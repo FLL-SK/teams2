@@ -1,0 +1,113 @@
+# import * from "./scalars.graphql"
+
+"""
+All possible application roles for Accountmember
+"""
+enum AccountMemberRole {
+  ADMIN
+}
+
+"""
+AccountMember statuses
+"""
+enum AccountMemberConfirmationStatus {
+  UNCONFIRMED
+  CONFIRMED
+}
+
+"""
+Address
+"""
+type Address {
+  row1: String
+  row2: String
+  city: String
+  zip: String
+  countryAlpha2Code: String
+  region: String
+}
+
+"""
+Address input
+"""
+input AddressInput {
+  row1: String
+  row2: String
+  city: String
+  zip: String
+  countryAlpha2Code: String
+  region: String
+}
+
+"""
+Info about pagination - used in Connection
+"""
+type PageInfo {
+  """
+  When paginating forwards, the cursor to continue
+  """
+  endCursor: String
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+  """
+  When paginating backwards, the cursor to continue
+  """
+  startCursor: String
+}
+
+"""
+Represents objects with globally unique id
+"""
+interface INode {
+  id: ID!
+}
+
+interface IActor {
+  id: ID
+  fullName: String!
+}
+
+"""
+Represents a payload of data that can return validation errors
+"""
+interface IMutationPayload {
+  """
+  The object that was created/updated/deleted
+  """
+  errors: [ValidationError!]
+}
+
+"""
+Represents validation error
+"""
+type ValidationError {
+  """
+  Indicates which field cause the error
+  """
+  field: Field
+
+  """
+  An error code for clients to match on.
+  """
+  code: ErrorCode
+}
+
+type Query {
+  """
+  Placeholder type as graphQL does not allow to define empty types
+  """
+  _: Boolean
+}
+
+type Mutation {
+  """
+  Placeholder type as graphQL does not allow to define empty types
+  """
+  _: Boolean
+}

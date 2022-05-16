@@ -1,0 +1,5 @@
+query getUser($id: ID!) {
+  getUser(id: $id) {
+    ...UserFragment
+  }
+}

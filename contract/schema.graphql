@@ -1,0 +1,9 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./user/user.graphql"
+
+schema {
+  query: Query
+  mutation: Mutation
+}

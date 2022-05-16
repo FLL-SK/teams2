@@ -1,0 +1,51 @@
+overwrite: true
+schema: './dist/schema.graphql'
+hooks:
+  afterOneFileWrite:
+    - eslint --fix
+    - prettier --write
+generates:
+  apps/server/src/generated/graphql.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-resolvers':
+          avoidOptionals: false
+          mappers:
+            Project: Project
+      - add:
+          content: |
+            /* eslint-disable @typescript-eslint/no-explicit-any */
+            /* eslint-disable @typescript-eslint/ban-types */
+    config:
+      scalars:
+        DateTime: string
+        Url: string
+        HumanId: string
+        Email: string
+        ID: string
+      enumsAsTypes: true
+      useIndexSignature: true
+      contextType: ../graphql/apollo-context#ApolloContext
+  apps/react-app/src/generated/graphql.tsx:
+    documents: 'apps/client/**/*.graphql'
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+      - add:
+          content: |
+            /* eslint-disable @typescript-eslint/no-explicit-any */
+            /* eslint-disable @typescript-eslint/ban-types */
+            /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+    config:
+      scalars:
+        DateTime: string
+        Url: string
+        HumanId: string
+        Email: string
+        ID: string
+      enumsAsTypes: true
+      avoidOptionals: false
+  ./graphql.schema.json:
+    plugins:
+      - 'introspection'
