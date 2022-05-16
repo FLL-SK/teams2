@@ -2,10 +2,7 @@
 Javascript Date object
 """
 scalar DateTime
-"""
-Scalar representing date without time. String formatted YYYY-MM-DD
-"""
-scalar DateString
+
 
 """
 Scalar representing email.
@@ -29,24 +26,11 @@ Scalar representing human readable id.
 scalar HumanId
 
 """
-Scalar representing Markdown text
-"""
-scalar Markdown
-
-"""
 Scalar representing web address.
 """
 scalar Url
 
 """
-Scalar representing an field in mutation response payload.
-"""
-scalar Field
-
-"""
 Scalar representing an error code in mutation response payload.
 """
 scalar ErrorCode
-
-"Logged time in minutes"
-scalar LoggedTime

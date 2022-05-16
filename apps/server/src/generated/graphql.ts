@@ -30,6 +30,14 @@ export type Scalars = {
   Float: number;
   /** Scalar representing email. */
   Email: string;
+  /** Scalar representing an error code in mutation response payload. */
+  ErrorCode: any;
+};
+
+/** Represents a payload of data that can return validation errors */
+export type IMutationPayload = {
+  /** The object that was created/updated/deleted */
+  errors?: Maybe<Array<ValidationError>>;
 };
 
 /** Represents objects with globally unique id */
@@ -79,9 +87,19 @@ export type UserCreateInput = {
   username: Scalars['Email'];
 };
 
-export type UserCreatePayload = {
+export type UserCreatePayload = IMutationPayload & {
   __typename?: 'UserCreatePayload';
+  errors?: Maybe<Array<ValidationError>>;
   user?: Maybe<User>;
+};
+
+/** Represents validation error */
+export type ValidationError = {
+  __typename?: 'ValidationError';
+  /** An error code for clients to match on. */
+  code: Scalars['ErrorCode'];
+  /** Indicates which field cause the error */
+  field: Scalars['String'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -196,7 +214,9 @@ export type DirectiveResolverFn<
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Email: ResolverTypeWrapper<Scalars['Email']>;
+  ErrorCode: ResolverTypeWrapper<Scalars['ErrorCode']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
+  IMutationPayload: ResolversTypes['UserCreatePayload'];
   INode: ResolversTypes['User'];
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
@@ -204,13 +224,16 @@ export type ResolversTypes = ResolversObject<{
   User: ResolverTypeWrapper<User>;
   UserCreateInput: UserCreateInput;
   UserCreatePayload: ResolverTypeWrapper<UserCreatePayload>;
+  ValidationError: ResolverTypeWrapper<ValidationError>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
   Email: Scalars['Email'];
+  ErrorCode: Scalars['ErrorCode'];
   ID: Scalars['ID'];
+  IMutationPayload: ResolversParentTypes['UserCreatePayload'];
   INode: ResolversParentTypes['User'];
   Mutation: {};
   Query: {};
@@ -218,12 +241,30 @@ export type ResolversParentTypes = ResolversObject<{
   User: User;
   UserCreateInput: UserCreateInput;
   UserCreatePayload: UserCreatePayload;
+  ValidationError: ValidationError;
 }>;
 
 export interface EmailScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['Email'], any> {
   name: 'Email';
 }
+
+export interface ErrorCodeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['ErrorCode'], any> {
+  name: 'ErrorCode';
+}
+
+export type IMutationPayloadResolvers<
+  ContextType = ApolloContext,
+  ParentType extends ResolversParentTypes['IMutationPayload'] = ResolversParentTypes['IMutationPayload']
+> = ResolversObject<{
+  __resolveType: TypeResolveFn<'UserCreatePayload', ParentType, ContextType>;
+  errors?: Resolver<
+    Maybe<Array<ResolversTypes['ValidationError']>>,
+    ParentType,
+    ContextType
+  >;
+}>;
 
 export type INodeResolvers<
   ContextType = ApolloContext,
@@ -284,15 +325,32 @@ export type UserCreatePayloadResolvers<
   ContextType = ApolloContext,
   ParentType extends ResolversParentTypes['UserCreatePayload'] = ResolversParentTypes['UserCreatePayload']
 > = ResolversObject<{
+  errors?: Resolver<
+    Maybe<Array<ResolversTypes['ValidationError']>>,
+    ParentType,
+    ContextType
+  >;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ValidationErrorResolvers<
+  ContextType = ApolloContext,
+  ParentType extends ResolversParentTypes['ValidationError'] = ResolversParentTypes['ValidationError']
+> = ResolversObject<{
+  code?: Resolver<ResolversTypes['ErrorCode'], ParentType, ContextType>;
+  field?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = ApolloContext> = ResolversObject<{
   Email?: GraphQLScalarType;
+  ErrorCode?: GraphQLScalarType;
+  IMutationPayload?: IMutationPayloadResolvers<ContextType>;
   INode?: INodeResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserCreatePayload?: UserCreatePayloadResolvers<ContextType>;
+  ValidationError?: ValidationErrorResolvers<ContextType>;
 }>;

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
+    "start": "run-s generate start:nx",
+    "start:nx": "nx run-many --parallel --target=serve --projects=server,client ",
     "build": "nx build",
     "test": "nx test",
     "generate": "run-s  build:contract generate:contract",

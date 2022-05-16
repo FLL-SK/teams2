@@ -18,8 +18,9 @@ input UserCreateInput {
   phoneNumber: String
 }
 
-type UserCreatePayload {
+type UserCreatePayload implements IMutationPayload{
   user: User
+  errors: [ValidationError!]
 }
 
 extend type Query {

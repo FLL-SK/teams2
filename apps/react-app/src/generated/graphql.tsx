@@ -25,6 +25,14 @@ export type Scalars = {
   Float: number;
   /** Scalar representing email. */
   Email: string;
+  /** Scalar representing an error code in mutation response payload. */
+  ErrorCode: any;
+};
+
+/** Represents a payload of data that can return validation errors */
+export type IMutationPayload = {
+  /** The object that was created/updated/deleted */
+  errors?: Maybe<Array<ValidationError>>;
 };
 
 /** Represents objects with globally unique id */
@@ -74,9 +82,19 @@ export type UserCreateInput = {
   username: Scalars['Email'];
 };
 
-export type UserCreatePayload = {
+export type UserCreatePayload = IMutationPayload & {
   __typename?: 'UserCreatePayload';
+  errors?: Maybe<Array<ValidationError>>;
   user?: Maybe<User>;
+};
+
+/** Represents validation error */
+export type ValidationError = {
+  __typename?: 'ValidationError';
+  /** An error code for clients to match on. */
+  code: Scalars['ErrorCode'];
+  /** Indicates which field cause the error */
+  field: Scalars['String'];
 };
 
 export type UserFragmentFragment = {

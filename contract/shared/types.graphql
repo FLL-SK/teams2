@@ -1,21 +1,6 @@
 # import * from "./scalars.graphql"
 
 """
-All possible application roles for Accountmember
-"""
-enum AccountMemberRole {
-  ADMIN
-}
-
-"""
-AccountMember statuses
-"""
-enum AccountMemberConfirmationStatus {
-  UNCONFIRMED
-  CONFIRMED
-}
-
-"""
 Address
 """
 type Address {
@@ -28,50 +13,12 @@ type Address {
 }
 
 """
-Address input
-"""
-input AddressInput {
-  row1: String
-  row2: String
-  city: String
-  zip: String
-  countryAlpha2Code: String
-  region: String
-}
-
-"""
-Info about pagination - used in Connection
-"""
-type PageInfo {
-  """
-  When paginating forwards, the cursor to continue
-  """
-  endCursor: String
-  """
-  When paginating forwards, are there more items?
-  """
-  hasNextPage: Boolean!
-  """
-  When paginating backwards, are there more items?
-  """
-  hasPreviousPage: Boolean!
-  """
-  When paginating backwards, the cursor to continue
-  """
-  startCursor: String
-}
-
-"""
 Represents objects with globally unique id
 """
 interface INode {
   id: ID!
 }
 
-interface IActor {
-  id: ID
-  fullName: String!
-}
 
 """
 Represents a payload of data that can return validation errors
@@ -90,12 +37,12 @@ type ValidationError {
   """
   Indicates which field cause the error
   """
-  field: Field
+  field: String!
 
   """
   An error code for clients to match on.
   """
-  code: ErrorCode
+  code: ErrorCode!
 }
 
 type Query {
