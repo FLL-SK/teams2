@@ -26,7 +26,7 @@ generates:
       enumsAsTypes: true
       useIndexSignature: true
       contextType: ../graphql/apollo-context#ApolloContext
-  apps/react-app/src/generated/graphql.tsx:
+  apps/client/src/generated/graphql.tsx:
     documents: 'apps/client/**/*.graphql'
     plugins:
       - 'typescript'
