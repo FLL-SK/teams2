@@ -5,7 +5,7 @@ hooks:
     - eslint --fix
     - prettier --write
 generates:
-  apps/server/src/generated/graphql.ts:
+  apps/server/src/app/generated/graphql.ts:
     plugins:
       - 'typescript'
       - 'typescript-resolvers':
@@ -18,15 +18,15 @@ generates:
             /* eslint-disable @typescript-eslint/ban-types */
     config:
       scalars:
-        DateTime: string
+        DateTime: Date
         Url: string
         HumanId: string
         Email: string
-        ID: string
+        ID: mongodb#ObjectId
       enumsAsTypes: true
       useIndexSignature: true
       contextType: ../graphql/apollo-context#ApolloContext
-  apps/client/src/generated/graphql.tsx:
+  apps/client/src/app/generated/graphql.tsx:
     documents: 'apps/client/**/*.graphql'
     plugins:
       - 'typescript'

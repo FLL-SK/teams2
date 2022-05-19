@@ -3,34 +3,15 @@ Javascript Date object
 """
 scalar DateTime
 
-
-"""
-Scalar representing email.
-"""
-scalar Email
-"""
-Scalar representing phone number.
-"""
-scalar PhoneNumber
-"""
-Scalar representing password.
-"""
-scalar Password
-"""
-Scalar representing access tokem.
-"""
-scalar Token
 """
 Scalar representing human readable id.
 """
 scalar HumanId
 
 """
-Scalar representing web address.
-"""
-scalar Url
-
-"""
 Scalar representing an error code in mutation response payload.
 """
 scalar ErrorCode
+
+"Email"
+scalar Email

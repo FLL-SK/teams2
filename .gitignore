@@ -43,3 +43,6 @@ generated
 
 # GraphQL schema
 graphql.schema.json
+
+# local config
+.env

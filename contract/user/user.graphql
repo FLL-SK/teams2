@@ -1,7 +1,6 @@
 # import * from "../shared/scalars.graphql"
 # import * from "../shared/types.graphql"
 
-
 """
 Represents registered provider (company, tenant).
 """
@@ -10,24 +9,25 @@ type User implements INode {
   name: String!
   username: Email!
   phoneNumber: String
+  deletedOn: DateTime
 }
 
-input UserCreateInput {
+input CreateUserInput {
   name: String!
   username: Email!
   phoneNumber: String
 }
 
-type UserCreatePayload implements IMutationPayload{
+type CreateUserPayload implements IMutationPayload {
   user: User
   errors: [ValidationError!]
 }
 
 extend type Query {
-  getUser(id:ID!): User!
+  getUser(id: ID!): User!
 }
 
 extend type Mutation {
-  createUser(input: UserCreateInput!): UserCreatePayload!
+  createUser(input: CreateUserInput!): CreateUserPayload!
   deleteUser(id: ID!): User
 }

@@ -1,24 +1,11 @@
 # import * from "./scalars.graphql"
 
 """
-Address
-"""
-type Address {
-  row1: String
-  row2: String
-  city: String
-  zip: String
-  countryAlpha2Code: String
-  region: String
-}
-
-"""
 Represents objects with globally unique id
 """
 interface INode {
   id: ID!
 }
-
 
 """
 Represents a payload of data that can return validation errors
