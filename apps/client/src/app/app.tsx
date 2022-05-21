@@ -7,19 +7,21 @@ import { LoginPage } from './pages/login/login-page';
 import { ProfilePage } from './pages/profile/profile-page';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { AuthedApolloProvider } from './components/auth/authed-apollo-provider';
+import { appConfig } from './app-config';
 
 const StyledApp = styled.div`
   // Your style here
 `;
 
 export function App() {
+  console.log('APPCONFIG', appConfig);
   return (
     <BrowserRouter>
       <Auth0Provider
-        domain="fllsk-dev.eu.auth0.com"
-        clientId="KhsK57vIU9x1QcW3ZhUeCKkMxM9ywibC"
+        domain={appConfig.auth.domain}
+        clientId={appConfig.auth.clientId}
         redirectUri={window.location.origin}
-        audience="https://fllsk-dev.eu.auth0.com/api/v2/"
+        audience={appConfig.auth.audience}
         scope="read:current_user"
       >
         <Auth0Wrapper>

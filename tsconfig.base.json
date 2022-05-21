@@ -15,7 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@teams2/debug": ["libs/debug/src/index.ts"],
       "@teams2/logger": ["libs/logger/src/index.ts"]
     }
   },
