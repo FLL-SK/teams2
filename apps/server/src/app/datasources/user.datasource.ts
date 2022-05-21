@@ -25,6 +25,11 @@ export class UserDataSource extends BaseDataSource {
     return UserMapper.toUser(await userRepository.findById(id));
   }
 
+  async getUserByUsername(username?: string): Promise<User> {
+    console.log('getUserByUsername', username);
+    return UserMapper.toUser(await userRepository.findOne({ username }));
+  }
+
   async createUser(input: CreateUserInput): Promise<CreateUserPayload> {
     const u: UserData = input;
     const nu = await userRepository.create(u);

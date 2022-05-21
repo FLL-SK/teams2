@@ -3,3 +3,9 @@ query getUser($id: ID!) {
     ...UserFragment
   }
 }
+
+query getProfile($username: String) {
+  getProfile(username: $username) {
+    ...UserFragment
+  }
+}

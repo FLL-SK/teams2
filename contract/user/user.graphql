@@ -25,6 +25,7 @@ type CreateUserPayload implements IMutationPayload {
 
 extend type Query {
   getUser(id: ID!): User!
+  getProfile(username: String): User
 }
 
 extend type Mutation {

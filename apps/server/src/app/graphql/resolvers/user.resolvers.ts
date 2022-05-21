@@ -4,6 +4,8 @@ import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getUser: async (_parent, { id }, { dataSources }) => dataSources.user.getUser(id),
+  getProfile: async (_parent, { username }, { dataSources }) =>
+    dataSources.user.getUserByUsername(username),
 };
 
 export const typeResolver: Resolver<User> = {};

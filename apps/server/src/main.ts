@@ -6,7 +6,7 @@ import { command } from 'yargs';
 import { resolve } from 'path';
 
 import { loadDotEnvFiles } from './app/utils/env-loader';
-import { getAppConfig } from './app-config';
+import { getServerConfig } from './server-config';
 import { bootstrapMongoDB, dbSeed } from './app/db';
 import { bootstrapApolloServer } from './app/graphql/bootstrap-apollo-server';
 
@@ -16,10 +16,10 @@ const log = logger('main');
 loadDotEnvFiles();
 
 async function server() {
-  const port = getAppConfig().port;
-  log.info('Starting server ...', { appConfig: getAppConfig() });
+  const port = getServerConfig().port;
+  log.info('Starting server ...', { appConfig: getServerConfig() });
   log.info(`Environment: ${process.env.NODE_ENV}`);
-  const appConfig = getAppConfig();
+  const appConfig = getServerConfig();
   const app = express();
 
   // CORS configuration
