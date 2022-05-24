@@ -10,7 +10,11 @@
         "outputPath": "dist/apps/server",
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
-        "assets": ["apps/server/src/assets"]
+        "assets": ["apps/server/src/assets",  {
+          "input": "apps/server/src/app/templates",
+          "glob": "**/*.pug",
+          "output": "templates"
+        }]
       },
       "configurations": {
         "production": {
