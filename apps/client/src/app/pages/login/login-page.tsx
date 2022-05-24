@@ -1,7 +1,17 @@
-import { useAuth0 } from '@auth0/auth0-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthenticate } from '../../components/useAuthenticate';
 
 export function LoginPage() {
-  const { loginWithRedirect } = useAuth0();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuthenticate();
 
-  return <button onClick={() => loginWithRedirect()}>Log In</button>;
+  const handleLogin = async (username: string, password: string) => {
+    if ((await login(username, password)).user) {
+      navigate((location.state as { from?: string })?.from || '/');
+      return;
+    }
+  };
+
+  return <button onClick={() => handleLogin('admin@test', 'admin')}>Log In</button>;
 }

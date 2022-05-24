@@ -26,7 +26,6 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUserByUsername(username?: string): Promise<User> {
-    console.log('getUserByUsername', username);
     return UserMapper.toUser(await userRepository.findOne({ username }));
   }
 

@@ -1,9 +1,14 @@
-import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  createHttpLink,
+  InMemoryCache,
+} from '@apollo/client';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import omitDeep from 'omit-deep';
 import { setContext } from '@apollo/link-context';
-import { useAuth0 } from '@auth0/auth0-react';
 import React from 'react';
 import { appConfig } from '../../app-config';
 
@@ -12,10 +17,8 @@ interface AuthedApolloProviderProps {
 }
 
 export function AuthedApolloProvider({ children }: AuthedApolloProviderProps) {
-  const { getAccessTokenSilently } = useAuth0();
-
   const httpLink = createHttpLink({
-    uri: appConfig.graphQLUrl // your URI here...
+    uri: `${appConfig.rootApiUrl}/graphql`, // your URI here...
   });
 
   // cleans __typename from the input data
@@ -30,18 +33,21 @@ export function AuthedApolloProvider({ children }: AuthedApolloProviderProps) {
   });
 
   const authLink = setContext(async () => {
-    const token = await getAccessTokenSilently();
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    };
+    // return authorization header with jwt token
+    const token = localStorage.getItem('token');
+    if (token) {
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+    } else return {};
   });
 
   const apolloClient = new ApolloClient({
     link: authLink.concat(cleanTypeName).concat(httpLink),
     cache: new InMemoryCache(),
-    connectToDevTools: true
+    connectToDevTools: true,
   });
 
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;

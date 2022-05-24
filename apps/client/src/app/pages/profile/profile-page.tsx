@@ -1,9 +1,9 @@
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuthenticate } from '../../components/useAuthenticate';
 import { useGetProfileQuery } from '../../generated/graphql';
 
 export function ProfilePage() {
-  const { user, logout } = useAuth0();
-  const { data, loading, error } = useGetProfileQuery({ variables: { username: user?.email } });
+  const { user, logout } = useAuthenticate();
+  const { data, loading, error } = useGetProfileQuery({ variables: { username: user?.username } });
 
   if (loading) {
     return <div>Loading...</div>;
@@ -16,7 +16,7 @@ export function ProfilePage() {
       <p>{data?.getProfile?.username}</p>
       <button
         onClick={() => {
-          logout({ returnTo: window.location.origin });
+          logout();
         }}
       >
         Log out
