@@ -2,7 +2,8 @@ import { logger } from '@teams2/logger';
 import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
-import { sendEMail } from '../utils/mailer';
+import { messageFromTemplate } from '../templates';
+import { sendEmail, sendHtmlEmail } from '../utils/mailer';
 
 const router = express.Router();
 export default router;
@@ -45,6 +46,12 @@ router.post('/', function (req, res, next) {
     }
 
     req.login(user, { session: false }, (err) => {
+      // EXAMPLE: this is email example
+      sendHtmlEmail(
+        ['test@test.test'],
+        'Welcome to Teams2',
+        messageFromTemplate('Huhuuuuuuuu', 'Welcome to Teams2')
+      );
       return login(user, res, err);
     });
   })(req, res);

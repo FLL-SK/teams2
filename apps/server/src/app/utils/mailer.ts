@@ -24,19 +24,18 @@ function createMailer() {
 }
 
 export function sendEmailSeparately(to: string[], subject: string, text: string) {
-  logLib.debug('Sending email to=%o subject=%s text=%s', to, subject, text);
-  to.forEach((t) => sendEMail([t], subject, text));
+  logLib.debug('Sending email to=%o subject=%s', to, subject);
+  to.forEach((t) => sendEmail([t], subject, text));
 }
 
-export function sendEMail(to: string[], subject: string, text: string) {
-  const cfg = getServerConfig();
-  const mailOptions = {
-    from: cfg.smtp.from,
-    to: to.join(','),
-    subject,
-    text,
-  };
-  logLib.debug('Sending email options=%o', mailOptions);
+export function sendHtmlEmailSeparately(to: string[], subject: string, html: string) {
+  logLib.debug('Sending email to=%o subject=%s', to, subject);
+  to.forEach((t) => sendHtmlEmail([t], subject, html));
+}
+
+function sendEmail_prim(mailOptions: nodemailer.SendMailOptions) {
+  const log = logLib.extend('sendEmail');
+  log.debug('Sending email to=%o subject=%s text=%s', mailOptions.to, mailOptions.subject);
   mailer.sendMail(mailOptions, (err, info) => {
     if (err) {
       return logLib.warn('Error sending options=%o err=%o', mailOptions, err);
@@ -48,4 +47,24 @@ export function sendEMail(to: string[], subject: string, text: string) {
       info.messageId
     );
   });
+}
+
+export function sendHtmlEmail(to: string[], subject: string, html: string) {
+  const mailOptions = {
+    from: getServerConfig().smtp.from,
+    to: to.join(','),
+    subject,
+    html,
+  };
+  sendEmail_prim(mailOptions);
+}
+
+export function sendEmail(to: string[], subject: string, text: string) {
+  const mailOptions = {
+    from: getServerConfig().smtp.from,
+    to: to.join(','),
+    subject,
+    text,
+  };
+  sendEmail_prim(mailOptions);
 }

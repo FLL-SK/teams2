@@ -5,6 +5,7 @@ export function getServerConfig() {
     //skipAuthentication: process.env.APP_SKIP_AUTHENTICATION === 'true',
     host: process.env.APP_HOST ?? 'localhost',
     port: process.env.APP_PORT ? Number(process.env.APP_PORT) ?? 5000 : 5000,
+
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
 
     graphQLSchemaPath: process.env.APP_GRAPHQL_SCHEMA_PATH ?? './dist/schema.graphql',
@@ -19,5 +20,6 @@ export function getServerConfig() {
     jwt: {
       secret: process.env.APP_JWT_SECRET,
     },
+    logoUrl: process.env.APP_LOGO_URL,
   };
 }
