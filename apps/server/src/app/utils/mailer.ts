@@ -39,8 +39,13 @@ export function sendEMail(to: string[], subject: string, text: string) {
   logLib.debug('Sending email options=%o', mailOptions);
   mailer.sendMail(mailOptions, (err, info) => {
     if (err) {
-      return console.error(err);
+      return logLib.warn('Error sending options=%o err=%o', mailOptions, err);
     }
-    console.log('Message sent: %s', info.messageId);
+    logLib.info(
+      'Message to:%o subject:%s id:%s',
+      mailOptions.to,
+      mailOptions.subject,
+      info.messageId
+    );
   });
 }
