@@ -32,6 +32,14 @@
         "buildTarget": "server:build"
       }
     },
+    "dbseed": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "server:build",
+        "watch": false,
+        "args": ["dbseed"]
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

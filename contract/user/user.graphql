@@ -16,6 +16,7 @@ input CreateUserInput {
   name: String!
   username: Email!
   phoneNumber: String
+  password: String!
 }
 
 type CreateUserPayload implements IMutationPayload {

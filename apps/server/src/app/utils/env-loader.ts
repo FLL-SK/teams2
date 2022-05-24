@@ -13,7 +13,7 @@ export function loadDotEnvFiles() {
     node_env: nodeEnv,
     silent: false,
     purge_dotenv: true,
-    path: path.join(cwd(), 'apps/server')
+    path: path.join(cwd(), 'apps/server'),
   });
 
   // 2. load workspace env variables
@@ -21,6 +21,6 @@ export function loadDotEnvFiles() {
     node_env: nodeEnv,
     silent: false,
     purge_dotenv: true,
-    path: path.join(cwd())
+    path: path.join(cwd()),
   });
 }

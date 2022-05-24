@@ -1,9 +1,7 @@
 import * as express from 'express';
 import * as cors from 'cors';
-import * as expressjwt from 'express-jwt';
-import jwksRsa = require('jwks-rsa');
 import { command } from 'yargs';
-import { resolve } from 'path';
+import { configure as configureAuth } from './app/auth';
 
 import { loadDotEnvFiles } from './app/utils/env-loader';
 import { getServerConfig } from './server-config';
@@ -11,6 +9,7 @@ import { bootstrapMongoDB, dbSeed } from './app/db';
 import { bootstrapApolloServer } from './app/graphql/bootstrap-apollo-server';
 
 import { logger } from '@teams2/logger';
+import { buildRootRouter } from './app/routes';
 const log = logger('main');
 
 loadDotEnvFiles();
@@ -19,7 +18,6 @@ async function server() {
   const port = getServerConfig().port;
   log.info('Starting server ...', { appConfig: getServerConfig() });
   log.info(`Environment: ${process.env.NODE_ENV}`);
-  const appConfig = getServerConfig();
   const app = express();
 
   // CORS configuration
@@ -31,43 +29,25 @@ async function server() {
   };
 
   app.use(cors(corsOptions));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   await bootstrapMongoDB();
 
-  const jwksOptions = {
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: appConfig.auth0.jwksUri,
-  };
-
-  const jwtCheck = expressjwt({
-    secret: jwksRsa.expressJwtSecret(jwksOptions),
-    credentialsRequired: false,
-    audience: appConfig.auth0.audience,
-    issuer: appConfig.auth0.issuer,
-    algorithms: ['RS256'],
-    getToken: (req): string | null => {
-      if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-        return req.headers.authorization.split(' ')[1];
-      } else if (req.query && req.query.access_token) {
-        return req.query.access_token as string;
-      }
-      return null;
-    },
-  });
-
-  app.use(jwtCheck);
+  // configure passport authentication
+  configureAuth(app);
 
   await bootstrapApolloServer(app);
 
   const assetsPath = __dirname + '/assets';
-
   app.use(express.static(assetsPath));
 
-  app.get('*', function (request, response) {
-    response.sendFile(resolve(assetsPath, 'index.html'));
-  });
+  const rootRouter = buildRootRouter();
+  app.use('/', rootRouter);
+
+  // app.get('*', function (request, response) {
+  //   response.sendFile(resolve(assetsPath, 'index.html'));
+  // });
   log.info(`Starting http server ...`, { port });
 
   const server = app.listen(port, () => {

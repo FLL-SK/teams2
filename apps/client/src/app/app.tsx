@@ -1,30 +1,23 @@
 import styled from 'styled-components';
 
 import { Route, Routes, Link, BrowserRouter } from 'react-router-dom';
-import { Auth0Wrapper } from './components/auth/auth0-wrapper';
+import { AuthWrapper } from './components/auth/auth-wrapper';
 import { RequireAuth } from './components/auth/require-auth';
 import { LoginPage } from './pages/login/login-page';
 import { ProfilePage } from './pages/profile/profile-page';
-import { Auth0Provider } from '@auth0/auth0-react';
 import { AuthedApolloProvider } from './components/auth/authed-apollo-provider';
 import { appConfig } from './app-config';
+import { AuthContextProvider } from './components/auth/auth-provider';
 
 const StyledApp = styled.div`
   // Your style here
 `;
 
 export function App() {
-  console.log('APPCONFIG', appConfig);
   return (
     <BrowserRouter>
-      <Auth0Provider
-        domain={appConfig.auth.domain}
-        clientId={appConfig.auth.clientId}
-        redirectUri={window.location.origin}
-        audience={appConfig.auth.audience}
-        scope="read:current_user"
-      >
-        <Auth0Wrapper>
+      <AuthContextProvider authApiUrl={`${appConfig.rootApiUrl}/auth`}>
+        <AuthWrapper>
           <AuthedApolloProvider>
             <StyledApp>
               <Routes>
@@ -32,8 +25,8 @@ export function App() {
                   path="/"
                   element={
                     <div>
-                      This is the generated root route.{' '}
-                      <Link to="/profile">Click here for page 2.</Link>
+                      This is the root route.{' '}
+                      <Link to="/profile">Click here for protected profile.</Link>
                     </div>
                   }
                 />
@@ -50,8 +43,8 @@ export function App() {
               {/* END: routes */}
             </StyledApp>
           </AuthedApolloProvider>
-        </Auth0Wrapper>
-      </Auth0Provider>
+        </AuthWrapper>
+      </AuthContextProvider>
     </BrowserRouter>
   );
 }
