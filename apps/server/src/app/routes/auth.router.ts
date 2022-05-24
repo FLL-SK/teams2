@@ -2,6 +2,7 @@ import { logger } from '@teams2/logger';
 import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
+import { sendEMail } from '../utils/mailer';
 
 const router = express.Router();
 export default router;
