@@ -10,6 +10,7 @@ export interface UserData {
   name?: string;
   phoneNumber?: string;
   deletedOn?: Date;
+  deletedBy?: ObjectId;
   password: string;
 }
 
@@ -23,10 +24,11 @@ export interface UserModel extends Model<UserData> {
 
 const schema = new Schema<UserData, UserModel>({
   username: { type: Types.String, required: true },
-  name: Types.String,
-  phoneNumber: Types.String,
-  deletedOn: Types.Date,
-  password: { type: Types.String, required: true },
+  name: { type: Types.String },
+  password: { type: Types.String, required: true }, // hashed password
+  phoneNumber: { type: Types.String },
+  deletedOn: { type: Types.Date },
+  deletedBy: { type: Types.ObjectId, ref: 'User' },
 });
 
 schema.index({ username: 1 }, { unique: true });

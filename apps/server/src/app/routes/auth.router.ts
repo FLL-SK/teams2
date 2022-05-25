@@ -3,7 +3,7 @@ import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
 import { messageFromTemplate } from '../templates';
-import { sendEmail, sendHtmlEmail } from '../utils/mailer';
+import { sendHtmlEmail } from '../utils/mailer';
 
 const router = express.Router();
 export default router;
