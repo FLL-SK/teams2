@@ -1,7 +1,9 @@
 # import * from "./shared/scalars.graphql"
 # import * from "./shared/types.graphql"
 
-# import * from "./user/user.graphql"
+# import * from "./user.graphql"
+# import * from "./team.graphql"
+# import * from "./event.graphql"
 
 schema {
   query: Query

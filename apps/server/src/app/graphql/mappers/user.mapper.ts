@@ -12,6 +12,10 @@ export const UserMapper = {
       username: user.username,
       phoneNumber: user.phoneNumber,
       deletedOn: user.deletedOn,
+      deletedBy: user.deletedBy,
+      isAdmin: user.isAdmin,
+      coachingTeams: [],
+      managingEvents: [],
     };
     return u;
   },

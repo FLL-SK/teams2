@@ -8,10 +8,8 @@ import { ProfilePage } from './pages/profile/profile-page';
 import { AuthedApolloProvider } from './components/auth/authed-apollo-provider';
 import { appConfig } from './app-config';
 import { AuthContextProvider } from './components/auth/auth-provider';
-
-const StyledApp = styled.div`
-  // Your style here
-`;
+import { GlobalStyle } from './theme/global-style';
+import { AppLayout } from './app-layout';
 
 export function App() {
   return (
@@ -19,29 +17,8 @@ export function App() {
       <AuthContextProvider authApiUrl={`${appConfig.rootApiUrl}/auth`}>
         <AuthWrapper>
           <AuthedApolloProvider>
-            <StyledApp>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <div>
-                      This is the root route.{' '}
-                      <Link to="/profile">Click here for protected profile.</Link>
-                    </div>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <RequireAuth>
-                      <ProfilePage />
-                    </RequireAuth>
-                  }
-                />
-                <Route path="/login" element={<LoginPage />} />
-              </Routes>
-              {/* END: routes */}
-            </StyledApp>
+            <GlobalStyle />
+            <AppLayout />
           </AuthedApolloProvider>
         </AuthWrapper>
       </AuthContextProvider>

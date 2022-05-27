@@ -1,6 +1,19 @@
-fragment UserFragment on User {
+fragment UserListFragment on User {
   id
   name
   username
   phoneNumber
+
+  isAdmin
+}
+
+fragment UserFragment on User {
+  ...UserListFragment
+
+  coachingTeams {
+    ...TeamListFragment
+  }
+  managingEvents {
+    ...EventListFragment
+  }
 }

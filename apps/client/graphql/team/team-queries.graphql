@@ -1,0 +1,11 @@
+query getEvent($id: ID!) {
+  getEvent(id: $id) {
+    ...EventFragment
+  }
+}
+
+query getEvents {
+  getEvents {
+    ...EventFragment
+  }
+}

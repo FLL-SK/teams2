@@ -12,6 +12,7 @@ export interface UserData {
   deletedOn?: Date;
   deletedBy?: ObjectId;
   password: string;
+  isAdmin?: boolean;
 }
 
 export type UserDocument = (Document<unknown, unknown, UserData> & UserData) | null;
@@ -29,6 +30,7 @@ const schema = new Schema<UserData, UserModel>({
   phoneNumber: { type: Types.String },
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },
+  isAdmin: { type: Types.Boolean },
 });
 
 schema.index({ username: 1 }, { unique: true });

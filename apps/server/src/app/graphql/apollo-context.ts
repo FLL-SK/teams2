@@ -1,5 +1,5 @@
-import { UserDataSource } from '../datasources';
-import { User } from '../generated/graphql';
+import { EventDataSource, TeamDataSource, UserDataSource } from '../datasources';
+import { UserData } from '../models';
 
 export interface AuthProfileData {
   email: string;
@@ -12,10 +12,12 @@ export const apolloContextEmpty: ApolloContext = {
 
 export type ApolloContextDataSources = {
   user: UserDataSource;
+  event: EventDataSource;
+  team: TeamDataSource;
 };
 
 export interface ApolloContext {
-  user: User;
+  user: Omit<UserData, 'password'> | null;
   userTimeZone: string;
   dataSources?: ApolloContextDataSources;
   authProfileData?: AuthProfileData;

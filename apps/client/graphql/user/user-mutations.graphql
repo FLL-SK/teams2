@@ -1,5 +1,33 @@
 mutation deleteUser($id: ID!) {
   deleteUser(id: $id) {
+    ...UserFragment
+  }
+}
+
+mutation createUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    user {
       ...UserFragment
+    }
+    errors {
+      ...ValidationErrorFragment
+    }
+  }
+}
+
+mutation updateUser($id: ID!, $input: UpdateUserInput!) {
+  updateUser(id: $id, input: $input) {
+    user {
+      ...UserFragment
+    }
+    errors {
+      ...ValidationErrorFragment
+    }
+  }
+}
+
+mutation changeUserPassword($id: ID!, $password: String!) {
+  changeUserPassword(id: $id, password: $password) {
+    ...UserFragment
   }
 }

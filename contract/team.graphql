@@ -1,0 +1,54 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./user.graphql"
+# import * from "./event.graphql"
+
+type Team implements INode {
+  id: ID!
+  name: String!
+  coachesIds: [ID!]!
+
+  deletedOn: DateTime
+  deletedBy: ID
+
+  coaches: [User!]!
+  events: [Event!]!
+}
+
+input CreateTeamInput {
+  name: String!
+}
+
+type CreateTeamPayload implements IMutationPayload {
+  team: Team
+  errors: [ValidationError!]
+}
+
+input UpdateTeamInput {
+  name: String
+}
+
+type UpdateTeamPayload {
+  team: Team
+  errors: [ValidationError!]
+}
+
+type CreateTeamPayload implements IMutationPayload {
+  team: Team
+  errors: [ValidationError!]
+}
+
+extend type Query {
+  getTeam(id: ID!): Team!
+  getTeams: [Team!]!
+}
+
+extend type Mutation {
+  createTeam(input: CreateTeamInput!): CreateTeamPayload!
+  updateTeam(id: ID!, input: UpdateTeamInput!): UpdateTeamPayload!
+  deleteTeam(id: ID!): Team
+
+  addCoachToTeam(teamId: ID!, userId: ID!): Team!
+  removeCoachFromTeam(teamId: ID!, userId: ID!): Team!
+}

@@ -1,0 +1,4 @@
+fragment ValidationErrorFragment on ValidationError {
+  field
+  code
+}

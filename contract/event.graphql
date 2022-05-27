@@ -1,0 +1,64 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./team.graphql"
+# import * from "./user.graphql"
+
+type Event implements INode {
+  id: ID!
+  name: String!
+  date: DateTime
+  teamsIds: [ID!]!
+  managersIds: [ID!]!
+  registrationStart: DateTime!
+  registrationEnd: DateTime
+
+  deletedOn: DateTime
+  deletedBy: ID
+
+  teams: [Team!]!
+  managers: [User!]!
+}
+
+input CreateEventInput {
+  name: String!
+}
+
+type CreateEventPayload implements IMutationPayload {
+  event: Event
+  errors: [ValidationError!]
+}
+
+input UpdateEventInput {
+  name: String
+  date: DateTime
+  registrationStart: DateTime
+  registrationEnd: DateTime
+}
+
+type UpdateEventPayload {
+  event: Event
+  errors: [ValidationError!]
+}
+
+type CreateEventPayload implements IMutationPayload {
+  event: Event
+  errors: [ValidationError!]
+}
+
+extend type Query {
+  getEvent(id: ID!): Event!
+  getEvents: [Event!]!
+}
+
+extend type Mutation {
+  createEvent(input: CreateEventInput!): CreateEventPayload!
+  updateEvent(id: ID!, input: UpdateEventInput!): UpdateEventPayload!
+  deleteEvent(id: ID!): Event
+
+  addTeamToEvent(eventId: ID!, teamId: ID!): Event!
+  removeTeamFromEvent(eventId: ID!, teamId: ID!): Event!
+
+  addEventManager(eventId: ID!, userId: ID!): Event!
+  removeEventManager(eventId: ID!, userId: ID!): Event!
+}

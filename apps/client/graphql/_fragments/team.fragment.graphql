@@ -1,0 +1,19 @@
+fragment TeamListFragment on Team {
+  id
+  name
+  coachesIds
+
+  deletedOn
+  deletedBy
+}
+
+fragment TeamFragment on Team {
+  ...TeamListFragment
+
+  coaches {
+    ...UserListFragment
+  }
+  events {
+    ...EventListFragment
+  }
+}

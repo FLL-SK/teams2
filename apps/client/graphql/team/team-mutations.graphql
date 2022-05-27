@@ -1,0 +1,39 @@
+mutation deleteTeam($id: ID!) {
+  deleteTeam(id: $id) {
+    ...TeamFragment
+  }
+}
+
+mutation createTeam($input: CreateTeamInput!) {
+  createTeam(input: $input) {
+    team {
+      ...TeamFragment
+    }
+    errors {
+      ...ValidationErrorFragment
+    }
+  }
+}
+
+mutation updateTeam($id: ID!, $input: UpdateTeamInput!) {
+  updateTeam(id: $id, input: $input) {
+    team {
+      ...TeamFragment
+    }
+    errors {
+      ...ValidationErrorFragment
+    }
+  }
+}
+
+mutation addCoachToTeam($teamId: ID!, $userId: ID!) {
+  addCoachToTeam(teamId: $teamId, userId: $userId) {
+    ...TeamFragment
+  }
+}
+
+mutation removeCoachFromTeam($teamId: ID!, $userId: ID!) {
+  removeCoachFromTeam(teamId: $teamId, userId: $userId) {
+    ...TeamFragment
+  }
+}

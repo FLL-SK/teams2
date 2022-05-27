@@ -1,6 +1,5 @@
-import { Schema, model, Model, Document } from 'mongoose';
+import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { hash } from 'bcryptjs';
 
 const Types = Schema.Types;
 
@@ -21,6 +20,10 @@ export type EventDocument = (Document<unknown, unknown, EventData> & EventData) 
 
 export interface EventModel extends Model<EventData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
+  findEventsManagedByUser(
+    userId: ObjectId,
+    projection?: ProjectionType<EventData>
+  ): Promise<EventDocument[]>;
 }
 
 const schema = new Schema<EventData, EventModel>({
@@ -42,4 +45,11 @@ schema.static('clean', function () {
   return this.deleteMany().exec();
 });
 
-export const userRepository = model<EventData, EventModel>('Event', schema);
+schema.static(
+  'findEventsManagedByUser',
+  function (userId: ObjectId, projection?: ProjectionType<EventData>) {
+    return this.find({ managersIds: userId, deletedOn: null }, projection).exec();
+  }
+);
+
+export const eventRepository = model<EventData, EventModel>('Event', schema);

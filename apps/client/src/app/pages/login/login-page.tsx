@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '../../components/useAuthenticate';
 
 export function LoginPage() {
@@ -13,5 +14,9 @@ export function LoginPage() {
     }
   };
 
-  return <button onClick={() => handleLogin('admin@test', 'admin')}>Log In</button>;
+  return (
+    <BasePage>
+      <button onClick={() => handleLogin('admin@test', 'admin')}>Log In</button>;
+    </BasePage>
+  );
 }

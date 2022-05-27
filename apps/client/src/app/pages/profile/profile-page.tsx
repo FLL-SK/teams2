@@ -1,3 +1,4 @@
+import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '../../components/useAuthenticate';
 import { useGetProfileQuery } from '../../generated/graphql';
 
@@ -9,7 +10,7 @@ export function ProfilePage() {
     return <div>Loading...</div>;
   }
   return (
-    <div>
+    <BasePage>
       <h1>Profile Page</h1>
       <p>This is the profile page.</p>
       <p>{data?.getProfile?.name}</p>
@@ -21,6 +22,6 @@ export function ProfilePage() {
       >
         Log out
       </button>
-    </div>
+    </BasePage>
   );
 }

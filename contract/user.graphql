@@ -1,0 +1,55 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./event.graphql"
+# import * from "./team.graphql"
+
+type User implements INode {
+  id: ID!
+  name: String!
+  username: Email!
+  phoneNumber: String
+
+  isAdmin: Boolean!
+
+  deletedOn: DateTime
+  deletedBy: ID!
+
+  coachingTeams: [Team!]
+  managingEvents: [Event!]
+}
+
+input CreateUserInput {
+  name: String!
+  username: Email!
+  phoneNumber: String
+  password: String!
+}
+
+type CreateUserPayload implements IMutationPayload {
+  user: User
+  errors: [ValidationError!]
+}
+
+input UpdateUserInput {
+  name: String
+  phoneNumber: String
+}
+
+type UpdateUserPayload implements IMutationPayload {
+  user: User
+  errors: [ValidationError!]
+}
+
+extend type Query {
+  getUser(id: ID!): User!
+  getProfile(username: String): User
+}
+
+extend type Mutation {
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  deleteUser(id: ID!): User
+
+  changeUserPassword(id: ID!, password: String!): User
+}

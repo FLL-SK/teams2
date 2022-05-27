@@ -1,0 +1,23 @@
+fragment EventListFragment on Event {
+  id
+  name
+  date
+  teamsIds
+  managersIds
+  registrationStart
+  registrationEnd
+
+  deletedOn
+  deletedBy
+}
+
+fragment EventFragment on Event {
+  ...EventListFragment
+
+  teams {
+    ...TeamListFragment
+  }
+  managers {
+    ...UserListFragment
+  }
+}

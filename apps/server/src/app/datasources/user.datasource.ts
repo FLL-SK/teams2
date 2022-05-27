@@ -2,13 +2,15 @@ import { DataSourceConfig } from 'apollo-datasource';
 
 import { ApolloContext } from '../graphql/apollo-context';
 
-//import { logger } from '@teams2/logger';
-
-//const logModule = logger('UserDS');
-
 import { BaseDataSource } from './_base.datasource';
 import { UserData, userRepository } from '../models';
-import { CreateUserInput, CreateUserPayload, User } from '../generated/graphql';
+import {
+  CreateUserInput,
+  CreateUserPayload,
+  UpdateUserInput,
+  UpdateUserPayload,
+  User,
+} from '../generated/graphql';
 import { UserMapper } from '../graphql/mappers';
 import { ObjectId } from 'mongodb';
 
@@ -35,8 +37,19 @@ export class UserDataSource extends BaseDataSource {
     return { user: UserMapper.toUser(nu) };
   }
 
+  async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
+    const u: Partial<UserData> = input;
+    const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
+    return { user: UserMapper.toUser(nu) };
+  }
+
   async deleteUser(id: ObjectId): Promise<User> {
     const u = await userRepository.findByIdAndDelete(id).lean().exec();
+    return UserMapper.toUser(u);
+  }
+
+  async changePassword(id: ObjectId, password: string): Promise<User> {
+    const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
     return UserMapper.toUser(u);
   }
 
