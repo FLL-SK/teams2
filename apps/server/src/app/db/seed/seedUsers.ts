@@ -1,5 +1,4 @@
 import { UserData, userRepository } from '../../models';
-import { compare, hash } from 'bcryptjs';
 import { logger } from '@teams2/logger';
 
 export const seedUsersData: UserData[] = [
@@ -8,8 +7,25 @@ export const seedUsersData: UserData[] = [
     password: 'admin',
   },
   {
-    username: 'user1@test',
-    password: 'user1',
+    username: 'coach1@test',
+    password: 'coach1',
+  },
+  {
+    username: 'coach2@test',
+    password: 'coach2',
+  },
+  {
+    username: 'coach3@test',
+    password: 'coach3',
+  },
+  {
+    username: 'eventmgr1@test',
+    password: 'eventmgr1',
+  },
+
+  {
+    username: 'eventmgr2@test',
+    password: 'eventmgr2',
   },
 ];
 
