@@ -8,12 +8,12 @@ export const UserMapper = {
     }
     const u: Omit<Required<User>, '__typename'> = {
       id: user._id,
-      name: user.name,
+      name: user.name ?? '',
       username: user.username,
-      phoneNumber: user.phoneNumber,
+      phoneNumber: user.phoneNumber ?? '',
       deletedOn: user.deletedOn,
       deletedBy: user.deletedBy,
-      isAdmin: user.isAdmin,
+      isAdmin: user.isAdmin ?? false,
       coachingTeams: [],
       managingEvents: [],
     };

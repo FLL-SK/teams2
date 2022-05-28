@@ -2,8 +2,10 @@ import { logger } from '@teams2/logger';
 import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
-import { messageFromTemplate } from '../templates';
+import { userRepository } from '../models';
+import { msgFromTemplate } from '../templates';
 import { sendHtmlEmail } from '../utils/mailer';
+import { requestPassworReset as requestPassworReset } from '../utils/password-reset';
 
 const router = express.Router();
 export default router;
@@ -35,6 +37,53 @@ router.get('/', (req, res) => {
   res.send({ error: { message: 'Invalid token' } });
 });
 
+router.post('/forgot', async function (req, res, next) {
+  const { username } = req.body;
+  const log = logLib.extend('post/forgot');
+  log.debug('user forgot password=%o', username);
+
+  const u = await userRepository.findActiveByUsername(username);
+  if (u) {
+    requestPassworReset(username);
+  } else {
+    log.debug('user not found', username);
+  }
+
+  res.send({});
+});
+
+router.post('/reset', async function (req, res, next) {
+  const { token, password } = req.body;
+  const log = logLib.extend('post/reset');
+
+  const au = verifyToken(token);
+  log.debug('user password reset=%o pwd=%s token=%s', au, password, token);
+
+  const u = await userRepository.findActiveByUsername(au.username);
+  if (u) {
+    u.password = password;
+    await u.save();
+    return res.send({});
+  }
+  res.status(401).send({ error: { message: 'Invalid token' } });
+});
+
+router.post('/signup', async function (req, res, next) {
+  const { username, password } = req.body;
+  const log = logLib.extend('post/signup');
+  log.debug('user signup=%o', username);
+
+  const u = await userRepository.findActiveByUsername(username);
+  if (u) {
+    return res.status(400).send({ error: { message: 'User already exists' } });
+  } else {
+    log.info('New signup', username);
+    await userRepository.create({ username, password });
+  }
+
+  res.send({});
+});
+
 router.post('/', function (req, res, next) {
   passport.authenticate('login', { session: false }, (err: Error, user?: AuthUser) => {
     const log = logLib.extend('post/');
@@ -46,12 +95,6 @@ router.post('/', function (req, res, next) {
     }
 
     req.login(user, { session: false }, (err) => {
-      // EXAMPLE: this is email example
-      sendHtmlEmail(
-        ['test@test.test'],
-        'Welcome to Teams2',
-        messageFromTemplate('Huhuuuuuuuu', 'Welcome to Teams2')
-      );
       return login(user, res, err);
     });
   })(req, res);

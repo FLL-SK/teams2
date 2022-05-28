@@ -13,7 +13,7 @@ import { ObjectId } from 'mongodb';
 const logLib = logger('auth');
 
 export interface AuthUser {
-  id: ObjectId;
+  id?: ObjectId;
   username: string;
 }
 
@@ -22,7 +22,12 @@ export function authenticateUsingJwt() {
 }
 
 export function createToken(data: AuthUser) {
-  return sign(data, getServerConfig().jwt.secret);
+  return sign(data, getServerConfig().jwt.secret, { expiresIn: '1d' });
+}
+
+export function createPasswordResetToken(username: string) {
+  const au: AuthUser = { username };
+  return sign(au, getServerConfig().jwt.secret, { expiresIn: '1h' });
 }
 
 export function verifyToken(token: string): AuthUser | null {

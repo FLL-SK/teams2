@@ -3,15 +3,16 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../graphql/apollo-context';
 
 import { BaseDataSource } from './_base.datasource';
-import { TeamData, teamRepository } from '../models';
+import { TeamData, teamRepository, userRepository } from '../models';
 import {
   CreateTeamInput,
   CreateTeamPayload,
   Team,
   UpdateTeamInput,
   UpdateTeamPayload,
+  User,
 } from '../generated/graphql';
-import { TeamMapper } from '../graphql/mappers';
+import { TeamMapper, UserMapper } from '../graphql/mappers';
 import { ObjectId } from 'mongodb';
 
 export class TeamDataSource extends BaseDataSource {
@@ -70,5 +71,14 @@ export class TeamDataSource extends BaseDataSource {
       { new: true }
     );
     return TeamMapper.toTeam(t);
+  }
+
+  async getTeamCoaches(teamId: ObjectId): Promise<User[]> {
+    const t = await teamRepository.findById(teamId);
+    if (!t) {
+      throw new Error('Team not found');
+    }
+    const coaches = await Promise.all(t.coachesIds.map(async (c) => userRepository.findById(c)));
+    return coaches.map((c) => UserMapper.toUser(c));
   }
 }

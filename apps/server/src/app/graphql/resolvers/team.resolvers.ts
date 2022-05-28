@@ -7,7 +7,9 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
   getTeams: async (_parent, _args, { dataSources }) => dataSources.team.getTeams(),
 };
 
-export const typeResolver: Resolver<Team> = {};
+export const typeResolver: Resolver<Team> = {
+  coaches: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamCoaches(id),
+};
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
   createTeam: async (_parent, { input }, { dataSources }) => dataSources.team.createTeam(input),

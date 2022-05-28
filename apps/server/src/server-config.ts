@@ -21,5 +21,6 @@ export function getServerConfig() {
       secret: process.env.APP_JWT_SECRET,
     },
     logoUrl: process.env.APP_LOGO_URL,
+    clientAppRootUrl: process.env.APP_CLIENT_ROOT_URL ?? '',
   };
 }

@@ -13,6 +13,7 @@ import {
 } from '../generated/graphql';
 import { UserMapper } from '../graphql/mappers';
 import { ObjectId } from 'mongodb';
+import { createPasswordResetToken } from '../auth';
 
 export class UserDataSource extends BaseDataSource {
   constructor() {

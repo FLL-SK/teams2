@@ -85,4 +85,26 @@ export class EventDataSource extends BaseDataSource {
       .exec();
     return EventMapper.toEvent(event);
   }
+
+  async getEventTeams(eventId: ObjectId): Promise<Team[]> {
+    const event = await eventRepository.findById(eventId).exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const teams = await Promise.all(
+      event.teamsIds.map(async (t) => teamRepository.findById(t).exec())
+    );
+    return teams.map(TeamMapper.toTeam);
+  }
+
+  async getEventManagers(eventId: ObjectId): Promise<User[]> {
+    const event = await eventRepository.findById(eventId).exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    const users = await Promise.all(
+      event.managersIds.map(async (u) => userRepository.findById(u).exec())
+    );
+    return users.map(UserMapper.toUser);
+  }
 }
