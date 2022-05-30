@@ -28,6 +28,11 @@ export class UserDataSource extends BaseDataSource {
     return UserMapper.toUser(await userRepository.findById(id));
   }
 
+  async getUsers(): Promise<User[]> {
+    const users = await userRepository.find();
+    return users.map(UserMapper.toUser);
+  }
+
   async getUserByUsername(username?: string): Promise<User> {
     return UserMapper.toUser(await userRepository.findOne({ username }));
   }

@@ -1,6 +1,5 @@
-import { Box, Header, ResponsiveContext } from 'grommet';
+import { Box, Text, ResponsiveContext } from 'grommet';
 import { MainNavbar } from './main-navbar';
-import { useAuthenticate } from './useAuthenticate';
 
 interface BasePageProps {
   title?: string;
@@ -13,13 +12,15 @@ export function BasePage(props: BasePageProps) {
   return (
     <ResponsiveContext.Consumer>
       {(responsiveSize) => (
-        <>
+        <Box gap="medium">
           <MainNavbar responsiveSize={responsiveSize} />
           <Box>
-            <Header>{title}</Header>
+            <Text size="xlarge" weight="bold">
+              {title}
+            </Text>
           </Box>
-          <Box pad="medium">{children}</Box>
-        </>
+          <Box>{children}</Box>
+        </Box>
       )}
     </ResponsiveContext.Consumer>
   );

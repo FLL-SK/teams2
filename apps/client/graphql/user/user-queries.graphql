@@ -4,8 +4,8 @@ query getUser($id: ID!) {
   }
 }
 
-query getProfile($username: String) {
-  getProfile(username: $username) {
+query getUsers {
+  getUsers {
     ...UserFragment
   }
 }

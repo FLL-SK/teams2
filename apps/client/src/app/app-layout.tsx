@@ -18,7 +18,7 @@ const BodyWrapper = styled(Box)`
   max-width: 100%;
   margin: 0 auto;
 
-  @media ${device.laptop} {
-    max-width: 1000px;
+  @media ${device.tablet} {
+    max-width: 800px;
   }
 `;

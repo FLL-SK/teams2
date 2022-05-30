@@ -1,6 +1,5 @@
 import { Box, Text } from 'grommet';
 import { EventFragmentFragment } from '../generated/graphql';
-import { useAuthenticate } from './useAuthenticate';
 
 interface EventTileProps {
   event: EventFragmentFragment;

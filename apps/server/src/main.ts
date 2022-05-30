@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as cors from 'cors';
+import * as morgan from 'morgan';
 import { command } from 'yargs';
 import { configure as configureAuth } from './app/auth';
 
@@ -28,6 +29,7 @@ async function server() {
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
   };
 
+  app.use(morgan('tiny'));
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

@@ -1,11 +1,11 @@
-query getEvent($id: ID!) {
-  getEvent(id: $id) {
-    ...EventFragment
+query getTeam($id: ID!) {
+  getTeam(id: $id) {
+    ...TeamFragment
   }
 }
 
-query getEvents {
-  getEvents {
-    ...EventFragment
+query getTeams {
+  getTeams {
+    ...TeamFragment
   }
 }

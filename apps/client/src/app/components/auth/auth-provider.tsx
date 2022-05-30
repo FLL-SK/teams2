@@ -19,6 +19,7 @@ export interface AuthState {
 }
 
 export interface AuthContextData extends AuthState {
+  isInitializing: boolean;
   login: (username: string, password: string) => Promise<AuthResponse>;
   logout: () => void;
   silentCheck: () => Promise<AuthResponse>;
@@ -28,6 +29,7 @@ export interface AuthContextData extends AuthState {
 }
 
 const emptyContext: AuthContextData = {
+  isInitializing: false,
   isAuthenticated: false,
   isLoggingIn: false,
   user: undefined,
@@ -134,7 +136,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       setState({ isAuthenticated: false, isLoggingIn: false, error: authResponse.error });
       return {};
     },
-    [authApiUrl]
+    [authApiUrl, initializing]
   );
 
   // ---------------------------------------------------------------------------
@@ -202,7 +204,16 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
 
   return (
     <AuthContext.Provider
-      value={{ ...state, login, logout, silentCheck, forgotPassword, resetPassword, signup }}
+      value={{
+        ...state,
+        isInitializing: initializing,
+        login,
+        logout,
+        silentCheck,
+        forgotPassword,
+        resetPassword,
+        signup,
+      }}
     >
       {children}
     </AuthContext.Provider>

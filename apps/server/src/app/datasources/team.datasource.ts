@@ -3,7 +3,7 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../graphql/apollo-context';
 
 import { BaseDataSource } from './_base.datasource';
-import { TeamData, teamRepository, userRepository } from '../models';
+import { eventRepository, TeamData, teamRepository, userRepository } from '../models';
 import {
   CreateTeamInput,
   CreateTeamPayload,
@@ -11,8 +11,9 @@ import {
   UpdateTeamInput,
   UpdateTeamPayload,
   User,
+  Event,
 } from '../generated/graphql';
-import { TeamMapper, UserMapper } from '../graphql/mappers';
+import { EventMapper, TeamMapper, UserMapper } from '../graphql/mappers';
 import { ObjectId } from 'mongodb';
 
 export class TeamDataSource extends BaseDataSource {
@@ -80,5 +81,10 @@ export class TeamDataSource extends BaseDataSource {
     }
     const coaches = await Promise.all(t.coachesIds.map(async (c) => userRepository.findById(c)));
     return coaches.map((c) => UserMapper.toUser(c));
+  }
+
+  async getTeamEvents(teamId: ObjectId): Promise<Event[]> {
+    const events = await eventRepository.find({ teamsIds: teamId });
+    return events.map((c) => EventMapper.toEvent(c));
   }
 }

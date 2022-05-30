@@ -15,8 +15,8 @@ type User implements INode {
   deletedOn: DateTime
   deletedBy: ID!
 
-  coachingTeams: [Team!]
-  managingEvents: [Event!]
+  coachingTeams: [Team!]!
+  managingEvents: [Event!]!
 }
 
 input CreateUserInput {
@@ -42,8 +42,8 @@ type UpdateUserPayload implements IMutationPayload {
 }
 
 extend type Query {
-  getUser(id: ID!): User!
-  getProfile(username: String): User
+  getUser(id: ID!): User
+  getUsers: [User!]!
 }
 
 extend type Mutation {
