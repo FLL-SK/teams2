@@ -24,11 +24,11 @@ export function CreateTeamDialog(props: CreateTeamDialogProps) {
   };
 
   return (
-    <Modal title="Create Team" onClose={onClose} footer={<></>}>
+    <Modal title="Nový tím" onClose={onClose}>
       <Form onSubmit={handleSubmit} messages={{ required: 'Povinný údaj' }}>
-        <FormField label="Meno tímu" name="name" required />
-        <Box direction="row" gap="small" alignContent="end">
-          <Button plain onClick={onClose} label="Zrušiť" />
+        <FormField label="Meno tímu" name="name" required autoFocus />
+        <Box direction="row" gap="small" justify="end">
+          <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
           <Button primary type="submit" label="Vytvoriť" />
         </Box>
       </Form>
