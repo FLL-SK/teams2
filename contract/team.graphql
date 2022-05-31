@@ -29,12 +29,7 @@ input UpdateTeamInput {
   name: String
 }
 
-type UpdateTeamPayload {
-  team: Team
-  errors: [ValidationError!]
-}
-
-type CreateTeamPayload implements IMutationPayload {
+type UpdateTeamPayload implements IMutationPayload {
   team: Team
   errors: [ValidationError!]
 }

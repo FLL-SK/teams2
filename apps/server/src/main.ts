@@ -11,6 +11,7 @@ import { bootstrapApolloServer } from './app/graphql/bootstrap-apollo-server';
 
 import { logger } from '@teams2/logger';
 import { buildRootRouter } from './app/routes';
+import passport = require('passport');
 const log = logger('main');
 
 loadDotEnvFiles();
@@ -38,6 +39,16 @@ async function server() {
 
   // configure passport authentication
   configureAuth(app);
+
+  app.use('/graphql', (req, res, next) => {
+    passport.authenticate('jwt', { session: false }, (err, user, info) => {
+      console.log('passport.authenticate', err, user, info);
+      if (user) {
+        req.user = user;
+      }
+      next();
+    })(req, res, next);
+  });
 
   await bootstrapApolloServer(app);
 

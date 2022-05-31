@@ -3,8 +3,6 @@ import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
 import { userRepository } from '../models';
-import { msgFromTemplate } from '../templates';
-import { sendHtmlEmail } from '../utils/mailer';
 import { requestPassworReset as requestPassworReset } from '../utils/password-reset';
 
 const router = express.Router();

@@ -35,8 +35,11 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async createTeam(input: CreateTeamInput): Promise<CreateTeamPayload> {
+    console.log('user', this.context.user);
     const currentUserId = this.context.user._id;
+
     const t: TeamData = { ...input, coachesIds: [currentUserId] };
+    console.log('creating team', t);
     const nu = await teamRepository.create(t);
     return { team: TeamMapper.toTeam(nu) };
   }

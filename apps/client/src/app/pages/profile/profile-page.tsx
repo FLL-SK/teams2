@@ -1,15 +1,19 @@
 import { appPath } from '@teams2/common';
-import { Box, Spinner, Tag } from 'grommet';
-import { useEffect } from 'react';
+import { Box, Button, Spinner, Tag } from 'grommet';
+import { Add } from 'grommet-icons';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { Panel } from '../../components/panel';
-import { useGetUserLazyQuery } from '../../generated/graphql';
+import { useCreateTeamMutation, useGetUserLazyQuery } from '../../generated/graphql';
+import { CreateTeamDialog } from './create-team-dialog';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [getProfile, { data, loading }] = useGetUserLazyQuery();
+  const [getProfile, { data, loading, refetch }] = useGetUserLazyQuery();
+  const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
+  const [createTeam] = useCreateTeamMutation({ onCompleted: () => refetch() });
 
   useEffect(() => {
     if (id) {
@@ -37,6 +41,7 @@ export function ProfilePage() {
             {data?.getUser?.coachingTeams.map((t) => (
               <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
             ))}
+            <Button icon={<Add />} onClick={() => setShowCreateTeamDialog(true)} hoverIndicator />
           </Box>
         </Panel>
         {!!data?.getUser?.managingEvents.length && (
@@ -49,6 +54,11 @@ export function ProfilePage() {
           </Panel>
         )}
       </Box>
+      <CreateTeamDialog
+        show={showCreateTeamDialog}
+        onClose={() => setShowCreateTeamDialog(false)}
+        onSubmit={(name) => createTeam({ variables: { input: { name } } })}
+      />
     </BasePage>
   );
 }
