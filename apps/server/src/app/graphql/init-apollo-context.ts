@@ -1,11 +1,9 @@
 import { ExpressContext } from 'apollo-server-express';
-import { UserDataSource } from '../datasources';
 import { userRepository } from '../models';
 import { ApolloContext, apolloContextEmpty, AuthProfileData } from './apollo-context';
 
 export async function initApolloContext(cfg: ExpressContext): Promise<ApolloContext> {
   const { req } = cfg;
-  console.log('initApolloContext', req.session, req.user);
 
   if (!req.user) {
     return { ...apolloContextEmpty };
@@ -15,7 +13,6 @@ export async function initApolloContext(cfg: ExpressContext): Promise<ApolloCont
     email: req.user?.username ?? '',
   };
 
-  console.log('profileData', profileData);
   const user = await userRepository.findByUsername(profileData.email);
 
   return {
