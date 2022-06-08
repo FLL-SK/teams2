@@ -15,7 +15,9 @@ export function Panel(props: PanelProps) {
           {title}{' '}
         </Text>
       </Box>
-      <Box pad={{ vertical: 'small', horizontal: 'medium' }}>{children}</Box>
+      <Box pad={{ vertical: 'small', horizontal: 'medium' }} gap="small">
+        {children}
+      </Box>
     </Box>
   );
 }

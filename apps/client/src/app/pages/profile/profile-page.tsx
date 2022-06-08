@@ -24,8 +24,9 @@ export function ProfilePage() {
   if (loading) {
     return <Spinner />;
   } else {
-    if (!id || !data?.getUser) {
-      navigate(appPath.page404);
+    if (!id) {
+      console.log(id, data);
+      //setNavLink(appPath.page404);
     }
   }
 
@@ -41,7 +42,13 @@ export function ProfilePage() {
             {data?.getUser?.coachingTeams.map((t) => (
               <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
             ))}
-            <Button icon={<Add />} onClick={() => setShowCreateTeamDialog(true)} hoverIndicator />
+            <Button
+              plain
+              icon={<Add />}
+              onClick={() => setShowCreateTeamDialog(true)}
+              hoverIndicator
+              label="Nový"
+            />
           </Box>
         </Panel>
         {!!data?.getUser?.managingEvents.length && (
