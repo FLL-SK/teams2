@@ -1,6 +1,7 @@
 import { appPath } from '@teams2/common';
 import { Box, Header, Nav, Anchor, Sidebar } from 'grommet';
 import { DirectionType } from 'grommet/utils';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthenticate } from './useAuthenticate';
 
@@ -12,17 +13,25 @@ function MainNav({ direction }: { direction: DirectionType }) {
   const { isAuthenticated, user } = useAuthenticate();
   const location = useLocation();
   const navigate = useNavigate();
+  const [navLink, setNavLink] = useState<string>();
+
+  useEffect(() => {
+    if (navLink) {
+      navigate(navLink, { state: { from: location } });
+    }
+    return () => {
+      setNavLink(undefined);
+    };
+  }, [location, navLink, navigate]);
 
   return (
     <Nav direction={direction}>
-      <Anchor onClick={() => navigate('/')}>Turnaje</Anchor>
+      <Anchor onClick={() => setNavLink('/')}>Turnaje</Anchor>
       <Box>
         {isAuthenticated ? (
-          <Anchor onClick={() => navigate(appPath.profile(user?.id))}>Profil</Anchor>
+          <Anchor onClick={() => setNavLink(appPath.profile(user?.id))}>Profil</Anchor>
         ) : (
-          <Anchor onClick={() => navigate(appPath.login, { state: { from: location } })}>
-            Prihlásiť sa
-          </Anchor>
+          <Anchor onClick={() => setNavLink(appPath.login)}>Prihlásiť sa</Anchor>
         )}
       </Box>
     </Nav>

@@ -1,6 +1,6 @@
 import { appPath } from '@teams2/common';
 import { Box, Spinner, Tag } from 'grommet';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { Panel } from '../../components/panel';
@@ -8,7 +8,9 @@ import { useGetEventLazyQuery } from '../../generated/graphql';
 
 export function EventPage() {
   const navigate = useNavigate();
-  const [getEvent, { data: eventData, loading: eventLoading }] = useGetEventLazyQuery();
+  const [getEvent, { data: eventData, loading: eventLoading, error: eventError }] =
+    useGetEventLazyQuery();
+  const [navLink, setNavLink] = useState<string>();
 
   const { id } = useParams();
 
@@ -18,14 +20,21 @@ export function EventPage() {
     }
   }, [getEvent, id]);
 
-  if (eventLoading) {
-    return <Spinner />;
-  } else if (!id || !eventData?.getEvent) {
-    navigate(appPath.page404);
+  useEffect(() => {
+    if (navLink) {
+      navigate(navLink);
+    }
+    return () => {
+      setNavLink(undefined);
+    };
+  }, [navLink, navigate]);
+
+  if ((!id || eventError) && !navLink) {
+    setNavLink(appPath.page404);
   }
 
   return (
-    <BasePage title="Turnaj">
+    <BasePage title="Turnaj" loading={eventLoading}>
       <Box gap="medium">
         <Panel title="Detaily turnaja">
           <p>Here be details</p>
@@ -33,7 +42,7 @@ export function EventPage() {
         <Panel title="Regitrácie">
           <Box direction="row" wrap>
             {eventData?.getEvent?.teams.map((t) => (
-              <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
+              <Tag key={t.id} onClick={() => setNavLink(appPath.team(t.id))} value={t.name} />
             ))}
           </Box>
         </Panel>
@@ -42,7 +51,7 @@ export function EventPage() {
             {eventData?.getEvent?.managers.map((m) => (
               <Tag
                 key={m.id}
-                onClick={() => navigate(appPath.profile(m.id))}
+                onClick={() => setNavLink(appPath.profile(m.id))}
                 value={m.name.length > 0 ? m.name : m.username}
               />
             ))}

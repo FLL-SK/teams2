@@ -1,13 +1,14 @@
-import { Box, Text, ResponsiveContext } from 'grommet';
+import { Box, Text, ResponsiveContext, Spinner } from 'grommet';
 import { MainNavbar } from './main-navbar';
 
 interface BasePageProps {
   title?: string;
   children: React.ReactNode;
+  loading?: boolean;
 }
 
 export function BasePage(props: BasePageProps) {
-  const { children, title } = props;
+  const { children, title, loading } = props;
 
   return (
     <ResponsiveContext.Consumer>
@@ -19,7 +20,7 @@ export function BasePage(props: BasePageProps) {
               {title}
             </Text>
           </Box>
-          <Box>{children}</Box>
+          {loading ? <Spinner /> : <Box>{children}</Box>}
         </Box>
       )}
     </ResponsiveContext.Consumer>
