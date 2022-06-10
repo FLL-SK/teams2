@@ -1,10 +1,12 @@
 import { appPath } from '@teams2/common';
-import { Box, Button, Spinner, Tag } from 'grommet';
+import { Box, Button } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
+import { LabelValue } from '../../components/label-value';
 import { Panel } from '../../components/panel';
+import { Tag } from '../../components/tag';
 import { useCreateTeamMutation, useGetUserLazyQuery } from '../../generated/graphql';
 import { CreateTeamDialog } from './create-team-dialog';
 
@@ -36,13 +38,29 @@ export function ProfilePage() {
   }
 
   return (
-    <BasePage title="Profil" loading={loading}>
+    <BasePage title="Profil používateľa" loading={loading}>
       <Box gap="medium">
-        <Panel title="Detaily používateľa">
-          <p>{data?.getUser?.name}</p>
-          <p>{data?.getUser?.username}</p>
+        <Panel title="Detaily">
+          <LabelValue
+            label="Meno eerwrwer"
+            value={data?.getUser?.name ?? '-'}
+            direction="row"
+            labelWidth="100px"
+          />
+          <LabelValue
+            label="Email"
+            value={data?.getUser?.username}
+            direction="row"
+            labelWidth="100px"
+          />
+          <LabelValue
+            label="Telefón"
+            value={data?.getUser?.phoneNumber ?? '-'}
+            direction="row"
+            labelWidth="100px"
+          />
         </Panel>
-        <Panel title="Moje tímy">
+        <Panel title="Tímy">
           <Box direction="row" wrap>
             {data?.getUser?.coachingTeams.map((t) => (
               <Tag key={t.id} onClick={() => setNavLink(appPath.team(t.id))} value={t.name} />
@@ -53,11 +71,12 @@ export function ProfilePage() {
               onClick={() => setShowCreateTeamDialog(true)}
               hoverIndicator
               label="Nový"
+              margin={{ horizontal: 'small', vertical: 'xsmall' }}
             />
           </Box>
         </Panel>
         {!!data?.getUser?.managingEvents.length && (
-          <Panel title="Moje turnaje">
+          <Panel title="Turnaje">
             <Box direction="row" wrap>
               {data?.getUser?.managingEvents.map((e) => (
                 <Tag key={e.id} onClick={() => setNavLink(appPath.event(e.id))} value={e.name} />

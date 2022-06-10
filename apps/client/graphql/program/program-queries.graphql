@@ -1,0 +1,11 @@
+query getProgram($id: ID!) {
+  getProgram(id: $id) {
+    ...ProgramFragment
+  }
+}
+
+query getPrograms {
+  getPrograms {
+    ...ProgramFragment
+  }
+}

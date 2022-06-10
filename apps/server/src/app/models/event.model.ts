@@ -6,6 +6,7 @@ const Types = Schema.Types;
 export interface EventData {
   _id?: ObjectId;
   name?: string;
+  programId: ObjectId;
   teamsIds: ObjectId[];
   managersIds: ObjectId[];
   date?: Date;
@@ -28,6 +29,7 @@ export interface EventModel extends Model<EventData> {
 
 const schema = new Schema<EventData, EventModel>({
   name: { type: Types.String, required: true },
+  programId: { type: Types.ObjectId, ref: 'Program', required: true },
   teamsIds: [{ type: Types.ObjectId, ref: 'Team', default: [] }],
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
   registrationStart: { type: Types.Date, default: new Date() },
@@ -37,8 +39,7 @@ const schema = new Schema<EventData, EventModel>({
   deletedBy: { type: Types.ObjectId, ref: 'User' },
 });
 
-schema.index({ name: 1 }, { unique: true });
-schema.index({ teamIds: 1 });
+schema.index({ programId: 1, name: 1 }, { unique: true });
 schema.index({ managersIds: 1 });
 
 schema.static('clean', function () {

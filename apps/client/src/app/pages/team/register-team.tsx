@@ -1,30 +1,30 @@
 import { Box, Button, Form, FormField } from 'grommet';
 import { Modal } from '../../components/modal';
 
-interface CreateTeamDialogProps {
+interface RegisterTeamDialogProps {
+  onSubmit: (eventId: string) => Promise<unknown>;
   onClose: () => void;
-  onSubmit: (name: string) => Promise<unknown>;
   show?: boolean;
 }
 
 interface FormFields {
-  name: string;
+  programId: string;
+  eventId: string;
 }
 
-export function CreateTeamDialog(props: CreateTeamDialogProps) {
-  const { onClose, onSubmit, show = true } = props;
-
+export function RegisterTeamDialog(props: RegisterTeamDialogProps) {
+  const { onSubmit, onClose, show } = props;
   if (!show) {
     return null;
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    await onSubmit(value.name);
+    await onSubmit(value.eventId);
     onClose();
   };
 
   return (
-    <Modal title="Nový tím" onClose={onClose}>
+    <Modal title="Registruj tím" onClose={onClose}>
       <Form onSubmit={handleSubmit} messages={{ required: 'Povinný údaj' }}>
         <FormField label="Meno tímu" name="name" required autoFocus />
         <Box direction="row" gap="medium" justify="end">

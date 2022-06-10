@@ -1,7 +1,5 @@
 import { DataSource, DataSourceConfig } from 'apollo-datasource';
-import { ObjectId } from 'mongodb';
-import { ApolloContext } from '../graphql/apollo-context';
-import { eventRepository, teamRepository } from '../models';
+import { ApolloContext } from '../apollo-context';
 
 export class BaseDataSource extends DataSource<ApolloContext> {
   protected context: ApolloContext;

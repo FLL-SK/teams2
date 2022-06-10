@@ -10,7 +10,7 @@ export function Panel(props: PanelProps) {
 
   return (
     <Box background="light-2" gap="small">
-      <Box pad="medium" background="light-4">
+      <Box pad="medium" background="#85C1E9">
         <Text weight="bold" size="medium">
           {title}{' '}
         </Text>

@@ -9,7 +9,7 @@ import { resolvers } from './resolvers';
 import { scalarResolvers } from './scalars';
 import { initApolloContext } from './init-apollo-context';
 import { ApolloContextDataSources } from './apollo-context';
-import { EventDataSource, TeamDataSource, UserDataSource } from '../datasources';
+import { EventDataSource, ProgramDataSource, TeamDataSource, UserDataSource } from './datasources';
 import { logger } from '@teams2/logger';
 import { errorFormatter } from './error-formatter';
 
@@ -34,6 +34,7 @@ export async function bootstrapApolloServer(app: Application): Promise<void> {
       user: new UserDataSource(),
       event: new EventDataSource(),
       team: new TeamDataSource(),
+      program: new ProgramDataSource(),
     }),
     introspection: true,
     debug: true,

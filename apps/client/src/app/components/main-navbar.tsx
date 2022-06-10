@@ -3,6 +3,7 @@ import { Box, Header, Nav, Anchor, Sidebar } from 'grommet';
 import { DirectionType } from 'grommet/utils';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Logo } from './logo';
 import { useAuthenticate } from './useAuthenticate';
 
 interface MainNavbarProps {
@@ -25,7 +26,8 @@ function MainNav({ direction }: { direction: DirectionType }) {
   }, [location, navLink, navigate]);
 
   return (
-    <Nav direction={direction}>
+    <Nav direction={direction} align="center">
+      <Logo height="70px" />
       <Anchor onClick={() => setNavLink('/')}>Turnaje</Anchor>
       <Box>
         {isAuthenticated ? (

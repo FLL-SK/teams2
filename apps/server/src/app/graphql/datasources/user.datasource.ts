@@ -1,19 +1,18 @@
 import { DataSourceConfig } from 'apollo-datasource';
 
-import { ApolloContext } from '../graphql/apollo-context';
+import { ApolloContext } from '../apollo-context';
 
 import { BaseDataSource } from './_base.datasource';
-import { UserData, userRepository } from '../models';
+import { UserData, userRepository } from '../../models';
 import {
   CreateUserInput,
   CreateUserPayload,
   UpdateUserInput,
   UpdateUserPayload,
   User,
-} from '../generated/graphql';
-import { UserMapper } from '../graphql/mappers';
+} from '../../generated/graphql';
+import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
-import { createPasswordResetToken } from '../auth';
 
 export class UserDataSource extends BaseDataSource {
   constructor() {

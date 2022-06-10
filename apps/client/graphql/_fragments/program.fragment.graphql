@@ -1,0 +1,22 @@
+fragment ProgramListFragment on Program {
+  id
+  name
+  managersIds
+
+  startDate
+  endDate
+
+  deletedOn
+  deletedBy
+}
+
+fragment ProgramFragment on Program {
+  ...ProgramListFragment
+
+  events {
+    ...EventListFragment
+  }
+  managers {
+    ...UserListFragment
+  }
+}

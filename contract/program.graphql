@@ -1,0 +1,55 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./team.graphql"
+# import * from "./user.graphql"
+# import * from "./event.graphql"
+
+type Program implements INode {
+  id: ID!
+  name: String!
+  managersIds: [ID!]!
+
+  startDate: DateTime!
+  endDate: DateTime!
+
+  deletedOn: DateTime
+  deletedBy: ID
+
+  events: [Event!]!
+  managers: [User!]!
+}
+
+input CreateProgramInput {
+  name: String!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+type CreateProgramPayload implements IMutationPayload {
+  program: Program
+  errors: [ValidationError!]
+}
+
+input UpdateProgramInput {
+  name: String
+}
+
+type UpdateProgramPayload {
+  program: Program
+  errors: [ValidationError!]
+}
+
+extend type Query {
+  getProgram(id: ID!): Program!
+  getPrograms: [Program!]!
+}
+
+extend type Mutation {
+  createProgram(input: CreateProgramInput!): CreateProgramPayload!
+  updateProgram(id: ID!, input: UpdateProgramInput!): UpdateProgramPayload!
+  deleteProgram(id: ID!): Program
+
+  addProgramManager(programId: ID!, userId: ID!): Program!
+  removeProgramManager(programId: ID!, userId: ID!): Program!
+}

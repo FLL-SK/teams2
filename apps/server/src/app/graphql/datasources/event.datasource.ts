@@ -1,12 +1,10 @@
 import { DataSourceConfig } from 'apollo-datasource';
 
-import { ApolloContext } from '../graphql/apollo-context';
+import { ApolloContext } from '../apollo-context';
 
 import { BaseDataSource } from './_base.datasource';
-import { EventData, eventRepository, teamRepository, UserData, userRepository } from '../models';
+import { EventData, eventRepository, teamRepository, userRepository } from '../../models';
 import {
-  CreateUserInput,
-  CreateUserPayload,
   Team,
   User,
   Event,
@@ -14,8 +12,8 @@ import {
   CreateEventPayload,
   UpdateEventInput,
   UpdateEventPayload,
-} from '../generated/graphql';
-import { EventMapper, TeamMapper, UserMapper } from '../graphql/mappers';
+} from '../../generated/graphql';
+import { EventMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 export class EventDataSource extends BaseDataSource {

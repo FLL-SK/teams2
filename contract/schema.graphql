@@ -4,6 +4,7 @@
 # import * from "./user.graphql"
 # import * from "./team.graphql"
 # import * from "./event.graphql"
+# import * from "./program.graphql"
 
 schema {
   query: Query

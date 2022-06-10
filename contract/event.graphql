@@ -3,24 +3,29 @@
 
 # import * from "./team.graphql"
 # import * from "./user.graphql"
+# import * from "./program.graphql"
 
 type Event implements INode {
   id: ID!
   name: String!
   date: DateTime
+  programId: ID!
   teamsIds: [ID!]!
   managersIds: [ID!]!
+
   registrationStart: DateTime!
-  registrationEnd: DateTime
+  registrationEnd: DateTime!
 
   deletedOn: DateTime
   deletedBy: ID
 
   teams: [Team!]!
   managers: [User!]!
+  program: Program!
 }
 
 input CreateEventInput {
+  programId: ID!
   name: String!
 }
 
@@ -37,11 +42,6 @@ input UpdateEventInput {
 }
 
 type UpdateEventPayload {
-  event: Event
-  errors: [ValidationError!]
-}
-
-type CreateEventPayload implements IMutationPayload {
   event: Event
   errors: [ValidationError!]
 }

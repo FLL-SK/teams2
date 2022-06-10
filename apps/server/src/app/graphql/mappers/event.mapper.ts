@@ -10,15 +10,19 @@ export const EventMapper = {
       id: event._id,
       name: event.name,
       date: event.date,
-      registrationStart: event.registrationStart,
-      registrationEnd: event.registrationEnd,
+      programId: event.programId,
       teamsIds: event.teamsIds,
       managersIds: event.managersIds,
+
+      registrationStart: event.registrationStart,
+      registrationEnd: event.registrationEnd,
+
       deletedOn: event.deletedOn,
       deletedBy: event.deletedBy,
 
       teams: [],
       managers: [],
+      program: null,
     };
     return u;
   },
