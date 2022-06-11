@@ -1,13 +1,13 @@
-mutation deleteProgram($id: ID!) {
-  deleteProgram(id: $id) {
-    ...ProgramFragment
+mutation deleteEvent($id: ID!) {
+  deleteEvent(id: $id) {
+    ...EventFragment
   }
 }
 
-mutation createProgram($input: CreateProgramInput!) {
-  createProgram(input: $input) {
-    program {
-      ...ProgramFragment
+mutation createEvent($input: CreateEventInput!) {
+  createEvent(input: $input) {
+    event {
+      ...EventFragment
     }
     errors {
       ...ValidationErrorFragment
@@ -15,10 +15,10 @@ mutation createProgram($input: CreateProgramInput!) {
   }
 }
 
-mutation updateProgram($id: ID!, $input: UpdateProgramInput!) {
-  updateProgram(id: $id, input: $input) {
-    program {
-      ...ProgramFragment
+mutation updateEvent($id: ID!, $input: UpdateEventInput!) {
+  updateEvent(id: $id, input: $input) {
+    event {
+      ...EventFragment
     }
     errors {
       ...ValidationErrorFragment
@@ -26,14 +26,26 @@ mutation updateProgram($id: ID!, $input: UpdateProgramInput!) {
   }
 }
 
-mutation addProgramManager($programId: ID!, $userId: ID!) {
-  addProgramManager(programId: $programId, userId: $userId) {
-    ...ProgramFragment
+mutation addEventManager($eventId: ID!, $userId: ID!) {
+  addEventManager(eventId: $eventId, userId: $userId) {
+    ...EventFragment
   }
 }
 
-mutation removeProgramManager($programId: ID!, $userId: ID!) {
-  removeProgramManager(programId: $programId, userId: $userId) {
-    ...ProgramFragment
+mutation removeEventManager($eventId: ID!, $userId: ID!) {
+  removeEventManager(eventId: $eventId, userId: $userId) {
+    ...EventFragment
+  }
+}
+
+mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
+  registerTeamForEvent(eventId: $eventId, teamId: $teamId) {
+    ...EventFragment
+  }
+}
+
+mutation removeTeamFromEvent($eventId: ID!, $teamId: ID!) {
+  removeTeamFromEvent(eventId: $eventId, teamId: $teamId) {
+    ...EventFragment
   }
 }

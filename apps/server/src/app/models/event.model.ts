@@ -14,9 +14,6 @@ export interface EventData {
   date?: Date;
   registrationEnd?: Date;
 
-  publishedOn?: Date;
-  publishedBy?: ObjectId;
-
   deletedOn?: Date;
   deletedBy?: ObjectId;
 }
@@ -44,9 +41,6 @@ const schema = new Schema<EventData, EventModel>({
 
   teamsIds: [{ type: Types.ObjectId, ref: 'Team', default: [] }],
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-
-  publishedOn: { type: Types.Date },
-  publishedBy: { type: Types.ObjectId, ref: 'User' },
 
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },

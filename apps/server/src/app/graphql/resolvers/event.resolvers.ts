@@ -20,7 +20,7 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.event.updateEvent(id, input),
   deleteEvent: (_parent, { id }, { dataSources }) => dataSources.event.deleteEvent(id),
 
-  addTeamToEvent: (_parent, { eventId, teamId }, { dataSources }) =>
+  registerTeamForEvent: (_parent, { eventId, teamId }, { dataSources }) =>
     dataSources.event.addTeamToEvent(eventId, teamId),
   removeTeamFromEvent: (_parent, { eventId, teamId }, { dataSources }) =>
     dataSources.event.removeTeamFromEvent(eventId, teamId),

@@ -17,9 +17,6 @@ export const EventMapper = {
       teamsIds: event.teamsIds,
       managersIds: event.managersIds,
 
-      publishedOn: event.publishedOn,
-      publishedBy: event.publishedBy,
-
       deletedOn: event.deletedOn,
       deletedBy: event.deletedBy,
 

@@ -5,12 +5,14 @@ import {
   teamRepository,
   userRepository,
 } from '../../models';
+import { addDays } from 'date-fns';
 import { logger } from '@teams2/logger';
 
 type TestSeedData = Omit<EventData, 'programId'> & {
   managers?: string[];
   teams?: string[];
   program: string;
+  dateOffset?: number;
 };
 
 export const seedTestEventData: TestSeedData[] = [
@@ -21,6 +23,7 @@ export const seedTestEventData: TestSeedData[] = [
     teams: ['Team1'],
     managers: ['eventmgr1@test', 'eventmgr2@test'],
     program: 'Program1',
+    dateOffset: 10,
   },
   {
     name: 'Event2',
@@ -28,6 +31,15 @@ export const seedTestEventData: TestSeedData[] = [
     managersIds: [],
     teams: ['Team2', 'Team3'],
     managers: ['eventmgr2@test'],
+    program: 'Program1',
+    dateOffset: -2,
+  },
+  {
+    name: 'Event3',
+    teamsIds: [],
+    managersIds: [],
+    teams: ['Team3'],
+    managers: ['progmgr1@test'],
     program: 'Program1',
   },
 ];
@@ -41,12 +53,18 @@ export async function seedTestEvents() {
       throw new Error(`Program ${d.program} not found`);
     }
 
+    const dt = d.dateOffset ? addDays(new Date(), d.dateOffset) : undefined;
+
     const e: EventData = {
       name: d.name,
       teamsIds: d.teamsIds,
       managersIds: d.managersIds,
       programId: p._id,
     };
+
+    if (dt) {
+      e.date = dt;
+    }
 
     for (const username of d.managers) {
       const u = await userRepository.findOne({ username });

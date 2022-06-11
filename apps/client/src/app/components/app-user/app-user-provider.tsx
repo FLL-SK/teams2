@@ -10,6 +10,7 @@ export interface AppUserContextData {
   user?: AppUser;
   error?: ApolloError;
   refresh: () => Promise<void>;
+  isTeamCoach: (teamId?: string) => boolean;
   isEventManager: (eventId?: string) => boolean;
   isProgramManager: (programId?: string) => boolean;
   isAdmin: () => boolean;
@@ -18,6 +19,7 @@ export interface AppUserContextData {
 const emptyContext: AppUserContextData = {
   loading: false,
   refresh: () => Promise.reject(new Error('Not initialized')),
+  isTeamCoach: () => false,
   isEventManager: () => false,
   isProgramManager: () => false,
   isAdmin: () => false,
@@ -40,6 +42,16 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
     }
     refetch();
   }, [loading, refetch]);
+
+  const isTeamCoach = useCallback(
+    (teamId?: string): boolean => {
+      if (teamId && data) {
+        return (data?.getUser?.coachingTeams ?? []).findIndex((e) => e.id === teamId) > -1;
+      }
+      return false;
+    },
+    [data]
+  );
 
   const isEventManager = useCallback(
     (eventId?: string): boolean => {
@@ -72,6 +84,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
         loading,
         error,
         refresh,
+        isTeamCoach,
         isEventManager,
         isProgramManager,
         isAdmin: () => data?.getUser?.isAdmin ?? false,

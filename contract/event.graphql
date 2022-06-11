@@ -16,9 +16,6 @@ type Event implements INode {
   teamsIds: [ID!]!
   managersIds: [ID!]!
 
-  publishedOn: DateTime
-  publishedBy: ID
-
   deletedOn: DateTime
   deletedBy: ID
 
@@ -30,6 +27,8 @@ type Event implements INode {
 input CreateEventInput {
   programId: ID!
   name: String!
+  date: DateTime
+  registrationEnd: DateTime
 }
 
 type CreateEventPayload implements IMutationPayload {
@@ -63,10 +62,7 @@ extend type Mutation {
   updateEvent(id: ID!, input: UpdateEventInput!): UpdateEventPayload!
   deleteEvent(id: ID!): Event
 
-  publishEvent(id: ID!): Event!
-  unpublishEvent(id: ID!): Event!
-
-  addTeamToEvent(eventId: ID!, teamId: ID!): Event!
+  registerTeamForEvent(eventId: ID!, teamId: ID!): Event!
   removeTeamFromEvent(eventId: ID!, teamId: ID!): Event!
 
   addEventManager(eventId: ID!, userId: ID!): Event!

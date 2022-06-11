@@ -5,6 +5,7 @@
     "client": "apps/client",
     "client-e2e": "apps/client-e2e",
     "common": "libs/common",
+    "dateutils": "libs/dateutils",
     "logger": "libs/logger",
     "server": "apps/server"
   }

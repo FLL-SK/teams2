@@ -9,9 +9,6 @@ fragment EventListFragment on Event {
   teamsIds
   managersIds
 
-  publishedOn
-  publishedBy
-
   deletedOn
   deletedBy
 

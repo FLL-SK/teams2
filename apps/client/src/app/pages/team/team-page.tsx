@@ -2,20 +2,31 @@ import { appPath } from '@teams2/common';
 import { Box, Button, Tag } from 'grommet';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
-import { useGetTeamLazyQuery } from '../../generated/graphql';
+import { UserTags } from '../../components/user-tags';
+import {
+  useAddCoachToTeamMutation,
+  useGetTeamLazyQuery,
+  useRemoveCoachFromTeamMutation,
+} from '../../generated/graphql';
 import { RegisterTeamDialog } from './register-team';
 
 export function TeamPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [getTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery();
+
   const [navLink, setNavLink] = useState<string>();
   const [showRegisterTeamDialog, setShowRegisterTeamDialog] = useState(false);
 
-  const { id } = useParams();
+  const { isAdmin, isTeamCoach } = useAppUser();
+
+  const [getTeam, { data: teamData, loading: teamLoading, error: teamError }] =
+    useGetTeamLazyQuery();
+  const [addCoach] = useAddCoachToTeamMutation();
+  const [removeCoach] = useRemoveCoachFromTeamMutation();
 
   useEffect(() => {
     if (id) {
@@ -38,6 +49,8 @@ export function TeamPage() {
     }
   }
 
+  const canEdit = isAdmin() || isTeamCoach(id);
+
   return (
     <BasePage title="Tím" loading={teamLoading}>
       <PanelGroup>
@@ -54,6 +67,16 @@ export function TeamPage() {
         </Panel>
         <Panel title="Faktúry">
           <p>Here be data</p>
+        </Panel>
+        <Panel title="Tréneri">
+          <Box direction="row" wrap>
+            <UserTags
+              canEdit={canEdit}
+              users={teamData?.getTeam?.coaches ?? []}
+              onAdd={(userId) => addCoach({ variables: { teamId: id ?? '0', userId } })}
+              onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
+            />
+          </Box>
         </Panel>
       </PanelGroup>
       <RegisterTeamDialog

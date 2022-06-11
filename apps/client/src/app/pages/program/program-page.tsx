@@ -1,33 +1,39 @@
 import { appPath } from '@teams2/common';
-import { Box, Button } from 'grommet';
+import { Box, Button, CheckBox } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
-import { useAuthenticate } from '../../components/auth/useAuthenticate';
 import { BasePage } from '../../components/base-page';
+import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { SelectUser } from '../../components/select-user';
 import { Tag } from '../../components/tag';
+import { UserTags } from '../../components/user-tags';
 import {
   useAddProgramManagerMutation,
+  useCreateEventMutation,
   useGetProgramLazyQuery,
   useRemoveProgramManagerMutation,
   useUpdateProgramMutation,
 } from '../../generated/graphql';
+import { ProgramEventsList } from './program-events-list';
 
 export function ProgramPage() {
   const navigate = useNavigate();
-  const [getProgram, { data, loading, error }] = useGetProgramLazyQuery();
+  const [getProgram, { data, loading, error, refetch }] = useGetProgramLazyQuery();
   const [navLink, setNavLink] = useState<string>();
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddManagerDialog, setShowAddManagerDialog] = useState(false);
+  const [showAddEventDialog, setShowAddEventDialog] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
 
   const [updateProgram] = useUpdateProgramMutation();
   const [addManager] = useAddProgramManagerMutation();
   const [removeManager] = useRemoveProgramManagerMutation();
+  const [createEvent] = useCreateEventMutation({ onCompleted: () => refetch() });
 
   const { isProgramManager, isAdmin } = useAppUser();
 
@@ -53,8 +59,16 @@ export function ProgramPage() {
   }
 
   const program = data?.getProgram;
-  const canEdit = isProgramManager(program?.id) || isAdmin;
-  const canAddManagers = isProgramManager(program?.id) || isAdmin;
+  const canEdit: boolean = isProgramManager(program?.id) || isAdmin();
+  const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
+
+  const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
+
+  const events = (program?.events ?? []).filter(
+    (event) =>
+      !event.deletedOn &&
+      (!event.date || showInactive || (event.date ?? '').substring(0, 10) >= today)
+  );
 
   return (
     <BasePage title="Program" loading={loading}>
@@ -75,38 +89,33 @@ export function ProgramPage() {
 
         <Panel title="Manažéri">
           <Box direction="row" wrap>
-            {data?.getProgram?.managers.map((m) => (
-              <Tag
-                key={m.id}
-                onClick={() => setNavLink(appPath.profile(m.id))}
-                value={m.name.length > 0 ? m.name : m.username}
-                onRemove={() =>
-                  removeManager({ variables: { programId: id ?? '0', userId: m.id } })
-                }
-              />
-            ))}
-
-            {showAddManagerDialog ? (
-              <SelectUser
-                onClose={() => setShowAddManagerDialog(false)}
-                onSelect={(user) =>
-                  addManager({ variables: { programId: id ?? '0', userId: user.id } })
-                }
-              />
-            ) : (
-              <Button
-                plain
-                icon={<Add />}
-                label="Pridať manažéra"
-                onClick={() => setShowAddManagerDialog(true)}
-                disabled={!canAddManagers}
-              />
-            )}
+            <UserTags
+              users={program?.managers ?? []}
+              onAdd={(userId) =>
+                addManager({ variables: { programId: program?.id ?? '0', userId } })
+              }
+              onRemove={(userId) =>
+                removeManager({ variables: { programId: program?.id ?? '0', userId } })
+              }
+              canEdit={canAddManagers}
+            />
           </Box>
         </Panel>
 
         <Panel title="Turnaje">
-          <p>Here be details</p>
+          <Box direction="row" justify="between">
+            <Box>
+              <Button label="Pridať turnaj" onClick={() => setShowAddEventDialog(true)} />
+            </Box>
+            <Box>
+              <CheckBox
+                toggle
+                label="Zobraziť aj neaktívne"
+                onChange={({ target }) => setShowInactive(target.checked)}
+              />
+            </Box>
+          </Box>
+          <ProgramEventsList events={events} />
         </Panel>
       </PanelGroup>
       <EditProgramDialog
@@ -114,6 +123,13 @@ export function ProgramPage() {
         program={data?.getProgram}
         onClose={() => setShowProgramEditDialog(false)}
         onSubmit={(values) => updateProgram({ variables: { id: id ?? '0', input: values } })}
+      />
+      <EditEventDialog
+        show={showAddEventDialog}
+        onClose={() => setShowAddEventDialog(false)}
+        onSubmit={(values) =>
+          createEvent({ variables: { input: { ...values, programId: id ?? '0' } } })
+        }
       />
     </BasePage>
   );
