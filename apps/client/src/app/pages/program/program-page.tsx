@@ -1,6 +1,5 @@
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox } from 'grommet';
-import { Add } from 'grommet-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
@@ -9,8 +8,7 @@ import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
-import { SelectUser } from '../../components/select-user';
-import { Tag } from '../../components/tag';
+
 import { UserTags } from '../../components/user-tags';
 import {
   useAddProgramManagerMutation,
@@ -19,14 +17,13 @@ import {
   useRemoveProgramManagerMutation,
   useUpdateProgramMutation,
 } from '../../generated/graphql';
-import { ProgramEventsList } from './program-events-list';
+import { EventsList } from '../../components/events-list';
 
 export function ProgramPage() {
   const navigate = useNavigate();
   const [getProgram, { data, loading, error, refetch }] = useGetProgramLazyQuery();
   const [navLink, setNavLink] = useState<string>();
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
-  const [showAddManagerDialog, setShowAddManagerDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
 
@@ -111,11 +108,12 @@ export function ProgramPage() {
               <CheckBox
                 toggle
                 label="Zobraziť aj neaktívne"
+                defaultChecked={showInactive}
                 onChange={({ target }) => setShowInactive(target.checked)}
               />
             </Box>
           </Box>
-          <ProgramEventsList events={events} />
+          <EventsList events={events} />
         </Panel>
       </PanelGroup>
       <EditProgramDialog

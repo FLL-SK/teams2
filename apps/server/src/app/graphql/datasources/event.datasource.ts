@@ -58,28 +58,28 @@ export class EventDataSource extends BaseDataSource {
 
   async addTeamToEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
     const event = await eventRepository
-      .findOneAndUpdate(eventId, { $addToSet: { teamsIds: teamId } }, { new: true })
+      .findOneAndUpdate({ _id: eventId }, { $addToSet: { teamsIds: teamId } }, { new: true })
       .exec();
     return EventMapper.toEvent(event);
   }
 
   async removeTeamFromEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
     const event = await eventRepository
-      .findOneAndUpdate(eventId, { $pull: { teamsIds: teamId } }, { new: true })
+      .findOneAndUpdate({ _id: eventId }, { $pull: { teamsIds: teamId } }, { new: true })
       .exec();
     return EventMapper.toEvent(event);
   }
 
   async addEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
     const event = await eventRepository
-      .findOneAndUpdate(eventId, { $addToSet: { managersIds: userId } }, { new: true })
+      .findOneAndUpdate({ _id: eventId }, { $addToSet: { managersIds: userId } }, { new: true })
       .exec();
     return EventMapper.toEvent(event);
   }
 
   async removeEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
     const event = await eventRepository
-      .findOneAndUpdate(eventId, { $pull: { managersIds: userId } }, { new: true })
+      .findOneAndUpdate({ _id: eventId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();
     return EventMapper.toEvent(event);
   }

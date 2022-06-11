@@ -1,12 +1,14 @@
 import { Box, Text } from 'grommet';
+import { GapType } from 'grommet/utils';
 
 interface PanelProps {
   title?: string;
   children: React.ReactNode;
+  gap?: GapType;
 }
 
 export function Panel(props: PanelProps) {
-  const { children, title } = props;
+  const { children, title, gap } = props;
 
   return (
     <Box background="light-2" gap="small">
@@ -15,7 +17,9 @@ export function Panel(props: PanelProps) {
           {title}{' '}
         </Text>
       </Box>
-      <Box pad={{ vertical: 'small', horizontal: 'medium' }}>{children}</Box>
+      <Box pad={{ vertical: 'small', horizontal: 'medium' }} gap={gap}>
+        {children}
+      </Box>
     </Box>
   );
 }

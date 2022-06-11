@@ -59,7 +59,7 @@ export class TeamDataSource extends BaseDataSource {
 
   async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
     const t = await teamRepository.findByIdAndUpdate(
-      teamId,
+      { _id: teamId },
       { $addToSet: { coachesIds: coachId } },
       { new: true }
     );
@@ -68,7 +68,7 @@ export class TeamDataSource extends BaseDataSource {
 
   async removeCoachFromTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
     const t = await teamRepository.findByIdAndUpdate(
-      teamId,
+      { _id: teamId },
       { $pull: { coachesIds: coachId } },
       { new: true }
     );

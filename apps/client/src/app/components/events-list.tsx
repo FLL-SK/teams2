@@ -1,13 +1,13 @@
 import { Box } from 'grommet';
 
-import { EventCard } from '../../components/event-card';
-import { EventListFragmentFragment } from '../../generated/graphql';
+import { EventCard } from './event-card';
+import { EventListFragmentFragment } from '../generated/graphql';
 
-interface ProgramEventsListProps {
+interface EventsListProps {
   events: EventListFragmentFragment[];
 }
 
-export function ProgramEventsList(props: ProgramEventsListProps) {
+export function EventsList(props: EventsListProps) {
   const { events } = props;
 
   return (

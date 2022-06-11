@@ -1,15 +1,18 @@
 import { appPath } from '@teams2/common';
-import { Box, Button, Tag } from 'grommet';
-import { useEffect, useState } from 'react';
+import { Box, Button, CheckBox, Tag } from 'grommet';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
+import { EventsList } from '../../components/events-list';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
+  EventListFragmentFragment,
   useAddCoachToTeamMutation,
   useGetTeamLazyQuery,
+  useRegisterTeamForEventMutation,
   useRemoveCoachFromTeamMutation,
 } from '../../generated/graphql';
 import { RegisterTeamDialog } from './register-team';
@@ -20,13 +23,17 @@ export function TeamPage() {
 
   const [navLink, setNavLink] = useState<string>();
   const [showRegisterTeamDialog, setShowRegisterTeamDialog] = useState(false);
+  const [showInactiveEvents, setShowInactiveEvents] = useState(false);
 
   const { isAdmin, isTeamCoach } = useAppUser();
 
-  const [getTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery();
+  const [
+    getTeam,
+    { data: teamData, loading: teamLoading, error: teamError, refetch: refetchTeam },
+  ] = useGetTeamLazyQuery();
   const [addCoach] = useAddCoachToTeamMutation();
   const [removeCoach] = useRemoveCoachFromTeamMutation();
+  const [registerTeam] = useRegisterTeamForEventMutation({ onCompleted: () => refetchTeam() });
 
   useEffect(() => {
     if (id) {
@@ -49,21 +56,48 @@ export function TeamPage() {
     }
   }
 
+  const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
+
   const canEdit = isAdmin() || isTeamCoach(id);
+  const team = teamData?.getTeam;
+  const events = useMemo(
+    () =>
+      (team?.events ?? []).filter(
+        (event) =>
+          !event.deletedOn &&
+          (!event.date || showInactiveEvents || (event.date ?? '').substring(0, 10) >= today)
+      ),
+    [team, showInactiveEvents, today]
+  );
+  const activeEvents = useMemo(
+    () =>
+      (team?.events ?? []).filter(
+        (event) => !event.deletedOn && (!event.date || (event.date ?? '').substring(0, 10) >= today)
+      ),
+    [team, today]
+  );
 
   return (
     <BasePage title="Tím" loading={teamLoading}>
       <PanelGroup>
         <Panel title="Detaily tímu">
-          <LabelValue label="Názov" value={teamData?.getTeam?.name} />
+          <LabelValue label="Názov" labelWidth="150px" value={team?.name} />
         </Panel>
-        <Panel title="Registrácie">
-          <Button label="Registrácia" onClick={() => setShowRegisterTeamDialog(true)} />
-          <Box direction="row" wrap>
-            {teamData?.getTeam?.events.map((e) => (
-              <Tag key={e.id} onClick={() => setNavLink(appPath.event(e.id))} value={e.name} />
-            ))}
+        <Panel title="Registrácie" gap="small">
+          <Box direction="row" justify="between">
+            <Button
+              label="Registrovať tím"
+              onClick={() => setShowRegisterTeamDialog(true)}
+              disabled={activeEvents.length > 0}
+            />
+            <CheckBox
+              toggle
+              label="Zobraziť aj neaktívne"
+              defaultChecked={showInactiveEvents}
+              onChange={({ target }) => setShowInactiveEvents(target.checked)}
+            />
           </Box>
+          <EventsList events={events} />
         </Panel>
         <Panel title="Faktúry">
           <p>Here be data</p>
@@ -72,7 +106,7 @@ export function TeamPage() {
           <Box direction="row" wrap>
             <UserTags
               canEdit={canEdit}
-              users={teamData?.getTeam?.coaches ?? []}
+              users={team?.coaches ?? []}
               onAdd={(userId) => addCoach({ variables: { teamId: id ?? '0', userId } })}
               onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
             />
@@ -82,6 +116,7 @@ export function TeamPage() {
       <RegisterTeamDialog
         show={showRegisterTeamDialog}
         onClose={() => setShowRegisterTeamDialog(false)}
+        onSubmit={(eventId) => registerTeam({ variables: { teamId: id ?? '0', eventId } })}
       />
     </BasePage>
   );

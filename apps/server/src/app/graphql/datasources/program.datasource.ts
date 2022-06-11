@@ -58,13 +58,15 @@ export class ProgramDataSource extends BaseDataSource {
 
   async addProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
     const u: UpdateQuery<ProgramData> = { $addToSet: { managersIds: userId } };
-    const program = await programRepository.findOneAndUpdate(programId, u, { new: true }).exec();
+    const program = await programRepository
+      .findOneAndUpdate({ _id: programId }, u, { new: true })
+      .exec();
     return ProgramMapper.toProgram(program);
   }
 
   async removeProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
     const program = await programRepository
-      .findOneAndUpdate(programId, { $pull: { managersIds: userId } }, { new: true })
+      .findOneAndUpdate({ _id: programId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();
     return ProgramMapper.toProgram(program);
   }
