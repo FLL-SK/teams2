@@ -1,10 +1,10 @@
 fragment ProgramListFragment on Program {
   id
   name
-  managersIds
+  description
+  logoUrl
 
-  startDate
-  endDate
+  managersIds
 
   deletedOn
   deletedBy

@@ -1,22 +1,26 @@
 import {
   EventData,
   eventRepository,
-  TeamData,
+  programRepository,
   teamRepository,
-  UserData,
   userRepository,
 } from '../../models';
 import { logger } from '@teams2/logger';
 
-type SeedData = EventData & { managers?: string[]; teams?: string[] };
+type TestSeedData = Omit<EventData, 'programId'> & {
+  managers?: string[];
+  teams?: string[];
+  program: string;
+};
 
-export const seedEventData: SeedData[] = [
+export const seedTestEventData: TestSeedData[] = [
   {
     name: 'Event1',
     teamsIds: [],
     managersIds: [],
     teams: ['Team1'],
     managers: ['eventmgr1@test', 'eventmgr2@test'],
+    program: 'Program1',
   },
   {
     name: 'Event2',
@@ -24,17 +28,24 @@ export const seedEventData: SeedData[] = [
     managersIds: [],
     teams: ['Team2', 'Team3'],
     managers: ['eventmgr2@test'],
+    program: 'Program1',
   },
 ];
 
-const log = logger('seed:Events');
+const log = logger('testseed:Events');
 
-export async function seedEvents() {
-  for (const d of seedEventData) {
+export async function seedTestEvents() {
+  for (const d of seedTestEventData) {
+    const p = await programRepository.findOne({ name: d.program }).lean().exec();
+    if (!p) {
+      throw new Error(`Program ${d.program} not found`);
+    }
+
     const e: EventData = {
       name: d.name,
       teamsIds: d.teamsIds,
       managersIds: d.managersIds,
+      programId: p._id,
     };
 
     for (const username of d.managers) {

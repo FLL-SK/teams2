@@ -1,7 +1,7 @@
 import { Grommet, Box } from 'grommet';
 import styled from 'styled-components';
 import { AppRouter } from './app-router';
-import { defaultTheme, device } from './theme/theme';
+import { defaultTheme, device } from './theme';
 
 export function AppLayout() {
   return (

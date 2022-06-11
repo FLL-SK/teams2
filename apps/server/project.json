@@ -36,12 +36,12 @@
         "buildTarget": "server:build"
       }
     },
-    "dbseed": {
+    "testseed": {
       "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "server:build",
         "watch": false,
-        "args": ["dbseed"]
+        "args": ["testseed"]
       }
     },
     "lint": {

@@ -10,9 +10,11 @@ import {
   UpdateUserInput,
   UpdateUserPayload,
   User,
+  UserFilterInput,
 } from '../../generated/graphql';
 import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 
 export class UserDataSource extends BaseDataSource {
   constructor() {
@@ -24,16 +26,21 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUser(id: ObjectId): Promise<User> {
-    return UserMapper.toUser(await userRepository.findById(id));
+    return UserMapper.toUser(await userRepository.findById(id).lean().exec());
   }
 
-  async getUsers(): Promise<User[]> {
-    const users = await userRepository.find();
+  async getUsers(filter: UserFilterInput): Promise<User[]> {
+    const { isActive } = filter;
+    const q: FilterQuery<UserData> = {};
+    if (isActive) {
+      q.deletedOn = null;
+    }
+    const users = await userRepository.find(q).lean().exec();
     return users.map(UserMapper.toUser);
   }
 
   async getUserByUsername(username?: string): Promise<User> {
-    return UserMapper.toUser(await userRepository.findOne({ username }));
+    return UserMapper.toUser(await userRepository.findOne({ username }).lean().exec());
   }
 
   async createUser(input: CreateUserInput): Promise<CreateUserPayload> {

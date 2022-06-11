@@ -4,8 +4,8 @@ query getProgram($id: ID!) {
   }
 }
 
-query getPrograms {
-  getPrograms {
+query getPrograms($filter: ProgramFilterInput) {
+  getPrograms(filter: $filter) {
     ...ProgramFragment
   }
 }

@@ -16,4 +16,7 @@ fragment UserFragment on User {
   managingEvents {
     ...EventListFragment
   }
+  managingPrograms {
+    ...ProgramListFragment
+  }
 }

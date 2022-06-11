@@ -8,10 +8,10 @@
 type Program implements INode {
   id: ID!
   name: String!
-  managersIds: [ID!]!
+  description: String
+  logoUrl: String
 
-  startDate: DateTime!
-  endDate: DateTime!
+  managersIds: [ID!]!
 
   deletedOn: DateTime
   deletedBy: ID
@@ -22,8 +22,7 @@ type Program implements INode {
 
 input CreateProgramInput {
   name: String!
-  startDate: DateTime!
-  endDate: DateTime!
+  description: String
 }
 
 type CreateProgramPayload implements IMutationPayload {
@@ -33,6 +32,7 @@ type CreateProgramPayload implements IMutationPayload {
 
 input UpdateProgramInput {
   name: String
+  description: String
 }
 
 type UpdateProgramPayload {
@@ -40,9 +40,13 @@ type UpdateProgramPayload {
   errors: [ValidationError!]
 }
 
+input ProgramFilterInput {
+  isActive: Boolean
+}
+
 extend type Query {
   getProgram(id: ID!): Program!
-  getPrograms: [Program!]!
+  getPrograms(filter: ProgramFilterInput): [Program!]!
 }
 
 extend type Mutation {

@@ -5,11 +5,11 @@ const Types = Schema.Types;
 
 export interface ProgramData {
   _id?: ObjectId;
-  name?: string;
-  managersIds: ObjectId[];
+  name: string;
+  description?: string;
+  logoUrl?: string;
 
-  startDate: Date;
-  endDate: Date;
+  managersIds: ObjectId[];
 
   deletedOn?: Date;
   deletedBy?: ObjectId;
@@ -28,9 +28,9 @@ export interface ProgramModel extends Model<ProgramData> {
 
 const schema = new Schema<ProgramData, ProgramModel>({
   name: { type: Types.String, required: true },
+  description: Types.String,
+  logoUrl: Types.String,
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-  startDate: { type: Types.Date, required: true },
-  endDate: { type: Types.Date, required: true },
 
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },

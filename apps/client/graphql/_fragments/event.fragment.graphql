@@ -1,16 +1,23 @@
 fragment EventListFragment on Event {
   id
   name
-  date
-  teamsIds
-  managersIds
   programId
 
-  registrationStart
+  date
   registrationEnd
+
+  teamsIds
+  managersIds
+
+  publishedOn
+  publishedBy
 
   deletedOn
   deletedBy
+
+  program {
+    ...ProgramListFragment
+  }
 }
 
 fragment EventFragment on Event {

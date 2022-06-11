@@ -1,11 +1,8 @@
 import { DataSourceConfig } from 'apollo-datasource';
-
 import { ApolloContext } from '../apollo-context';
-
 import { BaseDataSource } from './_base.datasource';
-
 import { ObjectId } from 'mongodb';
-import { ProgramData, programRepository, userRepository } from '../../models';
+import { eventRepository, ProgramData, programRepository, userRepository } from '../../models';
 import { ProgramMapper } from '../mappers/program.mapper';
 import {
   CreateProgramInput,
@@ -14,8 +11,10 @@ import {
   UpdateProgramInput,
   UpdateProgramPayload,
   User,
+  Event,
 } from '../../generated/graphql';
-import { UserMapper } from '../mappers';
+import { EventMapper, UserMapper } from '../mappers';
+import { UpdateQuery } from 'mongoose';
 
 export class ProgramDataSource extends BaseDataSource {
   constructor() {
@@ -43,7 +42,7 @@ export class ProgramDataSource extends BaseDataSource {
 
   async updateProgram(id: ObjectId, input: UpdateProgramInput): Promise<UpdateProgramPayload> {
     const u: Partial<ProgramData> = input;
-    const nu = await programRepository.findByIdAndUpdate(id, u).exec();
+    const nu = await programRepository.findByIdAndUpdate(id, u, { new: true }).exec();
     return { program: ProgramMapper.toProgram(nu) };
   }
 
@@ -58,15 +57,14 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async addProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
-    const program = await programRepository
-      .findOneAndUpdate(programId, { managersIds: { $addToSet: userId } }, { new: true })
-      .exec();
+    const u: UpdateQuery<ProgramData> = { $addToSet: { managersIds: userId } };
+    const program = await programRepository.findOneAndUpdate(programId, u, { new: true }).exec();
     return ProgramMapper.toProgram(program);
   }
 
   async removeProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
     const program = await programRepository
-      .findOneAndUpdate(programId, { managersIds: { $pull: userId } }, { new: true })
+      .findOneAndUpdate(programId, { $pull: { managersIds: userId } }, { new: true })
       .exec();
     return ProgramMapper.toProgram(program);
   }
@@ -80,5 +78,15 @@ export class ProgramDataSource extends BaseDataSource {
       program.managersIds.map(async (u) => userRepository.findById(u).exec())
     );
     return users.map(UserMapper.toUser);
+  }
+
+  async getProgramEvents(programId: ObjectId): Promise<Event[]> {
+    const program = await programRepository.findById(programId).exec();
+    if (!program) {
+      throw new Error('Program not found');
+    }
+
+    const events = await eventRepository.findEventsForProgram(programId);
+    return events.map(EventMapper.toEvent);
   }
 }

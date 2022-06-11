@@ -4,8 +4,8 @@ query getEvent($id: ID!) {
   }
 }
 
-query getEvents {
-  getEvents {
+query getEvents($filter: EventFilterInput) {
+  getEvents(filter: $filter) {
     ...EventFragment
   }
 }

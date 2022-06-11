@@ -10,7 +10,7 @@
     "generate": "run-s  build:contract generate:contract",
     "generate:contract": "graphql-codegen --config codegen.yml",
     "build:contract": "ts-node ./scripts/build-schema.ts",
-    "dbseed": "yarn nx run server:dbseed"
+    "testseed": "yarn nx run server:testseed"
   },
   "private": true,
   "dependencies": {

@@ -3,6 +3,7 @@
 
 # import * from "./event.graphql"
 # import * from "./team.graphql"
+# import * from "./program.graphql"
 
 type User implements INode {
   id: ID!
@@ -17,6 +18,7 @@ type User implements INode {
 
   coachingTeams: [Team!]!
   managingEvents: [Event!]!
+  managingPrograms: [Program!]!
 }
 
 input CreateUserInput {
@@ -41,9 +43,13 @@ type UpdateUserPayload implements IMutationPayload {
   errors: [ValidationError!]
 }
 
+input UserFilterInput {
+  isActive: Boolean
+}
+
 extend type Query {
   getUser(id: ID!): User
-  getUsers: [User!]!
+  getUsers(filter: UserFilterInput): [User!]!
 }
 
 extend type Mutation {

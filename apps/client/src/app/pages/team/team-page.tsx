@@ -4,14 +4,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { LabelValue } from '../../components/label-value';
-import { Panel } from '../../components/panel';
+import { Panel, PanelGroup } from '../../components/panel';
 import { useGetTeamLazyQuery } from '../../generated/graphql';
+import { RegisterTeamDialog } from './register-team';
 
 export function TeamPage() {
   const navigate = useNavigate();
   const [getTeam, { data: teamData, loading: teamLoading, error: teamError }] =
     useGetTeamLazyQuery();
   const [navLink, setNavLink] = useState<string>();
+  const [showRegisterTeamDialog, setShowRegisterTeamDialog] = useState(false);
 
   const { id } = useParams();
 
@@ -38,12 +40,12 @@ export function TeamPage() {
 
   return (
     <BasePage title="Tím" loading={teamLoading}>
-      <Box gap="medium">
+      <PanelGroup>
         <Panel title="Detaily tímu">
           <LabelValue label="Názov" value={teamData?.getTeam?.name} />
         </Panel>
         <Panel title="Registrácie">
-          <Button label="Registrácia" onClick={() => setNavLink(appPath.teamRegistration(id))} />
+          <Button label="Registrácia" onClick={() => setShowRegisterTeamDialog(true)} />
           <Box direction="row" wrap>
             {teamData?.getTeam?.events.map((e) => (
               <Tag key={e.id} onClick={() => setNavLink(appPath.event(e.id))} value={e.name} />
@@ -53,7 +55,11 @@ export function TeamPage() {
         <Panel title="Faktúry">
           <p>Here be data</p>
         </Panel>
-      </Box>
+      </PanelGroup>
+      <RegisterTeamDialog
+        show={showRegisterTeamDialog}
+        onClose={() => setShowRegisterTeamDialog(false)}
+      />
     </BasePage>
   );
 }

@@ -1,4 +1,5 @@
 import { BoxTypes, Button, Card, CardBody, CardFooter, CardHeader, Layer, Text } from 'grommet';
+import { HeightType, WidthType } from 'grommet/utils';
 
 interface ModalProps extends BoxTypes {
   title?: string;
@@ -8,6 +9,8 @@ interface ModalProps extends BoxTypes {
   showButton?: boolean;
   buttonLabel?: string;
   show?: boolean;
+  width?: WidthType;
+  height?: HeightType;
 }
 
 export function Modal(props: ModalProps) {
@@ -19,6 +22,8 @@ export function Modal(props: ModalProps) {
     show = true,
     showButton = false,
     buttonLabel = 'Ok',
+    width,
+    height,
   } = props;
 
   if (!show) {
@@ -26,8 +31,8 @@ export function Modal(props: ModalProps) {
   }
 
   return (
-    <Layer>
-      <Card>
+    <Layer onEsc={onClose}>
+      <Card width={width} height={height}>
         <CardHeader background={'light-3'} pad="small">
           <Text size="medium" weight="bold">
             {title}

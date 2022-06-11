@@ -26,11 +26,11 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeam(id: ObjectId): Promise<Team> {
-    return TeamMapper.toTeam(await teamRepository.findById(id));
+    return TeamMapper.toTeam(await teamRepository.findById(id).exec());
   }
 
   async getTeams(): Promise<Team[]> {
-    const teams = await teamRepository.find();
+    const teams = await teamRepository.find().exec();
     return teams.map((t) => TeamMapper.toTeam(t));
   }
 
@@ -43,7 +43,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
-    const u = await teamRepository.findByIdAndUpdate(id, input).exec();
+    const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return { team: TeamMapper.toTeam(u) };
   }
 
@@ -76,11 +76,13 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamCoaches(teamId: ObjectId): Promise<User[]> {
-    const t = await teamRepository.findById(teamId);
+    const t = await teamRepository.findById(teamId).lean().exec();
     if (!t) {
       throw new Error('Team not found');
     }
-    const coaches = await Promise.all(t.coachesIds.map(async (c) => userRepository.findById(c)));
+    const coaches = await Promise.all(
+      t.coachesIds.map(async (c) => userRepository.findById(c).lean().exec())
+    );
     return coaches.map((c) => UserMapper.toUser(c));
   }
 

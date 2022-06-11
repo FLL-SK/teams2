@@ -9,9 +9,11 @@ export const ProgramMapper = {
     const u: Omit<Required<Program>, '__typename'> = {
       id: program._id,
       name: program.name,
-      startDate: program.startDate,
-      endDate: program.endDate,
+      description: program.description,
+      logoUrl: program.logoUrl,
+
       managersIds: program.managersIds,
+
       deletedOn: program.deletedOn,
       deletedBy: program.deletedBy,
 

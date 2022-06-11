@@ -7,11 +7,15 @@ export interface EventData {
   _id?: ObjectId;
   name?: string;
   programId: ObjectId;
+
   teamsIds: ObjectId[];
   managersIds: ObjectId[];
+
   date?: Date;
-  registrationStart?: Date;
   registrationEnd?: Date;
+
+  publishedOn?: Date;
+  publishedBy?: ObjectId;
 
   deletedOn?: Date;
   deletedBy?: ObjectId;
@@ -25,15 +29,24 @@ export interface EventModel extends Model<EventData> {
     userId: ObjectId,
     projection?: ProjectionType<EventData>
   ): Promise<EventDocument[]>;
+  findEventsForProgram(
+    programId: ObjectId,
+    projection?: ProjectionType<EventData>
+  ): Promise<EventDocument[]>;
 }
 
 const schema = new Schema<EventData, EventModel>({
   name: { type: Types.String, required: true },
   programId: { type: Types.ObjectId, ref: 'Program', required: true },
+
+  date: { type: Types.Date },
+  registrationEnd: { type: Types.Date },
+
   teamsIds: [{ type: Types.ObjectId, ref: 'Team', default: [] }],
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-  registrationStart: { type: Types.Date, default: new Date() },
-  registrationEnd: { type: Types.Date },
+
+  publishedOn: { type: Types.Date },
+  publishedBy: { type: Types.ObjectId, ref: 'User' },
 
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },
@@ -50,6 +63,13 @@ schema.static(
   'findEventsManagedByUser',
   function (userId: ObjectId, projection?: ProjectionType<EventData>) {
     return this.find({ managersIds: userId, deletedOn: null }, projection).exec();
+  }
+);
+
+schema.static(
+  'findEventsForProgram',
+  function (programId: ObjectId, projection?: ProjectionType<EventData>) {
+    return this.find({ programId, deletedOn: null }, projection).exec();
   }
 );
 

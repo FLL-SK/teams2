@@ -9,7 +9,6 @@ interface BasePageProps {
 
 export function BasePage(props: BasePageProps) {
   const { children, title, loading } = props;
-
   return (
     <ResponsiveContext.Consumer>
       {(responsiveSize) => (

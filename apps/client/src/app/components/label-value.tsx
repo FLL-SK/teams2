@@ -3,7 +3,7 @@ import { Box, Text } from 'grommet';
 interface LabelValueProps {
   label: string;
   labelWidth?: string;
-  value?: string;
+  value?: string | null;
   direction?: 'row' | 'column';
 }
 

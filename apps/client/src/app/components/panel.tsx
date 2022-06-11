@@ -15,9 +15,11 @@ export function Panel(props: PanelProps) {
           {title}{' '}
         </Text>
       </Box>
-      <Box pad={{ vertical: 'small', horizontal: 'medium' }} gap="small">
-        {children}
-      </Box>
+      <Box pad={{ vertical: 'small', horizontal: 'medium' }}>{children}</Box>
     </Box>
   );
 }
+
+export const PanelGroup = ({ children }: { children: React.ReactNode }) => (
+  <Box gap="medium">{children}</Box>
+);

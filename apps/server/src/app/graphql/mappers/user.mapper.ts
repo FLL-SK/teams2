@@ -16,6 +16,7 @@ export const UserMapper = {
       isAdmin: user.isAdmin ?? false,
       coachingTeams: [],
       managingEvents: [],
+      managingPrograms: [],
     };
     return u;
   },

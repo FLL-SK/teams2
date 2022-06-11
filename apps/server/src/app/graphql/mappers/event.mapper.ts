@@ -9,13 +9,16 @@ export const EventMapper = {
     const u: Omit<Required<Event>, '__typename'> = {
       id: event._id,
       name: event.name,
-      date: event.date,
       programId: event.programId,
+
+      date: event.date,
+      registrationEnd: event.registrationEnd,
+
       teamsIds: event.teamsIds,
       managersIds: event.managersIds,
 
-      registrationStart: event.registrationStart,
-      registrationEnd: event.registrationEnd,
+      publishedOn: event.publishedOn,
+      publishedBy: event.publishedBy,
 
       deletedOn: event.deletedOn,
       deletedBy: event.deletedBy,

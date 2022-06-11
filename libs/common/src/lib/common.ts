@@ -3,6 +3,7 @@ export function common(): string {
 }
 
 export const appPath = {
+  admin: '/admin',
   passwordReset: '/password-reset',
   login: '/login',
   logou: '/logout',
@@ -11,5 +12,6 @@ export const appPath = {
   forgotPassword: '/forgot-password',
   team: (id = '') => `/team${id ? `/${id}` : ''}`,
   event: (id = '') => `/event${id ? `/${id}` : ''}`,
+  program: (id = '') => `/program${id ? `/${id}` : ''}`,
   page404: '/404',
 };

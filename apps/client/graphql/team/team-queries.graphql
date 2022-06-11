@@ -4,8 +4,8 @@ query getTeam($id: ID!) {
   }
 }
 
-query getTeams {
-  getTeams {
+query getTeams($filter: TeamFilterInput) {
+  getTeams(filter: $filter) {
     ...TeamFragment
   }
 }

@@ -3,18 +3,18 @@ import { Box, Header, Nav, Anchor, Sidebar } from 'grommet';
 import { DirectionType } from 'grommet/utils';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';
-import { useAuthenticate } from './useAuthenticate';
-
-interface MainNavbarProps {
-  responsiveSize: string;
-}
+import { useAuthenticate } from './auth/useAuthenticate';
+import { useAppUser } from './app-user/use-app-user';
 
 function MainNav({ direction }: { direction: DirectionType }) {
-  const { isAuthenticated, user } = useAuthenticate();
+  const { isAuthenticated, user, logout } = useAuthenticate();
   const location = useLocation();
   const navigate = useNavigate();
   const [navLink, setNavLink] = useState<string>();
+  const [doLogout, setDoLogout] = useState(false);
+  const { user: appUser } = useAppUser();
 
   useEffect(() => {
     if (navLink) {
@@ -24,6 +24,14 @@ function MainNav({ direction }: { direction: DirectionType }) {
       setNavLink(undefined);
     };
   }, [location, navLink, navigate]);
+
+  useEffect(() => {
+    if (doLogout) {
+      logout();
+      navigate('/');
+    }
+    return () => setDoLogout(false);
+  }, [doLogout, logout, navigate]);
 
   return (
     <Nav direction={direction} align="center">
@@ -36,8 +44,15 @@ function MainNav({ direction }: { direction: DirectionType }) {
           <Anchor onClick={() => setNavLink(appPath.login)}>Prihlásiť sa</Anchor>
         )}
       </Box>
+      {appUser?.isAdmin && <Anchor onClick={() => setNavLink(appPath.admin)}>Admin</Anchor>}
+      {isAuthenticated && <Anchor onClick={() => setDoLogout(true)}>Odhlásiť sa</Anchor>}
     </Nav>
   );
+}
+
+interface MainNavbarProps {
+  responsiveSize: string;
+  userData?: UserFragmentFragment | null;
 }
 
 export function MainNavbar(props: MainNavbarProps) {

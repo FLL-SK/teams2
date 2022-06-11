@@ -4,13 +4,14 @@ import { logger } from '@teams2/logger';
 import { preSeed } from './preseed';
 import { upgrade } from './upgrade';
 
-export * from './seed';
+export * from './test-seed';
 
 const log = logger('btsMongo');
 
 export async function bootstrapMongoDB(): Promise<void> {
   try {
-    await mongoose.connect(getServerConfig().mongoDBUri);
+    const c = await mongoose.connect(getServerConfig().mongoDBUri);
+
     log.info('Connected successfully to MongoDB server');
     await preSeed();
     await upgrade();

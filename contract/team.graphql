@@ -34,9 +34,13 @@ type UpdateTeamPayload implements IMutationPayload {
   errors: [ValidationError!]
 }
 
+input TeamFilterInput {
+  isActive: Boolean
+}
+
 extend type Query {
   getTeam(id: ID!): Team!
-  getTeams: [Team!]!
+  getTeams(filter: TeamFilterInput): [Team!]!
 }
 
 extend type Mutation {

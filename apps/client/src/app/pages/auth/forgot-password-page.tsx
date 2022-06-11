@@ -15,7 +15,7 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useAuthenticate } from '../../components/useAuthenticate';
+import { useAuthenticate } from '../../components/auth/useAuthenticate';
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate();

@@ -15,7 +15,7 @@ import {
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useAuthenticate } from '../../components/useAuthenticate';
+import { useAuthenticate } from '../../components/auth/useAuthenticate';
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ import { configure as configureAuth } from './app/auth';
 
 import { loadDotEnvFiles } from './app/utils/env-loader';
 import { getServerConfig } from './server-config';
-import { bootstrapMongoDB, dbSeed } from './app/db';
+import { bootstrapMongoDB, testDbSeed } from './app/db';
 import { bootstrapApolloServer } from './app/graphql/bootstrap-apollo-server';
 
 import { logger } from '@teams2/logger';
@@ -71,21 +71,21 @@ async function server() {
   });
 }
 
-async function seedDb() {
+async function seedTestData() {
   await bootstrapMongoDB();
-  await dbSeed();
+  await testDbSeed();
 }
 
-const argv = command('dbseed', 'Perform db-seed').help().alias('help', 'h').argv;
+const argv = command('testseed', 'Perform test-db-seed').help().alias('help', 'h').argv;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
-if (argv._.includes('dbseed')) {
-  seedDb()
+if (argv._.includes('testseed')) {
+  seedTestData()
     .then(() => {
-      log.info({}, 'db-seed completed');
+      log.info({}, 'test-db-seed completed');
       process.exit(0);
     })
-    .catch((e) => log.fatal('ds-seed failed', e));
+    .catch((e) => log.fatal('test-db-seed failed', e));
 } else {
   server()
     .then(() => {

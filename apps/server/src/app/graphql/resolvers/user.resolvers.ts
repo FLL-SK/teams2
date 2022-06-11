@@ -4,13 +4,15 @@ import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getUser: async (_parent, { id }, { dataSources }) => dataSources.user.getUser(id),
-  getUsers: async (_parent, _args, { dataSources }) => dataSources.user.getUsers(),
+  getUsers: async (_parent, { filter }, { dataSources }) => dataSources.user.getUsers(filter),
 };
 
 export const typeResolver: Resolver<User> = {
   coachingTeams: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamsCoachedBy(id),
   managingEvents: async ({ id }, _args, { dataSources }) =>
     dataSources.event.getEventsManagedBy(id),
+  managingPrograms: async ({ id }, _args, { dataSources }) =>
+    dataSources.program.getProgramsManagedBy(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

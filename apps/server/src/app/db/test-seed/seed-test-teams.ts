@@ -1,9 +1,9 @@
 import { TeamData, teamRepository, UserData, userRepository } from '../../models';
 import { logger } from '@teams2/logger';
 
-type SeedData = TeamData & { coaches?: string[] };
+type TestSeedData = TeamData & { coaches?: string[] };
 
-export const seedTeamsData: SeedData[] = [
+export const seedTestTeamsData: TestSeedData[] = [
   {
     name: 'Team1',
     coachesIds: [],
@@ -21,10 +21,10 @@ export const seedTeamsData: SeedData[] = [
   },
 ];
 
-const log = logger('seed:Teams');
+const log = logger('testseed:Teams');
 
-export async function seedTeams() {
-  for (const d of seedTeamsData) {
+export async function seedTestTeams() {
+  for (const d of seedTestTeamsData) {
     const t: TeamData = {
       name: d.name,
       coachesIds: d.coachesIds,

@@ -2,7 +2,7 @@ import { Box, Button, Form, FormField } from 'grommet';
 import { Modal } from '../../components/modal';
 
 interface RegisterTeamDialogProps {
-  onSubmit: (eventId: string) => Promise<unknown>;
+  onSubmit?: (eventId: string) => Promise<unknown>;
   onClose: () => void;
   show?: boolean;
 }
@@ -19,7 +19,9 @@ export function RegisterTeamDialog(props: RegisterTeamDialogProps) {
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    await onSubmit(value.eventId);
+    if (onSubmit) {
+      await onSubmit(value.eventId);
+    }
     onClose();
   };
 

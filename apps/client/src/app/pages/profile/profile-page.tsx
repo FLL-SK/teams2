@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { LabelValue } from '../../components/label-value';
-import { Panel } from '../../components/panel';
+import { Panel, PanelGroup } from '../../components/panel';
 import { Tag } from '../../components/tag';
 import { useCreateTeamMutation, useGetUserLazyQuery } from '../../generated/graphql';
 import { CreateTeamDialog } from './create-team-dialog';
@@ -39,26 +39,28 @@ export function ProfilePage() {
 
   return (
     <BasePage title="Profil používateľa" loading={loading}>
-      <Box gap="medium">
+      <PanelGroup>
         <Panel title="Detaily">
-          <LabelValue
-            label="Meno eerwrwer"
-            value={data?.getUser?.name ?? '-'}
-            direction="row"
-            labelWidth="100px"
-          />
-          <LabelValue
-            label="Email"
-            value={data?.getUser?.username}
-            direction="row"
-            labelWidth="100px"
-          />
-          <LabelValue
-            label="Telefón"
-            value={data?.getUser?.phoneNumber ?? '-'}
-            direction="row"
-            labelWidth="100px"
-          />
+          <Box gap="small">
+            <LabelValue
+              label="Meno"
+              value={data?.getUser?.name ?? '-'}
+              direction="row"
+              labelWidth="100px"
+            />
+            <LabelValue
+              label="Email"
+              value={data?.getUser?.username}
+              direction="row"
+              labelWidth="100px"
+            />
+            <LabelValue
+              label="Telefón"
+              value={data?.getUser?.phoneNumber ?? '-'}
+              direction="row"
+              labelWidth="100px"
+            />
+          </Box>
         </Panel>
         <Panel title="Tímy">
           <Box direction="row" wrap>
@@ -84,7 +86,7 @@ export function ProfilePage() {
             </Box>
           </Panel>
         )}
-      </Box>
+      </PanelGroup>
       <CreateTeamDialog
         show={showCreateTeamDialog}
         onClose={() => setShowCreateTeamDialog(false)}
