@@ -1,6 +1,6 @@
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox } from 'grommet';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -35,6 +35,7 @@ export function TeamPage() {
 
   const canEdit = isAdmin() || isTeamCoach(id);
   const team = teamData?.getTeam;
+
   const events = useMemo(
     () =>
       (team?.events ?? []).filter(
@@ -44,6 +45,7 @@ export function TeamPage() {
       ),
     [team, showInactiveEvents, today]
   );
+
   const activeEvents = useMemo(
     () =>
       (team?.events ?? []).filter(
