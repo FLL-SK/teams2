@@ -1,7 +1,6 @@
-import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox } from 'grommet';
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
@@ -13,16 +12,18 @@ import { UserTags } from '../../components/user-tags';
 import {
   useAddProgramManagerMutation,
   useCreateEventMutation,
-  useGetProgramLazyQuery,
+  useGetProgramQuery,
   useRemoveProgramManagerMutation,
   useUpdateProgramMutation,
 } from '../../generated/graphql';
 import { EventsList } from '../../components/events-list';
+import { ErrorPage } from '../../components/error-page';
 
 export function ProgramPage() {
-  const navigate = useNavigate();
-  const [getProgram, { data, loading, error, refetch }] = useGetProgramLazyQuery();
-  const [navLink, setNavLink] = useState<string>();
+  const { id } = useParams();
+
+  const { data, loading, error, refetch } = useGetProgramQuery({ variables: { id: id ?? '0' } });
+
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
@@ -33,27 +34,6 @@ export function ProgramPage() {
   const [createEvent] = useCreateEventMutation({ onCompleted: () => refetch() });
 
   const { isProgramManager, isAdmin } = useAppUser();
-
-  const { id } = useParams();
-
-  useEffect(() => {
-    if (id) {
-      getProgram({ variables: { id } });
-    }
-  }, [getProgram, id]);
-
-  useEffect(() => {
-    if (navLink) {
-      navigate(navLink);
-    }
-    return () => {
-      setNavLink(undefined);
-    };
-  }, [navLink, navigate]);
-
-  if ((!id || error) && !navLink) {
-    setNavLink(appPath.page404);
-  }
 
   const program = data?.getProgram;
   const canEdit: boolean = isProgramManager(program?.id) || isAdmin();
@@ -66,6 +46,10 @@ export function ProgramPage() {
       !event.deletedOn &&
       (!event.date || showInactive || (event.date ?? '').substring(0, 10) >= today)
   );
+
+  if (!id || error) {
+    return <ErrorPage title="Program nenájdený" />;
+  }
 
   return (
     <BasePage title="Program" loading={loading}>
@@ -102,7 +86,11 @@ export function ProgramPage() {
         <Panel title="Turnaje">
           <Box direction="row" justify="between">
             <Box>
-              <Button label="Pridať turnaj" onClick={() => setShowAddEventDialog(true)} />
+              <Button
+                label="Pridať turnaj"
+                onClick={() => setShowAddEventDialog(true)}
+                disabled={!canEdit}
+              />
             </Box>
             <Box>
               <CheckBox

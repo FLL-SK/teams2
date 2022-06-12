@@ -3,7 +3,7 @@ import { BasePage } from '../../components/base-page';
 
 export function Page404() {
   return (
-    <BasePage title="Tím">
+    <BasePage title="Chyba">
       <Box gap="medium">
         <Heading level={2}>Chyba 404</Heading>
         <Text>Stránka alebo údaj nenájdený.</Text>

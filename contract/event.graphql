@@ -4,6 +4,7 @@
 # import * from "./team.graphql"
 # import * from "./user.graphql"
 # import * from "./program.graphql"
+# import * from "./invoice.graphql"
 
 type Event implements INode {
   id: ID!
@@ -50,6 +51,11 @@ type UpdateEventPayload {
 input EventFilterInput {
   isActive: Boolean
   programId: ID
+}
+
+input RegisterTeamInput {
+  eventId: ID!
+  teamId: ID!
 }
 
 extend type Query {

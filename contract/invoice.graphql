@@ -1,13 +1,14 @@
 # import * from "./shared/scalars.graphql"
 # import * from "./shared/types.graphql"
 
-# import * from "./user.graphql"
 # import * from "./team.graphql"
-# import * from "./event.graphql"
+# import * from "./user.graphql"
 # import * from "./program.graphql"
-# import * from "./invoice.graphql"
 
-schema {
-  query: Query
-  mutation: Mutation
+type InvoiceItem {
+  lineNo: Int
+  name: String!
+  description: String
+  price: Float
+  quantity: Float
 }

@@ -45,3 +45,31 @@ type Mutation {
   """
   _: Boolean
 }
+
+type Address {
+  name: String!
+  street: String!
+  city: String!
+  zip: String!
+  countryCode: String
+  companyNumber: String
+  vatNumber: String
+  taxNumber: String
+  contactName: String!
+  phone: String!
+  email: String!
+}
+
+input AddressInput {
+  name: String!
+  street: String!
+  city: String!
+  zip: String!
+  countryCode: String
+  companyNumber: String
+  vatNumber: String
+  taxNumber: String
+  contactName: String!
+  phone: String!
+  email: String!
+}

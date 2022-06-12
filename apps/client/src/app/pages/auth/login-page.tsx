@@ -30,7 +30,6 @@ export function LoginPage() {
       return;
     } else {
       setError('Nesprávne prihlasovacie údaje');
-      console.log('heeeere');
     }
   };
 

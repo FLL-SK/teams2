@@ -1,5 +1,6 @@
 import { TeamData } from '../../models';
 import { Team } from '../../generated/graphql';
+import { AddressMapper } from './address.mapper';
 
 export const TeamMapper = {
   toTeam(team: TeamData | null | undefined): Team | null {
@@ -12,6 +13,9 @@ export const TeamMapper = {
       coachesIds: team.coachesIds,
       deletedOn: team.deletedOn,
       deletedBy: team.deletedBy,
+
+      billTo: AddressMapper.toAddress(team.billTo),
+      shipTo: AddressMapper.toAddress(team.shipTo),
 
       coaches: [],
       events: [],

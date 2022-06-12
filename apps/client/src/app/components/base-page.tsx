@@ -12,7 +12,7 @@ export function BasePage(props: BasePageProps) {
   return (
     <ResponsiveContext.Consumer>
       {(responsiveSize) => (
-        <Box gap="medium">
+        <Box gap="medium" pad={{ left: 'medium', right: 'medium', bottom: 'large' }}>
           <MainNavbar responsiveSize={responsiveSize} />
           <Box>
             <Text size="xlarge" weight="bold">

@@ -1,60 +1,35 @@
 import { appPath } from '@teams2/common';
-import { Box, Button, CheckBox, Tag } from 'grommet';
+import { Box, Button, CheckBox } from 'grommet';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
+import { ErrorPage } from '../../components/error-page';
 import { EventsList } from '../../components/events-list';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
-  EventListFragmentFragment,
   useAddCoachToTeamMutation,
-  useGetTeamLazyQuery,
-  useRegisterTeamForEventMutation,
+  useGetTeamQuery,
   useRemoveCoachFromTeamMutation,
 } from '../../generated/graphql';
-import { RegisterTeamDialog } from './register-team';
 
 export function TeamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [navLink, setNavLink] = useState<string>();
-  const [showRegisterTeamDialog, setShowRegisterTeamDialog] = useState(false);
   const [showInactiveEvents, setShowInactiveEvents] = useState(false);
 
   const { isAdmin, isTeamCoach } = useAppUser();
 
-  const [
-    getTeam,
-    { data: teamData, loading: teamLoading, error: teamError, refetch: refetchTeam },
-  ] = useGetTeamLazyQuery();
+  const {
+    data: teamData,
+    loading: teamLoading,
+    error: teamError,
+  } = useGetTeamQuery({ variables: { id: id ?? '0' } });
   const [addCoach] = useAddCoachToTeamMutation();
   const [removeCoach] = useRemoveCoachFromTeamMutation();
-  const [registerTeam] = useRegisterTeamForEventMutation({ onCompleted: () => refetchTeam() });
-
-  useEffect(() => {
-    if (id) {
-      getTeam({ variables: { id } });
-    }
-  }, [getTeam, id]);
-
-  useEffect(() => {
-    if (navLink) {
-      navigate(navLink);
-    }
-    return () => {
-      setNavLink(undefined);
-    };
-  }, [navLink, navigate]);
-
-  if (!id || teamError) {
-    if (!navLink) {
-      setNavLink(appPath.page404);
-    }
-  }
 
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
@@ -77,6 +52,10 @@ export function TeamPage() {
     [team, today]
   );
 
+  if (!id || teamError) {
+    return <ErrorPage title="Tím nenájdený." />;
+  }
+
   return (
     <BasePage title="Tím" loading={teamLoading}>
       <PanelGroup>
@@ -87,7 +66,7 @@ export function TeamPage() {
           <Box direction="row" justify="between">
             <Button
               label="Registrovať tím"
-              onClick={() => setShowRegisterTeamDialog(true)}
+              onClick={() => navigate(appPath.register(id))}
               disabled={activeEvents.length > 0}
             />
             <CheckBox
@@ -113,11 +92,6 @@ export function TeamPage() {
           </Box>
         </Panel>
       </PanelGroup>
-      <RegisterTeamDialog
-        show={showRegisterTeamDialog}
-        onClose={() => setShowRegisterTeamDialog(false)}
-        onSubmit={(eventId) => registerTeam({ variables: { teamId: id ?? '0', eventId } })}
-      />
     </BasePage>
   );
 }

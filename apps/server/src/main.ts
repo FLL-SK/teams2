@@ -42,7 +42,6 @@ async function server() {
 
   app.use('/graphql', (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
-      console.log('passport.authenticate', err, user, info);
       if (user) {
         req.user = user;
       }

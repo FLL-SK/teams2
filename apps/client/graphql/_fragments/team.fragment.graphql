@@ -16,4 +16,10 @@ fragment TeamFragment on Team {
   events {
     ...EventListFragment
   }
+  billTo {
+    ...AddressFragment
+  }
+  shipTo {
+    ...AddressFragment
+  }
 }

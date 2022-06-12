@@ -1,17 +1,18 @@
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Spinner, Tag } from 'grommet';
-import { useEffect, useState } from 'react';
+import { Anchor, Box, Button, Tag } from 'grommet';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
+import { ErrorPage } from '../../components/error-page';
 import { LabelValue } from '../../components/label-value';
 import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
   useAddEventManagerMutation,
-  useGetEventLazyQuery,
+  useGetEventQuery,
   useRemoveEventManagerMutation,
   useUpdateEventMutation,
 } from '../../generated/graphql';
@@ -21,32 +22,20 @@ export function EventPage() {
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
 
-  const [getEvent, { data: eventData, loading: eventLoading, error: eventError }] =
-    useGetEventLazyQuery();
-  const [navLink, setNavLink] = useState<string>();
+  const {
+    data: eventData,
+    loading: eventLoading,
+    error: eventError,
+  } = useGetEventQuery({ variables: { id: id ?? '0' } });
+
   const [showEventEditDialog, setShowEventEditDialog] = useState(false);
 
   const [updateEvent] = useUpdateEventMutation();
   const [addManager] = useAddEventManagerMutation();
   const [removeManager] = useRemoveEventManagerMutation();
 
-  useEffect(() => {
-    if (id) {
-      getEvent({ variables: { id } });
-    }
-  }, [getEvent, id]);
-
-  useEffect(() => {
-    if (navLink) {
-      navigate(navLink);
-    }
-    return () => {
-      setNavLink(undefined);
-    };
-  }, [navLink, navigate]);
-
-  if ((!id || eventError) && !navLink) {
-    setNavLink(appPath.page404);
+  if (!id || eventError) {
+    return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
   }
 
   const event = eventData?.getEvent;
@@ -80,7 +69,7 @@ export function EventPage() {
         <Panel title="Registrácie">
           <Box direction="row" wrap>
             {eventData?.getEvent?.teams.map((t) => (
-              <Tag key={t.id} onClick={() => setNavLink(appPath.team(t.id))} value={t.name} />
+              <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
             ))}
           </Box>
         </Panel>

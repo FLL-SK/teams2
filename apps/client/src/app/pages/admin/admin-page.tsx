@@ -1,18 +1,16 @@
-import { appPath } from '@teams2/common';
 import { Box, Button, Spinner } from 'grommet';
 import { Add } from 'grommet-icons';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
 import { BasePage } from '../../components/base-page';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { Panel, PanelGroup } from '../../components/panel';
 import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/graphql';
 import { ProgramsList } from './programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
+import { ErrorPage } from '../../components/error-page';
 
 export function AdminPage() {
-  const navigate = useNavigate();
-  const [navLink, setNavLink] = useState<string>();
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
   const { user, loading } = useAppUser();
 
@@ -21,21 +19,11 @@ export function AdminPage() {
     loading: programsLoading,
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
+
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 
-  useEffect(() => {
-    if (navLink) {
-      navigate(navLink);
-    }
-    return () => {
-      setNavLink(undefined);
-    };
-  }, [navLink, navigate]);
-
   if (!loading && !user?.isAdmin) {
-    if (!navLink) {
-      setNavLink(appPath.page404);
-    }
+    return <ErrorPage title="Nemáte oprávnenie." />;
   }
 
   return (

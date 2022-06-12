@@ -12,13 +12,14 @@ import { EventPage } from './pages/event/event-page';
 import { Page404 } from './pages/404/404-page';
 import { AdminPage } from './pages/admin/admin-page';
 import { ProgramPage } from './pages/program/program-page';
+import { RegisterPage } from './pages/register/register-page';
 
 export function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route
-        path={`${appPath.profile()}/:id`}
+        path={appPath.profile(':id')}
         element={
           <RequireAuth>
             <ProfilePage />
@@ -26,15 +27,16 @@ export function AppRouter() {
         }
       />
       <Route
-        path={`${appPath.team()}/:id`}
+        path={appPath.team(':id')}
         element={
           <RequireAuth>
             <TeamPage />
           </RequireAuth>
         }
       />
-      <Route path={`${appPath.event()}/:id`} element={<EventPage />} />
-      <Route path={`${appPath.program()}/:id`} element={<ProgramPage />} />
+      <Route path={appPath.event(':id')} element={<EventPage />} />
+      <Route path={appPath.program(':id')} element={<ProgramPage />} />
+      <Route path={appPath.register(':id')} element={<RegisterPage />} />
       <Route path={appPath.login} element={<LoginPage />} />
       <Route path={appPath.forgotPassword} element={<ForgotPasswordPage />} />
       <Route path={appPath.passwordReset} element={<ResetPasswordPage />} />
