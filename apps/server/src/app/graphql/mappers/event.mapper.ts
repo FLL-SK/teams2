@@ -20,6 +20,8 @@ export const EventMapper = {
       deletedOn: event.deletedOn,
       deletedBy: event.deletedBy,
 
+      invoiceItems: event.invoiceItems,
+
       teams: [],
       managers: [],
       program: null,

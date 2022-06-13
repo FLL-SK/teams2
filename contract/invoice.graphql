@@ -7,17 +7,17 @@
 
 type InvoiceItem {
   lineNo: Int
-  name: String!
-  description: String
-  price: Float
+  text: String!
+  note: String
+  unitPrice: Float
   quantity: Float
 }
 
 input InvoiceItemInput {
   lineNo: Int
-  name: String!
-  description: String
-  price: Float
+  text: String!
+  note: String
+  unitPrice: Float
   quantity: Float
 }
 

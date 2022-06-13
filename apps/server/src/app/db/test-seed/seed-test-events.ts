@@ -24,6 +24,7 @@ export const seedTestEventData: TestSeedData[] = [
     managers: ['eventmgr1@test', 'eventmgr2@test'],
     program: 'Program1',
     dateOffset: 10,
+    invoiceItems: [],
   },
   {
     name: 'Event2',
@@ -33,6 +34,7 @@ export const seedTestEventData: TestSeedData[] = [
     managers: ['eventmgr2@test'],
     program: 'Program1',
     dateOffset: -2,
+    invoiceItems: [],
   },
   {
     name: 'Event3',
@@ -41,6 +43,7 @@ export const seedTestEventData: TestSeedData[] = [
     teams: ['Team3'],
     managers: ['progmgr1@test'],
     program: 'Program1',
+    invoiceItems: [{ lineNo: 1, text: 'Item99', unitPrice: 99, quantity: 1 }],
   },
 ];
 
@@ -62,25 +65,31 @@ export async function seedTestEvents() {
       programId: p._id,
     };
 
+    const nu = new eventRepository(e);
+
+    for (const ii of d.invoiceItems) {
+      nu.invoiceItems.push(ii);
+    }
+
     if (dt) {
-      e.date = dt;
+      nu.date = dt;
     }
 
     for (const username of d.managers) {
       const u = await userRepository.findOne({ username });
       if (u) {
-        e.managersIds.push(u._id);
+        nu.managersIds.push(u._id);
       }
     }
 
     for (const teamName of d.teams) {
       const t = await teamRepository.findOne({ name: teamName });
       if (t) {
-        e.teamsIds.push(t._id);
+        nu.teamsIds.push(t._id);
       }
     }
 
-    const nu = await eventRepository.create(e);
+    await nu.save();
 
     log.debug(`Event created name=%s id=%s`, nu.name, nu._id);
   }

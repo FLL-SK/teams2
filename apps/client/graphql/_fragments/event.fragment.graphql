@@ -26,4 +26,7 @@ fragment EventFragment on Event {
   managers {
     ...UserListFragment
   }
+  invoiceItems {
+    ...InvoiceItemFragment
+  }
 }

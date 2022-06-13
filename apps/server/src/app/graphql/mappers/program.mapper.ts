@@ -17,6 +17,8 @@ export const ProgramMapper = {
       deletedOn: program.deletedOn,
       deletedBy: program.deletedBy,
 
+      invoiceItems: program.invoiceItems,
+
       managers: [],
       events: [],
     };

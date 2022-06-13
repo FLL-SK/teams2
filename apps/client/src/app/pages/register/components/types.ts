@@ -16,8 +16,8 @@ export interface RegisterDetails {
 
 export interface Item {
   lineNo: number;
-  name: string;
-  description: string;
-  price: number;
+  text: string;
+  note?: string;
+  unitPrice: number;
   quantity: number;
 }

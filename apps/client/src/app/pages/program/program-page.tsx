@@ -78,7 +78,7 @@ export function ProgramPage() {
         <Panel title="Detaily programu" gap="medium">
           <LabelValue label="Názov" labelWidth="150px" value={program?.name} />
           <LabelValue label="Popis" labelWidth="150px">
-            <Box background="light-1" flex pad="small">
+            <Box background="light-2" flex pad="small">
               <Markdown>{program?.description ?? ''}</Markdown>
             </Box>
           </LabelValue>

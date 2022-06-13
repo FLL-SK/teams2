@@ -8,8 +8,8 @@ fragment InvoiceFragment on Invoice {
 
 fragment InvoiceItemFragment on InvoiceItem {
   lineNo
-  name
-  description
-  price
+  text
+  note
+  unitPrice
   quantity
 }

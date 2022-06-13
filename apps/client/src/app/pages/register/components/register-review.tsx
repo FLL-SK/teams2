@@ -33,10 +33,10 @@ export function RegisterReview(props: RegisterReviewProps) {
         {(details.items ?? []).map((item) => (
           <ListRow key={item.lineNo} columns="1fr 1fr 1fr 1fr 1fr">
             <Text>{item.lineNo}</Text>
-            <Text>{item.name}</Text>
+            <Text>{item.text}</Text>
             <Text>{item.quantity}</Text>
-            <Text>{item.price}</Text>
-            <Text>{item.quantity * item.price}</Text>
+            <Text>{item.unitPrice}</Text>
+            <Text>{item.quantity * item.unitPrice}</Text>
           </ListRow>
         ))}
       </Panel>

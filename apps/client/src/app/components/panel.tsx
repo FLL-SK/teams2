@@ -11,7 +11,7 @@ export function Panel(props: PanelProps) {
   const { children, title, gap } = props;
 
   return (
-    <Box background="light-2" gap="small">
+    <Box background="light-1" gap="small">
       <Box pad="medium" background="#85C1E9">
         <Text weight="bold" size="medium">
           {title}{' '}

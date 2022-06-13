@@ -1,3 +1,4 @@
+import { EventBL } from '../../domains/event';
 import {
   QueryResolvers,
   MutationResolvers,
@@ -31,12 +32,16 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     { dataSources }
   ): Promise<RegisterTeamPayload> => {
     const { eventId, teamId } = input;
-    const event = await dataSources.event.addTeamToEvent(eventId, teamId);
+    const event = await EventBL.load(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    await event.registerTeam(input);
     const team = await dataSources.team.getTeam(teamId);
     if (!event || !team) {
       return null;
     }
-    return { event, team };
+    return { event: event.toEvent(), team };
   },
 
   unregisterTeamFromEvent: async (_parent, { eventId, teamId }, { dataSources }) => {

@@ -43,7 +43,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async createProgram(input: CreateProgramInput): Promise<CreateProgramPayload> {
-    const u: ProgramData = { ...input, managersIds: [] };
+    const u: ProgramData = { ...input, managersIds: [], invoiceItems: [] };
     const nu = await programRepository.create(u);
     return { program: ProgramMapper.toProgram(nu) };
   }
