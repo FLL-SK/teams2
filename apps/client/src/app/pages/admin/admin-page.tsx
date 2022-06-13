@@ -29,7 +29,7 @@ export function AdminPage() {
   return (
     <BasePage title="Admin" loading={loading}>
       <PanelGroup>
-        <Panel title="Programy">
+        <Panel title="Programy" gap="medium">
           <Box direction="row">
             <Button
               primary

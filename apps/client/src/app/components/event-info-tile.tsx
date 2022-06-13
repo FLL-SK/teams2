@@ -1,10 +1,11 @@
-import { Box, Text } from 'grommet';
+import { Box, Text, Tip } from 'grommet';
 import { BorderType } from 'grommet/utils';
 import styled from 'styled-components';
 import { getColor } from '../theme';
 import { EventFragmentFragment } from '../generated/graphql';
+import { ListRow } from './list-row';
 
-interface EventTileProps {
+interface EventInfoTileProps {
   event: EventFragmentFragment;
   selected?: boolean;
   onClick?: () => void;
@@ -17,19 +18,16 @@ const Container = styled(Box)`
   }
 `;
 
-export function EventTile(props: EventTileProps) {
+export function EventInfoTile(props: EventInfoTileProps) {
   const { event, selected, onClick } = props;
-  const border: BorderType = selected ? { color: getColor('brand') } : {};
+  const border: BorderType = selected ? { color: getColor('brand'), size: 'large' } : {};
   return (
-    <Container onClick={onClick} border={border}>
+    <Container onClick={onClick} border={border} pad="medium">
       <Box direction="row" gap="medium" align="center">
         <Text size="large">{event.name}</Text>
-        {event.teams.length}
-      </Box>
-      <Box>
-        {event.teams.map((team) => (
-          <Box key={team.id}>{team.name}</Box>
-        ))}
+        <Text>
+          <Tip content="Počet tímov">{event.teams.length}</Tip>
+        </Text>
       </Box>
     </Container>
   );

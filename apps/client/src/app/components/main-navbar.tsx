@@ -1,5 +1,5 @@
 import { appPath } from '@teams2/common';
-import { Box, Header, Nav, Anchor, Sidebar } from 'grommet';
+import { Box, Header, Nav, Anchor, Sidebar, Text } from 'grommet';
 import { DirectionType } from 'grommet/utils';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -36,16 +36,30 @@ function MainNav({ direction }: { direction: DirectionType }) {
   return (
     <Nav direction={direction} align="center">
       <Logo height="70px" />
-      <Anchor onClick={() => setNavLink('/')}>Turnaje</Anchor>
+      <Anchor onClick={() => setNavLink('/')}>
+        <Text>Turnaje</Text>
+      </Anchor>
       <Box>
         {isAuthenticated ? (
-          <Anchor onClick={() => setNavLink(appPath.profile(user?.id))}>Profil</Anchor>
+          <Anchor onClick={() => setNavLink(appPath.profile(user?.id))}>
+            <Text>Profil</Text>
+          </Anchor>
         ) : (
-          <Anchor onClick={() => setNavLink(appPath.login)}>Prihlásiť sa</Anchor>
+          <Anchor onClick={() => setNavLink(appPath.login)}>
+            <Text>Prihlásiť sa</Text>
+          </Anchor>
         )}
       </Box>
-      {appUser?.isAdmin && <Anchor onClick={() => setNavLink(appPath.admin)}>Admin</Anchor>}
-      {isAuthenticated && <Anchor onClick={() => setDoLogout(true)}>Odhlásiť sa</Anchor>}
+      {appUser?.isAdmin && (
+        <Anchor onClick={() => setNavLink(appPath.admin)}>
+          <Text>Admin</Text>
+        </Anchor>
+      )}
+      {isAuthenticated && (
+        <Anchor onClick={() => setDoLogout(true)}>
+          <Text>Odhlásiť sa</Text>
+        </Anchor>
+      )}
     </Nav>
   );
 }

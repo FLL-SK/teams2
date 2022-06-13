@@ -6,7 +6,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
-import { Address, useGetTeamQuery, useUpdateTeamMutation } from '../../generated/graphql';
+import {
+  Address,
+  RegisterTeamInput,
+  useGetTeamQuery,
+  useRegisterTeamForEventMutation,
+  useUpdateTeamMutation,
+} from '../../generated/graphql';
 import { RegisterBillToAddress } from './components/register-billto-address';
 import { RegisterIntro } from './components/register-intro';
 import { RegisterReview } from './components/register-review';
@@ -14,12 +20,23 @@ import { RegisterSelectEvent } from './components/register-select-event';
 import { RegisterSelectProgram } from './components/register-select-program';
 import { RegisterShipToAddress } from './components/register-shipto-address';
 import { RegisterDetails } from './components/types';
+import { RegisterSuccess } from './components/register-success';
+
+type RegistrationStep =
+  | 'intro'
+  | 'select-event'
+  | 'select-program'
+  | 'review'
+  | 'billto'
+  | 'shipto'
+  | 'success'
+  | 'error';
 
 export function RegisterPage() {
   const { id: teamId } = useParams();
   const navigate = useNavigate();
   const { isAdmin, isTeamCoach } = useAppUser();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
 
   const {
@@ -36,6 +53,7 @@ export function RegisterPage() {
       }),
   });
   const [updateTeam] = useUpdateTeamMutation();
+  const [registerTeam] = useRegisterTeamForEventMutation();
 
   const canRegister = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
@@ -43,15 +61,24 @@ export function RegisterPage() {
   const cancel = useCallback(() => navigate(appPath.team(teamId)), [navigate, teamId]);
 
   const doRegister = useCallback(
-    (data: RegisterDetails) => {
+    async (data: RegisterDetails) => {
       console.log('doRegister', data);
-      //TODO: register team for event
-      // send to server and receive confirmation with invoice number
-      // display invoice number
-      // let user click OK and return to team page
-      navigate(appPath.team(teamId));
+
+      const input: Partial<RegisterTeamInput> = {
+        eventId: data?.event?.id ?? '0',
+        teamId: teamId ?? '0',
+        billTo: data.billTo,
+        shipTo: data.shipTo,
+        items: data.items ?? [],
+      };
+
+      // let's assume everything is filled out properly
+      const result = await registerTeam({ variables: { input: input as RegisterTeamInput } });
+      if (!result.errors) {
+        setStep('success');
+      }
     },
-    [navigate, teamId]
+    [registerTeam, teamId]
   );
 
   if (!teamId || teamError) {
@@ -59,30 +86,32 @@ export function RegisterPage() {
   }
 
   return (
-    <BasePage title={`Registrácia tímu ${team?.name} turnaj`} loading={teamLoading}>
+    <BasePage title={`Registrácia tímu: ${team?.name}`} loading={teamLoading}>
       <Box>
-        {step === 1 && <RegisterIntro team={team} nextStep={() => setStep(2)} prevStep={cancel} />}
-        {step === 2 && (
+        {step === 'intro' && (
+          <RegisterIntro team={team} nextStep={() => setStep('select-program')} prevStep={cancel} />
+        )}
+        {step === 'select-program' && (
           <RegisterSelectProgram
             team={team}
             details={registerDetails}
             onSubmit={(p) => setRegisterDetails({ ...registerDetails, program: p })}
-            nextStep={() => setStep(3)}
-            prevStep={() => setStep(1)}
+            nextStep={() => setStep('select-event')}
+            prevStep={() => setStep('intro')}
             cancel={cancel}
           />
         )}
-        {step === 3 && (
+        {step === 'select-event' && (
           <RegisterSelectEvent
             team={team}
             details={registerDetails}
             onSubmit={(e) => setRegisterDetails({ ...registerDetails, event: e })}
-            nextStep={() => setStep(4)}
-            prevStep={() => setStep(2)}
+            nextStep={() => setStep('billto')}
+            prevStep={() => setStep('select-program')}
             cancel={cancel}
           />
         )}
-        {step === 4 && (
+        {step === 'billto' && (
           <RegisterBillToAddress
             team={team}
             details={registerDetails}
@@ -90,12 +119,12 @@ export function RegisterPage() {
               updateTeam({ variables: { id: teamId, input: { billTo: a } } });
               setRegisterDetails({ ...registerDetails, billTo: a });
             }}
-            nextStep={() => setStep(5)}
-            prevStep={() => setStep(3)}
+            nextStep={() => setStep('shipto')}
+            prevStep={() => setStep('select-event')}
             cancel={cancel}
           />
         )}
-        {step === 5 && (
+        {step === 'shipto' && (
           <RegisterShipToAddress
             team={team}
             details={registerDetails}
@@ -103,18 +132,32 @@ export function RegisterPage() {
               updateTeam({ variables: { id: teamId, input: { shipTo: a } } });
               setRegisterDetails({ ...registerDetails, shipTo: a });
             }}
-            nextStep={() => setStep(6)}
-            prevStep={() => setStep(4)}
+            nextStep={() => setStep('review')}
+            prevStep={() => setStep('shipto')}
             cancel={cancel}
           />
         )}
-        {step === 6 && (
+        {step === 'review' && (
           <RegisterReview
             team={team}
             details={registerDetails}
-            prevStep={() => setStep(5)}
+            prevStep={() => setStep('shipto')}
             nextStep={() => doRegister(registerDetails)}
             cancel={cancel}
+          />
+        )}
+        {step === 'success' && (
+          <RegisterSuccess
+            team={team}
+            details={registerDetails}
+            nextStep={() => navigate(appPath.team(teamId))}
+          />
+        )}
+        {step === 'error' && (
+          <RegisterSuccess
+            team={team}
+            details={registerDetails}
+            nextStep={() => navigate(appPath.team(teamId))}
           />
         )}
       </Box>

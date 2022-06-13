@@ -1,0 +1,4 @@
+fragment InvoiceFragment on Invoice {
+  id
+  invoiceNo
+}

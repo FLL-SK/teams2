@@ -12,3 +12,16 @@ type InvoiceItem {
   price: Float
   quantity: Float
 }
+
+input InvoiceItemInput {
+  lineNo: Int
+  name: String!
+  description: String
+  price: Float
+  quantity: Float
+}
+
+type Invoice {
+  id: ID!
+  invoiceNo: String
+}

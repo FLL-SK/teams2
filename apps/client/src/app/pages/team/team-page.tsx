@@ -19,7 +19,7 @@ export function TeamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [showInactiveEvents, setShowInactiveEvents] = useState(false);
+  const [showActiveEventsOnly, setShowActiveEventsOnly] = useState(true);
 
   const { isAdmin, isTeamCoach } = useAppUser();
 
@@ -41,9 +41,9 @@ export function TeamPage() {
       (team?.events ?? []).filter(
         (event) =>
           !event.deletedOn &&
-          (!event.date || showInactiveEvents || (event.date ?? '').substring(0, 10) >= today)
+          (!event.date || !showActiveEventsOnly || (event.date ?? '').substring(0, 10) >= today)
       ),
-    [team, showInactiveEvents, today]
+    [team, showActiveEventsOnly, today]
   );
 
   const activeEvents = useMemo(
@@ -55,7 +55,7 @@ export function TeamPage() {
   );
 
   if (!id || teamError) {
-    return <ErrorPage title="Tím nenájdený." />;
+    return <ErrorPage title="Chyba pri získavaní dát tímu." />;
   }
 
   return (
@@ -73,9 +73,9 @@ export function TeamPage() {
             />
             <CheckBox
               toggle
-              label="Zobraziť aj neaktívne"
-              defaultChecked={showInactiveEvents}
-              onChange={({ target }) => setShowInactiveEvents(target.checked)}
+              label="Iba aktívne"
+              defaultChecked={showActiveEventsOnly}
+              onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
           <EventsList events={events} />

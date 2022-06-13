@@ -80,7 +80,7 @@ export function RegisterReview(props: RegisterReviewProps) {
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />
         <Button plain label="Zrušiť" hoverIndicator onClick={cancel} />
-        <Button primary label="Pokračovať" onClick={nextStep} />
+        <Button primary label="Registrovať" onClick={nextStep} />
       </Box>
     </Box>
   );

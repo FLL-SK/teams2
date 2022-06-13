@@ -1,5 +1,5 @@
 import { Box, Button, Spinner, Text } from 'grommet';
-import { EventTile } from '../../../components/event-tile';
+import { EventListTile } from '../../../components/event-list-tile';
 import {
   EventListFragmentFragment,
   TeamFragmentFragment,
@@ -19,7 +19,7 @@ interface RegisterSelectEventProps {
 export function RegisterSelectEvent(props: RegisterSelectEventProps) {
   const { team, details, onSubmit, nextStep, prevStep, cancel } = props;
   const { data, loading } = useGetEventsQuery({
-    variables: { filter: { programId: details.program?.id ?? '0' } },
+    variables: { filter: { programId: details.program?.id ?? '0', isActive: true } },
   });
 
   if (loading) {
@@ -33,13 +33,14 @@ export function RegisterSelectEvent(props: RegisterSelectEventProps) {
       <Text>Vyberte turnaj na ktorý sa chcete prihlásiť:</Text>
 
       {events.map((event) => (
-        <EventTile
+        <EventListTile
           key={event.id}
           event={event}
           onClick={() => onSubmit(event)}
           selected={details.event?.id === event.id}
         />
       ))}
+
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />
         <Button plain label="Zrušiť" hoverIndicator onClick={cancel} />

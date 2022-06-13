@@ -1,19 +1,28 @@
 import { Box } from 'grommet';
-
-import { EventCard } from './event-card';
+import { EventListTile } from './event-list-tile';
 import { EventListFragmentFragment } from '../generated/graphql';
+import { useNavigate } from 'react-router-dom';
+import { appPath } from '@teams2/common';
 
 interface EventsListProps {
   events: EventListFragmentFragment[];
+  onClick?: (event: EventListFragmentFragment) => void;
+  onRemove?: (event: EventListFragmentFragment) => Promise<unknown>;
 }
 
 export function EventsList(props: EventsListProps) {
-  const { events } = props;
+  const navigate = useNavigate();
+  const { events, onClick, onRemove } = props;
 
   return (
-    <Box>
+    <Box gap="small">
       {events.map((event) => (
-        <EventCard key={event.id} event={event} />
+        <EventListTile
+          key={event.id}
+          event={event}
+          onClick={onClick ? () => onClick(event) : () => navigate(appPath.event(event.id))}
+          onRemove={onRemove ? () => onRemove(event) : undefined}
+        />
       ))}
     </Box>
   );

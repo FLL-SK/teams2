@@ -4,7 +4,8 @@ import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getProgram: async (_parent, { id }, { dataSources }) => dataSources.program.getProgram(id),
-  getPrograms: async (_parent, _args, { dataSources }) => dataSources.program.getPrograms(),
+  getPrograms: async (_parent, { filter }, { dataSources }) =>
+    dataSources.program.getPrograms(filter),
 };
 
 export const typeResolver: Resolver<Program> = {

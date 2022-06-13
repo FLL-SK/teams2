@@ -47,6 +47,10 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async deleteEvent(id: ObjectId): Promise<Event> {
+    const event = await eventRepository.findById(id).lean().exec();
+    if (event.teamsIds.length > 0) {
+      return null;
+    }
     const u = await eventRepository.findByIdAndDelete(id).exec();
     return EventMapper.toEvent(u);
   }

@@ -56,6 +56,20 @@ input EventFilterInput {
 input RegisterTeamInput {
   eventId: ID!
   teamId: ID!
+  billTo: AddressInput!
+  shipTo: AddressInput
+  items: [InvoiceItemInput!]!
+}
+
+type RegisterTeamPayload {
+  invoice: Invoice
+  team: Team!
+  event: Event!
+}
+
+type UnregisterTeamPayload {
+  team: Team!
+  event: Event!
 }
 
 extend type Query {
@@ -68,8 +82,8 @@ extend type Mutation {
   updateEvent(id: ID!, input: UpdateEventInput!): UpdateEventPayload!
   deleteEvent(id: ID!): Event
 
-  registerTeamForEvent(eventId: ID!, teamId: ID!): Event!
-  removeTeamFromEvent(eventId: ID!, teamId: ID!): Event!
+  registerTeamForEvent(input: RegisterTeamInput!): RegisterTeamPayload!
+  unregisterTeamFromEvent(eventId: ID!, teamId: ID!): UnregisterTeamPayload!
 
   addEventManager(eventId: ID!, userId: ID!): Event!
   removeEventManager(eventId: ID!, userId: ID!): Event!

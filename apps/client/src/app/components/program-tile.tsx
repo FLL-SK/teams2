@@ -19,11 +19,11 @@ const Container = styled(Box)`
 
 export function ProgramTile(props: ProgramTileProps) {
   const { program, onClick, selected } = props;
-  const border: BorderType = selected ? { color: getColor('brand') } : {};
+  const border: BorderType = selected ? { color: getColor('brand'), size: 'large' } : {};
 
   return (
     <Container pad="medium" gap="medium" onClick={onClick} background="light-2" border={border}>
-      <Text size="large">{program.name}</Text>
+      <Text>{program.name}</Text>
       <Markdown>{program.description ?? ''}</Markdown>
     </Container>
   );

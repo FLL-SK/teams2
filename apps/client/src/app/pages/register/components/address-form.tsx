@@ -39,6 +39,7 @@ export function AddressForm(props: AddressFormProps) {
       onReset={() => setFormData(emptyForm)}
       onSubmit={({ value }) => onSubmit(value)}
       value={formData}
+      messages={{ required: 'Povinný údaj' }}
     >
       <Grid columns={['1fr', '1fr', '1fr', '1fr']} gap={{ column: 'medium', row: 'small' }}>
         <GridFormField name="name" label="Názov organizácie" required area="auto / span 4">

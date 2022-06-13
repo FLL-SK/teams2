@@ -1,4 +1,5 @@
-import { Box, Button, Form, FormField } from 'grommet';
+import { Box, Button, Form, FormField, TextArea, TextInput } from 'grommet';
+import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
 import { Modal } from '../modal';
 
@@ -11,11 +12,15 @@ interface EditProgramDialogProps {
 
 interface FormFields {
   name: string;
-  description: string;
+  description?: string;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
   const { show, program, onClose, onSubmit } = props;
+  const [formValues, setFormValues] = useState<FormFields>({
+    name: program?.name ?? '',
+    description: program?.description ?? undefined,
+  });
 
   if (!show) {
     return null;
@@ -31,15 +36,20 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       title={!program ? 'Nový program' : 'Detaily programu'}
       onClose={onClose}
       width="large"
-      height="medium"
+      height="auto"
     >
-      <Form onSubmit={handleSubmit} messages={{ required: 'Povinný údaj' }}>
-        <FormField label="Názov" name="name" required autoFocus defaultValue={program?.name} />
-        <FormField
-          label="Popis"
-          name="description"
-          defaultValue={program?.description ?? undefined}
-        />
+      <Form
+        onSubmit={handleSubmit}
+        messages={{ required: 'Povinný údaj' }}
+        value={formValues}
+        onChange={setFormValues}
+      >
+        <FormField label="Názov" name="name" required autoFocus>
+          <TextInput name="name" />
+        </FormField>
+        <FormField label="Popis" name="description">
+          <TextArea rows={10} name="description" />
+        </FormField>
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
           <Button primary type="submit" label={!program ? 'Vytvoriť' : 'Uložiť'} />
