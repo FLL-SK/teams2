@@ -4,13 +4,13 @@ import { EventListFragmentFragment } from '../generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 
-interface EventsListProps {
+interface EventListProps {
   events: EventListFragmentFragment[];
   onClick?: (event: EventListFragmentFragment) => void;
   onRemove?: (event: EventListFragmentFragment) => Promise<unknown>;
 }
 
-export function EventsList(props: EventsListProps) {
+export function EventList(props: EventListProps) {
   const navigate = useNavigate();
   const { events, onClick, onRemove } = props;
 

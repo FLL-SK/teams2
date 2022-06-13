@@ -18,7 +18,7 @@ import {
   useRemoveProgramManagerMutation,
   useUpdateProgramMutation,
 } from '../../generated/graphql';
-import { EventsList } from '../../components/events-list';
+import { EventList } from '../../components/event-list';
 import { ErrorPage } from '../../components/error-page';
 import { appPath } from '@teams2/common';
 
@@ -126,7 +126,7 @@ export function ProgramPage() {
               />
             </Box>
           </Box>
-          <EventsList events={events} onRemove={canEdit ? handleDeleteEvent : undefined} />
+          <EventList events={events} onRemove={canEdit ? handleDeleteEvent : undefined} />
         </Panel>
       </PanelGroup>
       <EditProgramDialog

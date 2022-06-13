@@ -1,5 +1,5 @@
 import { BasePage } from '../../components/base-page';
-import { EventsList } from '../../components/events-list';
+import { EventList } from '../../components/event-list';
 import { useGetEventsQuery } from '../../generated/graphql';
 
 interface HomePageProps {
@@ -15,7 +15,7 @@ export function HomePage(props: HomePageProps) {
   );
   return (
     <BasePage title="Turnaje" loading={eventsLoading}>
-      <EventsList events={events} />
+      <EventList events={events} />
     </BasePage>
   );
 }

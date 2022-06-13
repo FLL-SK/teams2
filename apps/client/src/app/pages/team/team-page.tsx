@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
-import { EventsList } from '../../components/events-list';
+import { EventList } from '../../components/event-list';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
@@ -78,7 +78,7 @@ export function TeamPage() {
               onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
-          <EventsList events={events} />
+          <EventList events={events} />
         </Panel>
         <Panel title="Faktúry">
           <p>Here be data</p>
