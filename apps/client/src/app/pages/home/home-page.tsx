@@ -1,8 +1,5 @@
-import { Box, Spinner } from 'grommet';
-import { Link } from 'react-router-dom';
-
 import { BasePage } from '../../components/base-page';
-import { EventInfoTile } from '../../components/event-info-tile';
+import { EventsList } from '../../components/events-list';
 import { useGetEventsQuery } from '../../generated/graphql';
 
 interface HomePageProps {
@@ -10,19 +7,15 @@ interface HomePageProps {
 }
 
 export function HomePage(props: HomePageProps) {
-  const { data: eventsData, loading: eventsLoading } = useGetEventsQuery();
+  const { data: eventsData, loading: eventsLoading } = useGetEventsQuery({
+    variables: { filter: { isActive: true } },
+  });
+  const events = [...(eventsData?.getEvents ?? [])].sort((a, b) =>
+    (a.date ?? '') < (b.date ?? '') ? -1 : 1
+  );
   return (
-    <BasePage title="Turnaje">
-      <Link to="/profile">Click here for protected profile.</Link>
-      {eventsLoading ? (
-        <Spinner />
-      ) : (
-        <Box gap="medium">
-          {eventsData?.getEvents.map((event) => (
-            <EventInfoTile key={event.id} event={event} />
-          ))}
-        </Box>
-      )}
+    <BasePage title="Turnaje" loading={eventsLoading}>
+      <EventsList events={events} />
     </BasePage>
   );
 }
