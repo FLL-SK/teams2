@@ -1,4 +1,3 @@
-import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { StatusGood } from 'grommet-icons';
 import { LabelValue } from '../../../components/label-value';

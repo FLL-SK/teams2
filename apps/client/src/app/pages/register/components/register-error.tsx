@@ -9,7 +9,7 @@ interface RegisterErrorProps {
 }
 
 export function RegisterError(props: RegisterErrorProps) {
-  const { team, details, nextStep } = props;
+  const { team, nextStep } = props;
 
   if (!team) {
     return null;
