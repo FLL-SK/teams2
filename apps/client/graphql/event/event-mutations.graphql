@@ -38,16 +38,13 @@ mutation removeEventManager($eventId: ID!, $userId: ID!) {
   }
 }
 
-mutation registerTeamForEvent($input: RegisterTeamInput!) {
-  registerTeamForEvent(input: $input) {
+mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
+  registerTeamForEvent(eventId: $eventId, teamId: $teamId) {
     event {
       ...EventFragment
     }
     team {
       ...TeamFragment
-    }
-    invoice {
-      ...InvoiceFragment
     }
   }
 }

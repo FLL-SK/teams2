@@ -6,6 +6,7 @@ import {
   RegisterTeamPayload,
 } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
+import { EventMapper } from '../mappers';
 import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
@@ -28,20 +29,15 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
 
   registerTeamForEvent: async (
     _parent,
-    { input },
+    { eventId, teamId },
     { dataSources }
   ): Promise<RegisterTeamPayload> => {
-    const { eventId, teamId } = input;
-    const event = await EventBL.load(eventId);
-    if (!event) {
-      throw new Error('Event not found');
-    }
-    await event.registerTeam(input);
+    const event = await dataSources.event.addTeamToEvent(eventId, teamId);
     const team = await dataSources.team.getTeam(teamId);
     if (!event || !team) {
       return null;
     }
-    return { event: event.toEvent(), team };
+    return { event, team };
   },
 
   unregisterTeamFromEvent: async (_parent, { eventId, teamId }, { dataSources }) => {

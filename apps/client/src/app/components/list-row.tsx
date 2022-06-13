@@ -19,3 +19,11 @@ const Container = styled(Box)<ListRowProps>`
 export const ListRow = ({ columns, ...rest }: ListRowProps) => (
   <Container direction="row" columns={columns} {...rest} />
 );
+
+export const ListHeader = styled(Box)<ListRowProps>`
+  font-weight: bold;
+  text-decoration: underline;
+  width: 100%;
+  display: grid;
+  grid-template-columns: ${({ columns }) => columns};
+`;

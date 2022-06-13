@@ -1,4 +1,10 @@
-import { EventDataSource, ProgramDataSource, TeamDataSource, UserDataSource } from './datasources';
+import {
+  EventDataSource,
+  InvoiceDataSource,
+  ProgramDataSource,
+  TeamDataSource,
+  UserDataSource,
+} from './datasources';
 import { UserData } from '../models';
 
 export interface AuthProfileData {
@@ -15,6 +21,7 @@ export type ApolloContextDataSources = {
   event: EventDataSource;
   team: TeamDataSource;
   program: ProgramDataSource;
+  invoice: InvoiceDataSource;
 };
 
 export interface ApolloContext {

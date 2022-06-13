@@ -28,5 +28,15 @@ export function getServerConfig() {
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       bucket: process.env.AWS_BUCKET,
     },
+    invoicing: {
+      type: 'superfaktura',
+      sf: {
+        apiUrl: process.env.SF_API_URL,
+        email: process.env.SF_AUTH_EMAIL,
+        apiKey: process.env.SF_AUTH_API_KEY,
+        companyId: process.env.SF_AUTH_COMPANY_ID,
+        module: process.env.SF_AUTH_MODULE,
+      },
+    },
   };
 }

@@ -1,0 +1,11 @@
+mutation createRegistrationInvoice($eventId: ID!, $teamId: ID!) {
+  createRegistrationInvoice(eventId: $eventId, teamId: $teamId) {
+    ...InvoiceFragment
+  }
+}
+
+mutation emailInvoice($id: ID!) {
+  emailInvoice(id: $id) {
+    ...InvoiceFragment
+  }
+}

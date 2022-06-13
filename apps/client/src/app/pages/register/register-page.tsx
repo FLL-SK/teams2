@@ -67,9 +67,6 @@ export function RegisterPage() {
       const input: Partial<RegisterTeamInput> = {
         eventId: data?.event?.id ?? '0',
         teamId: teamId ?? '0',
-        billTo: data.billTo,
-        shipTo: data.shipTo,
-        items: data.items ?? [],
       };
 
       // let's assume everything is filled out properly

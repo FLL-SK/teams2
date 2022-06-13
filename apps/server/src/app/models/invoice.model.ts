@@ -10,10 +10,11 @@ export interface InvoiceData {
   issuedOn: Date;
   total: number;
 
-  teamId: ObjectId;
-  eventId: ObjectId;
+  teamId?: ObjectId;
+  eventId?: ObjectId;
 
   paidOn?: Date;
+  sentOn?: Date;
 
   token?: string;
 }
@@ -30,10 +31,11 @@ const schema = new Schema<InvoiceData, InvoiceModel>({
   issuedOn: { type: Types.Date, required: true },
   total: { type: Types.Number, required: true },
 
-  teamId: { type: Types.ObjectId, ref: 'Team', required: true },
-  eventId: { type: Types.ObjectId, ref: 'Event', required: true },
+  teamId: { type: Types.ObjectId, ref: 'Team' },
+  eventId: { type: Types.ObjectId, ref: 'Event' },
 
   paidOn: { type: Types.Date },
+  sentOn: { type: Types.Date },
   token: { type: Types.String },
 });
 

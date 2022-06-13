@@ -1,10 +1,4 @@
-import {
-  ProgramData,
-  programRepository,
-  userRepository,
-  ProgramModel,
-  InvoiceItemData,
-} from '../../models';
+import { ProgramData, programRepository, userRepository } from '../../models';
 import { logger } from '@teams2/logger';
 
 type TestSeedData = ProgramData & {
@@ -18,7 +12,7 @@ export const seedTestProgramData: TestSeedData[] = [
     managers: ['progmgr1@test', 'progmgr2@test'],
     description: '**Program1 description**\n* a\n* b\n* c',
     invoiceItems: [
-      { lineNo: 1, text: 'Item1', unitPrice: 100, quantity: 1 },
+      { lineNo: 1, text: 'Item1', unitPrice: 100, quantity: 1, note: 'Note1' },
       { lineNo: 2, text: 'Item2', unitPrice: 200, quantity: 1 },
     ],
   },

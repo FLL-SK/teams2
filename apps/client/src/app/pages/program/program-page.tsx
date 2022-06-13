@@ -21,6 +21,7 @@ import {
 import { EventList } from '../../components/event-list';
 import { ErrorPage } from '../../components/error-page';
 import { appPath } from '@teams2/common';
+import { InvoiceItemList } from '../../components/invoice-item-list';
 
 export function ProgramPage() {
   const { id } = useParams();
@@ -89,6 +90,10 @@ export function ProgramPage() {
               disabled={!canEdit}
             />
           </Box>
+        </Panel>
+
+        <Panel title="Faktúra" gap="medium">
+          <InvoiceItemList items={program?.invoiceItems ?? []} />
         </Panel>
 
         {canEdit && (

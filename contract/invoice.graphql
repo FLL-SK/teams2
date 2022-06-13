@@ -4,6 +4,7 @@
 # import * from "./team.graphql"
 # import * from "./user.graphql"
 # import * from "./program.graphql"
+# import * from "./event.graphql"
 
 type InvoiceItem {
   lineNo: Int
@@ -23,8 +24,19 @@ input InvoiceItemInput {
 
 type Invoice {
   id: ID!
-  number: String
-  total: Float
-  issuedOn: DateTime
+  number: String!
+  total: Float!
+  teamId: ID
+  eventId: ID
+  issuedOn: DateTime!
+  sentOn: DateTime
   paidOn: DateTime
+
+  team: Team
+  event: Event
+}
+
+extend type Mutation {
+  createRegistrationInvoice(eventId: ID!, teamId: ID!): Invoice!
+  emailInvoice(id: ID!): Invoice!
 }

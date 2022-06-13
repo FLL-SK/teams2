@@ -1,0 +1,49 @@
+import { Address, InvoiceItem } from '../generated/graphql';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Invoice = any;
+
+export interface InvoicePostResult {
+  status: 'ok' | 'error';
+  id?: string;
+  createdOn?: string;
+  token?: string;
+  error?: string;
+  total?: number;
+}
+
+export interface InvoiceEmailOptions {
+  id: string;
+  to: string;
+  cc?: string[];
+  bcc?: string[];
+  subject?: string;
+}
+
+export interface InvoiceEmailResult {
+  status: 'ok' | 'error';
+  error?: string;
+}
+
+export class InvoicingAPI {
+  getHeaders() {
+    return {};
+  }
+
+  async postInvoice(invoice: Invoice): Promise<InvoicePostResult> {
+    return { status: 'error', error: 'not implemented' };
+  }
+
+  constructInvoice(
+    teamName: string,
+    billTo: Address,
+    shipTo: Address | undefined,
+    items: InvoiceItem[]
+  ) {
+    return 'invoice';
+  }
+
+  async emailInvoice(options: InvoiceEmailOptions): Promise<InvoiceEmailResult> {
+    return { status: 'error', error: 'not implemented' };
+  }
+}

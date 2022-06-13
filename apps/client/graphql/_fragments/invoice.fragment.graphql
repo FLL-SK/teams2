@@ -4,6 +4,15 @@ fragment InvoiceFragment on Invoice {
   total
   issuedOn
   paidOn
+  sentOn
+  teamId
+  eventId
+  team {
+    ...TeamListFragment
+  }
+  event {
+    ...EventListFragment
+  }
 }
 
 fragment InvoiceItemFragment on InvoiceItem {

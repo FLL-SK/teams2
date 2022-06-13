@@ -55,16 +55,7 @@ input EventFilterInput {
   programId: ID
 }
 
-input RegisterTeamInput {
-  eventId: ID!
-  teamId: ID!
-  billTo: AddressInput!
-  shipTo: AddressInput
-  items: [InvoiceItemInput!]!
-}
-
 type RegisterTeamPayload {
-  invoice: Invoice
   team: Team!
   event: Event!
 }
@@ -84,7 +75,7 @@ extend type Mutation {
   updateEvent(id: ID!, input: UpdateEventInput!): UpdateEventPayload!
   deleteEvent(id: ID!): Event
 
-  registerTeamForEvent(input: RegisterTeamInput!): RegisterTeamPayload!
+  registerTeamForEvent(eventId: ID!, teamId: ID!): RegisterTeamPayload!
   unregisterTeamFromEvent(eventId: ID!, teamId: ID!): UnregisterTeamPayload!
 
   addEventManager(eventId: ID!, userId: ID!): Event!
