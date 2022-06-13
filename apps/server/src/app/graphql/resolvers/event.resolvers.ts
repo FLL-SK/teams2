@@ -1,4 +1,3 @@
-import { EventBL } from '../../domains/event';
 import {
   QueryResolvers,
   MutationResolvers,
@@ -6,7 +5,6 @@ import {
   RegisterTeamPayload,
 } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
-import { EventMapper } from '../mappers';
 import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
