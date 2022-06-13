@@ -1,5 +1,5 @@
 import { appPath } from '@teams2/common';
-import { Box, Header, Nav, Anchor, Sidebar, Text } from 'grommet';
+import { Box, Header, Nav, Anchor, Sidebar, Text, Avatar, Tip, Button } from 'grommet';
 import { DirectionType } from 'grommet/utils';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';
 import { useAuthenticate } from './auth/useAuthenticate';
 import { useAppUser } from './app-user/use-app-user';
+import { Logout, User } from 'grommet-icons';
 
 function MainNav({ direction }: { direction: DirectionType }) {
   const { isAuthenticated, user, logout } = useAuthenticate();
@@ -34,32 +35,37 @@ function MainNav({ direction }: { direction: DirectionType }) {
   }, [doLogout, logout, navigate]);
 
   return (
-    <Nav direction={direction} align="center">
-      <Logo height="70px" />
-      <Anchor onClick={() => setNavLink('/')}>
-        <Text>Turnaje</Text>
-      </Anchor>
-      <Box>
-        {isAuthenticated ? (
-          <Anchor onClick={() => setNavLink(appPath.profile(user?.id))}>
-            <Text>Profil</Text>
+    <Nav direction={direction} align="center" justify="between" flex>
+      <Box direction={direction} gap="medium" align="center">
+        <Logo height="70px" />
+        <Anchor onClick={() => setNavLink('/')}>
+          <Text>Turnaje</Text>
+        </Anchor>
+
+        {appUser?.isAdmin && (
+          <Anchor onClick={() => setNavLink(appPath.admin)}>
+            <Text>Admin</Text>
           </Anchor>
+        )}
+      </Box>
+
+      <Box direction="row" gap="small" align="center">
+        {isAuthenticated ? (
+          <Avatar onClick={() => setNavLink(appPath.profile(user?.id))} background="accent-2">
+            <Tip content={user?.username}>
+              <User />
+            </Tip>
+          </Avatar>
         ) : (
           <Anchor onClick={() => setNavLink(appPath.login)}>
             <Text>Prihlásiť sa</Text>
           </Anchor>
         )}
+
+        {isAuthenticated && (
+          <Button icon={<Logout />} onClick={() => setDoLogout(true)} tip="Odhlásiť sa" />
+        )}
       </Box>
-      {appUser?.isAdmin && (
-        <Anchor onClick={() => setNavLink(appPath.admin)}>
-          <Text>Admin</Text>
-        </Anchor>
-      )}
-      {isAuthenticated && (
-        <Anchor onClick={() => setDoLogout(true)}>
-          <Text>Odhlásiť sa</Text>
-        </Anchor>
-      )}
     </Nav>
   );
 }
