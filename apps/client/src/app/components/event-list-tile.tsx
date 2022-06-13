@@ -1,6 +1,6 @@
 import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Text, Tip } from 'grommet';
-import { Close } from 'grommet-icons';
+import { Calendar, Close, Group } from 'grommet-icons';
 import { BorderType } from 'grommet/utils';
 
 import { EventListFragmentFragment } from '../generated/graphql';
@@ -21,7 +21,7 @@ export function EventListTile(props: EventListTileProps) {
 
   return (
     <ListRow
-      columns="1fr 150px 50px auto"
+      columns="1fr 180px 75px auto"
       onClick={onClick}
       pad="small"
       align="center"
@@ -32,10 +32,18 @@ export function EventListTile(props: EventListTileProps) {
         {!hideProgram && <Text size="small">{event.program.name}</Text>}
       </Box>
 
-      <Text>{formatDate(event.date)}</Text>
-      <Text>
-        <Tip content="Počet tímov">{event.teamsIds.length}</Tip>
-      </Text>
+      <Box direction="row" gap="xsmall" align="center">
+        <Calendar />
+        <Text>{formatDate(event.date)}</Text>
+      </Box>
+
+      <Tip content="Počet tímov">
+        <Box direction="row" gap="xsmall" align="center">
+          <Group />
+          <Text>{event.teamsIds.length}</Text>
+        </Box>
+      </Tip>
+
       {onRemove && (
         <Button
           plain
