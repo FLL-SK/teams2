@@ -8,7 +8,8 @@ import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import {
   Address,
-  RegisterTeamInput,
+  useCreateRegistrationInvoiceMutation,
+  useEmailInvoiceMutation,
   useGetTeamQuery,
   useRegisterTeamForEventMutation,
   useUpdateTeamMutation,
@@ -21,6 +22,7 @@ import { RegisterSelectProgram } from './components/register-select-program';
 import { RegisterShipToAddress } from './components/register-shipto-address';
 import { RegisterDetails } from './components/types';
 import { RegisterSuccess } from './components/register-success';
+import { RegisterError } from './components/register-error';
 
 type RegistrationStep =
   | 'intro'
@@ -38,6 +40,8 @@ export function RegisterPage() {
   const { isAdmin, isTeamCoach } = useAppUser();
   const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
+  const [invoiceNo, setInvoiceNo] = useState<string | undefined>();
+  const [sentOn, setSentOn] = useState<Date | undefined>();
 
   const {
     data: teamData,
@@ -55,6 +59,20 @@ export function RegisterPage() {
   const [updateTeam] = useUpdateTeamMutation();
   const [registerTeam] = useRegisterTeamForEventMutation();
 
+  const [createInvoice] = useCreateRegistrationInvoiceMutation({
+    onCompleted: (data) => {
+      setInvoiceNo(data.createRegistrationInvoice.number);
+      emailInvoice({
+        variables: { id: data.createRegistrationInvoice.id },
+      });
+    },
+  });
+
+  const [emailInvoice] = useEmailInvoiceMutation({
+    onCompleted: (data) =>
+      setSentOn(data.emailInvoice.sentOn ? new Date(data.emailInvoice.sentOn) : undefined),
+  });
+
   const canRegister = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
 
@@ -62,20 +80,17 @@ export function RegisterPage() {
 
   const doRegister = useCallback(
     async (data: RegisterDetails) => {
-      console.log('doRegister', data);
-
-      const input: Partial<RegisterTeamInput> = {
-        eventId: data?.event?.id ?? '0',
-        teamId: teamId ?? '0',
-      };
-
       // let's assume everything is filled out properly
-      const result = await registerTeam({ variables: { input: input as RegisterTeamInput } });
+      const _teamId = teamId ?? '0';
+      const _eventId = data.event?.id ?? '0';
+
+      const result = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
       if (!result.errors) {
         setStep('success');
+        createInvoice({ variables: { teamId: _teamId, eventId: _eventId } });
       }
     },
-    [registerTeam, teamId]
+    [createInvoice, registerTeam, teamId]
   );
 
   if (!teamId || teamError) {
@@ -148,10 +163,12 @@ export function RegisterPage() {
             team={team}
             details={registerDetails}
             nextStep={() => navigate(appPath.team(teamId))}
+            invoiceNo={invoiceNo}
+            sentOn={sentOn}
           />
         )}
         {step === 'error' && (
-          <RegisterSuccess
+          <RegisterError
             team={team}
             details={registerDetails}
             nextStep={() => navigate(appPath.team(teamId))}

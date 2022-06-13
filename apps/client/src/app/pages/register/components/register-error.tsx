@@ -2,13 +2,13 @@ import { Box, Button, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
 
-interface RegisterSuccessProps {
+interface RegisterErrorProps {
   team?: TeamFragmentFragment;
   details: RegisterDetails;
   nextStep: () => void;
 }
 
-export function RegisterSuccess(props: RegisterSuccessProps) {
+export function RegisterError(props: RegisterErrorProps) {
   const { team, details, nextStep } = props;
 
   if (!team) {
