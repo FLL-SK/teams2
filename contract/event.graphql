@@ -17,6 +17,8 @@ type Event implements INode {
   teamsIds: [ID!]!
   managersIds: [ID!]!
 
+  invoiceItems: [InvoiceItem!]!
+
   deletedOn: DateTime
   deletedBy: ID
 
@@ -87,4 +89,6 @@ extend type Mutation {
 
   addEventManager(eventId: ID!, userId: ID!): Event!
   removeEventManager(eventId: ID!, userId: ID!): Event!
+
+  updateEventInvoiceItems(eventId: ID!, items: [InvoiceItemInput!]!): Event!
 }

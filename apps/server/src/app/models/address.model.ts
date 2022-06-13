@@ -16,7 +16,7 @@ export interface AddressData {
 
 const Types = Schema.Types;
 
-export const schemaAddress = new Schema<AddressData>(
+export const addressSchema = new Schema<AddressData>(
   {
     name: { type: Types.String, required: true },
     street: { type: Types.String, required: true },

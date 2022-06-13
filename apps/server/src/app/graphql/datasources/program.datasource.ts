@@ -19,6 +19,7 @@ import {
   User,
   Event,
   ProgramFilterInput,
+  InvoiceItemInput,
 } from '../../generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { FilterQuery, UpdateQuery } from 'mongoose';
@@ -97,5 +98,15 @@ export class ProgramDataSource extends BaseDataSource {
 
     const events = await eventRepository.findEventsForProgram(programId);
     return events.map(EventMapper.toEvent);
+  }
+
+  async updateProgramInvoiceItems(
+    programId: ObjectId,
+    items: InvoiceItemInput[]
+  ): Promise<Program> {
+    const program = await programRepository
+      .findOneAndUpdate({ _id: programId }, { invoiceItems: items }, { new: true })
+      .exec();
+    return ProgramMapper.toProgram(program);
   }
 }

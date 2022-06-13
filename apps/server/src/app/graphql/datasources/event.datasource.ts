@@ -12,6 +12,7 @@ import {
   CreateEventPayload,
   UpdateEventInput,
   UpdateEventPayload,
+  InvoiceItemInput,
 } from '../../generated/graphql';
 import { EventMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
@@ -108,5 +109,12 @@ export class EventDataSource extends BaseDataSource {
       event.managersIds.map(async (u) => userRepository.findById(u).exec())
     );
     return users.map(UserMapper.toUser);
+  }
+
+  async updateEventInvoiceItems(eventId: ObjectId, items: InvoiceItemInput[]): Promise<Event> {
+    const event = await eventRepository
+      .findOneAndUpdate({ _id: eventId }, { invoiceItems: items }, { new: true })
+      .exec();
+    return EventMapper.toEvent(event);
   }
 }

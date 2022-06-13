@@ -4,6 +4,7 @@
 # import * from "./team.graphql"
 # import * from "./user.graphql"
 # import * from "./event.graphql"
+# import * from "./invoice.graphql"
 
 type Program implements INode {
   id: ID!
@@ -12,6 +13,8 @@ type Program implements INode {
   logoUrl: String
 
   managersIds: [ID!]!
+
+  invoiceItems: [InvoiceItem!]!
 
   deletedOn: DateTime
   deletedBy: ID
@@ -56,4 +59,6 @@ extend type Mutation {
 
   addProgramManager(programId: ID!, userId: ID!): Program!
   removeProgramManager(programId: ID!, userId: ID!): Program!
+
+  updateProgramInvoiceItems(programId: ID!, items: [InvoiceItemInput!]!): Program!
 }

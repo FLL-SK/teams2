@@ -3,21 +3,19 @@ import { DeleteResult, ObjectId } from 'mongodb';
 
 const Types = Schema.Types;
 
-export interface InvoiceItemData {
-  lineNo: number;
-  item: string;
-  description?: string;
-  quantity: number;
-  unitPrice: number;
-}
-
 export interface InvoiceData {
   _id?: ObjectId;
-  number?: string;
+  number: string;
+  companyNumber?: string;
   issuedOn: Date;
-  teamId: ObjectId;
+  total: number;
 
-  items: InvoiceItemData[];
+  teamId: ObjectId;
+  eventId: ObjectId;
+
+  paidOn?: Date;
+
+  token?: string;
 }
 
 export type InvoiceDocument = (Document<unknown, unknown, InvoiceData> & InvoiceData) | null;
@@ -26,23 +24,17 @@ export interface InvoiceModel extends Model<InvoiceData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
-const schemaItems = new Schema<InvoiceItemData>(
-  {
-    lineNo: { type: Types.Number, required: true },
-    item: { type: Types.String, required: true },
-    description: { type: Types.String },
-    quantity: { type: Types.Number, required: true },
-    unitPrice: { type: Types.Number, required: true },
-  },
-  { _id: false }
-);
-
 const schema = new Schema<InvoiceData, InvoiceModel>({
   number: { type: Types.String, required: true },
+  companyNumber: { type: Types.String },
   issuedOn: { type: Types.Date, required: true },
-  teamId: { type: Types.ObjectId, ref: 'Team', required: true },
+  total: { type: Types.Number, required: true },
 
-  items: [{ type: schemaItems, default: [] }],
+  teamId: { type: Types.ObjectId, ref: 'Team', required: true },
+  eventId: { type: Types.ObjectId, ref: 'Event', required: true },
+
+  paidOn: { type: Types.Date },
+  token: { type: Types.String },
 });
 
 schema.index({ number: 1 });

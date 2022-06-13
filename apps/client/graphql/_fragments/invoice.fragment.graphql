@@ -1,4 +1,15 @@
 fragment InvoiceFragment on Invoice {
   id
-  invoiceNo
+  number
+  total
+  issuedOn
+  paidOn
+}
+
+fragment InvoiceItemFragment on InvoiceItem {
+  lineNo
+  name
+  description
+  price
+  quantity
 }

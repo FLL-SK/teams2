@@ -37,3 +37,9 @@ mutation removeProgramManager($programId: ID!, $userId: ID!) {
     ...ProgramFragment
   }
 }
+
+mutation updateProgramInvoiceItems($programId: ID!, $items: [InvoiceItemInput!]!) {
+  updateProgramInvoiceItems(programId: $programId, items: $items) {
+    ...ProgramFragment
+  }
+}

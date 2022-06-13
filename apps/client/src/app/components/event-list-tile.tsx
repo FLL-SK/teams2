@@ -17,7 +17,9 @@ interface EventListTileProps {
 
 export function EventListTile(props: EventListTileProps) {
   const { event, selected, onClick, onRemove, hideProgram } = props;
-  const border: BorderType = selected ? { color: getColor('brand'), size: 'large' } : {};
+  const border: BorderType = selected
+    ? { color: getColor('brand'), size: 'large' }
+    : { side: 'top' };
 
   return (
     <ListRow

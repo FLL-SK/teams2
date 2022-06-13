@@ -23,5 +23,8 @@ input InvoiceItemInput {
 
 type Invoice {
   id: ID!
-  invoiceNo: String
+  number: String
+  total: Float
+  issuedOn: DateTime
+  paidOn: DateTime
 }

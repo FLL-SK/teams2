@@ -1,6 +1,6 @@
 import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { AddressData, schemaAddress } from './address.model';
+import { AddressData, addressSchema } from './address.model';
 
 const Types = Schema.Types;
 
@@ -29,8 +29,8 @@ const schema = new Schema<TeamData, TeamModel>({
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },
   coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-  billTo: { type: schemaAddress },
-  shipTo: { type: schemaAddress },
+  billTo: { type: addressSchema },
+  shipTo: { type: addressSchema },
 });
 
 schema.index({ name: 1 }, { unique: false });

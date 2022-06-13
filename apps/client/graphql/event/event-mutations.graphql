@@ -62,3 +62,9 @@ mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
     }
   }
 }
+
+mutation updateEventInvoiceItems($eventId: ID!, $items: [InvoiceItemInput!]!) {
+  updateEventInvoiceItems(eventId: $eventId, items: $items) {
+    ...EventFragment
+  }
+}
