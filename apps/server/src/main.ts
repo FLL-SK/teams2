@@ -31,6 +31,8 @@ async function server() {
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
   };
 
+  log.info('Configuring CORS ... %o', corsOptions);
+
   app.use(morgan('tiny'));
   app.use(cors(corsOptions));
   app.use(express.json());
