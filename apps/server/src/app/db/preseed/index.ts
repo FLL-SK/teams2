@@ -1,5 +1,6 @@
 import { userRepository } from '../../models';
-import { users } from './data/users.json'
+import { hashPassword } from '../../utils/hash-password';
+import { users } from './data/users.json';
 
 export async function preSeedUsers() {
   for (const user of users) {
@@ -7,16 +8,15 @@ export async function preSeedUsers() {
       { username: user.username },
       {
         ...user,
-        fullName: `${user.firstName} ${user.lastName}`
+        fullName: `${user.firstName} ${user.lastName}`,
+        password: await hashPassword(user.password),
       },
       {
-        upsert: true
+        upsert: true,
       }
     );
   }
 }
-
-
 
 export async function preSeed() {
   await preSeedUsers();
