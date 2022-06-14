@@ -36,7 +36,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async createEvent(input: CreateEventInput): Promise<CreateEventPayload> {
-    const u: EventData = { ...input, teamsIds: [], managersIds: [], invoiceItems: [] };
+    const u: EventData = { ...input, teamsIds: [], managersIds: [] };
     const nu = await eventRepository.create(u);
     return { event: EventMapper.toEvent(nu) };
   }

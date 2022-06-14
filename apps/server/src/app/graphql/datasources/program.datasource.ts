@@ -2,13 +2,7 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { ObjectId } from 'mongodb';
-import {
-  eventRepository,
-  ProgramData,
-  ProgramDocument,
-  programRepository,
-  userRepository,
-} from '../../models';
+import { eventRepository, ProgramData, programRepository, userRepository } from '../../models';
 import { ProgramMapper } from '../mappers/program.mapper';
 import {
   CreateProgramInput,
@@ -22,7 +16,7 @@ import {
   InvoiceItemInput,
 } from '../../generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { UpdateQuery } from 'mongoose';
 
 export class ProgramDataSource extends BaseDataSource {
   constructor() {
@@ -43,7 +37,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async createProgram(input: CreateProgramInput): Promise<CreateProgramPayload> {
-    const u: ProgramData = { ...input, managersIds: [], invoiceItems: [] };
+    const u: ProgramData = { ...input, managersIds: [] };
     const nu = await programRepository.create(u);
     return { program: ProgramMapper.toProgram(nu) };
   }
