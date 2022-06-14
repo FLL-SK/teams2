@@ -1,3 +1,4 @@
+import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
 import { useGetUsersQuery } from '../generated/graphql';
@@ -18,7 +19,7 @@ interface SelectUserProps {
 export function SelectUser(props: SelectUserProps) {
   const { onSelect, onClose, selected, clearable } = props;
   const [options, setOptions] = useState<UserOption[]>([]);
-  const { data, loading, error, refetch } = useGetUsersQuery({
+  const { data, loading } = useGetUsersQuery({
     variables: { filter: { isActive: true } },
     onCompleted: (data) => setOptions(data.getUsers),
   });

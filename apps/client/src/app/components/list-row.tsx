@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, BoxExtendedProps } from 'grommet';
 import styled from 'styled-components';
 import { getColor } from '../theme';

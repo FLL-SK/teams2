@@ -1,6 +1,6 @@
+import React from 'react';
 import { Box, Button, CheckBox, Markdown } from 'grommet';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
@@ -20,12 +20,11 @@ import {
 } from '../../generated/graphql';
 import { EventList } from '../../components/event-list';
 import { ErrorPage } from '../../components/error-page';
-import { appPath } from '@teams2/common';
 import { InvoiceItemList } from '../../components/invoice-item-list';
+import { useParams } from 'react-router-dom';
 
 export function ProgramPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const { data, loading, error, refetch } = useGetProgramQuery({ variables: { id: id ?? '0' } });
 

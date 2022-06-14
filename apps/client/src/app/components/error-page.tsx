@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Heading, Text } from 'grommet';
 import { BasePage } from './base-page';
 

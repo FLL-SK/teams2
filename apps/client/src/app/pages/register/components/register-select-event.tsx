@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
 import {
@@ -17,7 +18,7 @@ interface RegisterSelectEventProps {
 }
 
 export function RegisterSelectEvent(props: RegisterSelectEventProps) {
-  const { team, details, onSubmit, nextStep, prevStep, cancel } = props;
+  const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const { data, loading } = useGetEventsQuery({
     variables: { filter: { programId: details.program?.id ?? '0', isActive: true } },
   });

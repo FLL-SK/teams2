@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box } from 'grommet';
 import { useCallback, useState } from 'react';
@@ -42,6 +43,7 @@ export function RegisterPage() {
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
   const [invoiceNo, setInvoiceNo] = useState<string | undefined>();
   const [sentOn, setSentOn] = useState<Date | undefined>();
+  const [timeoutError, setTimeoutError] = useState<boolean>(false);
 
   const {
     data: teamData,
@@ -59,6 +61,7 @@ export function RegisterPage() {
   const [updateTeam] = useUpdateTeamMutation();
   const [registerTeam] = useRegisterTeamForEventMutation();
 
+  // creating an invoice triggers sending an email to the billing contact
   const [createInvoice] = useCreateRegistrationInvoiceMutation({
     onCompleted: (data) => {
       setInvoiceNo(data.createRegistrationInvoice.number);
@@ -85,6 +88,7 @@ export function RegisterPage() {
       const _eventId = data.event?.id ?? '0';
 
       const result = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
+      setTimeout(() => setTimeoutError(true), 5000);
       if (!result.errors) {
         setStep('success');
         createInvoice({ variables: { teamId: _teamId, eventId: _eventId } });
@@ -165,6 +169,7 @@ export function RegisterPage() {
             nextStep={() => navigate(appPath.team(teamId))}
             invoiceNo={invoiceNo}
             sentOn={sentOn}
+            timeoutError={timeoutError}
           />
         )}
         {step === 'error' && (

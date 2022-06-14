@@ -117,6 +117,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     const config = getServerConfig();
 
     log.debug('Sending invoice via SF');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const request: any = {
       Email: {
         invoice_id: Number(options.id) ?? 0,

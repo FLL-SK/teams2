@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './components/auth/require-auth';

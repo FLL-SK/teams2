@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button } from 'grommet';
 import { Add } from 'grommet-icons';

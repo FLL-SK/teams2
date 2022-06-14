@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box } from 'grommet';
 import { EventListTile } from './event-list-tile';
 import { EventListFragmentFragment } from '../generated/graphql';

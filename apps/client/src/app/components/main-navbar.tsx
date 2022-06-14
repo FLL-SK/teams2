@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Header, Nav, Anchor, Sidebar, Text, Avatar, Tip, Button } from 'grommet';
 import { DirectionType } from 'grommet/utils';

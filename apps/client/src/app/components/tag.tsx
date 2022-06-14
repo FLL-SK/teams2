@@ -1,4 +1,5 @@
-import { Box, Text, Tag as GrommetTag, Button } from 'grommet';
+import React from 'react';
+import { Box, Text, Button } from 'grommet';
 import { Close } from 'grommet-icons';
 import styled from 'styled-components';
 

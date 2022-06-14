@@ -30,6 +30,14 @@
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nrwl/nx/javascript"],
       "rules": {}
+    },
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "extends": ["plugin:react/recommended", "plugin:react-hooks/recommended"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+      }
     }
   ]
 }

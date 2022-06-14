@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Address, InvoiceItem } from '../generated/graphql';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

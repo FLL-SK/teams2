@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Text } from 'grommet';
 import { InvoiceItemFragmentFragment } from '../generated/graphql';
 import { JustifiedText } from './justified-text';
@@ -19,7 +20,7 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
         <JustifiedText justify="center">Cena celkom</JustifiedText>
       </ListHeader>
       {items.map((item) => (
-        <ListRow columns="1fr 75px 100px 150px auto" pad="small" align="center">
+        <ListRow key={item.lineNo} columns="1fr 75px 100px 150px auto" pad="small" align="center">
           <Box>
             <Text>{item.text}</Text>
             <Text size="small">{item.note}</Text>

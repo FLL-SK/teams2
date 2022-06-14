@@ -63,6 +63,10 @@ export class InvoiceDataSource extends BaseDataSource {
     const result = await api.postInvoice(invoicePost);
     log.debug(`invoice posted: %o`, result);
 
+    if (result.status === 'error') {
+      log.error(`invoice post error: %s`, result.error);
+      return null;
+    }
     const inv: InvoiceData = {
       eventId,
       teamId,
@@ -97,6 +101,7 @@ export class InvoiceDataSource extends BaseDataSource {
       subject: `Faktura ${team.name}`,
     });
     log.debug(`invoice email sent: %o`, result);
+
     if (result.status === 'error') {
       log.error(`invoice email error: %s`, result.error);
       return null;

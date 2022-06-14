@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Spinner } from 'grommet';
 import { Navigate, useLocation } from 'react-router-dom';

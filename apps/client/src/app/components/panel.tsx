@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Text } from 'grommet';
 import { GapType } from 'grommet/utils';
 

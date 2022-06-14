@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import {
   Anchor,
@@ -13,7 +14,7 @@ import {
   Text,
 } from 'grommet';
 import { useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '../../components/auth/useAuthenticate';
 

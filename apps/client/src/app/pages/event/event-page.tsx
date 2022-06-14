@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Text } from 'grommet';

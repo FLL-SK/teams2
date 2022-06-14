@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { ListRow } from '../../../components/list-row';

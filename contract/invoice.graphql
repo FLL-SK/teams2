@@ -37,6 +37,6 @@ type Invoice {
 }
 
 extend type Mutation {
-  createRegistrationInvoice(eventId: ID!, teamId: ID!): Invoice!
-  emailInvoice(id: ID!): Invoice!
+  createRegistrationInvoice(eventId: ID!, teamId: ID!): Invoice
+  emailInvoice(id: ID!): Invoice
 }

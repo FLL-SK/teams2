@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Text, ResponsiveContext, Spinner } from 'grommet';
 import { MainNavbar } from './main-navbar';
 
