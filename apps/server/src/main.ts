@@ -25,7 +25,7 @@ async function server() {
 
   // CORS configuration
   const corsOptions = {
-    origin: ['http://localhost:5000', 'http://localhost:4200'],
+    origin: ['http://localhost:5000', 'http://localhost:4200', getServerConfig().clientAppRootUrl],
     preflightContinue: true,
     credentials: true,
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
