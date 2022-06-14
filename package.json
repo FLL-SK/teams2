@@ -61,7 +61,8 @@
     "react-router-dom": "^6.3.0",
     "regenerator-runtime": "0.13.7",
     "styled-components": "5.3.5",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",
