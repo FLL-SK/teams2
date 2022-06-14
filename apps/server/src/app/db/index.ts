@@ -10,16 +10,14 @@ const log = logger('btsMongo');
 
 export async function bootstrapMongoDB(): Promise<void> {
   try {
-    const c = await mongoose.connect(getServerConfig().mongoDBUri);
+    await mongoose.connect(getServerConfig().mongoDBUri);
 
     log.info('Connected successfully to MongoDB server');
     await preSeed();
     await upgrade();
   } catch (error) {
-    log.fatal(
-      `Error while connecting to MongoDB, url=${getServerConfig().mongoDBUri} error=%o`,
-      error
-    );
+    log.fatal(`Error while connecting to MongoDB error=%o`, error);
+    log.debug('Mongo URI: %s', getServerConfig().mongoDBUri);
     process.exit(1);
   }
 }

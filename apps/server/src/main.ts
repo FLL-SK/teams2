@@ -18,7 +18,8 @@ loadDotEnvFiles();
 
 async function server() {
   const port = getServerConfig().port;
-  log.info('Starting server ...', { appConfig: getServerConfig() });
+  log.info('Starting server ...');
+  log.debug('Config: %o', getServerConfig());
   log.info(`Environment: ${process.env.NODE_ENV}`);
   const app = express();
 
