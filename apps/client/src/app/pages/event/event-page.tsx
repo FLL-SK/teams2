@@ -1,7 +1,7 @@
 import React from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Text } from 'grommet';
+import { Anchor, Box, Button, Markdown, Text } from 'grommet';
 import { Close } from 'grommet-icons';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -58,6 +58,11 @@ export function EventPage() {
             </LabelValue>
             <LabelValue label="Názov" labelWidth="150px" value={event?.name} />
             <LabelValue label="Dátum turnaja" labelWidth="150px" value={formatDate(event?.date)} />
+            <LabelValue label="Podmienky" labelWidth="150px">
+              <Box background="light-2" flex pad="small">
+                <Markdown>{event?.conditions ?? ''}</Markdown>
+              </Box>
+            </LabelValue>
             <LabelValue
               label="Termín registrácie"
               labelWidth="150px"

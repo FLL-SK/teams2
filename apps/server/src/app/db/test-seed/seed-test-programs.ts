@@ -15,6 +15,7 @@ export const seedTestProgramData: TestSeedData[] = [
       { lineNo: 1, text: 'Item1', unitPrice: 100, quantity: 1, note: 'Note1' },
       { lineNo: 2, text: 'Item2', unitPrice: 200, quantity: 1 },
     ],
+    conditions: '*Program1 conditions*\n1. condition 1\n2. condtion 2\n3. condition 3',
   },
   {
     name: 'Program2',
@@ -42,6 +43,7 @@ export async function seedTestPrograms() {
       managersIds: d.managersIds,
       description: d.description,
       deletedOn: d.deletedOn,
+      conditions: d.conditions,
     };
 
     const nu = new programRepository(p);

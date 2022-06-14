@@ -25,6 +25,7 @@ export const seedTestEventData: TestSeedData[] = [
     program: 'Program1',
     dateOffset: 10,
     invoiceItems: [],
+    conditions: '*Event1 Program1 conditions*\n1. condition 1\n2. condtion 2\n3. condition 3',
   },
   {
     name: 'Event2',
@@ -63,6 +64,7 @@ export async function seedTestEvents() {
       teamsIds: d.teamsIds,
       managersIds: d.managersIds,
       programId: p._id,
+      conditions: d.conditions,
     };
 
     const nu = new eventRepository(e);

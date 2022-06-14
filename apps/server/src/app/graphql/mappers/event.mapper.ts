@@ -10,6 +10,7 @@ export const EventMapper = {
       id: event._id,
       name: event.name,
       programId: event.programId,
+      conditions: event.conditions,
 
       date: event.date,
       registrationEnd: event.registrationEnd,

@@ -11,6 +11,7 @@ export const ProgramMapper = {
       name: program.name,
       description: program.description,
       logoUrl: program.logoUrl,
+      conditions: program.conditions,
 
       managersIds: program.managersIds,
 

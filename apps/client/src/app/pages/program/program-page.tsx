@@ -82,6 +82,11 @@ export function ProgramPage() {
               <Markdown>{program?.description ?? ''}</Markdown>
             </Box>
           </LabelValue>
+          <LabelValue label="Podmienky" labelWidth="150px">
+            <Box background="light-2" flex pad="small">
+              <Markdown>{program?.conditions ?? ''}</Markdown>
+            </Box>
+          </LabelValue>
           <Box direction="row">
             <Button
               label="Zmeniť"

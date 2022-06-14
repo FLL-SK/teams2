@@ -3,6 +3,7 @@ fragment ProgramListFragment on Program {
   name
   description
   logoUrl
+  conditions
 
   managersIds
 

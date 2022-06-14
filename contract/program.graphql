@@ -11,6 +11,7 @@ type Program implements INode {
   name: String!
   description: String
   logoUrl: String
+  conditions: String
 
   managersIds: [ID!]!
 
@@ -26,6 +27,7 @@ type Program implements INode {
 input CreateProgramInput {
   name: String!
   description: String
+  conditions: String
 }
 
 type CreateProgramPayload implements IMutationPayload {
@@ -36,6 +38,7 @@ type CreateProgramPayload implements IMutationPayload {
 input UpdateProgramInput {
   name: String
   description: String
+  conditions: String
 }
 
 type UpdateProgramPayload {

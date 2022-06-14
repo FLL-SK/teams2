@@ -14,18 +14,18 @@ export interface NotificationType {
 
 export type NotificationContextType = {
   notifications: NotificationType[];
-  error: (msg: string, details?: string) => void;
-  fatal: (msg: string, details?: string) => void;
-  info: (msg: string, details?: string) => void;
+  notify: {
+    error: (msg: string, details?: string) => void;
+    fatal: (msg: string, details?: string) => void;
+    info: (msg: string, details?: string) => void;
+  };
   remove: (id: number, details?: string) => void;
   clear: () => void;
 };
 
 export const NotificationContext = createContext<NotificationContextType>({
   notifications: [],
-  error: () => null,
-  fatal: () => null,
-  info: () => null,
+  notify: { error: () => null, fatal: () => null, info: () => null },
   remove: () => null,
   clear: () => null,
 });
@@ -111,9 +111,7 @@ export const NotificationProvider = (props: { children?: ReactNode }): JSX.Eleme
     <NotificationContext.Provider
       value={{
         notifications: state,
-        error: notifyError,
-        fatal: notifyFatal,
-        info: notifyInfo,
+        notify: { error: notifyError, fatal: notifyFatal, info: notifyInfo },
         remove: removeNotification,
         clear: clearNotifications,
       }}

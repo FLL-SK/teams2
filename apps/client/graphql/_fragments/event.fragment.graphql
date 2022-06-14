@@ -6,6 +6,8 @@ fragment EventListFragment on Event {
   date
   registrationEnd
 
+  conditions
+
   teamsIds
   managersIds
 

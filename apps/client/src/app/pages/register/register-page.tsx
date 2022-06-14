@@ -24,6 +24,7 @@ import { RegisterShipToAddress } from './components/register-shipto-address';
 import { RegisterDetails } from './components/types';
 import { RegisterSuccess } from './components/register-success';
 import { RegisterError } from './components/register-error';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 type RegistrationStep =
   | 'intro'
@@ -44,6 +45,7 @@ export function RegisterPage() {
   const [invoiceNo, setInvoiceNo] = useState<string | undefined>();
   const [sentOn, setSentOn] = useState<Date | undefined>();
   const [timeoutError, setTimeoutError] = useState<boolean>(false);
+  const { notify } = useNotification();
 
   const {
     data: teamData,
@@ -62,19 +64,8 @@ export function RegisterPage() {
   const [registerTeam] = useRegisterTeamForEventMutation();
 
   // creating an invoice triggers sending an email to the billing contact
-  const [createInvoice] = useCreateRegistrationInvoiceMutation({
-    onCompleted: (data) => {
-      setInvoiceNo(data.createRegistrationInvoice.number);
-      emailInvoice({
-        variables: { id: data.createRegistrationInvoice.id },
-      });
-    },
-  });
-
-  const [emailInvoice] = useEmailInvoiceMutation({
-    onCompleted: (data) =>
-      setSentOn(data.emailInvoice.sentOn ? new Date(data.emailInvoice.sentOn) : undefined),
-  });
+  const [createInvoice] = useCreateRegistrationInvoiceMutation();
+  const [emailInvoice] = useEmailInvoiceMutation();
 
   const canRegister = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
@@ -87,14 +78,32 @@ export function RegisterPage() {
       const _teamId = teamId ?? '0';
       const _eventId = data.event?.id ?? '0';
 
-      const result = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
-      setTimeout(() => setTimeoutError(true), 5000);
-      if (!result.errors) {
-        setStep('success');
-        createInvoice({ variables: { teamId: _teamId, eventId: _eventId } });
+      const ti = setTimeout(() => setTimeoutError(true), 5000);
+
+      const r1 = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
+      if (!r1.data?.registerTeamForEvent) {
+        notify.fatal('Nepodarilo sa zaregistrovat tím.');
+        return;
       }
+      setStep('success');
+
+      const r2 = await createInvoice({ variables: { teamId: _teamId, eventId: _eventId } });
+      if (!r2.data?.createRegistrationInvoice) {
+        notify.error('Nepodarilo sa vytvoriť faktúru.');
+        return;
+      }
+      setInvoiceNo(r2.data.createRegistrationInvoice.number);
+
+      const r3 = await emailInvoice({ variables: { id: r2.data.createRegistrationInvoice.id } });
+      if (!r3.data?.emailInvoice) {
+        notify.error('Nepodarilo sa odoslať faktúru emailom.');
+        return;
+      }
+      setSentOn(r3.data.emailInvoice.sentOn ? new Date(r3.data.emailInvoice.sentOn) : undefined);
+
+      clearTimeout(ti);
     },
-    [createInvoice, registerTeam, teamId]
+    [createInvoice, emailInvoice, notify, registerTeam, teamId]
   );
 
   if (!teamId || teamError) {

@@ -13,6 +13,7 @@ type Event implements INode {
 
   date: DateTime
   registrationEnd: DateTime
+  conditions: String
 
   teamsIds: [ID!]!
   managersIds: [ID!]!
@@ -32,6 +33,7 @@ input CreateEventInput {
   name: String!
   date: DateTime
   registrationEnd: DateTime
+  conditions: String
 }
 
 type CreateEventPayload implements IMutationPayload {
@@ -43,6 +45,7 @@ input UpdateEventInput {
   name: String
   date: DateTime
   registrationEnd: DateTime
+  conditions: String
 }
 
 type UpdateEventPayload {

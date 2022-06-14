@@ -51,7 +51,7 @@ export function RegisterSuccess(props: RegisterSuccessProps) {
           )}
         </LabelValue>
         {timeoutError && (
-          <Box margin="medium" pad="medium" background={'lightred'}>
+          <Box margin="medium" pad="medium" border={{ color: 'status-critical', size: 'medium' }}>
             <Text>
               Registrácia prebehla úspešne, ale nastala chyba pri spracovaní faktúry. Prosíme,
               kontaktujte nás.

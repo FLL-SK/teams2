@@ -14,6 +14,7 @@ interface EditProgramDialogProps {
 interface FormFields {
   name: string;
   description?: string;
+  conditions?: string;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
@@ -21,6 +22,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
   const [formValues, setFormValues] = useState<FormFields>({
     name: program?.name ?? '',
     description: program?.description ?? undefined,
+    conditions: program?.conditions ?? '',
   });
 
   if (!show) {
@@ -50,6 +52,9 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
         </FormField>
         <FormField label="Popis" name="description">
           <TextArea rows={10} name="description" />
+        </FormField>
+        <FormField label="Podmienky" name="conditions">
+          <TextArea rows={10} name="conditions" />
         </FormField>
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />

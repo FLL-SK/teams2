@@ -1,10 +1,15 @@
 import React from 'react';
-import { Box, Button, Text } from 'grommet';
+import { Box, Button, Markdown, Spinner, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { ListRow } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
-import { TeamFragmentFragment } from '../../../generated/graphql';
+import {
+  TeamFragmentFragment,
+  useGetEventQuery,
+  useGetProgramQuery,
+} from '../../../generated/graphql';
 import { RegisterDetails } from './types';
+import { InvoiceItemList } from '../../../components/invoice-item-list';
 
 interface RegisterReviewProps {
   team?: TeamFragmentFragment;
@@ -16,10 +21,24 @@ interface RegisterReviewProps {
 
 export function RegisterReview(props: RegisterReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
+  const { data: programData, loading: programLoading } = useGetProgramQuery({
+    variables: { id: details.program?.id ?? '0' },
+  });
+  const { data: eventData, loading: eventLoading } = useGetEventQuery({
+    variables: { id: details.event?.id ?? '0' },
+  });
 
   if (!team) {
     return null;
   }
+
+  const program = programData?.getProgram;
+  const event = eventData?.getEvent;
+
+  const items =
+    ((event?.invoiceItems?.length ?? 0) > 0 ? event?.invoiceItems : program?.invoiceItems) ?? [];
+
+  console.log('items', items, event?.invoiceItems, program?.invoiceItems);
 
   return (
     <Box gap="medium">
@@ -30,16 +49,8 @@ export function RegisterReview(props: RegisterReviewProps) {
         <LabelValue labelWidth="150px" label="Turnaj" value={details.event?.name} />
       </Panel>
 
-      <Panel title="Registračný poplatok" gap="small">
-        {(details.items ?? []).map((item) => (
-          <ListRow key={item.lineNo} columns="1fr 1fr 1fr 1fr 1fr">
-            <Text>{item.lineNo}</Text>
-            <Text>{item.text}</Text>
-            <Text>{item.quantity}</Text>
-            <Text>{item.unitPrice}</Text>
-            <Text>{item.quantity * item.unitPrice}</Text>
-          </ListRow>
-        ))}
+      <Panel title="Poplatky" gap="small">
+        {programLoading || eventLoading ? <Spinner /> : <InvoiceItemList items={items} />}
       </Panel>
 
       <Panel title="Fakturačná adresa" gap="small">
@@ -77,6 +88,25 @@ export function RegisterReview(props: RegisterReviewProps) {
         <LabelValue labelWidth="150px" label="Telefón" value={details?.shipTo?.phone} />
         <LabelValue labelWidth="150px" label="Email" value={details?.shipTo?.email} />
       </Panel>
+
+      {(program?.conditions || event?.conditions) && (
+        <Panel title="Podmienky" gap="small">
+          {program?.conditions && (
+            <LabelValue label="Podmienky programu" labelWidth="150px">
+              <Box background="light-2" flex pad="small">
+                <Markdown>{program?.conditions ?? ''}</Markdown>
+              </Box>
+            </LabelValue>
+          )}
+          {event?.conditions && (
+            <LabelValue label="Podmienky turnaja" labelWidth="150px">
+              <Box background="light-2" flex pad="small">
+                <Markdown>{event?.conditions ?? ''}</Markdown>
+              </Box>
+            </LabelValue>
+          )}
+        </Panel>
+      )}
 
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />

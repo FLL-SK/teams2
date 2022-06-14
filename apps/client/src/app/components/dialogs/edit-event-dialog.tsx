@@ -1,6 +1,6 @@
 import React from 'react';
 import { toUtcDateString, toZonedDateString } from '@teams2/dateutils';
-import { Box, Button, DateInput, Form, FormField, Grid, TextInput } from 'grommet';
+import { Box, Button, DateInput, Form, FormField, Grid, TextArea, TextInput } from 'grommet';
 import { useState } from 'react';
 
 import { EventListFragmentFragment } from '../../generated/graphql';
@@ -17,6 +17,7 @@ interface FormFields {
   name: string;
   date?: string; // UTC ISO date
   registrationEnd?: string; // UTC ISO date
+  conditions?: string;
 }
 
 export function EditEventDialog(props: EditEventDialogProps) {
@@ -25,6 +26,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
     name: event?.name ?? '',
     date: toZonedDateString(event?.date),
     registrationEnd: toZonedDateString(event?.registrationEnd),
+    conditions: event?.conditions ?? '',
   });
 
   if (!show) {
@@ -65,6 +67,9 @@ export function EditEventDialog(props: EditEventDialogProps) {
             <DateInput name="registrationEnd" format="dd.mm.yyyy" />
           </FormField>
         </Grid>
+        <FormField label="Podmienky" name="conditions">
+          <TextArea rows={10} name="conditions" />
+        </FormField>
 
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />

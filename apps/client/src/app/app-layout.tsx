@@ -3,11 +3,13 @@ import { Grommet, Box } from 'grommet';
 import styled from 'styled-components';
 import { AppRouter } from './app-router';
 import { defaultTheme, device } from './theme';
+import { Notifications } from './components/notifications/notifications';
 
 export function AppLayout() {
   return (
     <Grommet theme={defaultTheme}>
       <BodyWrapper>
+        <Notifications />
         <AppRouter />
       </BodyWrapper>
     </Grommet>

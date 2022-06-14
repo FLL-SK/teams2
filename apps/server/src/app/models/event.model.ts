@@ -8,6 +8,7 @@ export interface EventData {
   _id?: ObjectId;
   name?: string;
   programId: ObjectId;
+  conditions?: string;
 
   teamsIds: ObjectId[];
   managersIds: ObjectId[];
@@ -38,6 +39,7 @@ export interface EventModel extends Model<EventData> {
 const schema = new Schema<EventData, EventModel>({
   name: { type: Types.String, required: true },
   programId: { type: Types.ObjectId, ref: 'Program', required: true },
+  conditions: { type: Types.String },
 
   date: { type: Types.Date },
   registrationEnd: { type: Types.Date },

@@ -13,12 +13,18 @@ const Container = styled.div`
 `;
 
 export function Notifications() {
-  const { notifications } = useNotification();
+  const { notifications, remove } = useNotification();
 
   return (
     <Container id="notifications">
       {notifications.map((a) => (
-        <Notification key={a.id} message={a.msg} details={a.details} variant={a.variant} />
+        <Notification
+          key={a.id}
+          message={a.msg}
+          details={a.details}
+          variant={a.variant}
+          onClose={() => remove(a.id)}
+        />
       ))}
     </Container>
   );

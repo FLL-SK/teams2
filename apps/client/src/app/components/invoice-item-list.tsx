@@ -26,8 +26,8 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
             <Text size="small">{item.note}</Text>
           </Box>
           <JustifiedText justify="center">{item.quantity}</JustifiedText>
-          <JustifiedText justify="end">{item.unitPrice}</JustifiedText>
-          <JustifiedText justify="end">
+          <JustifiedText justify="center">{item.unitPrice}</JustifiedText>
+          <JustifiedText justify="center">
             {(item.quantity ?? 0) * (item.unitPrice ?? 0)}
           </JustifiedText>
         </ListRow>

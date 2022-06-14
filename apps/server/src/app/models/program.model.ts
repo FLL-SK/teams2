@@ -9,6 +9,7 @@ export interface ProgramData {
   name: string;
   description?: string;
   logoUrl?: string;
+  conditions?: string;
 
   managersIds: ObjectId[];
 
@@ -40,6 +41,7 @@ const schema = new Schema<ProgramData, ProgramModel>({
   name: { type: Types.String, required: true },
   description: { type: Types.String },
   logoUrl: { type: Types.String },
+  conditions: { type: Types.String },
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 
   invoiceItems: { type: [invoiceItemSchema], default: [] },
