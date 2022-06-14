@@ -4,6 +4,7 @@ export function getServerConfig() {
     nodeEnv: process.env['NODE' + '_ENV'] || 'development',
     //skipAuthentication: process.env.APP_SKIP_AUTHENTICATION === 'true',
     host: process.env.APP_HOST ?? 'localhost',
+    // Heroku is using PORT env to specify the port
     port: process.env.PORT ? Number(process.env.PORT) ?? 5000 : 5000,
 
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
