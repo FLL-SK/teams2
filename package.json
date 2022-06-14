@@ -5,7 +5,8 @@
   "scripts": {
     "start": "run-s generate start:nx",
     "start:nx": "nx run-many --parallel --target=serve --projects=server,client ",
-    "build": "nx build",
+    "build": "nx build server",
+    "build:all": "nx build",
     "test": "nx test",
     "generate": "run-s  build:contract generate:contract",
     "generate:contract": "graphql-codegen --config codegen.yml",
