@@ -48,7 +48,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
       title={!event ? 'Nový turnaj' : 'Detaily turnaja'}
       onClose={onClose}
       width="large"
-      height="medium"
+      height="auto"
     >
       <Form
         onSubmit={handleSubmit}

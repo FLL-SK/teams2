@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, Form, FormField, TextArea, TextInput } from 'grommet';
 import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
@@ -19,11 +19,15 @@ interface FormFields {
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
   const { show, program, onClose, onSubmit } = props;
-  const [formValues, setFormValues] = useState<FormFields>({
-    name: program?.name ?? '',
-    description: program?.description ?? undefined,
-    conditions: program?.conditions ?? '',
-  });
+  const [formValues, setFormValues] = useState<FormFields>();
+
+  useEffect(() => {
+    setFormValues({
+      name: program?.name ?? '',
+      description: program?.description ?? '',
+      conditions: program?.conditions ?? '',
+    });
+  }, [program]);
 
   if (!show) {
     return null;
