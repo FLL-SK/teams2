@@ -65,5 +65,5 @@ extend type Mutation {
 
   createProgramInvoiceItem(programId: ID!, item: InvoiceItemInput!): InvoiceItem!
   deleteProgramInvoiceItem(programId: ID!, itemId: ID!): InvoiceItem!
-  updateProgramInvoiceItem(programId: ID!, item: InvoiceItemInput!): InvoiceItem!
+  updateProgramInvoiceItem(programId: ID!, itemId: ID!, item: InvoiceItemInput!): InvoiceItem!
 }

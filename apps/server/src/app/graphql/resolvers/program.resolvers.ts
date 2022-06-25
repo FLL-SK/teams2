@@ -28,8 +28,8 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
 
   createProgramInvoiceItem: (_parent, { programId, item }, { dataSources }) =>
     dataSources.invoice.createProgramInvoiceItem(programId, item),
-  updateProgramInvoiceItem: (_parent, { programId, item }, { dataSources }) =>
-    dataSources.invoice.updateProgramInvoiceItem(programId, item),
+  updateProgramInvoiceItem: (_parent, { programId, itemId, item }, { dataSources }) =>
+    dataSources.invoice.updateProgramInvoiceItem(programId, itemId, item),
   deleteProgramInvoiceItem: (_parent, { programId, itemId }, { dataSources }) =>
     dataSources.invoice.deleteProgramInvoiceItem(programId, itemId),
 };

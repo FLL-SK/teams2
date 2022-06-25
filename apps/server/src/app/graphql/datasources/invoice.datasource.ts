@@ -47,10 +47,15 @@ export class InvoiceDataSource extends BaseDataSource {
     // load team
     const team = await teamRepository.findById(teamId).exec();
     // load eventInvoiceItems
-    const eventInvoiceItems = await invoiceItemRepository.find({ eventId }).lean().exec();
+    const eventInvoiceItems = await invoiceItemRepository
+      .find({ eventId })
+      .sort({ lineNo: 1, text: 1 })
+      .lean()
+      .exec();
     // load program invoice items
     const programInvoiceItems = await invoiceItemRepository
       .find({ programId: event.programId })
+      .sort({ lineNo: 1, text: 1 })
       .lean()
       .exec();
 
@@ -133,7 +138,11 @@ export class InvoiceDataSource extends BaseDataSource {
   }
 
   async getProgramInvoiceItems(programId: ObjectId): Promise<InvoiceItem[]> {
-    const items = await invoiceItemRepository.find({ programId }).lean().exec();
+    const items = await invoiceItemRepository
+      .find({ programId })
+      .sort({ lineNo: 1, text: 1 })
+      .lean()
+      .exec();
     return items.map(InvoiceItemMapper.toInvoiceItem);
   }
 
@@ -142,9 +151,9 @@ export class InvoiceDataSource extends BaseDataSource {
     return InvoiceItemMapper.toInvoiceItem(newItem);
   }
 
-  async updateInvoiceItem(item: InvoiceItemInput): Promise<InvoiceItem> {
+  async updateInvoiceItem(itemId: ObjectId, item: InvoiceItemInput): Promise<InvoiceItem> {
     const newItem = await invoiceItemRepository
-      .findOneAndUpdate({ _id: item.id }, { $set: { ...item } }, { new: true })
+      .findOneAndUpdate({ _id: itemId }, { $set: { ...item } }, { new: true })
       .exec();
     return InvoiceItemMapper.toInvoiceItem(newItem);
   }
@@ -164,10 +173,12 @@ export class InvoiceDataSource extends BaseDataSource {
 
   async updateProgramInvoiceItem(
     programId: ObjectId,
+    itemId: ObjectId,
     item: InvoiceItemInput
   ): Promise<InvoiceItem> {
     //TODO admin and program manager only
-    return await this.updateInvoiceItem({ ...item });
+    const newItem = await this.updateInvoiceItem(itemId, item);
+    return newItem;
   }
 
   async deleteProgramInvoiceItem(programId: ObjectId, itemId: ObjectId): Promise<InvoiceItem> {

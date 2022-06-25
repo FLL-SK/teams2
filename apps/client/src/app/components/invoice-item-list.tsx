@@ -8,10 +8,11 @@ import { Close } from 'grommet-icons';
 interface InvoiceItemListProps {
   items: InvoiceItemFragmentFragment[];
   onRemove?: (item: InvoiceItemFragmentFragment) => unknown;
+  onClick?: (item: InvoiceItemFragmentFragment) => unknown;
 }
 
 export function InvoiceItemList(props: InvoiceItemListProps) {
-  const { items, onRemove } = props;
+  const { items, onRemove, onClick } = props;
 
   return (
     <Box>
@@ -22,7 +23,16 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
         <JustifiedText justify="center">Cena celkom</JustifiedText>
       </ListHeader>
       {items.map((item) => (
-        <ListRow key={item.lineNo} columns="1fr 75px 100px 150px auto" pad="small" align="center">
+        <ListRow
+          key={item.id}
+          columns="1fr 75px 100px 150px auto"
+          pad="small"
+          align="center"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick && onClick(item);
+          }}
+        >
           <Box>
             <Text>{item.text}</Text>
             <Text size="small">{item.note}</Text>

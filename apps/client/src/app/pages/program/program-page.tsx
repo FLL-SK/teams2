@@ -26,6 +26,8 @@ import { EventList } from '../../components/event-list';
 import { ErrorPage } from '../../components/error-page';
 import { InvoiceItemList } from '../../components/invoice-item-list';
 import { useParams } from 'react-router-dom';
+import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-item-dialog';
+import { omit } from 'lodash';
 
 export function ProgramPage() {
   const { id } = useParams();
@@ -35,6 +37,8 @@ export function ProgramPage() {
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
+  const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
+  const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
   const [updateProgram] = useUpdateProgramMutation();
   const [addManager] = useAddProgramManagerMutation();
@@ -110,7 +114,15 @@ export function ProgramPage() {
             onRemove={(i) =>
               deleteInvoiceItem({ variables: { programId: id ?? '0', itemId: i.id } })
             }
+            onClick={(item) => setInvoiceItemEdit(item)}
           />
+          <Box direction="row">
+            <Button
+              label="Pridať položku"
+              onClick={() => setInvoiceItemAdd(true)}
+              disabled={!canEdit}
+            />
+          </Box>
         </Panel>
 
         {canEdit && (
@@ -163,6 +175,23 @@ export function ProgramPage() {
         onSubmit={(values) =>
           createEvent({ variables: { input: { ...values, programId: id ?? '0' } } })
         }
+      />
+      <EditInvoiceItemDialog
+        show={!!invoiceItemEdit || invoiceItemAdd}
+        item={invoiceItemEdit}
+        onClose={() => {
+          setInvoiceItemAdd(false);
+          setInvoiceItemEdit(undefined);
+        }}
+        onSubmit={(values) => {
+          if (invoiceItemAdd) {
+            createInvoiceItem({ variables: { programId: id ?? '0', item: omit(values, 'id') } });
+          } else {
+            updateInvoiceItem({
+              variables: { programId: id ?? '0', itemId: values.id ?? '0', item: values },
+            });
+          }
+        }}
       />
     </BasePage>
   );

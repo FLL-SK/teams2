@@ -33,6 +33,8 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     { dataSources, user }
   ): Promise<RegisterTeamPayload> => {
     if (!user.isAdmin && !user.isCoachOf(teamId)) {
+      //TODO nicer error handling
+      console.log('Not authorized to register', user.isAdmin, user.isCoachOf(teamId));
       return null;
     }
     const event = await dataSources.event.addTeamToEvent(eventId, teamId);
@@ -45,6 +47,13 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
 
   unregisterTeamFromEvent: async (_parent, { eventId, teamId }, { dataSources, user }) => {
     if (!user.isAdmin && !user.isEventManagerOf(eventId)) {
+      //TODO nicer error handling
+      console.log(
+        'Not authorized to unregister',
+        user.isAdmin,
+        user,
+        user.isEventManagerOf(eventId)
+      );
       return null;
     }
 

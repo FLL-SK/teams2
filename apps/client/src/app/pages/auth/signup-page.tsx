@@ -56,7 +56,7 @@ export function SignupPage() {
                   onChange={() => setError(undefined)}
                 >
                   <FormField label="E-mail" name="username" required />
-                  <FormField label="Heslo" name="password" required />
+                  <FormField label="Heslo" name="password" type="password" required />
                   <Button primary type="submit" label="Vytvoriť účet" />
                 </Form>
                 <Box pad="small" justify="center">

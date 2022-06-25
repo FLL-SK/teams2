@@ -44,8 +44,8 @@ mutation createProgramInvoiceItem($programId: ID!, $item: InvoiceItemInput!) {
   }
 }
 
-mutation updateProgramInvoiceItem($programId: ID!, $item: InvoiceItemInput!) {
-  updateProgramInvoiceItem(programId: $programId, item: $item) {
+mutation updateProgramInvoiceItem($programId: ID!, $itemId: ID!, $item: InvoiceItemInput!) {
+  updateProgramInvoiceItem(programId: $programId, itemId: $itemId, item: $item) {
     ...InvoiceItemFragment
   }
 }

@@ -28,7 +28,7 @@ export async function initApolloContext(cfg: ExpressContext): Promise<ApolloCont
 
   return {
     user: {
-      ...user,
+      ...user.toObject(),
       isUser: (userId: ObjectId) => userId.equals(user.id),
       isProgramManagerOf: (programId: ObjectId) => !!programs.find((p) => programId.equals(p)),
       isEventManagerOf: (eventId: ObjectId) => !!events.find((e) => eventId.equals(e)),
