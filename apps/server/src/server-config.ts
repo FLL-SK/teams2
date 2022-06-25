@@ -39,5 +39,6 @@ export function getServerConfig() {
         module: process.env.SF_AUTH_MODULE,
       },
     },
+    adminEmail: process.env.TEAMS_ADMIN_EMAIL,
   };
 }

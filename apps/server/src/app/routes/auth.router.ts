@@ -3,6 +3,7 @@ import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
 import { userRepository } from '../models';
+import { emailUserSignupToAdmin, emailUserSignupToUser } from '../utils/emails';
 import { requestPassworReset as requestPassworReset } from '../utils/password-reset';
 
 const router = express.Router();
@@ -77,6 +78,8 @@ router.post('/signup', async function (req, res, next) {
   } else {
     log.info('New signup', username);
     await userRepository.create({ username, password });
+    emailUserSignupToAdmin(username);
+    emailUserSignupToUser(username);
   }
 
   res.send({});

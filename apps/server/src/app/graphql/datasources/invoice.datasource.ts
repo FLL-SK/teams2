@@ -186,4 +186,25 @@ export class InvoiceDataSource extends BaseDataSource {
 
     return this.deleteInvoiceItem(itemId);
   }
+
+  async createEventInvoiceItem(eventId: ObjectId, item: InvoiceItemInput): Promise<InvoiceItem> {
+    //TODO admin and program manager only
+    return await this.createInvoiceItem({ quantity: 0, unitPrice: 0, ...item, eventId });
+  }
+
+  async updateEventInvoiceItem(
+    eventId: ObjectId,
+    itemId: ObjectId,
+    item: InvoiceItemInput
+  ): Promise<InvoiceItem> {
+    //TODO admin and program manager only
+    const newItem = await this.updateInvoiceItem(itemId, item);
+    return newItem;
+  }
+
+  async deleteEventInvoiceItem(programId: ObjectId, itemId: ObjectId): Promise<InvoiceItem> {
+    //TODO admin and program manager only
+
+    return this.deleteInvoiceItem(itemId);
+  }
 }

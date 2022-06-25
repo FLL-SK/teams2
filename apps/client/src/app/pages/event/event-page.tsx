@@ -14,25 +14,35 @@ import { ListRow } from '../../components/list-row';
 import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
+  InvoiceItemFragmentFragment,
   TeamListFragmentFragment,
   useAddEventManagerMutation,
+  useCreateEventInvoiceItemMutation,
+  useDeleteEventInvoiceItemMutation,
   useGetEventQuery,
   useRemoveEventManagerMutation,
   useUnregisterTeamFromEventMutation,
+  useUpdateEventInvoiceItemMutation,
   useUpdateEventMutation,
 } from '../../generated/graphql';
 import { BasicDialog } from '../../components/dialogs/basic-dialog';
+import { InvoiceItemList } from '../../components/invoice-item-list';
+import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-item-dialog';
+import { omit } from 'lodash';
 
 export function EventPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
   const [teamToUnregister, setTeamToUnregister] = useState<TeamListFragmentFragment>();
+  const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
+  const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
   const {
     data: eventData,
     loading: eventLoading,
     error: eventError,
+    refetch,
   } = useGetEventQuery({ variables: { id: id ?? '0' } });
 
   const [showEventEditDialog, setShowEventEditDialog] = useState(false);
@@ -42,12 +52,17 @@ export function EventPage() {
   const [removeManager] = useRemoveEventManagerMutation();
   const [unregisterTeam] = useUnregisterTeamFromEventMutation();
 
+  const [createInvoiceItem] = useCreateEventInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [updateInvoiceItem] = useUpdateEventInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [deleteInvoiceItem] = useDeleteEventInvoiceItemMutation({ onCompleted: () => refetch() });
+
   if (!id || eventError) {
     return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
   }
 
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
+  const invoiceItems = event?.invoiceItems ?? [];
 
   return (
     <BasePage title="Turnaj" loading={eventLoading}>
@@ -81,6 +96,33 @@ export function EventPage() {
             </Box>
           </Box>
         </Panel>
+
+        <Panel title="Poplatky" gap="medium">
+          {invoiceItems.length === 0 && (
+            <Text>
+              Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný. Pridaním
+              poplatku je možné definovať poplatky špecifické pre tento turnaj.
+            </Text>
+          )}
+          {invoiceItems.length > 0 && (
+            <InvoiceItemList
+              items={invoiceItems}
+              onRemove={(i) =>
+                deleteInvoiceItem({ variables: { eventId: id ?? '0', itemId: i.id } })
+              }
+              onClick={(item) => setInvoiceItemEdit(item)}
+              editable={canEdit}
+            />
+          )}
+          <Box direction="row">
+            <Button
+              label="Pridať poplatok"
+              onClick={() => setInvoiceItemAdd(true)}
+              disabled={!canEdit}
+            />
+          </Box>
+        </Panel>
+
         <Panel title="Tímy">
           <Box direction="row" wrap>
             {eventData?.getEvent?.teams.map((t) => (
@@ -105,6 +147,7 @@ export function EventPage() {
             ))}
           </Box>
         </Panel>
+
         {canEdit && (
           <Panel title="Manažéri">
             <Box direction="row" wrap>
@@ -118,12 +161,32 @@ export function EventPage() {
           </Panel>
         )}
       </Box>
+
       <EditEventDialog
         show={showEventEditDialog}
         event={event}
         onClose={() => setShowEventEditDialog(false)}
         onSubmit={(values) => updateEvent({ variables: { id: id ?? '0', input: { ...values } } })}
       />
+
+      <EditInvoiceItemDialog
+        show={!!invoiceItemEdit || invoiceItemAdd}
+        item={invoiceItemEdit}
+        onClose={() => {
+          setInvoiceItemAdd(false);
+          setInvoiceItemEdit(undefined);
+        }}
+        onSubmit={(values) => {
+          if (invoiceItemAdd) {
+            createInvoiceItem({ variables: { eventId: id ?? '0', item: omit(values, 'id') } });
+          } else {
+            updateInvoiceItem({
+              variables: { eventId: id ?? '0', itemId: values.id ?? '0', item: values },
+            });
+          }
+        }}
+      />
+
       <BasicDialog
         show={!!teamToUnregister}
         onClose={() => setTeamToUnregister(undefined)}

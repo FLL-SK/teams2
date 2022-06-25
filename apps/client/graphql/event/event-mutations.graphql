@@ -60,8 +60,20 @@ mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
   }
 }
 
-mutation updateEventInvoiceItems($eventId: ID!, $items: [InvoiceItemInput!]!) {
-  updateEventInvoiceItems(eventId: $eventId, items: $items) {
-    ...EventFragment
+mutation createEventInvoiceItem($eventId: ID!, $item: InvoiceItemInput!) {
+  createEventInvoiceItem(eventId: $eventId, item: $item) {
+    ...InvoiceItemFragment
+  }
+}
+
+mutation updateEventInvoiceItem($eventId: ID!, $itemId: ID!, $item: InvoiceItemInput!) {
+  updateEventInvoiceItem(eventId: $eventId, itemId: $itemId, item: $item) {
+    ...InvoiceItemFragment
+  }
+}
+
+mutation deleteEventInvoiceItem($eventId: ID!, $itemId: ID!) {
+  deleteEventInvoiceItem(eventId: $eventId, itemId: $itemId) {
+    ...InvoiceItemFragment
   }
 }

@@ -9,10 +9,11 @@ interface InvoiceItemListProps {
   items: InvoiceItemFragmentFragment[];
   onRemove?: (item: InvoiceItemFragmentFragment) => unknown;
   onClick?: (item: InvoiceItemFragmentFragment) => unknown;
+  editable?: boolean;
 }
 
 export function InvoiceItemList(props: InvoiceItemListProps) {
-  const { items, onRemove, onClick } = props;
+  const { items, onRemove, onClick, editable } = props;
 
   return (
     <Box>
@@ -30,7 +31,7 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
           align="center"
           onClick={(e) => {
             e.stopPropagation();
-            onClick && onClick(item);
+            editable && onClick && onClick(item);
           }}
         >
           <Box>
@@ -42,8 +43,9 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
           <JustifiedText justify="center">
             {(item.quantity ?? 0) * (item.unitPrice ?? 0)}
           </JustifiedText>
-          {onRemove && (
+          {editable && onRemove && (
             <Button
+              size="large"
               plain
               hoverIndicator
               icon={<Close size="small" />}

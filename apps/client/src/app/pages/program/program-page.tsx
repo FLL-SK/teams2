@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, CheckBox, Markdown } from 'grommet';
+import { Box, Button, CheckBox, Markdown, Text } from 'grommet';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -84,6 +84,8 @@ export function ProgramPage() {
     return <ErrorPage title="Program nenájdený" />;
   }
 
+  const invoiceItems = program?.invoiceItems ?? [];
+
   return (
     <BasePage title="Program" loading={loading}>
       <PanelGroup>
@@ -109,16 +111,20 @@ export function ProgramPage() {
         </Panel>
 
         <Panel title="Poplatky" gap="medium">
-          <InvoiceItemList
-            items={program?.invoiceItems ?? []}
-            onRemove={(i) =>
-              deleteInvoiceItem({ variables: { programId: id ?? '0', itemId: i.id } })
-            }
-            onClick={(item) => setInvoiceItemEdit(item)}
-          />
+          {invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
+          {invoiceItems.length > 0 && (
+            <InvoiceItemList
+              items={invoiceItems}
+              onRemove={(i) =>
+                deleteInvoiceItem({ variables: { programId: id ?? '0', itemId: i.id } })
+              }
+              onClick={(item) => setInvoiceItemEdit(item)}
+              editable={canEdit}
+            />
+          )}
           <Box direction="row">
             <Button
-              label="Pridať položku"
+              label="Pridať poplatok"
               onClick={() => setInvoiceItemAdd(true)}
               disabled={!canEdit}
             />
@@ -163,12 +169,14 @@ export function ProgramPage() {
           <EventList events={events} onRemove={canEdit ? handleDeleteEvent : undefined} />
         </Panel>
       </PanelGroup>
+
       <EditProgramDialog
         show={showProgramEditDialog}
         program={data?.getProgram}
         onClose={() => setShowProgramEditDialog(false)}
         onSubmit={(values) => updateProgram({ variables: { id: id ?? '0', input: values } })}
       />
+
       <EditEventDialog
         show={showAddEventDialog}
         onClose={() => setShowAddEventDialog(false)}
