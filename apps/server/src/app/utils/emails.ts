@@ -20,7 +20,7 @@ export function emailUserSignupToUser(userEmail: string) {
 }
 
 export function emailUserSignupToAdmin(userEmail: string) {
-  const subject = 'Nový účet';
+  const subject = `Nový účet ${userEmail}`;
   const title = subject;
   const msg = `Účet pre email ${userEmail} bol vytvorený.`;
   emailMessage(getServerConfig().adminEmail, subject, title, msg);
@@ -33,7 +33,7 @@ export function emailTeamRegisteredToCoach(
   programName: string,
   eventUrl: string
 ) {
-  const subject = 'Registrácia vášho tímu';
+  const subject = `Registrácia vášho tímu ${teamName}`;
   const title = subject;
   const msg = `Váš tím ${teamName} bol úspešne zaregistrovaný na turnaj ${eventName} programu ${programName}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((m) => emailMessage(m, subject, title, msg));
@@ -46,7 +46,7 @@ export function emailTeamRegisteredToEventManagers(
   programName: string,
   eventUrl: string
 ) {
-  const subject = 'Registrácia tímu';
+  const subject = `Registrácia tímu ${teamName}`;
   const title = subject;
   const msg = `Tím ${teamName} bol úspešne zaregistrovaný na turnaj ${eventName} programu ${programName}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((m) => emailMessage(m, subject, title, msg));
@@ -59,7 +59,7 @@ export function emailTeamUnRegisteredToCoach(
   programName: string,
   eventUrl: string
 ) {
-  const subject = 'Zrušenie registrácie vášho tímu';
+  const subject = `Zrušenie registrácie vášho tímu ${teamName}`;
   const title = subject;
   const msg = `Registrácia vášho tímu ${teamName} na turnaj ${eventName} programu ${programName} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((m) => emailMessage(m, subject, title, msg));
@@ -72,14 +72,37 @@ export function emailTeamUnRegisteredToEventManagers(
   programName: string,
   eventUrl: string
 ) {
-  const subject = 'Zrušenie registrácia tímu';
+  const subject = `Zrušenie registrácia tímu ${teamName}`;
   const title = subject;
   const msg = `Registrácia tímu ${teamName} turnaj ${eventName} programu ${programName} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((m) => emailMessage(m, subject, title, msg));
 }
 
+export function emailEventChangedToCoach(
+  emails: string[],
+  teamName: string,
+  eventName: string,
+  programName: string,
+  eventUrl: string
+) {
+  const subject = `Zmena na turnaji ${eventName}`;
+  const title = subject;
+  const msg = `Turnaj ${eventName} programu ${programName}, na ktorý je váš tím ${teamName} regitrovaný, bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  emails.forEach((m) => emailMessage(m, subject, title, msg));
+}
+
+export function emailEventChangedToEventManagers(
+  emails: string[],
+  eventName: string,
+  programName: string,
+  eventUrl: string
+) {
+  const subject = `Zmena turnaja ${eventName}`;
+  const title = subject;
+  const msg = `Turnaj turnaj ${eventName} programu ${programName} bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  emails.forEach((m) => emailMessage(m, subject, title, msg));
+}
+
 //TODO
-// notify team unregistered - coach, eventmgrs
 // notify new program manager -> admin
 // notify new event manager -> program mgr, admin
-// notify event modified -> coaches, event mgr, program mgr

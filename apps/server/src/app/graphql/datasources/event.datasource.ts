@@ -39,12 +39,6 @@ export class EventDataSource extends BaseDataSource {
     return { event: EventMapper.toEvent(nu) };
   }
 
-  async updateEvent(id: ObjectId, input: UpdateEventInput): Promise<UpdateEventPayload> {
-    const u: Partial<EventData> = input;
-    const nu = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
-    return { event: EventMapper.toEvent(nu) };
-  }
-
   async deleteEvent(id: ObjectId): Promise<Event> {
     const event = await eventRepository.findById(id).lean().exec();
     if (event.teamsIds.length > 0) {
@@ -107,12 +101,5 @@ export class EventDataSource extends BaseDataSource {
       event.managersIds.map(async (u) => userRepository.findById(u).exec())
     );
     return users.map(UserMapper.toUser);
-  }
-
-  async updateEventInvoiceItems(eventId: ObjectId, items: InvoiceItemInput[]): Promise<Event> {
-    const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { invoiceItems: items }, { new: true })
-      .exec();
-    return EventMapper.toEvent(event);
   }
 }

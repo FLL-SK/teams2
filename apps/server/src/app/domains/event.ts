@@ -1,8 +1,13 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
+import { UpdateEventInput, UpdateEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
+import { EventMapper } from '../graphql/mappers';
+import { EventData, eventRepository } from '../models';
 import {
+  emailEventChangedToCoach,
+  emailEventChangedToEventManagers,
   emailTeamRegisteredToCoach,
   emailTeamRegisteredToEventManagers,
   emailTeamUnRegisteredToCoach,
@@ -74,20 +79,46 @@ export async function unregisterTeamFromEvent(
   const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
   const coachEmails = coaches.map((c) => c.username);
 
-  emailTeamUnRegisteredToCoach(
-    coachEmails,
-    team.name,
-    event.name,
-    program.name,
-    getServerConfig().clientAppRootUrl + appPath.event(event.id.toString())
-  );
-  emailTeamUnRegisteredToEventManagers(
-    mgrEmails,
-    team.name,
-    event.name,
-    program.name,
-    getServerConfig().clientAppRootUrl + appPath.event(event.id.toString())
-  );
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event.id.toString());
+  emailTeamUnRegisteredToCoach(coachEmails, team.name, event.name, program.name, eventUrl);
+  emailTeamUnRegisteredToEventManagers(mgrEmails, team.name, event.name, program.name, eventUrl);
 
   return { event, team };
+}
+
+export async function updateEvent(
+  id: ObjectId,
+  input: UpdateEventInput,
+  ctx: ApolloContext
+): Promise<UpdateEventPayload> {
+  const { dataSources, user } = ctx;
+  const u: Partial<EventData> = input;
+  const nu = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(nu.id.toString());
+  const program = await dataSources.program.getProgram(nu.programId);
+
+  // get data for sending emails to coaches
+  const teams = await Promise.all(
+    (
+      await dataSources.event.getEventTeams(id)
+    ).map(async (t) => ({
+      name: t.name,
+      coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
+    }))
+  );
+
+  // send email to coaches of registered teams
+  teams.forEach((t) =>
+    emailEventChangedToCoach(t.coaches, t.name, nu.name, program.name, eventUrl)
+  );
+
+  // get data for sending emails to managers
+  const managerEmails = [
+    ...(await dataSources.program.getProgramManagers(nu.programId)).map((e) => e.username),
+    ...(await dataSources.event.getEventManagers(id)).map((e) => e.username),
+  ];
+  emailEventChangedToEventManagers(managerEmails, nu.name, program.name, eventUrl);
+
+  return { event: EventMapper.toEvent(nu) };
 }

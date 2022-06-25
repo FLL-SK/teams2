@@ -1,10 +1,5 @@
-import { registerTeamToEvent, unregisterTeamFromEvent } from '../../domains/event';
-import {
-  QueryResolvers,
-  MutationResolvers,
-  Event,
-  RegisterTeamPayload,
-} from '../../generated/graphql';
+import { updateEvent, registerTeamToEvent, unregisterTeamFromEvent } from '../../domains/event';
+import { QueryResolvers, MutationResolvers, Event } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
 
@@ -24,8 +19,7 @@ export const typeResolver: Resolver<Event> = {
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
   createEvent: (_parent, { input }, { dataSources }) => dataSources.event.createEvent(input),
-  updateEvent: (_parent, { id, input }, { dataSources }) =>
-    dataSources.event.updateEvent(id, input),
+  updateEvent: (_parent, { id, input }, context) => updateEvent(id, input, context),
   deleteEvent: (_parent, { id }, { dataSources }) => dataSources.event.deleteEvent(id),
 
   registerTeamForEvent: (_parent, { eventId, teamId }, context) =>
