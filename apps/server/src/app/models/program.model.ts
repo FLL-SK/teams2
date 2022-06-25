@@ -1,6 +1,5 @@
 import { Schema, model, Model, Document, ProjectionType, FilterQuery } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { InvoiceItemData, invoiceItemSchema } from '.';
 
 const Types = Schema.Types;
 
@@ -12,8 +11,6 @@ export interface ProgramData {
   conditions?: string;
 
   managersIds: ObjectId[];
-
-  invoiceItems?: InvoiceItemData[];
 
   deletedOn?: Date;
   deletedBy?: ObjectId;
@@ -43,8 +40,6 @@ const schema = new Schema<ProgramData, ProgramModel>({
   logoUrl: { type: Types.String },
   conditions: { type: Types.String },
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-
-  invoiceItems: { type: [invoiceItemSchema], default: [] },
 
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },

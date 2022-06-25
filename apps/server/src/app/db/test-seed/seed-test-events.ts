@@ -1,18 +1,22 @@
 import {
   EventData,
   eventRepository,
+  InvoiceItemData,
+  invoiceItemRepository,
   programRepository,
   teamRepository,
   userRepository,
 } from '../../models';
 import { addDays } from 'date-fns';
 import { logger } from '@teams2/logger';
+import { ObjectId } from 'mongodb';
 
 type TestSeedData = Omit<EventData, 'programId'> & {
   managers?: string[];
   teams?: string[];
   program: string;
   dateOffset?: number;
+  invoiceItems: InvoiceItemData[];
 };
 
 export const seedTestEventData: TestSeedData[] = [
@@ -69,10 +73,6 @@ export async function seedTestEvents() {
 
     const nu = new eventRepository(e);
 
-    for (const ii of d.invoiceItems) {
-      nu.invoiceItems.push(ii);
-    }
-
     if (dt) {
       nu.date = dt;
     }
@@ -92,6 +92,13 @@ export async function seedTestEvents() {
     }
 
     await nu.save();
+
+    // create invoice items for an event
+    for (const ii of d.invoiceItems) {
+      const invi = new invoiceItemRepository(ii);
+      invi.eventId = nu._id;
+      await invi.save();
+    }
 
     log.debug(`Event created name=%s id=%s`, nu.name, nu._id);
   }

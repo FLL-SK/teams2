@@ -1,8 +1,15 @@
-import { ProgramData, programRepository, userRepository } from '../../models';
+import {
+  InvoiceItemData,
+  invoiceItemRepository,
+  ProgramData,
+  programRepository,
+  userRepository,
+} from '../../models';
 import { logger } from '@teams2/logger';
 
 type TestSeedData = ProgramData & {
   managers?: string[];
+  invoiceItems: InvoiceItemData[];
 };
 
 export const seedTestProgramData: TestSeedData[] = [
@@ -48,10 +55,6 @@ export async function seedTestPrograms() {
 
     const nu = new programRepository(p);
 
-    for (const ii of d.invoiceItems) {
-      nu.invoiceItems.push(ii);
-    }
-
     for (const username of d.managers) {
       const u = await userRepository.findOne({ username });
       if (u) {
@@ -60,6 +63,13 @@ export async function seedTestPrograms() {
     }
 
     await nu.save();
+
+    // create invoice items for a program
+    for (const ii of d.invoiceItems) {
+      const invi = new invoiceItemRepository(ii);
+      invi.programId = nu._id;
+      await invi.save();
+    }
 
     log.debug(`Program created name=%s id=%s`, nu.name, nu._id);
   }

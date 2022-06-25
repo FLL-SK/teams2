@@ -1,7 +1,5 @@
 import { DataSourceConfig } from 'apollo-datasource';
-
 import { ApolloContext } from '../apollo-context';
-
 import { BaseDataSource } from './_base.datasource';
 import { EventData, eventRepository, teamRepository, userRepository } from '../../models';
 import {

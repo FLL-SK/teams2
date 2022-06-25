@@ -11,6 +11,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 export const typeResolver: Resolver<Program> = {
   managers: async ({ id }, _args, { dataSources }) => dataSources.program.getProgramManagers(id),
   events: async ({ id }, _args, { dataSources }) => dataSources.program.getProgramEvents(id),
+  invoiceItems: async ({ id }, _args, { dataSources }) =>
+    dataSources.invoice.getProgramInvoiceItems(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
@@ -24,6 +26,10 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   removeProgramManager: (_parent, { programId, userId }, { dataSources }) =>
     dataSources.program.removeProgramManager(programId, userId),
 
-  updateProgramInvoiceItems: (_parent, { programId, items }, { dataSources }) =>
-    dataSources.program.updateProgramInvoiceItems(programId, items),
+  createProgramInvoiceItem: (_parent, { programId, item }, { dataSources }) =>
+    dataSources.invoice.createProgramInvoiceItem(programId, item),
+  updateProgramInvoiceItem: (_parent, { programId, item }, { dataSources }) =>
+    dataSources.invoice.updateProgramInvoiceItem(programId, item),
+  deleteProgramInvoiceItem: (_parent, { programId, itemId }, { dataSources }) =>
+    dataSources.invoice.deleteProgramInvoiceItem(programId, itemId),
 };

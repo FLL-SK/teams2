@@ -32,7 +32,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     teamName: string,
     billTo: Address,
     shipTo: Address | undefined,
-    items: InvoiceItem[]
+    items: Omit<InvoiceItem, 'id'>[]
   ): SFInvoice {
     const sfi: SFInvoice = {};
     sfi.Client = {

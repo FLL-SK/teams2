@@ -7,14 +7,16 @@
 # import * from "./event.graphql"
 
 type InvoiceItem {
+  id: ID!
   lineNo: Int
   text: String!
   note: String
-  unitPrice: Float
-  quantity: Float
+  unitPrice: Float!
+  quantity: Float!
 }
 
 input InvoiceItemInput {
+  id: ID
   lineNo: Int
   text: String!
   note: String

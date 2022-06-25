@@ -11,11 +11,15 @@ import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
   EventListFragmentFragment,
+  InvoiceItemFragmentFragment,
   useAddProgramManagerMutation,
   useCreateEventMutation,
+  useCreateProgramInvoiceItemMutation,
   useDeleteEventMutation,
+  useDeleteProgramInvoiceItemMutation,
   useGetProgramQuery,
   useRemoveProgramManagerMutation,
+  useUpdateProgramInvoiceItemMutation,
   useUpdateProgramMutation,
 } from '../../generated/graphql';
 import { EventList } from '../../components/event-list';
@@ -38,6 +42,10 @@ export function ProgramPage() {
 
   const [createEvent] = useCreateEventMutation({ onCompleted: () => refetch() });
   const [deleteEvent] = useDeleteEventMutation({ onCompleted: () => refetch() });
+
+  const [createInvoiceItem] = useCreateProgramInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [updateInvoiceItem] = useUpdateProgramInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [deleteInvoiceItem] = useDeleteProgramInvoiceItemMutation({ onCompleted: () => refetch() });
 
   const { isProgramManager, isAdmin } = useAppUser();
 
@@ -96,8 +104,13 @@ export function ProgramPage() {
           </Box>
         </Panel>
 
-        <Panel title="Faktúra" gap="medium">
-          <InvoiceItemList items={program?.invoiceItems ?? []} />
+        <Panel title="Poplatky" gap="medium">
+          <InvoiceItemList
+            items={program?.invoiceItems ?? []}
+            onRemove={(i) =>
+              deleteInvoiceItem({ variables: { programId: id ?? '0', itemId: i.id } })
+            }
+          />
         </Panel>
 
         {canEdit && (

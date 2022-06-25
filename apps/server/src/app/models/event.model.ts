@@ -1,6 +1,5 @@
 import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { InvoiceItemData, invoiceItemSchema } from '.';
 
 const Types = Schema.Types;
 
@@ -15,8 +14,6 @@ export interface EventData {
 
   date?: Date;
   registrationEnd?: Date;
-
-  invoiceItems?: InvoiceItemData[];
 
   deletedOn?: Date;
   deletedBy?: ObjectId;
@@ -46,8 +43,6 @@ const schema = new Schema<EventData, EventModel>({
 
   teamsIds: [{ type: Types.ObjectId, ref: 'Team', default: [] }],
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-
-  invoiceItems: { type: [invoiceItemSchema], default: [] },
 
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },

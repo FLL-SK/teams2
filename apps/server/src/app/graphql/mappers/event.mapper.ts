@@ -1,5 +1,6 @@
 import { EventData } from '../../models';
 import { Event } from '../../generated/graphql';
+import { InvoiceItemMapper } from './invoice-item.mapper';
 
 export const EventMapper = {
   toEvent(event: EventData | null | undefined): Event | null {
@@ -21,8 +22,7 @@ export const EventMapper = {
       deletedOn: event.deletedOn,
       deletedBy: event.deletedBy,
 
-      invoiceItems: event.invoiceItems,
-
+      invoiceItems: [],
       teams: [],
       managers: [],
       program: null,

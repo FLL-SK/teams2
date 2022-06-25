@@ -14,17 +14,20 @@ import { ListRow } from '../../components/list-row';
 import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
+  TeamListFragmentFragment,
   useAddEventManagerMutation,
   useGetEventQuery,
   useRemoveEventManagerMutation,
   useUnregisterTeamFromEventMutation,
   useUpdateEventMutation,
 } from '../../generated/graphql';
+import { BasicDialog } from '../../components/dialogs/basic-dialog';
 
 export function EventPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
+  const [teamToUnregister, setTeamToUnregister] = useState<TeamListFragmentFragment>();
 
   const {
     data: eventData,
@@ -78,7 +81,7 @@ export function EventPage() {
             </Box>
           </Box>
         </Panel>
-        <Panel title="Registrácie">
+        <Panel title="Tímy">
           <Box direction="row" wrap>
             {eventData?.getEvent?.teams.map((t) => (
               <ListRow
@@ -94,7 +97,7 @@ export function EventPage() {
                   icon={<Close size="small" />}
                   onClick={(e) => {
                     e.stopPropagation();
-                    unregisterTeam({ variables: { teamId: t.id, eventId: id } });
+                    setTeamToUnregister(t);
                   }}
                   disabled={!canEdit}
                 />
@@ -102,16 +105,18 @@ export function EventPage() {
             ))}
           </Box>
         </Panel>
-        <Panel title="Manažéri">
-          <Box direction="row" wrap>
-            <UserTags
-              users={event?.managers ?? []}
-              onAdd={(userId) => addManager({ variables: { eventId: id ?? '0', userId } })}
-              onRemove={(userId) => removeManager({ variables: { eventId: id ?? '0', userId } })}
-              canEdit={canEdit}
-            />
-          </Box>
-        </Panel>
+        {canEdit && (
+          <Panel title="Manažéri">
+            <Box direction="row" wrap>
+              <UserTags
+                users={event?.managers ?? []}
+                onAdd={(userId) => addManager({ variables: { eventId: id ?? '0', userId } })}
+                onRemove={(userId) => removeManager({ variables: { eventId: id ?? '0', userId } })}
+                canEdit={canEdit}
+              />
+            </Box>
+          </Panel>
+        )}
       </Box>
       <EditEventDialog
         show={showEventEditDialog}
@@ -119,6 +124,28 @@ export function EventPage() {
         onClose={() => setShowEventEditDialog(false)}
         onSubmit={(values) => updateEvent({ variables: { id: id ?? '0', input: { ...values } } })}
       />
+      <BasicDialog
+        show={!!teamToUnregister}
+        onClose={() => setTeamToUnregister(undefined)}
+        title="Odhlásiť tím z turnaja?"
+      >
+        <Box gap="medium">
+          <Text alignSelf="center">{`Naozaj chcete odhlásiť tím ${teamToUnregister?.name} z turnaja?`}</Text>
+          <Box direction="row" justify="evenly">
+            <Button label="Nie" primary onClick={() => setTeamToUnregister(undefined)} />
+            <Button
+              label="Áno"
+              onClick={async (e) => {
+                e.stopPropagation();
+                await unregisterTeam({
+                  variables: { teamId: teamToUnregister?.id ?? '0', eventId: id },
+                });
+                setTeamToUnregister(undefined);
+              }}
+            />
+          </Box>
+        </Box>
+      </BasicDialog>
     </BasePage>
   );
 }

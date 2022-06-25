@@ -16,6 +16,7 @@ fragment InvoiceFragment on Invoice {
 }
 
 fragment InvoiceItemFragment on InvoiceItem {
+  id
   lineNo
   text
   note

@@ -17,6 +17,8 @@ export const typeResolver: Resolver<Event> = {
   managers: async ({ id }, _args, { dataSources }) => dataSources.event.getEventManagers(id),
   program: async ({ programId }, _args, { dataSources }) =>
     dataSources.program.getProgram(programId),
+  invoiceItems: async ({ id }, _args, { dataSources }) =>
+    dataSources.invoice.getEventInvoiceItems(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
@@ -28,8 +30,11 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   registerTeamForEvent: async (
     _parent,
     { eventId, teamId },
-    { dataSources }
+    { dataSources, user }
   ): Promise<RegisterTeamPayload> => {
+    if (!user.isAdmin && !user.isCoachOf(teamId)) {
+      return null;
+    }
     const event = await dataSources.event.addTeamToEvent(eventId, teamId);
     const team = await dataSources.team.getTeam(teamId);
     if (!event || !team) {
@@ -38,7 +43,11 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     return { event, team };
   },
 
-  unregisterTeamFromEvent: async (_parent, { eventId, teamId }, { dataSources }) => {
+  unregisterTeamFromEvent: async (_parent, { eventId, teamId }, { dataSources, user }) => {
+    if (!user.isAdmin && !user.isEventManagerOf(eventId)) {
+      return null;
+    }
+
     const event = await dataSources.event.removeTeamFromEvent(eventId, teamId);
     const team = await dataSources.team.getTeam(teamId);
     return { event, team };

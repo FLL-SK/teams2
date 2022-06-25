@@ -6,10 +6,15 @@ import { useState } from 'react';
 import { BasePage } from '../../components/base-page';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { Panel, PanelGroup } from '../../components/panel';
-import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/graphql';
+import {
+  useCreateProgramMutation,
+  useGetProgramsQuery,
+  useGetTeamsQuery,
+} from '../../generated/graphql';
 import { ProgramsList } from './programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
+import { TeamsList } from './teams-list';
 
 export function AdminPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
@@ -20,6 +25,8 @@ export function AdminPage() {
     loading: programsLoading,
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
+
+  const { data: teamsData, loading: teamsLoading, refetch: refetchTeams } = useGetTeamsQuery();
 
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 
@@ -44,6 +51,9 @@ export function AdminPage() {
           ) : (
             <ProgramsList programs={programsData?.getPrograms ?? []} />
           )}
+        </Panel>
+        <Panel title="Tímy">
+          {teamsLoading ? <Spinner /> : <TeamsList teams={teamsData?.getTeams ?? []} />}
         </Panel>
       </PanelGroup>
 

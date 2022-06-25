@@ -1,6 +1,5 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { hash } from 'bcryptjs';
 import { hashPassword } from '../utils/hash-password';
 
 const Types = Schema.Types;

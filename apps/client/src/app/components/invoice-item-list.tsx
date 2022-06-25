@@ -1,15 +1,17 @@
 import React from 'react';
-import { Box, Text } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import { InvoiceItemFragmentFragment } from '../generated/graphql';
 import { JustifiedText } from './justified-text';
 import { ListHeader, ListRow } from './list-row';
+import { Close } from 'grommet-icons';
 
 interface InvoiceItemListProps {
   items: InvoiceItemFragmentFragment[];
+  onRemove?: (item: InvoiceItemFragmentFragment) => unknown;
 }
 
 export function InvoiceItemList(props: InvoiceItemListProps) {
-  const { items } = props;
+  const { items, onRemove } = props;
 
   return (
     <Box>
@@ -30,6 +32,17 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
           <JustifiedText justify="center">
             {(item.quantity ?? 0) * (item.unitPrice ?? 0)}
           </JustifiedText>
+          {onRemove && (
+            <Button
+              plain
+              hoverIndicator
+              icon={<Close size="small" />}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove(item);
+              }}
+            />
+          )}
         </ListRow>
       ))}
     </Box>

@@ -1,5 +1,12 @@
 import { logger } from '@teams2/logger';
-import { eventRepository, programRepository, teamRepository, userRepository } from '../../models';
+import {
+  eventRepository,
+  invoiceItemRepository,
+  invoiceRepository,
+  programRepository,
+  teamRepository,
+  userRepository,
+} from '../../models';
 import { seedTestEvents } from './seed-test-events';
 import { seedTestPrograms } from './seed-test-programs';
 import { seedTestTeams } from './seed-test-teams';
@@ -15,6 +22,8 @@ export async function testDbSeed() {
     await programRepository.clean();
     await teamRepository.clean();
     await userRepository.clean();
+    await invoiceItemRepository.clean();
+    await invoiceRepository.clean();
 
     log.debug('Seeding users:');
     await seedTestUsers();

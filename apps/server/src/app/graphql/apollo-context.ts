@@ -6,6 +6,7 @@ import {
   UserDataSource,
 } from './datasources';
 import { UserData } from '../models';
+import { ObjectId } from 'mongodb';
 
 export interface AuthProfileData {
   email: string;
@@ -24,8 +25,15 @@ export type ApolloContextDataSources = {
   invoice: InvoiceDataSource;
 };
 
+interface UserDataExtended extends UserData {
+  isUser: (userId: ObjectId) => boolean;
+  isProgramManagerOf: (programId: ObjectId) => boolean;
+  isEventManagerOf: (eventId: ObjectId) => boolean;
+  isCoachOf: (teamId: ObjectId) => boolean;
+}
+
 export interface ApolloContext {
-  user: Omit<UserData, 'password'> | null;
+  user: Omit<UserDataExtended, 'password'> | null;
   userTimeZone: string;
   dataSources?: ApolloContextDataSources;
   authProfileData?: AuthProfileData;

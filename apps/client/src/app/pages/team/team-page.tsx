@@ -1,3 +1,4 @@
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox } from 'grommet';
 import { useMemo, useState } from 'react';
@@ -80,19 +81,23 @@ export function TeamPage() {
           </Box>
           <EventList events={events} />
         </Panel>
-        <Panel title="Faktúry">
-          <p>Here be data</p>
-        </Panel>
-        <Panel title="Tréneri">
-          <Box direction="row" wrap>
-            <UserTags
-              canEdit={canEdit}
-              users={team?.coaches ?? []}
-              onAdd={(userId) => addCoach({ variables: { teamId: id ?? '0', userId } })}
-              onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
-            />
-          </Box>
-        </Panel>
+        {canEdit && (
+          <Panel title="Faktúry">
+            <p>Here be data</p>
+          </Panel>
+        )}
+        {canEdit && (
+          <Panel title="Tréneri">
+            <Box direction="row" wrap>
+              <UserTags
+                canEdit={canEdit}
+                users={team?.coaches ?? []}
+                onAdd={(userId) => addCoach({ variables: { teamId: id ?? '0', userId } })}
+                onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
+              />
+            </Box>
+          </Panel>
+        )}
       </PanelGroup>
     </BasePage>
   );

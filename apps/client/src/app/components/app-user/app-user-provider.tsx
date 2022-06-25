@@ -14,6 +14,8 @@ export interface AppUserContextData {
   isEventManager: (eventId?: string) => boolean;
   isProgramManager: (programId?: string) => boolean;
   isAdmin: () => boolean;
+  isUser: (userId: string) => boolean;
+  xOut: () => string;
 }
 
 const emptyContext: AppUserContextData = {
@@ -23,6 +25,8 @@ const emptyContext: AppUserContextData = {
   isEventManager: () => false,
   isProgramManager: () => false,
   isAdmin: () => false,
+  isUser: () => false,
+  xOut: () => 'xxx',
 };
 
 export const AppUserContext = createContext<AppUserContextData>(emptyContext);
@@ -42,6 +46,8 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
     }
     refetch();
   }, [loading, refetch]);
+
+  const isUser = useCallback((userId: string): boolean => user?.id === userId, [user]);
 
   const isTeamCoach = useCallback(
     (teamId?: string): boolean => {
@@ -88,6 +94,8 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
         isEventManager,
         isProgramManager,
         isAdmin: () => data?.getUser?.isAdmin ?? false,
+        isUser,
+        xOut: () => 'xxx',
       }}
     >
       {children}

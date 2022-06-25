@@ -7,6 +7,7 @@ export const InvoiceItemMapper = {
       return null;
     }
     const u: Omit<Required<InvoiceItem>, '__typename'> = {
+      id: item._id,
       lineNo: item.lineNo,
       text: item.text,
       note: item.note,

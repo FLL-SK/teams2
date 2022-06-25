@@ -4,12 +4,14 @@ import { BaseDataSource } from './_base.datasource';
 import {
   eventRepository,
   InvoiceData,
+  InvoiceItemData,
+  invoiceItemRepository,
   invoiceRepository,
   programRepository,
   teamRepository,
 } from '../../models';
-import { Invoice } from '../../generated/graphql';
-import { InvoiceMapper } from '../mappers';
+import { Invoice, InvoiceItem, InvoiceItemInput } from '../../generated/graphql';
+import { InvoiceItemMapper, InvoiceMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { InvoicingAPI } from '../../domains/invoicingAPI';
 
@@ -36,6 +38,7 @@ export class InvoiceDataSource extends BaseDataSource {
     return invoices.map((i) => InvoiceMapper.toInvoice(i));
   }
 
+  //TOTO: this method does not belong to datasource
   async createRegistrationInvoice(eventId: ObjectId, teamId: ObjectId): Promise<Invoice> {
     const config = getServerConfig();
     const log = this.logBase.extend('createRegInv');
@@ -43,8 +46,13 @@ export class InvoiceDataSource extends BaseDataSource {
     const event = await eventRepository.findById(eventId).exec();
     // load team
     const team = await teamRepository.findById(teamId).exec();
-    // load program
-    const program = await programRepository.findById(event.programId).exec();
+    // load eventInvoiceItems
+    const eventInvoiceItems = await invoiceItemRepository.find({ eventId }).lean().exec();
+    // load program invoice items
+    const programInvoiceItems = await invoiceItemRepository
+      .find({ programId: event.programId })
+      .lean()
+      .exec();
 
     // create invoice
     let api: InvoicingAPI;
@@ -56,7 +64,7 @@ export class InvoiceDataSource extends BaseDataSource {
       team.name,
       team.billTo,
       team.shipTo,
-      event.invoiceItems.length > 0 ? event.invoiceItems : program.invoiceItems
+      eventInvoiceItems.length > 0 ? eventInvoiceItems : programInvoiceItems
     );
 
     // post invoice
@@ -78,6 +86,7 @@ export class InvoiceDataSource extends BaseDataSource {
     return InvoiceMapper.toInvoice(invoice);
   }
 
+  //TODO: emailing isnot part of datasource
   async emailInvoice(id: ObjectId): Promise<Invoice> {
     const config = getServerConfig();
     const log = this.logBase.extend('emailInv');
@@ -111,5 +120,59 @@ export class InvoiceDataSource extends BaseDataSource {
     await invoice.save();
 
     return InvoiceMapper.toInvoice(invoice);
+  }
+
+  async getInvoiceItems(invoiceId: ObjectId): Promise<InvoiceItem[]> {
+    const items = await invoiceItemRepository.find({ invoiceId }).lean().exec();
+    return items.map(InvoiceItemMapper.toInvoiceItem);
+  }
+
+  async getEventInvoiceItems(eventId: ObjectId): Promise<InvoiceItem[]> {
+    const items = await invoiceItemRepository.find({ eventId }).lean().exec();
+    return items.map(InvoiceItemMapper.toInvoiceItem);
+  }
+
+  async getProgramInvoiceItems(programId: ObjectId): Promise<InvoiceItem[]> {
+    const items = await invoiceItemRepository.find({ programId }).lean().exec();
+    return items.map(InvoiceItemMapper.toInvoiceItem);
+  }
+
+  async createInvoiceItem(item: InvoiceItemData): Promise<InvoiceItem> {
+    const newItem = await invoiceItemRepository.create(item);
+    return InvoiceItemMapper.toInvoiceItem(newItem);
+  }
+
+  async updateInvoiceItem(item: InvoiceItemInput): Promise<InvoiceItem> {
+    const newItem = await invoiceItemRepository
+      .findOneAndUpdate({ _id: item.id }, { $set: { ...item } }, { new: true })
+      .exec();
+    return InvoiceItemMapper.toInvoiceItem(newItem);
+  }
+
+  async deleteInvoiceItem(itemId: ObjectId): Promise<InvoiceItem> {
+    const deletedItem = await invoiceItemRepository.findOneAndDelete({ _id: itemId }).exec();
+    return InvoiceItemMapper.toInvoiceItem(deletedItem);
+  }
+
+  async createProgramInvoiceItem(
+    programId: ObjectId,
+    item: InvoiceItemInput
+  ): Promise<InvoiceItem> {
+    //TODO admin and program manager only
+    return await this.createInvoiceItem({ quantity: 0, unitPrice: 0, ...item, programId });
+  }
+
+  async updateProgramInvoiceItem(
+    programId: ObjectId,
+    item: InvoiceItemInput
+  ): Promise<InvoiceItem> {
+    //TODO admin and program manager only
+    return await this.updateInvoiceItem({ ...item });
+  }
+
+  async deleteProgramInvoiceItem(programId: ObjectId, itemId: ObjectId): Promise<InvoiceItem> {
+    //TODO admin and program manager only
+
+    return this.deleteInvoiceItem(itemId);
   }
 }

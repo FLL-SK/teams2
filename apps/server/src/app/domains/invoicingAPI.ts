@@ -39,7 +39,7 @@ export class InvoicingAPI {
     teamName: string,
     billTo: Address,
     shipTo: Address | undefined,
-    items: InvoiceItem[]
+    items: Omit<InvoiceItem, 'id'>[]
   ) {
     return 'invoice';
   }

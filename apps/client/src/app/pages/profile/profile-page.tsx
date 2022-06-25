@@ -11,10 +11,12 @@ import { Panel, PanelGroup } from '../../components/panel';
 import { Tag } from '../../components/tag';
 import { useCreateTeamMutation, useGetUserQuery } from '../../generated/graphql';
 import { CreateTeamDialog } from './create-team-dialog';
+import { useAppUser } from '../../components/app-user/use-app-user';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAdmin, isUser, xOut } = useAppUser();
   const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [createTeam] = useCreateTeamMutation({ onCompleted: () => refetch() });
@@ -22,6 +24,8 @@ export function ProfilePage() {
   if (!id || error) {
     return <ErrorPage title="Profil nenájdený." />;
   }
+
+  const canEdit = isAdmin() || isUser(id);
 
   return (
     <BasePage title="Profil používateľa" loading={loading}>
@@ -36,34 +40,36 @@ export function ProfilePage() {
             />
             <LabelValue
               label="Email"
-              value={data?.getUser?.username}
+              value={canEdit ? data?.getUser?.username : xOut()}
               direction="row"
               labelWidth="100px"
             />
             <LabelValue
               label="Telefón"
-              value={data?.getUser?.phoneNumber ?? '-'}
+              value={canEdit ? data?.getUser?.phoneNumber ?? '-' : xOut()}
               direction="row"
               labelWidth="100px"
             />
           </Box>
         </Panel>
-        <Panel title="Tímy">
-          <Box direction="row" wrap>
-            {data?.getUser?.coachingTeams.map((t) => (
-              <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
-            ))}
-            <Button
-              plain
-              icon={<Add />}
-              onClick={() => setShowCreateTeamDialog(true)}
-              hoverIndicator
-              label="Nový"
-              margin={{ horizontal: 'small', vertical: 'xsmall' }}
-            />
-          </Box>
-        </Panel>
-        {!!data?.getUser?.managingEvents.length && (
+        {canEdit && (
+          <Panel title="Tímy">
+            <Box direction="row" wrap>
+              {data?.getUser?.coachingTeams.map((t) => (
+                <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
+              ))}
+              <Button
+                plain
+                icon={<Add />}
+                onClick={() => setShowCreateTeamDialog(true)}
+                hoverIndicator
+                label="Nový"
+                margin={{ horizontal: 'small', vertical: 'xsmall' }}
+              />
+            </Box>
+          </Panel>
+        )}
+        {!!data?.getUser?.managingEvents.length && canEdit && (
           <Panel title="Turnaje">
             <Box direction="row" wrap>
               {data?.getUser?.managingEvents.map((e) => (
