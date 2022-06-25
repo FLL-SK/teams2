@@ -30,7 +30,7 @@ export function sendEmailSeparately(to: string[], subject: string, text: string)
 
 export function sendHtmlEmailSeparately(to: string[], subject: string, html: string) {
   logLib.debug('Sending email to=%o subject=%s', to, subject);
-  to.forEach((t) => sendHtmlEmail([t], subject, html));
+  to.forEach((t) => sendHtmlEmail(t, subject, html));
 }
 
 function sendEmail_prim(mailOptions: nodemailer.SendMailOptions) {
@@ -49,10 +49,10 @@ function sendEmail_prim(mailOptions: nodemailer.SendMailOptions) {
   });
 }
 
-export function sendHtmlEmail(to: string[], subject: string, html: string) {
+export function sendHtmlEmail(to: string, subject: string, html: string) {
   const mailOptions = {
     from: getServerConfig().smtp.from,
-    to: to.join(','),
+    to,
     subject,
     html,
   };

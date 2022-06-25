@@ -2,7 +2,12 @@ import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../graphql/apollo-context';
-import { emailTeamRegisteredToCoach, emailTeamRegisteredToEventManagers } from '../utils/emails';
+import {
+  emailTeamRegisteredToCoach,
+  emailTeamRegisteredToEventManagers,
+  emailTeamUnRegisteredToCoach,
+  emailTeamUnRegisteredToEventManagers,
+} from '../utils/emails';
 
 export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, ctx: ApolloContext) {
   const { user, dataSources } = ctx;
@@ -17,12 +22,13 @@ export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, c
     return null;
   }
 
+  //TODO promise.all
   const program = await dataSources.program.getProgram(event.programId);
-  console.log('Got program', program);
   const eventMgrs = await dataSources.event.getEventManagers(eventId);
   const programMgrs = await dataSources.program.getProgramManagers(event.programId);
-  const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
   const coaches = await dataSources.team.getTeamCoaches(teamId);
+
+  const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
   const coachEmails = coaches.map((c) => c.username);
 
   emailTeamRegisteredToCoach(
@@ -58,6 +64,30 @@ export async function unregisterTeamFromEvent(
 
   const event = await dataSources.event.removeTeamFromEvent(eventId, teamId);
   const team = await dataSources.team.getTeam(teamId);
+
+  //TODO promise.all
+  const program = await dataSources.program.getProgram(event.programId);
+  const eventMgrs = await dataSources.event.getEventManagers(eventId);
+  const programMgrs = await dataSources.program.getProgramManagers(event.programId);
+  const coaches = await dataSources.team.getTeamCoaches(teamId);
+
+  const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
+  const coachEmails = coaches.map((c) => c.username);
+
+  emailTeamUnRegisteredToCoach(
+    coachEmails,
+    team.name,
+    event.name,
+    program.name,
+    getServerConfig().clientAppRootUrl + appPath.event(event.id.toString())
+  );
+  emailTeamUnRegisteredToEventManagers(
+    mgrEmails,
+    team.name,
+    event.name,
+    program.name,
+    getServerConfig().clientAppRootUrl + appPath.event(event.id.toString())
+  );
 
   return { event, team };
 }
