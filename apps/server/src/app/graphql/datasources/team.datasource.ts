@@ -1,7 +1,5 @@
 import { DataSourceConfig } from 'apollo-datasource';
-
 import { ApolloContext } from '../apollo-context';
-
 import { BaseDataSource } from './_base.datasource';
 import { eventRepository, TeamData, teamRepository, userRepository } from '../../models';
 import {
@@ -30,7 +28,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeams(): Promise<Team[]> {
-    const teams = await teamRepository.find().exec();
+    const teams = await teamRepository.find().sort({ name: 1 }).exec();
     return teams.map((t) => TeamMapper.toTeam(t));
   }
 

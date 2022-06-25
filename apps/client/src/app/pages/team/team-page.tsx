@@ -65,6 +65,7 @@ export function TeamPage() {
         <Panel title="Detaily tímu">
           <LabelValue label="Názov" labelWidth="150px" value={team?.name} />
         </Panel>
+
         <Panel title="Registrácie" gap="small">
           <Box direction="row" justify="between">
             <Button
@@ -81,11 +82,7 @@ export function TeamPage() {
           </Box>
           <EventList events={events} />
         </Panel>
-        {canEdit && (
-          <Panel title="Faktúry">
-            <p>Here be data</p>
-          </Panel>
-        )}
+
         {canEdit && (
           <Panel title="Tréneri">
             <Box direction="row" wrap>

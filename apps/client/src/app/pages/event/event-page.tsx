@@ -21,6 +21,7 @@ import {
   useDeleteEventInvoiceItemMutation,
   useGetEventQuery,
   useRemoveEventManagerMutation,
+  useSwitchTeamEventMutation,
   useUnregisterTeamFromEventMutation,
   useUpdateEventInvoiceItemMutation,
   useUpdateEventMutation,
@@ -29,14 +30,18 @@ import { BasicDialog } from '../../components/dialogs/basic-dialog';
 import { InvoiceItemList } from '../../components/invoice-item-list';
 import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-item-dialog';
 import { omit } from 'lodash';
+import { TeamMenu } from './team-menu';
+import { ChangeTeamEventDialog } from '../../components/dialogs/change-team-event-dialog';
 
 export function EventPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
   const [teamToUnregister, setTeamToUnregister] = useState<TeamListFragmentFragment>();
+  const [teamToSwitch, setTeamToSwitch] = useState<TeamListFragmentFragment>();
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
+  const [selectedTeam, setSelectedTeam] = useState<TeamListFragmentFragment>();
 
   const {
     data: eventData,
@@ -51,6 +56,7 @@ export function EventPage() {
   const [addManager] = useAddEventManagerMutation();
   const [removeManager] = useRemoveEventManagerMutation();
   const [unregisterTeam] = useUnregisterTeamFromEventMutation();
+  const [switchTeamEvent] = useSwitchTeamEventMutation();
 
   const [createInvoiceItem] = useCreateEventInvoiceItemMutation({ onCompleted: () => refetch() });
   const [updateInvoiceItem] = useUpdateEventInvoiceItemMutation({ onCompleted: () => refetch() });
@@ -126,23 +132,16 @@ export function EventPage() {
         <Panel title="Tímy">
           <Box direction="row" wrap>
             {eventData?.getEvent?.teams.map((t) => (
-              <ListRow
-                key={t.id}
-                columns="1fr auto"
-                onClick={() => navigate(appPath.team(t.id))}
-                pad="small"
-              >
+              <ListRow key={t.id} columns="1fr auto" pad="small" align="center">
                 <Text>{t.name}</Text>
-                <Button
-                  plain
-                  hoverIndicator
-                  icon={<Close size="small" />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTeamToUnregister(t);
-                  }}
-                  disabled={!canEdit}
-                />
+                <Box width="100px">
+                  <TeamMenu
+                    team={t}
+                    onUnregister={(tt) => setTeamToUnregister(tt)}
+                    onChangeEvent={(tt) => setTeamToSwitch(tt)}
+                    canEdit={canEdit}
+                  />
+                </Box>
               </ListRow>
             ))}
           </Box>
@@ -185,6 +184,22 @@ export function EventPage() {
             });
           }
         }}
+      />
+
+      <ChangeTeamEventDialog
+        show={!!teamToSwitch}
+        team={teamToSwitch}
+        event={event}
+        onClose={() => setTeamToSwitch(undefined)}
+        onSubmit={(e) =>
+          switchTeamEvent({
+            variables: {
+              teamId: teamToSwitch?.id ?? '0',
+              oldEventId: event?.id ?? '0',
+              newEventId: e.id,
+            },
+          })
+        }
       />
 
       <BasicDialog

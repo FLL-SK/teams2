@@ -1,7 +1,7 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { UpdateEventInput, UpdateEventPayload } from '../generated/graphql';
+import { SwitchTeamEventPayload, UpdateEventInput, UpdateEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
 import { EventMapper } from '../graphql/mappers';
 import { EventData, eventRepository } from '../models';
@@ -13,6 +13,10 @@ import {
   emailTeamUnRegisteredToCoach,
   emailTeamUnRegisteredToEventManagers,
 } from '../utils/emails';
+
+import { logger } from '@teams2/logger';
+
+const logLib = logger('domain:Event');
 
 export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, ctx: ApolloContext) {
   const { user, dataSources } = ctx;
@@ -121,4 +125,15 @@ export async function updateEvent(
   emailEventChangedToEventManagers(managerEmails, nu.name, program.name, eventUrl);
 
   return { event: EventMapper.toEvent(nu) };
+}
+
+export async function switchTeamEvent(
+  teamId: ObjectId,
+  oldEventId: ObjectId,
+  newEventId: ObjectId,
+  ctx: ApolloContext
+): Promise<SwitchTeamEventPayload> {
+  const { event: oldEvent } = await unregisterTeamFromEvent(teamId, oldEventId, ctx);
+  const { team, event: newEvent } = await registerTeamToEvent(teamId, newEventId, ctx);
+  return { team, oldEvent, newEvent };
 }

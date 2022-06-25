@@ -1,6 +1,7 @@
 import { QueryResolvers, MutationResolvers, Invoice } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
+import { createRegistrationInvoice, emailInvoice } from '../../domains/invoice';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {};
 
@@ -10,7 +11,7 @@ export const typeResolver: Resolver<Invoice> = {
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
-  createRegistrationInvoice: (_parent, { eventId, teamId }, { dataSources }) =>
-    dataSources.invoice.createRegistrationInvoice(eventId, teamId),
-  emailInvoice: (_parent, { id }, { dataSources }) => dataSources.invoice.emailInvoice(id),
+  createRegistrationInvoice: (_parent, { eventId, teamId }, context) =>
+    createRegistrationInvoice(eventId, teamId, context),
+  emailInvoice: (_parent, { id }, context) => emailInvoice(id, context),
 };

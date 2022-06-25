@@ -60,6 +60,20 @@ mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
   }
 }
 
+mutation switchTeamEvent($teamId: ID!, $oldEventId: ID!, $newEventId: ID!) {
+  switchTeamEvent(teamId: $teamId, oldEventId: $oldEventId, newEventId: $newEventId) {
+    team {
+      ...TeamFragment
+    }
+    oldEvent {
+      ...EventFragment
+    }
+    newEvent {
+      ...EventFragment
+    }
+  }
+}
+
 mutation createEventInvoiceItem($eventId: ID!, $item: InvoiceItemInput!) {
   createEventInvoiceItem(eventId: $eventId, item: $item) {
     ...InvoiceItemFragment

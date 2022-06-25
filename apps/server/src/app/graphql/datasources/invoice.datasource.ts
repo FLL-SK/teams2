@@ -38,95 +38,6 @@ export class InvoiceDataSource extends BaseDataSource {
     return invoices.map((i) => InvoiceMapper.toInvoice(i));
   }
 
-  //TOTO: this method does not belong to datasource
-  async createRegistrationInvoice(eventId: ObjectId, teamId: ObjectId): Promise<Invoice> {
-    const config = getServerConfig();
-    const log = this.logBase.extend('createRegInv');
-    log.debug(`eventId: ${eventId}, teamId: ${teamId}`);
-    const event = await eventRepository.findById(eventId).exec();
-    // load team
-    const team = await teamRepository.findById(teamId).exec();
-    // load eventInvoiceItems
-    const eventInvoiceItems = await invoiceItemRepository
-      .find({ eventId })
-      .sort({ lineNo: 1, text: 1 })
-      .lean()
-      .exec();
-    // load program invoice items
-    const programInvoiceItems = await invoiceItemRepository
-      .find({ programId: event.programId })
-      .sort({ lineNo: 1, text: 1 })
-      .lean()
-      .exec();
-
-    // create invoice
-    let api: InvoicingAPI;
-    if (config.invoicing.type === 'superfaktura') {
-      log.debug('using superfaktura');
-      api = new InvoicingAPISuperfaktura();
-    }
-    const invoicePost = api.constructInvoice(
-      team.name,
-      team.billTo,
-      team.shipTo,
-      eventInvoiceItems.length > 0 ? eventInvoiceItems : programInvoiceItems
-    );
-
-    // post invoice
-    const result = await api.postInvoice(invoicePost);
-    log.debug(`invoice posted: %o`, result);
-
-    if (result.status === 'error') {
-      log.error(`invoice post error: %s`, result.error);
-      return null;
-    }
-    const inv: InvoiceData = {
-      eventId,
-      teamId,
-      number: result.id,
-      issuedOn: new Date(result.createdOn),
-      total: result.total,
-    };
-    const invoice = await invoiceRepository.create(inv);
-    return InvoiceMapper.toInvoice(invoice);
-  }
-
-  //TODO: emailing isnot part of datasource
-  async emailInvoice(id: ObjectId): Promise<Invoice> {
-    const config = getServerConfig();
-    const log = this.logBase.extend('emailInv');
-    log.debug(`id: ${id}`);
-
-    const invoice = await invoiceRepository.findById(id).exec();
-    const team = await teamRepository.findById(invoice.teamId).exec();
-
-    let api: InvoicingAPI;
-    if (config.invoicing.type === 'superfaktura') {
-      log.debug('using superfaktura');
-      api = new InvoicingAPISuperfaktura();
-    }
-
-    //TODO add coaches to cc
-    //TODO add internal email to bcc
-
-    const result = await api.emailInvoice({
-      id: invoice.number,
-      to: team.billTo.email,
-      subject: `Faktura ${team.name}`,
-    });
-    log.debug(`invoice email sent: %o`, result);
-
-    if (result.status === 'error') {
-      log.error(`invoice email error: %s`, result.error);
-      return null;
-    }
-
-    invoice.sentOn = new Date();
-    await invoice.save();
-
-    return InvoiceMapper.toInvoice(invoice);
-  }
-
   async getInvoiceItems(invoiceId: ObjectId): Promise<InvoiceItem[]> {
     const items = await invoiceItemRepository.find({ invoiceId }).lean().exec();
     return items.map(InvoiceItemMapper.toInvoiceItem);
@@ -206,5 +117,12 @@ export class InvoiceDataSource extends BaseDataSource {
     //TODO admin and program manager only
 
     return this.deleteInvoiceItem(itemId);
+  }
+
+  async setInvoiceSentOn(invoiceId: ObjectId, date: Date): Promise<Invoice> {
+    const invoice = await invoiceRepository
+      .findOneAndUpdate({ _id: invoiceId }, { sentOn: date }, { new: true })
+      .exec();
+    return InvoiceMapper.toInvoice(invoice);
   }
 }

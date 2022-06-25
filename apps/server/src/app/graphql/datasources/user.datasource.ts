@@ -1,7 +1,5 @@
 import { DataSourceConfig } from 'apollo-datasource';
-
 import { ApolloContext } from '../apollo-context';
-
 import { BaseDataSource } from './_base.datasource';
 import { UserData, userRepository } from '../../models';
 import {
@@ -35,7 +33,7 @@ export class UserDataSource extends BaseDataSource {
     if (isActive) {
       q.deletedOn = null;
     }
-    const users = await userRepository.find(q).lean().exec();
+    const users = await userRepository.find(q).sort({ username: 1 }).lean().exec();
     return users.map(UserMapper.toUser);
   }
 
