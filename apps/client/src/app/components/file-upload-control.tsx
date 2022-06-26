@@ -28,7 +28,7 @@ export function FileUploadControl(props: FileUploadControlProps) {
         messages={messages}
         disabled={disabled}
         onChange={(event) => {
-          const fileList = event.target.files;
+          const fileList = event?.target.files;
           if (fileList) {
             setToUpload(fileList);
           }
