@@ -11,6 +11,8 @@ export const EventTeamMapper = {
       teamId: eventTeam.teamId,
       eventId: eventTeam.eventId,
       registeredOn: eventTeam.registeredOn,
+      teamSize: eventTeam.teamSize,
+      sizeConfirmedOn: eventTeam.sizeConfirmedOn,
 
       team: null,
       event: null,

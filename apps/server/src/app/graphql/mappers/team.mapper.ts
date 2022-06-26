@@ -16,6 +16,7 @@ export const TeamMapper = {
 
       billTo: AddressMapper.toAddress(team.billTo),
       shipTo: AddressMapper.toAddress(team.shipTo),
+      useBillTo: team.useBillTo,
 
       coaches: [],
       events: [],

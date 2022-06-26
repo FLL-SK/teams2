@@ -12,6 +12,7 @@ export interface TeamData {
   coachesIds: ObjectId[];
   billTo?: AddressData;
   shipTo?: AddressData;
+  useBillTo?: boolean;
 }
 
 export type TeamDocument = (Document<unknown, unknown, TeamData> & TeamData) | null;
@@ -31,6 +32,7 @@ const schema = new Schema<TeamData, TeamModel>({
   coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
   billTo: { type: addressSchema },
   shipTo: { type: addressSchema },
+  useBillTo: { type: Types.Boolean, default: true },
 });
 
 schema.index({ name: 1 }, { unique: false });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Text } from 'grommet';
+import { Box, Button, CheckBox, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../generated/graphql';
 import { Address, RegisterDetails } from './types';
 
@@ -8,7 +8,7 @@ import { AddressForm } from './address-form';
 interface RegisterShipToAddressProps {
   team?: TeamFragmentFragment;
   details: RegisterDetails;
-  onSubmit: (a: Address) => void;
+  onSubmit: (a: Address | undefined, useBillTo: boolean) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
@@ -26,7 +26,20 @@ export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
   return (
     <Box gap="medium">
       <Text>Zadajte dodaciu adresu a osobu, ktorá prijme zásielku.</Text>
-      <AddressForm formId={formId} value={details.shipTo} onSubmit={onSubmit} hideOrgRegistration />
+      <CheckBox
+        toggle
+        label="Použiť fakturačné údaje"
+        checked={details.useBillTo}
+        onChange={({ target }) => onSubmit(details.shipTo, target.checked)}
+      />
+      {!details.useBillTo && (
+        <AddressForm
+          formId={formId}
+          value={details.shipTo}
+          onSubmit={(a) => onSubmit(a, false)}
+          hideOrgRegistration
+        />
+      )}
 
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />
@@ -37,7 +50,7 @@ export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
           onClick={nextStep}
           form={formId}
           type="submit"
-          disabled={!details.shipTo}
+          disabled={!details.shipTo && !details.useBillTo}
         />
       </Box>
     </Box>

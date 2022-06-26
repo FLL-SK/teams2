@@ -9,7 +9,7 @@ export class BaseDataSource extends DataSource<ApolloContext> {
 
   constructor() {
     super();
-    this.logBase = logger('DS:Base');
+    this.logBase = logger('DS');
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {

@@ -14,7 +14,7 @@ import {
   Event,
   ProgramFilterInput,
 } from '../../generated/graphql';
-import { EventMapper, EventTeamMapper, UserMapper } from '../mappers';
+import { EventMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
 
 export class ProgramDataSource extends BaseDataSource {

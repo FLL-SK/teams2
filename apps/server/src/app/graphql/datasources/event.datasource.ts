@@ -14,9 +14,11 @@ import {
   CreateEventInput,
   CreateEventPayload,
   EventTeam,
+  EventFilterInput,
 } from '../../generated/graphql';
 import { EventMapper, EventTeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 
 export class EventDataSource extends BaseDataSource {
   constructor() {
@@ -31,8 +33,15 @@ export class EventDataSource extends BaseDataSource {
     return EventMapper.toEvent(await eventRepository.findById(id).exec());
   }
 
-  async getEvents(): Promise<Event[]> {
-    const events = await eventRepository.find().exec();
+  async getEvents(filter: EventFilterInput): Promise<Event[]> {
+    const q: FilterQuery<Event> = {};
+    if (filter.programId) {
+      q.programId = filter.programId;
+    }
+    if (filter.isActive) {
+      q.date = { $not: { $lt: new Date() } };
+    }
+    const events = await eventRepository.find(q).exec();
     return events.map(EventMapper.toEvent);
   }
 

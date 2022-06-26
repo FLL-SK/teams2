@@ -1,0 +1,8 @@
+fragment FileFragment on File {
+  id
+  name
+  size
+  type
+  updatedOn
+  url
+}

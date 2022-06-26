@@ -8,6 +8,8 @@ export interface EventTeamData {
   eventId: ObjectId;
   teamId: ObjectId;
   registeredOn: Date;
+  teamSize?: number;
+  sizeConfirmedOn?: Date;
 }
 
 export type EventTeamDocument = (Document<unknown, unknown, EventTeamData> & EventTeamData) | null;
@@ -18,8 +20,10 @@ export interface EventTeamModel extends Model<EventTeamData> {
 
 const schema = new Schema<EventTeamData, EventTeamModel>({
   eventId: { type: Types.ObjectId, ref: 'Event', required: true },
-  teamId: { type: Types.ObjectId, ref: 'team', required: true },
-  registeredOn: { type: Types.Date },
+  teamId: { type: Types.ObjectId, ref: 'Team', required: true },
+  registeredOn: { type: Types.Date, required: true },
+  teamSize: { type: Types.Number, default: 0 },
+  sizeConfirmedOn: { type: Types.Date },
 });
 
 schema.index({ eventId: 1, teamId: 1 });

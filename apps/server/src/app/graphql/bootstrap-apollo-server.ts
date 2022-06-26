@@ -11,6 +11,7 @@ import { initApolloContext } from './init-apollo-context';
 import { ApolloContextDataSources } from './apollo-context';
 import {
   EventDataSource,
+  FileDataSource,
   InvoiceDataSource,
   ProgramDataSource,
   TeamDataSource,
@@ -42,6 +43,7 @@ export async function bootstrapApolloServer(app: Application): Promise<void> {
       team: new TeamDataSource(),
       program: new ProgramDataSource(),
       invoice: new InvoiceDataSource(),
+      file: new FileDataSource(),
     }),
     introspection: true,
     debug: true,

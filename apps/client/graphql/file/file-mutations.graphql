@@ -1,0 +1,17 @@
+mutation addProgramFile($programId: ID!, $input: FileUploadInput!) {
+  addProgramFile(programId: $programId, input: $input) {
+    ...FileFragment
+  }
+}
+
+mutation addEventFile($eventId: ID!, $input: FileUploadInput!) {
+  addEventFile(eventId: $eventId, input: $input) {
+    ...FileFragment
+  }
+}
+
+mutation removeFile($fileId: ID!) {
+  removeFile(fileId: $fileId) {
+    ...FileFragment
+  }
+}

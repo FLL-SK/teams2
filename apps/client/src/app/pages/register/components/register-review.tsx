@@ -1,7 +1,6 @@
-import React from 'react';
-import { Box, Button, Markdown, Spinner, Text } from 'grommet';
+import React, { useState } from 'react';
+import { Box, Button, CheckBox, Markdown, Spinner, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
-import { ListRow } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
 import {
   TeamFragmentFragment,
@@ -19,6 +18,8 @@ interface RegisterReviewProps {
   cancel: () => void;
 }
 
+const labelWidth = '180px';
+
 export function RegisterReview(props: RegisterReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
   const { data: programData, loading: programLoading } = useGetProgramQuery({
@@ -27,6 +28,9 @@ export function RegisterReview(props: RegisterReviewProps) {
   const { data: eventData, loading: eventLoading } = useGetEventQuery({
     variables: { id: details.event?.id ?? '0' },
   });
+
+  const [acceptedProgramTC, setAcceptedProgramTC] = useState<boolean>(false);
+  const [acceptedEventTC, setAcceptedEventTC] = useState<boolean>(false);
 
   if (!team) {
     return null;
@@ -38,15 +42,16 @@ export function RegisterReview(props: RegisterReviewProps) {
   const items =
     ((event?.invoiceItems?.length ?? 0) > 0 ? event?.invoiceItems : program?.invoiceItems) ?? [];
 
-  console.log('items', items, event?.invoiceItems, program?.invoiceItems);
+  const shipTo = details.shipTo;
+  const billTo = details.billTo;
 
   return (
     <Box gap="medium">
       <Text>Skontrolujte zadané údaje.</Text>
       <Panel title="Registrácia" gap="small">
-        <LabelValue labelWidth="150px" label="Tím" value={team.name} />
-        <LabelValue labelWidth="150px" label="Program" value={details.program?.name} />
-        <LabelValue labelWidth="150px" label="Turnaj" value={details.event?.name} />
+        <LabelValue labelWidth={labelWidth} label="Tím" value={team.name} />
+        <LabelValue labelWidth={labelWidth} label="Program" value={details.program?.name} />
+        <LabelValue labelWidth={labelWidth} label="Turnaj" value={details.event?.name} />
       </Panel>
 
       <Panel title="Poplatky" gap="small">
@@ -54,52 +59,62 @@ export function RegisterReview(props: RegisterReviewProps) {
       </Panel>
 
       <Panel title="Fakturačná adresa" gap="small">
-        <LabelValue labelWidth="150px" label="Názov/meno" value={details?.billTo?.name} />
-        <LabelValue labelWidth="150px" label="Adresa" value={details?.billTo?.street} />
-        <LabelValue labelWidth="150px" label="Mesto" value={details?.billTo?.city} />
-        <LabelValue labelWidth="150px" label="PSČ" value={details?.billTo?.zip} />
-        <LabelValue labelWidth="150px" label="Krajina" value={details?.billTo?.countryCode} />
+        {billTo && (
+          <Box gap="small">
+            <LabelValue labelWidth={labelWidth} label="Názov/meno" value={billTo.name} />
+            <LabelValue labelWidth={labelWidth} label="Adresa" value={billTo.street} />
+            <LabelValue labelWidth={labelWidth} label="Mesto" value={billTo.city} />
+            <LabelValue labelWidth={labelWidth} label="PSČ" value={billTo.zip} />
+            <LabelValue labelWidth={labelWidth} label="Krajina" value={billTo.countryCode} />
 
-        <LabelValue labelWidth="150px" label="IČO" value={details?.billTo?.companyNumber} />
-        <LabelValue labelWidth="150px" label="DIČ" value={details?.billTo?.taxNumber} />
-        <LabelValue labelWidth="150px" label="IČ-DPH" value={details?.billTo?.vatNumber} />
+            <LabelValue labelWidth={labelWidth} label="IČO" value={billTo.companyNumber} />
+            <LabelValue labelWidth={labelWidth} label="DIČ" value={billTo.taxNumber} />
+            <LabelValue labelWidth={labelWidth} label="IČ-DPH" value={billTo.vatNumber} />
 
-        <LabelValue
-          labelWidth="150px"
-          label="Kontaktná osoba"
-          value={details?.billTo?.contactName}
-        />
-        <LabelValue labelWidth="150px" label="Telefón" value={details?.billTo?.phone} />
-        <LabelValue labelWidth="150px" label="Email" value={details?.billTo?.email} />
+            <LabelValue
+              labelWidth={labelWidth}
+              label="Kontaktná osoba"
+              value={billTo.contactName}
+            />
+            <LabelValue labelWidth={labelWidth} label="Telefón" value={billTo.phone} />
+            <LabelValue labelWidth={labelWidth} label="Email" value={billTo.email} />
+          </Box>
+        )}
       </Panel>
 
       <Panel title="Dodacia adresa" gap="small">
-        <LabelValue labelWidth="150px" label="Názov/meno" value={details?.shipTo?.name} />
-        <LabelValue labelWidth="150px" label="Adresa" value={details?.shipTo?.street} />
-        <LabelValue labelWidth="150px" label="Mesto" value={details?.shipTo?.city} />
-        <LabelValue labelWidth="150px" label="PSČ" value={details?.shipTo?.zip} />
-        <LabelValue labelWidth="150px" label="Krajina" value={details?.shipTo?.countryCode} />
+        {details.useBillTo ? (
+          <Text>Použijú sa fakturačné údaje</Text>
+        ) : shipTo ? (
+          <Box gap="small">
+            <LabelValue labelWidth={labelWidth} label="Názov/meno" value={shipTo.name} />
+            <LabelValue labelWidth={labelWidth} label="Adresa" value={shipTo.street} />
+            <LabelValue labelWidth={labelWidth} label="Mesto" value={shipTo.city} />
+            <LabelValue labelWidth={labelWidth} label="PSČ" value={shipTo.zip} />
+            <LabelValue labelWidth={labelWidth} label="Krajina" value={shipTo.countryCode} />
 
-        <LabelValue
-          labelWidth="150px"
-          label="Kontaktná osoba"
-          value={details?.shipTo?.contactName}
-        />
-        <LabelValue labelWidth="150px" label="Telefón" value={details?.shipTo?.phone} />
-        <LabelValue labelWidth="150px" label="Email" value={details?.shipTo?.email} />
+            <LabelValue
+              labelWidth={labelWidth}
+              label="Kontaktná osoba"
+              value={shipTo.contactName}
+            />
+            <LabelValue labelWidth={labelWidth} label="Telefón" value={shipTo.phone} />
+            <LabelValue labelWidth={labelWidth} label="Email" value={shipTo.email} />
+          </Box>
+        ) : null}
       </Panel>
 
       {(program?.conditions || event?.conditions) && (
         <Panel title="Podmienky" gap="small">
           {program?.conditions && (
-            <LabelValue label="Podmienky programu" labelWidth="150px">
+            <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
               <Box background="light-2" flex pad="small">
                 <Markdown>{program?.conditions ?? ''}</Markdown>
               </Box>
             </LabelValue>
           )}
           {event?.conditions && (
-            <LabelValue label="Podmienky turnaja" labelWidth="150px">
+            <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
               <Box background="light-2" flex pad="small">
                 <Markdown>{event?.conditions ?? ''}</Markdown>
               </Box>
@@ -108,10 +123,30 @@ export function RegisterReview(props: RegisterReviewProps) {
         </Panel>
       )}
 
+      <Box>
+        <CheckBox
+          toggle
+          label="Akceptujem podmienky programu"
+          checked={acceptedProgramTC}
+          onChange={({ target }) => setAcceptedProgramTC(target.checked)}
+        />
+        <CheckBox
+          toggle
+          label="Akceptujem podmienky turnaja"
+          checked={acceptedEventTC}
+          onChange={({ target }) => setAcceptedEventTC(target.checked)}
+        />
+      </Box>
+
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />
         <Button plain label="Zrušiť" hoverIndicator onClick={cancel} />
-        <Button primary label="Registrovať" onClick={nextStep} />
+        <Button
+          primary
+          label="Registrovať"
+          onClick={nextStep}
+          disabled={!(acceptedProgramTC && (acceptedEventTC || !event?.conditions))}
+        />
       </Box>
     </Box>
   );

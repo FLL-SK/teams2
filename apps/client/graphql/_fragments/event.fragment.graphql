@@ -1,6 +1,8 @@
 fragment EventTeamTeamFragment on EventTeam {
   id
   registeredOn
+  teamSize
+  sizeConfirmedOn
   team {
     ...TeamListFragment
   }

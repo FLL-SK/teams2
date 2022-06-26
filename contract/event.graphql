@@ -11,6 +11,8 @@ type EventTeam implements INode {
   eventId: ID!
   teamId: ID!
   registeredOn: DateTime
+  teamSize: Int
+  sizeConfirmedOn: DateTime
 
   event: Event!
   team: Team!

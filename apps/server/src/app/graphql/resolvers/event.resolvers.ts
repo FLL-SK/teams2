@@ -10,7 +10,7 @@ import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getEvent: async (_parent, { id }, { dataSources }) => dataSources.event.getEvent(id),
-  getEvents: async (_parent, _args, { dataSources }) => dataSources.event.getEvents(),
+  getEvents: async (_parent, { filter }, { dataSources }) => dataSources.event.getEvents(filter),
 };
 
 export const typeResolver: Resolver<Event> = {
