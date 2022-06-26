@@ -113,10 +113,10 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
   }
 
   async emailInvoice(options: InvoiceEmailOptions): Promise<InvoiceEmailResult> {
-    const log = logger('IAPI:SF:enailInvoice');
+    const log = logger('IAPI:SF:emailInvoice');
     const config = getServerConfig();
 
-    log.debug('Sending invoice via SF');
+    log.debug('Sending invoice PDF via email via SF');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const request: any = {
       Email: {
@@ -145,7 +145,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
 
       if (result.status != 200) {
         log.error(
-          `Failed posting invoice to Superfaktura. code=${result.status} text=${result.statusText}`
+          `Failed sending invoice PDF via Superfaktura. code=${result.status} text=${result.statusText}`
         );
         return { status: 'error', error: result.statusText };
       }
@@ -157,9 +157,9 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
 
       return { status: 'ok' };
     } catch (err) {
-      log.error('Error posting invoice to Superfaktura err=%o', err);
+      log.error('Error sending invoice PDF via Superfaktura err=%o', err);
     }
 
-    return { status: 'error', error: 'unknown error ocurred posting invoice to Superfaktura' };
+    return { status: 'error', error: 'unknown error ocurred requesting SF to email invoice' };
   }
 }

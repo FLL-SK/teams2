@@ -5,6 +5,7 @@ import { useState } from 'react';
 import {
   EventListFragmentFragment,
   TeamListFragmentFragment,
+  useGetEventsQuery,
   useGetProgramQuery,
 } from '../../generated/graphql';
 import { Modal } from '../modal';
@@ -22,7 +23,10 @@ export function ChangeTeamEventDialog(props: ChangeTeamEventDialogProps) {
   const { show, team, event, onClose, onSubmit } = props;
   const [selectedEvent, setSelectedEvent] = useState<EventListFragmentFragment>();
 
-  const { data, loading } = useGetProgramQuery({ variables: { id: event?.programId ?? '0' } });
+  const { data, loading } = useGetEventsQuery({
+    variables: { filter: { programId: event?.programId ?? '0', isActive: true } },
+  });
+
   if (!show || !team || !event) {
     return null;
   }
@@ -38,7 +42,9 @@ export function ChangeTeamEventDialog(props: ChangeTeamEventDialogProps) {
           ) : (
             <Box flex>
               <Select
-                options={data?.getProgram.events ?? []}
+                options={data?.getEvents ?? []}
+                disabled={[event.id]}
+                valueKey={(o: EventListFragmentFragment) => o.id}
                 labelKey={(o: EventListFragmentFragment) => o.name}
                 onChange={({ option }) => setSelectedEvent(option)}
               />

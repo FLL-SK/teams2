@@ -14,6 +14,7 @@ type Team implements INode {
 
   billTo: Address
   shipTo: Address
+  useBillTo: Boolean
 
   coaches: [User!]!
   events: [EventTeam!]!
@@ -32,6 +33,7 @@ input UpdateTeamInput {
   name: String
   billTo: AddressInput
   shipTo: AddressInput
+  useBillTo: Boolean
 }
 
 type UpdateTeamPayload implements IMutationPayload {

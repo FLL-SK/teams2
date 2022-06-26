@@ -9,6 +9,7 @@ import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import {
   Address,
+  UpdateTeamInput,
   useCreateRegistrationInvoiceMutation,
   useEmailInvoiceMutation,
   useGetTeamQuery,
@@ -153,9 +154,13 @@ export function RegisterPage() {
           <RegisterShipToAddress
             team={team}
             details={registerDetails}
-            onSubmit={(a) => {
-              updateTeam({ variables: { id: teamId, input: { shipTo: a } } });
-              setRegisterDetails({ ...registerDetails, shipTo: a });
+            onSubmit={(a, ub) => {
+              const u: UpdateTeamInput = { useBillTo: ub };
+              if (a) {
+                u.shipTo = a;
+              }
+              updateTeam({ variables: { id: teamId, input: u } });
+              setRegisterDetails({ ...registerDetails, shipTo: a, useBillTo: ub });
             }}
             nextStep={() => setStep('review')}
             prevStep={() => setStep('shipto')}

@@ -48,6 +48,12 @@ function MainNav({ direction }: { direction: DirectionType }) {
             <Text>Admin</Text>
           </Anchor>
         )}
+
+        {isAuthenticated && (
+          <Anchor onClick={() => setNavLink(appPath.profile(user?.id))}>
+            <Text>Môj profil</Text>
+          </Anchor>
+        )}
       </Box>
 
       <Box direction="row" gap="small" align="center">

@@ -72,7 +72,7 @@ export async function createRegistrationInvoice(
 export async function emailInvoice(id: ObjectId, ctx: ApolloContext): Promise<Invoice> {
   const { dataSources } = ctx;
   const config = getServerConfig();
-  const log = this.logBase.extend('emailInv');
+  const log = logLib.extend('emailInv');
   log.debug(`id: ${id}`);
 
   const invoice = await dataSources.invoice.getInvoice(id);

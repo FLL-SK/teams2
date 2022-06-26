@@ -11,6 +11,7 @@ export interface RegisterDetails {
   event?: EventListFragmentFragment;
   shipTo?: Address;
   billTo?: Address;
+  useBillTo?: boolean;
   items?: Item[];
 }
 

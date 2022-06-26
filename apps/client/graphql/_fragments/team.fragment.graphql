@@ -19,6 +19,7 @@ fragment TeamFragment on Team {
   billTo {
     ...AddressFragment
   }
+  useBillTo
   shipTo {
     ...AddressFragment
   }
