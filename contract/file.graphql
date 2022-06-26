@@ -13,16 +13,21 @@ type File implements INode {
   updatedOn: DateTime!
 }
 
-input FileUploadRequestInput {
+input FileUploadInput {
   name: String!
   size: Int!
   type: String!
 }
+
 extend type Query {
   getProgramFiles(programId: ID!): [File!]!
   getEventFiles(eventId: ID!): [File!]!
+  getProgramFileUploadUrl(programId: ID!, input: FileUploadInput!): String!
+  getEventFileUploadUrl(eventId: ID!, input: FileUploadInput!): String!
 }
 
 extend type Mutation {
-  requestFileUpload(input: FileUploadRequestInput): String!
+  addProgramFile(programId: ID!, input: FileUploadInput!): File!
+  addEventFile(eventId: ID!, input: FileUploadInput!): File!
+  removeFile(fileId: ID!): File!
 }

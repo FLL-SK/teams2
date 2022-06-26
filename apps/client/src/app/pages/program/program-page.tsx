@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, CheckBox, Markdown, Text } from 'grommet';
+import { Box, Button, CheckBox, FileInput, Markdown, Text } from 'grommet';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -11,13 +11,18 @@ import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
   EventListFragmentFragment,
+  FileUploadInput,
   InvoiceItemFragmentFragment,
+  useAddProgramFileMutation,
   useAddProgramManagerMutation,
   useCreateEventMutation,
   useCreateProgramInvoiceItemMutation,
   useDeleteEventMutation,
   useDeleteProgramInvoiceItemMutation,
+  useGetProgramFilesQuery,
+  useGetProgramFileUploadUrlLazyQuery,
   useGetProgramQuery,
+  useRemoveFileMutation,
   useRemoveProgramManagerMutation,
   useUpdateProgramInvoiceItemMutation,
   useUpdateProgramMutation,
@@ -28,11 +33,30 @@ import { InvoiceItemList } from '../../components/invoice-item-list';
 import { useParams } from 'react-router-dom';
 import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-item-dialog';
 import { omit } from 'lodash';
+import { FileTile } from '../../components/file-tile';
+import { FileUploadControl } from '../../components/file-upload-control';
+import { uploadS3XHR } from '../../utils/upload-s3-xhr';
 
 export function ProgramPage() {
   const { id } = useParams();
 
-  const { data, loading, error, refetch } = useGetProgramQuery({ variables: { id: id ?? '0' } });
+  const {
+    data: programData,
+    loading: programLoading,
+    error,
+    refetch: programRefetch,
+  } = useGetProgramQuery({ variables: { id: id ?? '0' } });
+
+  const {
+    data: filesData,
+    loading: filesLoading,
+    refetch: filesRefetch,
+  } = useGetProgramFilesQuery({
+    variables: { programId: id ?? '0' },
+    pollInterval: 600000, // get updated urls before they expire
+  });
+
+  const [getUploadUrl] = useGetProgramFileUploadUrlLazyQuery();
 
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
@@ -44,16 +68,26 @@ export function ProgramPage() {
   const [addManager] = useAddProgramManagerMutation();
   const [removeManager] = useRemoveProgramManagerMutation();
 
-  const [createEvent] = useCreateEventMutation({ onCompleted: () => refetch() });
-  const [deleteEvent] = useDeleteEventMutation({ onCompleted: () => refetch() });
+  const [createEvent] = useCreateEventMutation({ onCompleted: () => programRefetch() });
+  const [deleteEvent] = useDeleteEventMutation({ onCompleted: () => programRefetch() });
 
-  const [createInvoiceItem] = useCreateProgramInvoiceItemMutation({ onCompleted: () => refetch() });
-  const [updateInvoiceItem] = useUpdateProgramInvoiceItemMutation({ onCompleted: () => refetch() });
-  const [deleteInvoiceItem] = useDeleteProgramInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [createInvoiceItem] = useCreateProgramInvoiceItemMutation({
+    onCompleted: () => programRefetch(),
+  });
+  const [updateInvoiceItem] = useUpdateProgramInvoiceItemMutation({
+    onCompleted: () => programRefetch(),
+  });
+  const [deleteInvoiceItem] = useDeleteProgramInvoiceItemMutation({
+    onCompleted: () => programRefetch(),
+  });
+
+  const [addProgramFile] = useAddProgramFileMutation({ onCompleted: () => filesRefetch() });
+  const [removeFile] = useRemoveFileMutation({ onCompleted: () => filesRefetch() });
 
   const { isProgramManager, isAdmin } = useAppUser();
 
-  const program = data?.getProgram;
+  const program = programData?.getProgram;
+  const files = filesData?.getProgramFiles ?? [];
   const canEdit: boolean = isProgramManager(program?.id) || isAdmin();
   const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
 
@@ -80,6 +114,28 @@ export function ProgramPage() {
     [deleteEvent]
   );
 
+  const handleFileUpload = useCallback(
+    async (files: FileList) => {
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        console.log('fetching upload url for ', f);
+        const ff: FileUploadInput = { name: f.name, size: f.size, type: f.type };
+        getUploadUrl({
+          variables: { programId: id ?? '0', input: ff },
+          onCompleted: async (data) => {
+            console.log('Uploading to ', data.getProgramFileUploadUrl);
+            if (await uploadS3XHR(f, data.getProgramFileUploadUrl)) {
+              addProgramFile({ variables: { programId: id ?? '0', input: ff } });
+            }
+
+            //TODO statu/result notification
+          },
+        });
+      }
+    },
+    [addProgramFile, getUploadUrl, id]
+  );
+
   if (!id || error) {
     return <ErrorPage title="Program nenájdený" />;
   }
@@ -87,7 +143,7 @@ export function ProgramPage() {
   const invoiceItems = program?.invoiceItems ?? [];
 
   return (
-    <BasePage title="Program" loading={loading}>
+    <BasePage title="Program" loading={programLoading}>
       <PanelGroup>
         <Panel title="Detaily programu" gap="medium">
           <LabelValue label="Názov" labelWidth="150px" value={program?.name} />
@@ -108,6 +164,18 @@ export function ProgramPage() {
               disabled={!canEdit}
             />
           </Box>
+        </Panel>
+
+        <Panel title="Súbory" gap="small">
+          {files.map((f) => (
+            <FileTile
+              key={f.id}
+              file={f}
+              readOnly={!canEdit}
+              onDelete={(f) => removeFile({ variables: { fileId: f.id } })}
+            />
+          ))}
+          {canEdit && <FileUploadControl onUpload={handleFileUpload} />}
         </Panel>
 
         <Panel title="Poplatky" gap="medium">
@@ -172,7 +240,7 @@ export function ProgramPage() {
 
       <EditProgramDialog
         show={showProgramEditDialog}
-        program={data?.getProgram}
+        program={programData?.getProgram}
         onClose={() => setShowProgramEditDialog(false)}
         onSubmit={(values) => updateProgram({ variables: { id: id ?? '0', input: values } })}
       />

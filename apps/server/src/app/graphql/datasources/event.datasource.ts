@@ -6,7 +6,6 @@ import {
   eventRepository,
   EventTeamData,
   eventTeamRepository,
-  fileRepository,
   userRepository,
 } from '../../models';
 import {
@@ -15,9 +14,8 @@ import {
   CreateEventInput,
   CreateEventPayload,
   EventTeam,
-  File,
 } from '../../generated/graphql';
-import { EventMapper, EventTeamMapper, FileMapper, UserMapper } from '../mappers';
+import { EventMapper, EventTeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 export class EventDataSource extends BaseDataSource {
@@ -100,10 +98,5 @@ export class EventDataSource extends BaseDataSource {
       event.managersIds.map(async (u) => userRepository.findById(u).exec())
     );
     return users.map(UserMapper.toUser);
-  }
-
-  async getFiles(programId: ObjectId): Promise<File[]> {
-    const files = await fileRepository.find({ programId }).sort({ name: 1 }).exec();
-    return files.map(FileMapper.toFile);
   }
 }

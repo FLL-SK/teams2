@@ -1,5 +1,6 @@
 import {
   EventDataSource,
+  FileDataSource,
   InvoiceDataSource,
   ProgramDataSource,
   TeamDataSource,
@@ -23,6 +24,7 @@ export type ApolloContextDataSources = {
   team: TeamDataSource;
   program: ProgramDataSource;
   invoice: InvoiceDataSource;
+  file: FileDataSource;
 };
 
 interface UserDataExtended extends UserData {

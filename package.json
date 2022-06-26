@@ -26,6 +26,7 @@
     "@graphql-tools/load": "^7.3.2",
     "@graphql-tools/schema": "^7.1.2",
     "@graphql-tools/utils": "8.2.5",
+    "@tsmx/human-readable": "^1.0.7",
     "@types/passport": "^1.0.7",
     "apollo-server-express": "^3.7.0",
     "aws-sdk": "^2.1151.0",

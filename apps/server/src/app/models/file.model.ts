@@ -21,9 +21,9 @@ export interface FileModel extends Model<FileData> {
 }
 
 const schema = new Schema<FileData, FileModel>({
-  programId: { type: Types.ObjectId, ref: 'Program', required: true },
-  eventId: { type: Types.ObjectId, ref: 'Event', required: true },
-  teamId: { type: Types.ObjectId, ref: 'Team', required: true },
+  programId: { type: Types.ObjectId, ref: 'Program' },
+  eventId: { type: Types.ObjectId, ref: 'Event' },
+  teamId: { type: Types.ObjectId, ref: 'Team' },
   name: { type: Types.String, required: true },
   size: { type: Types.Number, required: true },
   type: { type: Types.String, required: true },

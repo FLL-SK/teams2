@@ -8,7 +8,7 @@ export const s3Client = new S3(getServerConfig().s3);
 
 export async function deleteObjectsPromise(
   params: S3.DeleteObjectsRequest
-): Promise<S3.DeleteObjectOutput> {
+): Promise<S3.DeleteObjectsOutput> {
   return new Promise((resolve, reject) =>
     s3Client.deleteObjects(params, function (err, data) {
       if (err) return reject(err);
@@ -32,7 +32,7 @@ export async function listObjectsV2Promise(
   );
 }
 
-export async function deleteFileFromBucket(fileName: string) {
+export async function deleteFileFromBucket(fileName: string): Promise<boolean> {
   const log = logLib.extend('deleteFile');
   const files: S3.ObjectIdentifier[] = [{ Key: fileName }];
 
@@ -47,6 +47,7 @@ export async function deleteFileFromBucket(fileName: string) {
   log.debug('Going to delete file from S3 %o', params.Delete);
   const data = await deleteObjectsPromise(params);
   log.debug('Deleted %o', data);
+  return data.Errors.length === 0;
 }
 
 export async function getSignedUrlForUpload(fileName: string, fileType: string, expiresIn = 120) {
@@ -70,7 +71,6 @@ export async function getSignedUrlForDownload(fileName: string, fileType: string
     Bucket: getServerConfig().s3.bucket,
     Key: fileName,
     Expires: expiresIn, // seconds
-    ContentType: fileType,
   };
 
   const url = await s3Client.getSignedUrlPromise('getObject', params);

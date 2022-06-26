@@ -1,23 +1,12 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import {
-  eventRepository,
-  InvoiceData,
-  InvoiceItemData,
-  invoiceItemRepository,
-  invoiceRepository,
-  programRepository,
-  teamRepository,
-} from '../../models';
+import { InvoiceItemData, invoiceItemRepository, invoiceRepository } from '../../models';
 import { Invoice, InvoiceItem, InvoiceItemInput } from '../../generated/graphql';
 import { InvoiceItemMapper, InvoiceMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
-import { InvoicingAPI } from '../../domains/invoicingAPI';
 
 import { logger } from '@teams2/logger';
-import { InvoicingAPISuperfaktura } from '../../domains/invoicingAPI-superfaktura';
-import { getServerConfig } from '../../../server-config';
 
 export class InvoiceDataSource extends BaseDataSource {
   constructor() {

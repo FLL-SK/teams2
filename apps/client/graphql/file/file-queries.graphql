@@ -9,3 +9,11 @@ query getEventFiles($eventId: ID!) {
     ...FileFragment
   }
 }
+
+query getProgramFileUploadUrl($programId: ID!, $input: FileUploadInput!) {
+  getProgramFileUploadUrl(programId: $programId, input: $input)
+}
+
+query getEventFileUploadUrl($eventId: ID!, $input: FileUploadInput!) {
+  getEventFileUploadUrl(eventId: $eventId, input: $input)
+}

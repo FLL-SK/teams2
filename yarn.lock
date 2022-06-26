@@ -2639,6 +2639,11 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
+"@tsmx/human-readable@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@tsmx/human-readable/-/human-readable-1.0.7.tgz#308c7054ca8c77c88fdcbe0a6c67d58977a4d0c9"
+  integrity sha512-bpoy55Zj4f8fIgDDmTNAYNYwcQdEh+77JOL2+/zj1sr9cpLrlpMzceV6HqOoFKmvvckLrQ9Xg9lYEZAefr6hSw==
+
 "@types/accepts@^1.3.5":
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/@types/accepts/-/accepts-1.3.5.tgz#c34bec115cfc746e04fe5a059df4ce7e7b391575"
