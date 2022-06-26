@@ -6,6 +6,7 @@
 # import * from "./event.graphql"
 # import * from "./program.graphql"
 # import * from "./invoice.graphql"
+# import * from "./file.graphql"
 
 schema {
   query: Query

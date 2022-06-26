@@ -6,3 +6,4 @@ export * from './program.model';
 export * from './invoice.model';
 export * from './invoice-item.model';
 export * from './address.model';
+export * from './file.model';

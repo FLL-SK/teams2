@@ -1,0 +1,11 @@
+query getProgramFiles($programId: ID!) {
+  getProgramFiles(programId: $programId) {
+    ...FileFragment
+  }
+}
+
+query getEventFiles($eventId: ID!) {
+  getEventFiles(eventId: $eventId) {
+    ...FileFragment
+  }
+}

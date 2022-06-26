@@ -1,0 +1,28 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+type File implements INode {
+  id: ID!
+  programId: ID
+  eventId: ID
+  teamId: ID
+  name: String!
+  size: Int!
+  type: String!
+  url: String!
+  updatedOn: DateTime!
+}
+
+input FileUploadRequestInput {
+  name: String!
+  size: Int!
+  type: String!
+}
+extend type Query {
+  getProgramFiles(programId: ID!): [File!]!
+  getEventFiles(eventId: ID!): [File!]!
+}
+
+extend type Mutation {
+  requestFileUpload(input: FileUploadRequestInput): String!
+}

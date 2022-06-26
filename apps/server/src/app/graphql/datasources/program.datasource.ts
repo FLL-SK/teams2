@@ -2,7 +2,13 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { ObjectId } from 'mongodb';
-import { eventRepository, ProgramData, programRepository, userRepository } from '../../models';
+import {
+  eventRepository,
+  fileRepository,
+  ProgramData,
+  programRepository,
+  userRepository,
+} from '../../models';
 import { ProgramMapper } from '../mappers/program.mapper';
 import {
   CreateProgramInput,
@@ -13,8 +19,9 @@ import {
   User,
   Event,
   ProgramFilterInput,
+  File,
 } from '../../generated/graphql';
-import { EventMapper, EventTeamMapper, UserMapper } from '../mappers';
+import { EventMapper, EventTeamMapper, FileMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
 
 export class ProgramDataSource extends BaseDataSource {
@@ -91,5 +98,10 @@ export class ProgramDataSource extends BaseDataSource {
 
     const events = await eventRepository.findEventsForProgram(programId);
     return events.map(EventMapper.toEvent);
+  }
+
+  async getFiles(programId: ObjectId): Promise<File[]> {
+    const files = await fileRepository.find({ programId }).sort({ name: 1 }).exec();
+    return files.map(FileMapper.toFile);
   }
 }

@@ -18,7 +18,7 @@ export interface EventTeamModel extends Model<EventTeamData> {
 
 const schema = new Schema<EventTeamData, EventTeamModel>({
   eventId: { type: Types.ObjectId, ref: 'Event', required: true },
-  teamId: { type: Types.ObjectId, ref: 'team', required: true },
+  teamId: { type: Types.ObjectId, ref: 'Team', required: true },
   registeredOn: { type: Types.Date },
 });
 

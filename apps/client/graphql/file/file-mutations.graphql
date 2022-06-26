@@ -1,0 +1,3 @@
+mutation requestFileUpload($input: FileUploadRequestInput) {
+  requestFileUpload(input: $input)
+}
