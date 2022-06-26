@@ -9,7 +9,6 @@ export interface EventData {
   programId: ObjectId;
   conditions?: string;
 
-  teamsIds: ObjectId[];
   managersIds: ObjectId[];
 
   date?: Date;
@@ -41,7 +40,6 @@ const schema = new Schema<EventData, EventModel>({
   date: { type: Types.Date },
   registrationEnd: { type: Types.Date },
 
-  teamsIds: [{ type: Types.ObjectId, ref: 'Team', default: [] }],
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 
   deletedOn: { type: Types.Date },

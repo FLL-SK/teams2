@@ -1,3 +1,19 @@
+fragment EventTeamTeamFragment on EventTeam {
+  id
+  registeredOn
+  team {
+    ...TeamListFragment
+  }
+}
+
+fragment EventTeamEventFragment on EventTeam {
+  id
+  registeredOn
+  event {
+    ...EventListFragment
+  }
+}
+
 fragment EventListFragment on Event {
   id
   name
@@ -8,7 +24,10 @@ fragment EventListFragment on Event {
 
   conditions
 
-  teamsIds
+  eventTeams {
+    ...EventTeamTeamFragment
+  }
+
   managersIds
 
   deletedOn
@@ -22,9 +41,6 @@ fragment EventListFragment on Event {
 fragment EventFragment on Event {
   ...EventListFragment
 
-  teams {
-    ...TeamListFragment
-  }
   managers {
     ...UserListFragment
   }

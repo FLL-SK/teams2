@@ -2,9 +2,7 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Markdown, Text } from 'grommet';
-import { Close } from 'grommet-icons';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
@@ -32,16 +30,15 @@ import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-ite
 import { omit } from 'lodash';
 import { TeamMenu } from './team-menu';
 import { ChangeTeamEventDialog } from '../../components/dialogs/change-team-event-dialog';
+import { useParams } from 'react-router-dom';
 
 export function EventPage() {
-  const navigate = useNavigate();
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
   const [teamToUnregister, setTeamToUnregister] = useState<TeamListFragmentFragment>();
   const [teamToSwitch, setTeamToSwitch] = useState<TeamListFragmentFragment>();
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
-  const [selectedTeam, setSelectedTeam] = useState<TeamListFragmentFragment>();
 
   const {
     data: eventData,
@@ -131,12 +128,12 @@ export function EventPage() {
 
         <Panel title="Tímy">
           <Box direction="row" wrap>
-            {eventData?.getEvent?.teams.map((t) => (
+            {event?.eventTeams.map((t) => (
               <ListRow key={t.id} columns="1fr auto" pad="small" align="center">
-                <Text>{t.name}</Text>
+                <Text>{t.team.name}</Text>
                 <Box width="100px">
                   <TeamMenu
-                    team={t}
+                    team={t.team}
                     onUnregister={(tt) => setTeamToUnregister(tt)}
                     onChangeEvent={(tt) => setTeamToSwitch(tt)}
                     canEdit={canEdit}

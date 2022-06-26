@@ -16,7 +16,7 @@ type Team implements INode {
   shipTo: Address
 
   coaches: [User!]!
-  events: [Event!]!
+  events: [EventTeam!]!
 }
 
 input CreateTeamInput {

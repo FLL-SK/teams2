@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { SwitchTeamEventPayload, UpdateEventInput, UpdateEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
-import { EventMapper } from '../graphql/mappers';
+import { EventMapper, EventTeamMapper } from '../graphql/mappers';
 import { EventData, eventRepository } from '../models';
 import {
   emailEventChangedToCoach,
@@ -107,7 +107,7 @@ export async function updateEvent(
     (
       await dataSources.event.getEventTeams(id)
     ).map(async (t) => ({
-      name: t.name,
+      name: (await dataSources.team.getTeam(t.teamId)).name,
       coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
     }))
   );

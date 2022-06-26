@@ -1,6 +1,8 @@
 import {
   EventData,
   eventRepository,
+  EventTeamData,
+  eventTeamRepository,
   InvoiceItemData,
   invoiceItemRepository,
   programRepository,
@@ -22,7 +24,6 @@ type TestSeedData = Omit<EventData, 'programId'> & {
 export const seedTestEventData: TestSeedData[] = [
   {
     name: 'Event1',
-    teamsIds: [],
     managersIds: [],
     teams: ['Team1'],
     managers: ['eventmgr1@test', 'eventmgr2@test'],
@@ -33,7 +34,6 @@ export const seedTestEventData: TestSeedData[] = [
   },
   {
     name: 'Event2',
-    teamsIds: [],
     managersIds: [],
     teams: ['Team2', 'Team3'],
     managers: ['eventmgr2@test'],
@@ -43,7 +43,6 @@ export const seedTestEventData: TestSeedData[] = [
   },
   {
     name: 'Event3',
-    teamsIds: [],
     managersIds: [],
     teams: ['Team3'],
     managers: ['progmgr1@test'],
@@ -65,7 +64,6 @@ export async function seedTestEvents() {
 
     const e: EventData = {
       name: d.name,
-      teamsIds: d.teamsIds,
       managersIds: d.managersIds,
       programId: p._id,
       conditions: d.conditions,
@@ -86,9 +84,8 @@ export async function seedTestEvents() {
 
     for (const teamName of d.teams) {
       const t = await teamRepository.findOne({ name: teamName });
-      if (t) {
-        nu.teamsIds.push(t._id);
-      }
+      const et: EventTeamData = { eventId: nu._id, teamId: t._id, registeredOn: new Date() };
+      await eventTeamRepository.create(et);
     }
 
     await nu.save();

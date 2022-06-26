@@ -40,9 +40,11 @@ export function TeamPage() {
   const events = useMemo(
     () =>
       (team?.events ?? []).filter(
-        (event) =>
-          !event.deletedOn &&
-          (!event.date || !showActiveEventsOnly || (event.date ?? '').substring(0, 10) >= today)
+        (et) =>
+          !et.event.deletedOn &&
+          (!et.event.date ||
+            !showActiveEventsOnly ||
+            (et.event.date ?? '').substring(0, 10) >= today)
       ),
     [team, showActiveEventsOnly, today]
   );
@@ -50,7 +52,8 @@ export function TeamPage() {
   const activeEvents = useMemo(
     () =>
       (team?.events ?? []).filter(
-        (event) => !event.deletedOn && (!event.date || (event.date ?? '').substring(0, 10) >= today)
+        (et) =>
+          !et.event.deletedOn && (!et.event.date || (et.event.date ?? '').substring(0, 10) >= today)
       ),
     [team, today]
   );
@@ -80,7 +83,7 @@ export function TeamPage() {
               onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
-          <EventList events={events} />
+          <EventList events={events.map((e) => e.event)} />
         </Panel>
 
         {canEdit && (
