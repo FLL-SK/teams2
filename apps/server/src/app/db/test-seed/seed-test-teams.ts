@@ -8,6 +8,17 @@ export const seedTestTeamsData: TestSeedData[] = [
     name: 'Team1',
     coachesIds: [],
     coaches: ['coach1@test'],
+    address: {
+      name: 'Adr name',
+      street: 'Adre street',
+      city: 'Adr city',
+      zip: 'Adr Zip',
+      countryCode: 'Adr Country',
+      contactName: 'Adr Contact Name',
+      email: 'adr@test',
+      phone: 'Adr Phone',
+    },
+
     billTo: {
       name: 'Bill To',
       street: 'Bill To Street',
@@ -39,6 +50,16 @@ export const seedTestTeamsData: TestSeedData[] = [
     name: 'Team2',
     coachesIds: [],
     coaches: ['coach2@test', 'coach3@test'],
+    address: {
+      name: '2 Adr name',
+      street: '2 Adre street',
+      city: '2 Adr city',
+      zip: '2 Adr Zip',
+      countryCode: '2 Adr Country',
+      contactName: '2 Adr Contact Name',
+      email: '2adr@test',
+      phone: '2 Adr Phone',
+    },
     billTo: {
       name: '2 Bill To',
       street: '2 Bill To Street',
@@ -56,6 +77,16 @@ export const seedTestTeamsData: TestSeedData[] = [
   {
     name: 'Team3',
     coachesIds: [],
+    address: {
+      name: '3 Adr name',
+      street: '3 Adre street',
+      city: '3 Adr city',
+      zip: '3 Adr Zip',
+      countryCode: '3 Adr Country',
+      contactName: '3 Adr Contact Name',
+      email: '3adr@test',
+      phone: '3 Adr Phone',
+    },
     coaches: ['coach3@test'],
   },
 ];
@@ -69,6 +100,7 @@ export async function seedTestTeams() {
       coachesIds: d.coachesIds,
       billTo: d.billTo,
       shipTo: d.shipTo,
+      address: d.address,
     };
 
     for (const username of d.coaches) {

@@ -3,6 +3,10 @@ fragment TeamListFragment on Team {
   name
   coachesIds
 
+  address {
+    ...AddressFragment
+  }
+
   deletedOn
   deletedBy
 }

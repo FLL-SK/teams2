@@ -11,12 +11,14 @@ export const TeamMapper = {
       id: team._id,
       name: team.name,
       coachesIds: team.coachesIds,
-      deletedOn: team.deletedOn,
-      deletedBy: team.deletedBy,
 
+      address: AddressMapper.toAddress(team.address),
       billTo: AddressMapper.toAddress(team.billTo),
       shipTo: AddressMapper.toAddress(team.shipTo),
       useBillTo: team.useBillTo,
+
+      deletedOn: team.deletedOn,
+      deletedBy: team.deletedBy,
 
       coaches: [],
       events: [],
