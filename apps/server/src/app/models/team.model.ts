@@ -7,12 +7,13 @@ const Types = Schema.Types;
 export interface TeamData {
   _id?: ObjectId;
   name: string;
-  deletedOn?: Date;
-  deletedBy?: ObjectId;
   coachesIds: ObjectId[];
+  address: AddressData;
   billTo?: AddressData;
   shipTo?: AddressData;
   useBillTo?: boolean;
+  deletedOn?: Date;
+  deletedBy?: ObjectId;
 }
 
 export type TeamDocument = (Document<unknown, unknown, TeamData> & TeamData) | null;
@@ -30,6 +31,7 @@ const schema = new Schema<TeamData, TeamModel>({
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },
   coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
+  address: { type: addressSchema },
   billTo: { type: addressSchema },
   shipTo: { type: addressSchema },
   useBillTo: { type: Types.Boolean, default: true },
