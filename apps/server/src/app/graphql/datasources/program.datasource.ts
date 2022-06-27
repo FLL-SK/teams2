@@ -80,7 +80,7 @@ export class ProgramDataSource extends BaseDataSource {
     const users = await Promise.all(
       program.managersIds.map(async (u) => userRepository.findById(u).exec())
     );
-    return users.map(UserMapper.toUser);
+    return users.filter((u) => !!u).map(UserMapper.toUser);
   }
 
   async getProgramEvents(programId: ObjectId): Promise<Event[]> {

@@ -52,7 +52,7 @@ export class TeamDataSource extends BaseDataSource {
 
   async getTeamsCoachedBy(coachId: ObjectId): Promise<Team[]> {
     const teams = await teamRepository.findTeamsCoachedByUser(coachId);
-    return teams.map((t) => TeamMapper.toTeam(t));
+    return teams.filter((t) => !!t).map((t) => TeamMapper.toTeam(t));
   }
 
   async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
@@ -81,7 +81,7 @@ export class TeamDataSource extends BaseDataSource {
     const coaches = await Promise.all(
       t.coachesIds.map(async (c) => userRepository.findById(c).lean().exec())
     );
-    return coaches.map((c) => UserMapper.toUser(c));
+    return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
   }
 
   async getTeamEvents(teamId: ObjectId): Promise<EventTeam[]> {

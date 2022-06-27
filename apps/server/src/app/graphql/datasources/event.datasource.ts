@@ -106,6 +106,6 @@ export class EventDataSource extends BaseDataSource {
     const users = await Promise.all(
       event.managersIds.map(async (u) => userRepository.findById(u).exec())
     );
-    return users.map(UserMapper.toUser);
+    return users.filter((e) => !!e).map(UserMapper.toUser);
   }
 }
