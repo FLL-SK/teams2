@@ -13,18 +13,30 @@ import {
 } from '../../generated/graphql';
 import { EventTeamMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
+import * as Dataloader from 'dataloader';
 
 export class TeamDataSource extends BaseDataSource {
+  private loader: Dataloader<string, Team, string>;
+
   constructor() {
     super();
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
     super.initialize(config);
+    this.loader = new Dataloader(this.loaderFn.bind(this));
+  }
+
+  private async loaderFn(ids: string[]): Promise<Team[]> {
+    const data = await teamRepository.find({ _id: { $in: ids } }).exec();
+    return data.map(TeamMapper.toTeam.bind(this));
   }
 
   async getTeam(id: ObjectId): Promise<Team> {
-    return TeamMapper.toTeam(await teamRepository.findById(id).exec());
+    //const team = TeamMapper.toTeam(await teamRepository.findById(id).exec());
+    const team = this.loader.load(id.toString());
+
+    return team;
   }
 
   async getTeams(): Promise<Team[]> {

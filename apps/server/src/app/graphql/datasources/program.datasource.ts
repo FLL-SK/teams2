@@ -16,22 +16,40 @@ import {
 } from '../../generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
+import { logger } from '@teams2/logger';
+import * as Dataloader from 'dataloader';
 
 export class ProgramDataSource extends BaseDataSource {
+  private loader: Dataloader<string, Program, string>;
   constructor() {
     super();
+    this.logBase = logger('DS:program');
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
     super.initialize(config);
+    this.loader = new Dataloader(this.loaderFn.bind(this));
+  }
+
+  private async loaderFn(ids: string[]): Promise<Program[]> {
+    const data = await programRepository.find({ _id: { $in: ids } }).exec();
+    return data.map(ProgramMapper.toProgram.bind(this));
   }
 
   async getProgram(id: ObjectId): Promise<Program> {
-    return ProgramMapper.toProgram(await programRepository.findById(id).exec());
+    const log = this.logBase.extend('getP');
+    log.debug('id=%s', id);
+    const program = this.loader.load(id.toString());
+    //const program = ProgramMapper.toProgram(await programRepository.findById(id).exec());
+    log.debug('id=%s done', id);
+    return program;
   }
 
   async getPrograms(filter?: ProgramFilterInput): Promise<Program[]> {
+    const log = this.logBase.extend('getPrgs');
+    log.debug('getting prgs');
     const programs = await programRepository.findPrograms(filter ?? {});
+    log.debug('getting prgs - done');
     return programs.map(ProgramMapper.toProgram);
   }
 
