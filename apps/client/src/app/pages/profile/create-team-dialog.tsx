@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Form, FormField } from 'grommet';
+import { Box, Button, Form, FormField, Grid } from 'grommet';
 import { Modal } from '../../components/modal';
 import { CreateTeamInput } from '../../generated/graphql';
 
@@ -35,8 +35,10 @@ export function CreateTeamDialog(props: CreateTeamDialogProps) {
         <FormField label="Meno tímu" name="name" required autoFocus />
         <FormField label="Názov zriaďovateľa" name="orgName" required />
         <FormField label="Adresa/ulica" name="street" required />
-        <FormField label="Mesto" name="city" required />
-        <FormField label="PSČ" name="zip" required />
+        <Grid columns={['4fr', '1fr']} gap="small">
+          <FormField label="Mesto" name="city" required />
+          <FormField label="PSČ" name="zip" required />
+        </Grid>
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
           <Button primary type="submit" label="Vytvoriť" />
