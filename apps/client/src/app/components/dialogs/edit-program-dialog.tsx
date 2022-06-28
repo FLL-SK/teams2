@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Button, DateInput, Form, FormField, TextArea, TextInput } from 'grommet';
+import { Box, Button, DateInput, Form, FormField, Grid, TextArea, TextInput } from 'grommet';
 import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
 import { Modal } from '../modal';
@@ -63,12 +63,14 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
         <FormField label="Názov" name="name" required autoFocus>
           <TextInput name="name" />
         </FormField>
-        <FormField label="Začiatok programu" name="startDate">
-          <DateInput name="startDate" format="dd.mm.yyyy" />
-        </FormField>
-        <FormField label="Koniec programu" name="endDate">
-          <DateInput name="endDate" format="dd.mm.yyyy" />
-        </FormField>
+        <Grid columns={['1fr', '1fr']} gap="small">
+          <FormField label="Začiatok programu" name="startDate">
+            <DateInput name="startDate" format="dd.mm.yyyy" />
+          </FormField>
+          <FormField label="Koniec programu" name="endDate">
+            <DateInput name="endDate" format="dd.mm.yyyy" />
+          </FormField>
+        </Grid>
         <FormField label="Popis" name="description">
           <TextArea rows={10} name="description" />
         </FormField>
