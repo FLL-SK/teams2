@@ -2,7 +2,7 @@ fragment UserListFragment on User {
   id
   name
   username
-  phoneNumber
+  phone
 
   isAdmin
 }

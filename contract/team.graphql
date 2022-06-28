@@ -28,9 +28,9 @@ input CreateTeamInput {
   city: String!
   zip: String!
   countryCode: String
-  contactName: String!
-  phone: String!
-  email: String!
+  contactName: String
+  phone: String
+  email: String
 }
 
 type CreateTeamPayload implements IMutationPayload {

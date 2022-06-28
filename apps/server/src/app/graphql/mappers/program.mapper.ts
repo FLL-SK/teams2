@@ -1,6 +1,5 @@
 import { ProgramData } from '../../models';
 import { Program } from '../../generated/graphql';
-import { InvoiceItemMapper } from './invoice-item.mapper';
 
 export const ProgramMapper = {
   toProgram(program: ProgramData | null | undefined): Program | null {
@@ -13,6 +12,8 @@ export const ProgramMapper = {
       description: program.description,
       logoUrl: program.logoUrl,
       conditions: program.conditions,
+      startDate: program.startDate,
+      endDate: program.endDate,
 
       managersIds: program.managersIds,
 

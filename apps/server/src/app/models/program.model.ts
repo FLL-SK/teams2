@@ -9,6 +9,8 @@ export interface ProgramData {
   description?: string;
   logoUrl?: string;
   conditions?: string;
+  startDate: Date;
+  endDate: Date;
 
   managersIds: ObjectId[];
 
@@ -40,6 +42,9 @@ const schema = new Schema<ProgramData, ProgramModel>({
   logoUrl: { type: Types.String },
   conditions: { type: Types.String },
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
+
+  startDate: { type: Types.Date, required: true },
+  endDate: { type: Types.Date, required: true },
 
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },

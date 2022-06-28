@@ -46,7 +46,7 @@ export function ProfilePage() {
             />
             <LabelValue
               label="Telefón"
-              value={canEdit ? data?.getUser?.phoneNumber ?? '-' : xOut()}
+              value={canEdit ? data?.getUser?.phone ?? '-' : xOut()}
               direction="row"
               labelWidth="100px"
             />
@@ -88,7 +88,7 @@ export function ProfilePage() {
               input: {
                 ...data,
                 contactName: user?.name ?? '',
-                phone: user?.phoneNumber ?? '',
+                phone: user?.phone ?? '',
                 email: user?.username ?? '',
               },
             },

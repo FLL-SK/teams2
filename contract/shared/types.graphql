@@ -55,9 +55,9 @@ type Address {
   companyNumber: String
   vatNumber: String
   taxNumber: String
-  contactName: String!
-  phone: String!
-  email: String!
+  contactName: String
+  phone: String
+  email: Email
 }
 
 input AddressInput {
@@ -69,7 +69,7 @@ input AddressInput {
   companyNumber: String
   vatNumber: String
   taxNumber: String
-  contactName: String!
-  phone: String!
-  email: String!
+  contactName: String
+  phone: String
+  email: Email
 }

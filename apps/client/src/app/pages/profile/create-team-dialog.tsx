@@ -30,7 +30,7 @@ export function CreateTeamDialog(props: CreateTeamDialogProps) {
   };
 
   return (
-    <Modal title="Nový tím" onClose={onClose}>
+    <Modal title="Nový tím" onClose={onClose} width="large">
       <Form onSubmit={handleSubmit} messages={{ required: 'Povinný údaj' }}>
         <FormField label="Meno tímu" name="name" required autoFocus />
         <FormField label="Názov zriaďovateľa" name="orgName" required />

@@ -9,9 +9,10 @@ type User implements INode {
   id: ID!
   name: String!
   username: Email!
-  phoneNumber: String
+  phone: String
 
-  isAdmin: Boolean!
+  isAdmin: Boolean
+  isSuperAdmin: Boolean
 
   deletedOn: DateTime
   deletedBy: ID!
@@ -24,7 +25,7 @@ type User implements INode {
 input CreateUserInput {
   name: String!
   username: Email!
-  phoneNumber: String
+  phone: String
   password: String!
 }
 
@@ -35,7 +36,7 @@ type CreateUserPayload implements IMutationPayload {
 
 input UpdateUserInput {
   name: String
-  phoneNumber: String
+  phone: String
 }
 
 type UpdateUserPayload implements IMutationPayload {

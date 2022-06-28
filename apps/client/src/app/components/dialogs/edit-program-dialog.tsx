@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Box, Button, Form, FormField, TextArea, TextInput } from 'grommet';
+import { Box, Button, DateInput, Form, FormField, TextArea, TextInput } from 'grommet';
 import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
 import { Modal } from '../modal';
+import { toUtcDateString, toZonedDateString } from '@teams2/dateutils';
 
 interface EditProgramDialogProps {
   show?: boolean;
@@ -15,6 +16,8 @@ interface FormFields {
   name: string;
   description?: string;
   conditions?: string;
+  startDate: string;
+  endDate: string;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
@@ -26,6 +29,8 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       name: program?.name ?? '',
       description: program?.description ?? '',
       conditions: program?.conditions ?? '',
+      startDate: toZonedDateString(program?.startDate) ?? '',
+      endDate: toZonedDateString(program?.endDate) ?? '',
     });
   }, [program]);
 
@@ -34,7 +39,11 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    await onSubmit(value);
+    await onSubmit({
+      ...value,
+      startDate: toUtcDateString(value.startDate) ?? '',
+      endDate: toUtcDateString(value.endDate) ?? '',
+    });
     onClose();
   };
 
@@ -53,6 +62,12 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       >
         <FormField label="Názov" name="name" required autoFocus>
           <TextInput name="name" />
+        </FormField>
+        <FormField label="Začiatok programu" name="startDate">
+          <DateInput name="startDate" format="dd.mm.yyyy" />
+        </FormField>
+        <FormField label="Koniec programu" name="endDate">
+          <DateInput name="endDate" format="dd.mm.yyyy" />
         </FormField>
         <FormField label="Popis" name="description">
           <TextArea rows={10} name="description" />
