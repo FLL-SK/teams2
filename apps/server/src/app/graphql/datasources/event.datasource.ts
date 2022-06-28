@@ -19,18 +19,29 @@ import {
 import { EventMapper, EventTeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
+import * as Dataloader from 'dataloader';
 
 export class EventDataSource extends BaseDataSource {
+  private loader: Dataloader<string, Event, string>;
+
   constructor() {
     super();
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
     super.initialize(config);
+    this.loader = new Dataloader(this.loaderFn.bind(this));
+  }
+
+  private async loaderFn(ids: string[]): Promise<Event[]> {
+    const data = await eventRepository.find({ _id: { $in: ids } }).exec();
+    return data.map(EventMapper.toEvent.bind(this));
   }
 
   async getEvent(id: ObjectId): Promise<Event> {
-    return EventMapper.toEvent(await eventRepository.findById(id).exec());
+    //const event=  EventMapper.toEvent(await eventRepository.findById(id).exec());
+    const event = this.loader.load(id.toString());
+    return event;
   }
 
   async getEvents(filter: EventFilterInput): Promise<Event[]> {

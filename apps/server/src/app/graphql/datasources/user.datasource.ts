@@ -13,18 +13,28 @@ import {
 import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
+import * as Dataloader from 'dataloader';
 
 export class UserDataSource extends BaseDataSource {
+  private loader: Dataloader<string, User, string>;
+
   constructor() {
     super();
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
     super.initialize(config);
+    this.loader = new Dataloader(this.loaderFn.bind(this));
+  }
+
+  private async loaderFn(ids: string[]): Promise<User[]> {
+    const data = await userRepository.find({ _id: { $in: ids } }).exec();
+    return data.map(UserMapper.toUser.bind(this));
   }
 
   async getUser(id: ObjectId): Promise<User> {
-    return UserMapper.toUser(await userRepository.findById(id).lean().exec());
+    return this.loader.load(id.toString());
+    //return UserMapper.toUser(await userRepository.findById(id).lean().exec());
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
