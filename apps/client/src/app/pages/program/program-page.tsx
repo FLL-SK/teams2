@@ -63,7 +63,6 @@ export function ProgramPage() {
 
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
-  const [showInactive, setShowInactive] = useState(false);
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
@@ -97,13 +96,8 @@ export function ProgramPage() {
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
   const events = useMemo(
-    () =>
-      (program?.events ?? []).filter(
-        (event) =>
-          !event.deletedOn &&
-          (!event.date || showInactive || (event.date ?? '').substring(0, 10) >= today)
-      ),
-    [program, showInactive, today]
+    () => (program?.events ?? []).filter((event) => !event.deletedOn),
+    [program]
   );
 
   const handleDeleteEvent = useCallback(
@@ -232,14 +226,6 @@ export function ProgramPage() {
                 label="Pridať turnaj"
                 onClick={() => setShowAddEventDialog(true)}
                 disabled={!canEdit}
-              />
-            </Box>
-            <Box>
-              <CheckBox
-                toggle
-                label="Zobraziť aj neaktívne"
-                defaultChecked={showInactive}
-                onChange={({ target }) => setShowInactive(target.checked)}
               />
             </Box>
           </Box>

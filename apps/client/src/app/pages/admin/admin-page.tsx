@@ -34,23 +34,22 @@ export function AdminPage() {
     return <ErrorPage title="Nemáte oprávnenie." />;
   }
 
+  const programs = [...(programsData?.getPrograms ?? [])].sort((a, b) =>
+    a.startDate < b.startDate ? 1 : -1
+  );
+
   return (
     <BasePage title="Admin" loading={loading}>
       <PanelGroup>
         <Panel title="Programy" gap="medium">
           <Box direction="row">
             <Button
-              primary
               icon={<Add />}
               onClick={() => setShowAddProgramDialog(true)}
               label="Nový program"
             />
           </Box>
-          {programsLoading ? (
-            <Spinner />
-          ) : (
-            <ProgramsList programs={programsData?.getPrograms ?? []} />
-          )}
+          {programsLoading ? <Spinner /> : <ProgramsList programs={programs} />}
         </Panel>
         <Panel title="Tímy">
           {teamsLoading ? <Spinner /> : <TeamsList teams={teamsData?.getTeams ?? []} />}

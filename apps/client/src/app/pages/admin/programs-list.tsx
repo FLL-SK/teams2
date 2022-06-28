@@ -12,16 +12,16 @@ interface ProgramsListProps {
 export function ProgramsList({ programs }: ProgramsListProps) {
   const navigate = useNavigate();
   return (
-    <Box gap="xsmall">
+    <Box gap="small">
       {programs.map((program) => (
-        <ListRow
+        <Box
           key={program.id}
-          columns="1fr 1fr 1fr"
           pad={{ vertical: 'small', horizontal: 'small' }}
           onClick={() => navigate(appPath.program(program.id))}
+          hoverIndicator
         >
           <Text>{program.name}</Text>
-        </ListRow>
+        </Box>
       ))}
     </Box>
   );

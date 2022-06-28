@@ -83,7 +83,11 @@ export function TeamPage() {
               onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
-          <EventList events={events.map((e) => e.event)} />
+          <EventList
+            events={[...events.map((e) => e.event)].sort((a, b) =>
+              (a.date ?? '') < (b.date ?? '') ? 1 : -1
+            )}
+          />
         </Panel>
 
         {canEdit && (

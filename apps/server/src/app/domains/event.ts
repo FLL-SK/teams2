@@ -1,10 +1,9 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { SwitchTeamEventPayload, UpdateEventInput, UpdateEventPayload } from '../generated/graphql';
+import { SwitchTeamEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
-import { EventMapper, EventTeamMapper } from '../graphql/mappers';
-import { EventData, eventRepository } from '../models';
+import { eventRepository } from '../models';
 import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
@@ -19,6 +18,8 @@ import { logger } from '@teams2/logger';
 const logLib = logger('domain:Event');
 
 export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, ctx: ApolloContext) {
+  const log = logLib.extend('registerTeam');
+  log.info('Registering team %s to event %s', teamId, eventId);
   const { user, dataSources } = ctx;
   if (!user.isAdmin && !user.isCoachOf(teamId)) {
     //TODO nicer error handling
@@ -90,41 +91,36 @@ export async function unregisterTeamFromEvent(
   return { event, team };
 }
 
-export async function updateEvent(
-  id: ObjectId,
-  input: UpdateEventInput,
-  ctx: ApolloContext
-): Promise<UpdateEventPayload> {
+export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloContext) {
   const { dataSources, user } = ctx;
-  const u: Partial<EventData> = input;
-  const nu = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+  const log = logLib.extend('sendNotify');
+  log.debug('Going to sent notifications');
+  const event = await eventRepository.findById(eventId).exec();
 
-  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(nu.id.toString());
-  const program = await dataSources.program.getProgram(nu.programId);
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
+  const program = await dataSources.program.getProgram(event.programId);
 
+  const evt = await dataSources.eventTeam.getEventTeams(eventId);
   // get data for sending emails to coaches
   const teams = await Promise.all(
-    (
-      await dataSources.event.getEventTeams(id)
-    ).map(async (t) => ({
+    evt.map(async (t) => ({
       name: (await dataSources.team.getTeam(t.teamId)).name,
       coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
     }))
   );
 
   // send email to coaches of registered teams
+  log.debug('Sending notitications to %d teams', teams.length);
   teams.forEach((t) =>
-    emailEventChangedToCoach(t.coaches, t.name, nu.name, program.name, eventUrl)
+    emailEventChangedToCoach(t.coaches, t.name, event.name, program.name, eventUrl)
   );
 
   // get data for sending emails to managers
   const managerEmails = [
-    ...(await dataSources.program.getProgramManagers(nu.programId)).map((e) => e.username),
-    ...(await dataSources.event.getEventManagers(id)).map((e) => e.username),
+    ...(await dataSources.program.getProgramManagers(event.programId)).map((e) => e.username),
+    ...(await dataSources.event.getEventManagers(eventId)).map((e) => e.username),
   ];
-  emailEventChangedToEventManagers(managerEmails, nu.name, program.name, eventUrl);
-
-  return { event: EventMapper.toEvent(nu) };
+  emailEventChangedToEventManagers(managerEmails, event.name, program.name, eventUrl);
 }
 
 export async function switchTeamEvent(
@@ -133,6 +129,8 @@ export async function switchTeamEvent(
   newEventId: ObjectId,
   ctx: ApolloContext
 ): Promise<SwitchTeamEventPayload> {
+  const log = logLib.extend('switch');
+  log.info('Switching team %s from ev1 %s to ev2 %s', teamId, oldEventId, newEventId);
   const { event: oldEvent } = await unregisterTeamFromEvent(teamId, oldEventId, ctx);
   const { team, event: newEvent } = await registerTeamToEvent(teamId, newEventId, ctx);
   return { team, oldEvent, newEvent };

@@ -1,9 +1,4 @@
-import {
-  updateEvent,
-  registerTeamToEvent,
-  unregisterTeamFromEvent,
-  switchTeamEvent,
-} from '../../domains/event';
+import { registerTeamToEvent, unregisterTeamFromEvent, switchTeamEvent } from '../../domains/event';
 import { QueryResolvers, MutationResolvers, Event } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
@@ -14,7 +9,7 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 };
 
 export const typeResolver: Resolver<Event> = {
-  eventTeams: async ({ id }, _args, { dataSources }) => dataSources.event.getEventTeams(id),
+  eventTeams: async ({ id }, _args, { dataSources }) => dataSources.eventTeam.getEventTeams(id),
   managers: async ({ id }, _args, { dataSources }) => dataSources.event.getEventManagers(id),
   program: async ({ programId }, _args, { dataSources }) =>
     dataSources.program.getProgram(programId),
@@ -24,7 +19,8 @@ export const typeResolver: Resolver<Event> = {
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
   createEvent: (_parent, { input }, { dataSources }) => dataSources.event.createEvent(input),
-  updateEvent: (_parent, { id, input }, context) => updateEvent(id, input, context),
+  updateEvent: (_parent, { id, input }, { dataSources }) =>
+    dataSources.event.updateEvent(id, input),
   deleteEvent: (_parent, { id }, { dataSources }) => dataSources.event.deleteEvent(id),
 
   registerTeamForEvent: (_parent, { eventId, teamId }, context) =>

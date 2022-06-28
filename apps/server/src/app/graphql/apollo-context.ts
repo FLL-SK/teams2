@@ -1,5 +1,6 @@
 import {
   EventDataSource,
+  EventTeamDataSource,
   FileDataSource,
   InvoiceDataSource,
   ProgramDataSource,
@@ -21,6 +22,7 @@ export const apolloContextEmpty: ApolloContext = {
 export type ApolloContextDataSources = {
   user: UserDataSource;
   event: EventDataSource;
+  eventTeam: EventTeamDataSource;
   team: TeamDataSource;
   program: ProgramDataSource;
   invoice: InvoiceDataSource;
