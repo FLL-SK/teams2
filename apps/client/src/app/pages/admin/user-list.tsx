@@ -1,31 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Text, TextInput } from 'grommet';
-import { TeamListFragmentFragment } from '../../generated/graphql';
+import { TeamListFragmentFragment, UserListFragmentFragment } from '../../generated/graphql';
 import { ListRow } from '../../components/list-row';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 import { Close } from 'grommet-icons';
-import { fullAddress } from '../../utils/format-address';
 
-interface TeamsListProps {
-  teams: TeamListFragmentFragment[];
+interface UserListProps {
+  users: UserListFragmentFragment[];
 }
 
 const maxItems = 5;
 
-export function TeamsList(props: TeamsListProps) {
-  const { teams } = props;
+export function UserList(props: UserListProps) {
+  const { users } = props;
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState<TeamListFragmentFragment[]>([]);
+  const [searchResults, setSearchResults] = useState<UserListFragmentFragment[]>([]);
 
   const searchList = useMemo(
     () =>
-      teams.map((t) => ({
-        text: `${t.name.toLocaleLowerCase()} ${t.address.city.toLocaleLowerCase()}`,
+      users.map((t) => ({
+        text: `${t.name.toLocaleLowerCase()} ${t.username.toLocaleLowerCase()} ${t.phone}`,
         value: t,
       })),
-    [teams]
+    [users]
   );
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export function TeamsList(props: TeamsListProps) {
     for (const item of searchList) {
       if (item.text.includes(searchText.toLocaleLowerCase())) {
         results.push(item.value);
-        if (results.length === 10) {
+        if (results.length >= maxItems) {
           break;
         }
       }
@@ -45,20 +44,21 @@ export function TeamsList(props: TeamsListProps) {
     <Box gap="xsmall">
       <Box direction="row">
         <TextInput
-          placeholder="Hľadať názov tímu/mesto"
+          placeholder="Hľadať meno/email/telefón"
           onChange={({ target }) => setSearchText(target.value)}
         />
         <Button icon={<Close />} onClick={() => setSearchText('')} />
       </Box>
-      {searchResults.map((team) => (
+      {searchResults.map((item) => (
         <ListRow
-          key={team.id}
-          columns="1fr"
+          key={item.id}
+          columns="1fr 1fr 1fr"
           pad={{ vertical: 'small', horizontal: 'small' }}
-          onClick={() => navigate(appPath.team(team.id))}
+          onClick={() => navigate(appPath.team(item.id))}
         >
-          <Text>{team.name}</Text>
-          <Text size="small">{fullAddress(team.address)}</Text>
+          <Text>{item.username}</Text>
+          <Text>{item.name}</Text>
+          <Text>{item.phone}</Text>
         </ListRow>
       ))}
       <Text>{`Zobrazených je max. ${maxItems} výsledkov`}</Text>

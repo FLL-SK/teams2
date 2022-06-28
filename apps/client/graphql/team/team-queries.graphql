@@ -6,6 +6,6 @@ query getTeam($id: ID!) {
 
 query getTeams($filter: TeamFilterInput) {
   getTeams(filter: $filter) {
-    ...TeamFragment
+    ...TeamListFragment
   }
 }

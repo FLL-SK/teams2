@@ -10,11 +10,13 @@ import {
   useCreateProgramMutation,
   useGetProgramsQuery,
   useGetTeamsQuery,
+  useGetUsersQuery,
 } from '../../generated/graphql';
 import { ProgramsList } from './programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { TeamsList } from './teams-list';
+import { UserList } from './user-list';
 
 export function AdminPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
@@ -29,6 +31,7 @@ export function AdminPage() {
   } = useGetProgramsQuery();
 
   const { data: teamsData, loading: teamsLoading } = useGetTeamsQuery();
+  const { data: userData, loading: userLoading } = useGetUsersQuery();
 
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 
@@ -61,6 +64,9 @@ export function AdminPage() {
         </Panel>
         <Panel title="Tímy">
           {teamsLoading ? <Spinner /> : <TeamsList teams={teamsData?.getTeams ?? []} />}
+        </Panel>
+        <Panel title="Používatelia">
+          {userLoading ? <Spinner /> : <UserList users={userData?.getUsers ?? []} />}
         </Panel>
       </PanelGroup>
 
