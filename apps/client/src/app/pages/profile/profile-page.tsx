@@ -16,7 +16,7 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, isUser, xOut } = useAppUser();
+  const { isAdmin, isUser, xOut, user } = useAppUser();
   const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [createTeam] = useCreateTeamMutation({ onCompleted: () => refetch() });
@@ -46,7 +46,7 @@ export function ProfilePage() {
             />
             <LabelValue
               label="Telefón"
-              value={canEdit ? data?.getUser?.phoneNumber ?? '-' : xOut()}
+              value={canEdit ? data?.getUser?.phone ?? '-' : xOut()}
               direction="row"
               labelWidth="100px"
             />
@@ -82,7 +82,18 @@ export function ProfilePage() {
       <CreateTeamDialog
         show={showCreateTeamDialog}
         onClose={() => setShowCreateTeamDialog(false)}
-        onSubmit={(name) => createTeam({ variables: { input: { name } } })}
+        onSubmit={(data) =>
+          createTeam({
+            variables: {
+              input: {
+                ...data,
+                contactName: user?.name ?? '',
+                phone: user?.phone ?? '',
+                email: user?.username ?? '',
+              },
+            },
+          })
+        }
       />
     </BasePage>
   );

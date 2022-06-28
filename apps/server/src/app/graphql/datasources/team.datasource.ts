@@ -35,7 +35,20 @@ export class TeamDataSource extends BaseDataSource {
   async createTeam(input: CreateTeamInput): Promise<CreateTeamPayload> {
     const currentUserId = this.context.user._id;
 
-    const t: TeamData = { ...input, coachesIds: [currentUserId] };
+    const t: TeamData = {
+      name: input.name,
+      address: {
+        name: input.orgName,
+        street: input.street,
+        city: input.city,
+        zip: input.zip,
+        countryCode: input.countryCode,
+        contactName: input.contactName,
+        email: input.email,
+        phone: input.phone,
+      },
+      coachesIds: [currentUserId],
+    };
     const nu = await teamRepository.create(t);
     return { team: TeamMapper.toTeam(nu) };
   }
@@ -52,7 +65,7 @@ export class TeamDataSource extends BaseDataSource {
 
   async getTeamsCoachedBy(coachId: ObjectId): Promise<Team[]> {
     const teams = await teamRepository.findTeamsCoachedByUser(coachId);
-    return teams.map((t) => TeamMapper.toTeam(t));
+    return teams.filter((t) => !!t).map((t) => TeamMapper.toTeam(t));
   }
 
   async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
@@ -81,7 +94,7 @@ export class TeamDataSource extends BaseDataSource {
     const coaches = await Promise.all(
       t.coachesIds.map(async (c) => userRepository.findById(c).lean().exec())
     );
-    return coaches.map((c) => UserMapper.toUser(c));
+    return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
   }
 
   async getTeamEvents(teamId: ObjectId): Promise<EventTeam[]> {

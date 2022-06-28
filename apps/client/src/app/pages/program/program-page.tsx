@@ -36,6 +36,9 @@ import { omit } from 'lodash';
 import { FileTile } from '../../components/file-tile';
 import { FileUploadControl } from '../../components/file-upload-control';
 import { uploadS3XHR } from '../../utils/upload-s3-xhr';
+import { formatDate } from '@teams2/dateutils';
+
+const labelWidth = '150px';
 
 export function ProgramPage() {
   const { id } = useParams();
@@ -146,13 +149,19 @@ export function ProgramPage() {
     <BasePage title="Program" loading={programLoading}>
       <PanelGroup>
         <Panel title="Detaily programu" gap="medium">
-          <LabelValue label="Názov" labelWidth="150px" value={program?.name} />
-          <LabelValue label="Popis" labelWidth="150px">
+          <LabelValue label="Názov" labelWidth={labelWidth} value={program?.name} />
+          <LabelValue
+            label="Začiatok"
+            labelWidth={labelWidth}
+            value={formatDate(program?.startDate)}
+          />
+          <LabelValue label="Koniec" labelWidth={labelWidth} value={formatDate(program?.endDate)} />
+          <LabelValue label="Popis" labelWidth={labelWidth}>
             <Box background="light-2" flex pad="small">
               <Markdown>{program?.description ?? ''}</Markdown>
             </Box>
           </LabelValue>
-          <LabelValue label="Podmienky" labelWidth="150px">
+          <LabelValue label="Podmienky" labelWidth={labelWidth}>
             <Box background="light-2" flex pad="small">
               <Markdown>{program?.conditions ?? ''}</Markdown>
             </Box>

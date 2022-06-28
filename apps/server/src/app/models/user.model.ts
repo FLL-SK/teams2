@@ -8,11 +8,12 @@ export interface UserData {
   _id?: ObjectId;
   username: string;
   name?: string;
-  phoneNumber?: string;
+  phone?: string;
   deletedOn?: Date;
   deletedBy?: ObjectId;
   password: string;
   isAdmin?: boolean;
+  isSuperAdmin?: boolean;
 }
 
 export type UserDocument = (Document<unknown, unknown, UserData> & UserData) | null;
@@ -27,10 +28,11 @@ const schema = new Schema<UserData, UserModel>({
   username: { type: Types.String, required: true },
   name: { type: Types.String },
   password: { type: Types.String, required: true }, // hashed password
-  phoneNumber: { type: Types.String },
+  phone: { type: Types.String },
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId, ref: 'User' },
   isAdmin: { type: Types.Boolean },
+  isSuperAdmin: { type: Types.Boolean },
 });
 
 schema.index({ username: 1 }, { unique: true });

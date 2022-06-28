@@ -6,15 +6,20 @@ import {
   userRepository,
 } from '../../models';
 import { logger } from '@teams2/logger';
+import { addDays } from 'date-fns';
 
-type TestSeedData = ProgramData & {
+type TestSeedData = Omit<ProgramData, 'startDate' | 'endDate'> & {
   managers?: string[];
   invoiceItems: InvoiceItemData[];
+  startOffset: number;
+  endOffset: number;
 };
 
 export const seedTestProgramData: TestSeedData[] = [
   {
     name: 'Program1',
+    startOffset: -100,
+    endOffset: 100,
     managersIds: [],
     managers: ['progmgr1@test', 'progmgr2@test'],
     description: '**Program1 description**\n* a\n* b\n* c',
@@ -26,6 +31,8 @@ export const seedTestProgramData: TestSeedData[] = [
   },
   {
     name: 'Program2',
+    startOffset: -100,
+    endOffset: -2,
     managersIds: [],
     managers: ['progmgr2@test'],
     description: '**Program2 description**\n* a\n* b\n* c',
@@ -34,6 +41,8 @@ export const seedTestProgramData: TestSeedData[] = [
   },
   {
     name: 'Program3-not active',
+    startOffset: -10,
+    endOffset: 20,
     deletedOn: new Date(),
     managersIds: [],
     managers: ['progmgr2@test'],
@@ -51,6 +60,8 @@ export async function seedTestPrograms() {
       description: d.description,
       deletedOn: d.deletedOn,
       conditions: d.conditions,
+      startDate: addDays(new Date(), d.startOffset),
+      endDate: addDays(new Date(), d.endOffset),
     };
 
     const nu = new programRepository(p);

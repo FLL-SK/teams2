@@ -9,12 +9,13 @@ type Team implements INode {
   name: String!
   coachesIds: [ID!]!
 
-  deletedOn: DateTime
-  deletedBy: ID
-
+  address: Address!
   billTo: Address
   shipTo: Address
   useBillTo: Boolean
+
+  deletedOn: DateTime
+  deletedBy: ID
 
   coaches: [User!]!
   events: [EventTeam!]!
@@ -22,6 +23,14 @@ type Team implements INode {
 
 input CreateTeamInput {
   name: String!
+  orgName: String!
+  street: String!
+  city: String!
+  zip: String!
+  countryCode: String
+  contactName: String
+  phone: String
+  email: String
 }
 
 type CreateTeamPayload implements IMutationPayload {
@@ -31,6 +40,7 @@ type CreateTeamPayload implements IMutationPayload {
 
 input UpdateTeamInput {
   name: String
+  address: AddressInput
   billTo: AddressInput
   shipTo: AddressInput
   useBillTo: Boolean

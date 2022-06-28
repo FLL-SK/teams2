@@ -12,6 +12,8 @@ type Program implements INode {
   description: String
   logoUrl: String
   conditions: String
+  startDate: DateTime!
+  endDate: DateTime!
 
   managersIds: [ID!]!
 
@@ -28,6 +30,8 @@ input CreateProgramInput {
   name: String!
   description: String
   conditions: String
+  startDate: DateTime!
+  endDate: DateTime!
 }
 
 type CreateProgramPayload implements IMutationPayload {
@@ -39,6 +43,8 @@ input UpdateProgramInput {
   name: String
   description: String
   conditions: String
+  startDate: DateTime
+  endDate: DateTime
 }
 
 type UpdateProgramPayload {

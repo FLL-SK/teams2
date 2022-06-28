@@ -26,7 +26,7 @@ export function AdminPage() {
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
 
-  const { data: teamsData, loading: teamsLoading, refetch: refetchTeams } = useGetTeamsQuery();
+  const { data: teamsData, loading: teamsLoading } = useGetTeamsQuery();
 
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 

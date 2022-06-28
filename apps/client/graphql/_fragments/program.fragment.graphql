@@ -4,6 +4,8 @@ fragment ProgramListFragment on Program {
   description
   logoUrl
   conditions
+  startDate
+  endDate
 
   managersIds
 
