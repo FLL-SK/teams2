@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Spinner } from 'grommet';
+import { Box, Button, CheckBox, Spinner } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
 
@@ -10,15 +10,19 @@ import {
   useCreateProgramMutation,
   useGetProgramsQuery,
   useGetTeamsQuery,
+  useGetUsersQuery,
 } from '../../generated/graphql';
 import { ProgramsList } from './programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { TeamsList } from './teams-list';
+import { UserList } from './user-list';
 
 export function AdminPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
   const { user, loading } = useAppUser();
+  const [showInactivePrograms, setShowInactivePrograms] = useState(false);
+  const [today] = useState(new Date().toISOString());
 
   const {
     data: programsData,
@@ -27,6 +31,7 @@ export function AdminPage() {
   } = useGetProgramsQuery();
 
   const { data: teamsData, loading: teamsLoading } = useGetTeamsQuery();
+  const { data: userData, loading: userLoading } = useGetUsersQuery();
 
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 
@@ -34,26 +39,34 @@ export function AdminPage() {
     return <ErrorPage title="Nemáte oprávnenie." />;
   }
 
+  const programs = [...(programsData?.getPrograms ?? [])]
+    .sort((a, b) => (a.endDate < b.endDate ? 1 : -1))
+    .filter((p) => showInactivePrograms || (p.endDate > today && !p.deletedOn));
+
   return (
     <BasePage title="Admin" loading={loading}>
       <PanelGroup>
         <Panel title="Programy" gap="medium">
-          <Box direction="row">
+          <Box direction="row" justify="between">
             <Button
-              primary
               icon={<Add />}
               onClick={() => setShowAddProgramDialog(true)}
               label="Nový program"
             />
+            <CheckBox
+              label="Zobraziť neaktívne programy"
+              toggle
+              checked={showInactivePrograms}
+              onChange={() => setShowInactivePrograms(!showInactivePrograms)}
+            />
           </Box>
-          {programsLoading ? (
-            <Spinner />
-          ) : (
-            <ProgramsList programs={programsData?.getPrograms ?? []} />
-          )}
+          {programsLoading ? <Spinner /> : <ProgramsList programs={programs} />}
         </Panel>
         <Panel title="Tímy">
           {teamsLoading ? <Spinner /> : <TeamsList teams={teamsData?.getTeams ?? []} />}
+        </Panel>
+        <Panel title="Používatelia">
+          {userLoading ? <Spinner /> : <UserList users={userData?.getUsers ?? []} />}
         </Panel>
       </PanelGroup>
 

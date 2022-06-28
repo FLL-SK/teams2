@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, CheckBox, FileInput, Markdown, Text } from 'grommet';
+import { Box, Button, Markdown, Spinner, Text } from 'grommet';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -63,7 +63,6 @@ export function ProgramPage() {
 
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
-  const [showInactive, setShowInactive] = useState(false);
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
@@ -91,19 +90,12 @@ export function ProgramPage() {
 
   const program = programData?.getProgram;
   const files = filesData?.getProgramFiles ?? [];
-  const canEdit: boolean = isProgramManager(program?.id) || isAdmin();
+  const canEdit: boolean = (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn;
   const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
 
-  const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
-
   const events = useMemo(
-    () =>
-      (program?.events ?? []).filter(
-        (event) =>
-          !event.deletedOn &&
-          (!event.date || showInactive || (event.date ?? '').substring(0, 10) >= today)
-      ),
-    [program, showInactive, today]
+    () => (program?.events ?? []).filter((event) => !event.deletedOn),
+    [program]
   );
 
   const handleDeleteEvent = useCallback(
@@ -121,17 +113,15 @@ export function ProgramPage() {
     async (files: FileList) => {
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
-        console.log('fetching upload url for ', f);
         const ff: FileUploadInput = { name: f.name, size: f.size, type: f.type };
         getUploadUrl({
           variables: { programId: id ?? '0', input: ff },
           onCompleted: async (data) => {
-            console.log('Uploading to ', data.getProgramFileUploadUrl);
             if (await uploadS3XHR(f, data.getProgramFileUploadUrl)) {
               addProgramFile({ variables: { programId: id ?? '0', input: ff } });
             }
 
-            //TODO statu/result notification
+            //TODO status/result notification
           },
         });
       }
@@ -147,6 +137,13 @@ export function ProgramPage() {
 
   return (
     <BasePage title="Program" loading={programLoading}>
+      {program?.deletedOn && (
+        <Box pad="medium">
+          <Text weight="bold" color="red">
+            Program bol zrušený
+          </Text>
+        </Box>
+      )}
       <PanelGroup>
         <Panel title="Detaily programu" gap="medium">
           <LabelValue label="Názov" labelWidth={labelWidth} value={program?.name} />
@@ -176,14 +173,18 @@ export function ProgramPage() {
         </Panel>
 
         <Panel title="Súbory" gap="small">
-          {files.map((f) => (
-            <FileTile
-              key={f.id}
-              file={f}
-              readOnly={!canEdit}
-              onDelete={(f) => removeFile({ variables: { fileId: f.id } })}
-            />
-          ))}
+          {filesLoading ? (
+            <Spinner />
+          ) : (
+            files.map((f) => (
+              <FileTile
+                key={f.id}
+                file={f}
+                readOnly={!canEdit}
+                onDelete={(f) => removeFile({ variables: { fileId: f.id } })}
+              />
+            ))
+          )}
           {canEdit && <FileUploadControl onUpload={handleFileUpload} />}
         </Panel>
 
@@ -232,14 +233,6 @@ export function ProgramPage() {
                 label="Pridať turnaj"
                 onClick={() => setShowAddEventDialog(true)}
                 disabled={!canEdit}
-              />
-            </Box>
-            <Box>
-              <CheckBox
-                toggle
-                label="Zobraziť aj neaktívne"
-                defaultChecked={showInactive}
-                onChange={({ target }) => setShowInactive(target.checked)}
               />
             </Box>
           </Box>

@@ -13,19 +13,22 @@ import {
   Event,
   CreateEventInput,
   CreateEventPayload,
-  EventTeam,
   EventFilterInput,
+  UpdateEventInput,
+  UpdateEventPayload,
 } from '../../generated/graphql';
-import { EventMapper, EventTeamMapper, UserMapper } from '../mappers';
+import { EventMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
+import { logger } from '@teams2/logger';
 
 export class EventDataSource extends BaseDataSource {
   private loader: Dataloader<string, Event, string>;
 
   constructor() {
     super();
+    this.logBase = logger('DS:Event');
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
@@ -39,12 +42,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async getEvent(id: ObjectId): Promise<Event> {
-    //const event=  EventMapper.toEvent(await eventRepository.findById(id).exec());
     const event = this.loader.load(id.toString());
     return event;
   }
 
   async getEvents(filter: EventFilterInput): Promise<Event[]> {
+    const log = this.logBase.extend('getEvents');
     const q: FilterQuery<Event> = {};
     if (filter.programId) {
       q.programId = filter.programId;
@@ -52,7 +55,10 @@ export class EventDataSource extends BaseDataSource {
     if (filter.isActive) {
       q.date = { $not: { $lt: new Date() } };
     }
-    const events = await eventRepository.find(q).exec();
+    log.debug('filter=%o', q);
+
+    const events = await eventRepository.find(q).sort({ date: 1, name: 1 }).exec();
+    log.debug('Found %o', events);
     return events.map(EventMapper.toEvent);
   }
 
@@ -62,8 +68,14 @@ export class EventDataSource extends BaseDataSource {
     return { event: EventMapper.toEvent(nu) };
   }
 
+  async updateEvent(id: ObjectId, input: UpdateEventInput): Promise<UpdateEventPayload> {
+    const u: Partial<EventData> = input;
+    const nu = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+    return { event: EventMapper.toEvent(nu) };
+  }
+
   async deleteEvent(id: ObjectId): Promise<Event> {
-    const teams = await this.getEventTeams(id);
+    const teams = await eventTeamRepository.find({ eventId: id }).lean().exec();
     if (teams.length > 0) {
       return null;
     }
@@ -102,11 +114,6 @@ export class EventDataSource extends BaseDataSource {
       .findOneAndUpdate({ _id: eventId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();
     return EventMapper.toEvent(event);
-  }
-
-  async getEventTeams(eventId: ObjectId): Promise<EventTeam[]> {
-    const teams = await eventTeamRepository.find({ eventId }).sort({ registeredOn: 1 }).exec();
-    return teams.map(EventTeamMapper.toEventTeam);
   }
 
   async getEventManagers(eventId: ObjectId): Promise<User[]> {

@@ -9,9 +9,9 @@ export interface AddressData {
   companyNumber?: string;
   vatNumber?: string;
   taxNumber?: string;
-  contactName: string;
-  email: string;
-  phone: string;
+  contactName?: string;
+  email?: string;
+  phone?: string;
 }
 
 const Types = Schema.Types;
@@ -26,9 +26,9 @@ export const addressSchema = new Schema<AddressData>(
     companyNumber: { type: Types.String },
     vatNumber: { type: Types.String },
     taxNumber: { type: Types.String },
-    contactName: { type: Types.String, required: true },
-    email: { type: Types.String, required: true },
-    phone: { type: Types.String, required: true },
+    contactName: { type: Types.String },
+    email: { type: Types.String },
+    phone: { type: Types.String },
   },
   { _id: false }
 );

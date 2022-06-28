@@ -14,6 +14,7 @@ export interface AppUserContextData {
   isEventManager: (eventId?: string) => boolean;
   isProgramManager: (programId?: string) => boolean;
   isAdmin: () => boolean;
+  isSuperAdmin: () => boolean;
   isUser: (userId: string) => boolean;
   xOut: () => string;
 }
@@ -25,6 +26,7 @@ const emptyContext: AppUserContextData = {
   isEventManager: () => false,
   isProgramManager: () => false,
   isAdmin: () => false,
+  isSuperAdmin: () => false,
   isUser: () => false,
   xOut: () => 'xxx',
 };
@@ -94,6 +96,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
         isEventManager,
         isProgramManager,
         isAdmin: () => data?.getUser?.isAdmin ?? false,
+        isSuperAdmin: () => data?.getUser?.isSuperAdmin ?? false,
         isUser,
         xOut: () => 'xxx',
       }}

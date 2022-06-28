@@ -38,10 +38,13 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
-    const { isActive } = filter;
     const q: FilterQuery<UserData> = {};
-    if (isActive) {
-      q.deletedOn = null;
+    if (filter) {
+      const { isActive } = filter;
+
+      if (isActive) {
+        q.deletedOn = null;
+      }
     }
     const users = await userRepository.find(q).sort({ username: 1 }).lean().exec();
     return users.map(UserMapper.toUser);
@@ -75,6 +78,12 @@ export class UserDataSource extends BaseDataSource {
 
   static async getUserByUsername(username: string): Promise<User> {
     const u = await userRepository.findByUsername(username);
+    return UserMapper.toUser(u);
+  }
+
+  async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
+    //TODO: authorized?
+    const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
     return UserMapper.toUser(u);
   }
 }

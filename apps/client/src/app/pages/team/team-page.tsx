@@ -11,16 +11,22 @@ import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
+  CreateTeamInput,
+  UpdateTeamInput,
   useAddCoachToTeamMutation,
   useGetTeamQuery,
   useRemoveCoachFromTeamMutation,
+  useUpdateTeamMutation,
 } from '../../generated/graphql';
+import { fullAddress } from '../../utils/format-address';
+import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 
 export function TeamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [showActiveEventsOnly, setShowActiveEventsOnly] = useState(true);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   const { isAdmin, isTeamCoach } = useAppUser();
 
@@ -31,6 +37,8 @@ export function TeamPage() {
   } = useGetTeamQuery({ variables: { id: id ?? '0' } });
   const [addCoach] = useAddCoachToTeamMutation();
   const [removeCoach] = useRemoveCoachFromTeamMutation();
+
+  const [updateTeam] = useUpdateTeamMutation();
 
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
@@ -58,6 +66,20 @@ export function TeamPage() {
     [team, today]
   );
 
+  const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
+    console.log('submit', data);
+    const input: UpdateTeamInput = {
+      name: data.name,
+      address: {
+        name: data.orgName,
+        street: data.street,
+        city: data.city,
+        zip: data.zip,
+      },
+    };
+    updateTeam({ variables: { id: id ?? '0', input } });
+  };
+
   if (!id || teamError) {
     return <ErrorPage title="Chyba pri získavaní dát tímu." />;
   }
@@ -65,8 +87,12 @@ export function TeamPage() {
   return (
     <BasePage title="Tím" loading={teamLoading}>
       <PanelGroup>
-        <Panel title="Detaily tímu">
+        <Panel title="Detaily tímu" gap="small">
           <LabelValue label="Názov" labelWidth="150px" value={team?.name} />
+          <LabelValue label="Zriaďovateľ" labelWidth="150px" value={fullAddress(team?.address)} />
+          <Box direction="row">
+            <Button label="Zmeniť" onClick={() => setShowEditDialog(true)} disabled={!canEdit} />
+          </Box>
         </Panel>
 
         <Panel title="Registrácie" gap="small">
@@ -83,7 +109,11 @@ export function TeamPage() {
               onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
-          <EventList events={events.map((e) => e.event)} />
+          <EventList
+            events={[...events.map((e) => e.event)].sort((a, b) =>
+              (a.date ?? '') < (b.date ?? '') ? 1 : -1
+            )}
+          />
         </Panel>
 
         {canEdit && (
@@ -99,6 +129,13 @@ export function TeamPage() {
           </Panel>
         )}
       </PanelGroup>
+      <EditTeamDialog
+        key={team?.id}
+        show={showEditDialog}
+        team={team}
+        onClose={() => setShowEditDialog(false)}
+        onSubmit={handleSubmit}
+      />
     </BasePage>
   );
 }

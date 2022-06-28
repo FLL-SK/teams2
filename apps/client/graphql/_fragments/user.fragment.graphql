@@ -5,6 +5,7 @@ fragment UserListFragment on User {
   phone
 
   isAdmin
+  isSuperAdmin
 }
 
 fragment UserFragment on User {

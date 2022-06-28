@@ -1,3 +1,12 @@
 {
-  "users": [{ "username": "admin@fll.sk", "firstName": "Super", "lastName": "Admin", "isAdmin": true, "password": "initial-admin" }]
+  "users": [
+    {
+      "username": "admin@fll.sk",
+      "firstName": "Super",
+      "lastName": "Admin",
+      "isAdmin": true,
+      "password": "initial-admin",
+      "isSuperAdmin": true
+    }
+  ]
 }
