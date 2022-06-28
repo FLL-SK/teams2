@@ -80,4 +80,10 @@ export class UserDataSource extends BaseDataSource {
     const u = await userRepository.findByUsername(username);
     return UserMapper.toUser(u);
   }
+
+  async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
+    //TODO: authorized?
+    const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
+    return UserMapper.toUser(u);
+  }
 }

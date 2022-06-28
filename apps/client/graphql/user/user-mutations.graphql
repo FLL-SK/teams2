@@ -31,3 +31,9 @@ mutation changeUserPassword($id: ID!, $password: String!) {
     ...UserFragment
   }
 }
+
+mutation setAdmin($id: ID!, $isAdmin: Boolean!) {
+  setAdmin(id: $id, isAdmin: $isAdmin) {
+    ...UserFragment
+  }
+}

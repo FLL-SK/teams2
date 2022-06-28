@@ -9,17 +9,23 @@ import { ErrorPage } from '../../components/error-page';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { Tag } from '../../components/tag';
-import { useCreateTeamMutation, useGetUserQuery } from '../../generated/graphql';
+import {
+  useCreateTeamMutation,
+  useGetUserQuery,
+  useSetAdminMutation,
+} from '../../generated/graphql';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { useAppUser } from '../../components/app-user/use-app-user';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, isUser, xOut, user } = useAppUser();
+  const { isAdmin, isUser, xOut, user, isSuperAdmin } = useAppUser();
   const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
+
   const [createTeam] = useCreateTeamMutation({ onCompleted: () => refetch() });
+  const [setAdmin] = useSetAdminMutation({ onCompleted: () => refetch() });
 
   if (!id || error) {
     return <ErrorPage title="Profil nenájdený." />;
@@ -30,27 +36,48 @@ export function ProfilePage() {
   return (
     <BasePage title="Profil používateľa" loading={loading}>
       <PanelGroup>
-        <Panel title="Detaily">
-          <Box gap="small">
+        <Panel title="Detaily" gap="small">
+          <LabelValue
+            label="Meno"
+            value={data?.getUser?.name ?? '-'}
+            direction="row"
+            labelWidth="100px"
+          />
+          <LabelValue
+            label="Email"
+            value={canEdit ? data?.getUser?.username : xOut()}
+            direction="row"
+            labelWidth="100px"
+          />
+          <LabelValue
+            label="Telefón"
+            value={canEdit ? data?.getUser?.phone ?? '-' : xOut()}
+            direction="row"
+            labelWidth="100px"
+          />
+          {data?.getUser?.isAdmin && (
             <LabelValue
-              label="Meno"
-              value={data?.getUser?.name ?? '-'}
-              direction="row"
               labelWidth="100px"
+              label="Admin"
+              value={data?.getUser?.isAdmin ? 'Áno' : 'Nie'}
             />
+          )}
+          {data?.getUser?.isSuperAdmin && (
             <LabelValue
-              label="Email"
-              value={canEdit ? data?.getUser?.username : xOut()}
-              direction="row"
               labelWidth="100px"
+              label="SuperAdmin"
+              value={data?.getUser?.isSuperAdmin ? 'Áno' : 'Nie'}
             />
-            <LabelValue
-              label="Telefón"
-              value={canEdit ? data?.getUser?.phone ?? '-' : xOut()}
-              direction="row"
-              labelWidth="100px"
-            />
-          </Box>
+          )}
+
+          {isSuperAdmin() && !data?.getUser?.isAdmin && (
+            <Box>
+              <Button
+                label="Urob admin"
+                onClick={() => setAdmin({ variables: { id, isAdmin: true } })}
+              />
+            </Box>
+          )}
         </Panel>
         {canEdit && (
           <Panel title="Tímy">

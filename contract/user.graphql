@@ -59,4 +59,5 @@ extend type Mutation {
   deleteUser(id: ID!): User
 
   changeUserPassword(id: ID!, password: String!): User
+  setAdmin(id: ID!, isAdmin: Boolean!): User
 }
