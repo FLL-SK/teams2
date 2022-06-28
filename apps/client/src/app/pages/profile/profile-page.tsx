@@ -10,7 +10,7 @@ import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { Tag } from '../../components/tag';
 import { useCreateTeamMutation, useGetUserQuery } from '../../generated/graphql';
-import { CreateTeamDialog } from './create-team-dialog';
+import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { useAppUser } from '../../components/app-user/use-app-user';
 
 export function ProfilePage() {
@@ -79,7 +79,7 @@ export function ProfilePage() {
           </Panel>
         )}
       </PanelGroup>
-      <CreateTeamDialog
+      <EditTeamDialog
         show={showCreateTeamDialog}
         onClose={() => setShowCreateTeamDialog(false)}
         onSubmit={(data) =>

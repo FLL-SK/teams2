@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'grommet';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
-import { ListRow } from '../../components/list-row';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 
