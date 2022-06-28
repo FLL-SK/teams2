@@ -82,18 +82,7 @@ export function ProfilePage() {
       <EditTeamDialog
         show={showCreateTeamDialog}
         onClose={() => setShowCreateTeamDialog(false)}
-        onSubmit={(data) =>
-          createTeam({
-            variables: {
-              input: {
-                ...data,
-                contactName: user?.name ?? '',
-                phone: user?.phone ?? '',
-                email: user?.username ?? '',
-              },
-            },
-          })
-        }
+        onSubmit={(data) => createTeam({ variables: { input: data } })}
       />
     </BasePage>
   );
