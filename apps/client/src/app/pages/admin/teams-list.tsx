@@ -33,7 +33,7 @@ export function TeamsList(props: TeamsListProps) {
     for (const item of searchList) {
       if (item.text.includes(searchText.toLocaleLowerCase())) {
         results.push(item.value);
-        if (results.length === 10) {
+        if (results.length === maxItems) {
           break;
         }
       }
@@ -61,7 +61,9 @@ export function TeamsList(props: TeamsListProps) {
           <Text size="small">{fullAddress(team.address)}</Text>
         </ListRow>
       ))}
-      <Text>{`Zobrazených je max. ${maxItems} výsledkov`}</Text>
+      <Box pad="small">
+        <Text color="light-6">{`Zobrazených je max. ${maxItems} výsledkov`}</Text>
+      </Box>
     </Box>
   );
 }

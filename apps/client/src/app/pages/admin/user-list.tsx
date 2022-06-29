@@ -61,7 +61,9 @@ export function UserList(props: UserListProps) {
           <Text>{item.phone}</Text>
         </ListRow>
       ))}
-      <Text>{`Zobrazených je max. ${maxItems} výsledkov`}</Text>
+      <Box pad="small">
+        <Text color="light-6">{`Zobrazených je max. ${maxItems} výsledkov`}</Text>
+      </Box>
     </Box>
   );
 }
