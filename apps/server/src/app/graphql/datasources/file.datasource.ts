@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
 import { deleteFileFromBucket } from '../../utils/aws-s3';
-import { getPrefixedName } from '../../domains/file';
+import { storagePath } from '../../utils/storage-path';
 
 export class FileDataSource extends BaseDataSource {
   constructor() {
@@ -21,22 +21,30 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getProgramFiles(programId: ObjectId): Promise<File[]> {
-    const files = await fileRepository.find({ programId }).sort({ name: 1 }).exec();
+    const files = await fileRepository
+      .find({ type: 'programDoc', ref: programId.toString() })
+      .sort({ name: 1 })
+      .exec();
     return files.map(FileMapper.toFile);
   }
 
   async getEventFiles(eventId: ObjectId): Promise<File[]> {
-    const files = await fileRepository.find({ eventId }).sort({ name: 1 }).exec();
+    const files = await fileRepository
+      .find({ type: 'eventDoc', ref: eventId.toString() })
+      .sort({ name: 1 })
+      .exec();
     return files.map(FileMapper.toFile);
   }
 
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {
     const log = this.logBase.extend('addPFile');
     const nf: FileData = {
-      programId,
+      type: 'programDoc',
+      ref: programId.toString(),
       name: input.name,
+      storagePath: storagePath(input.name, 'programDoc', programId.toString()),
       size: input.size,
-      type: input.type,
+      contentType: input.contentType,
       updatedOn: new Date(),
     };
     log.debug('Adding file %o', nf);
@@ -47,10 +55,12 @@ export class FileDataSource extends BaseDataSource {
   async addEventFile(eventId: ObjectId, input: FileUploadInput): Promise<File> {
     const log = this.logBase.extend('addFFile');
     const nf: FileData = {
-      eventId,
+      type: 'eventDoc',
+      ref: eventId.toString(),
       name: input.name,
+      storagePath: storagePath(input.name, 'eventDoc', eventId.toString()),
       size: input.size,
-      type: input.type,
+      contentType: input.contentType,
       updatedOn: new Date(),
     };
     log.debug('Adding file %o', nf);
@@ -64,11 +74,11 @@ export class FileDataSource extends BaseDataSource {
 
     const f = await fileRepository.findByIdAndDelete(fileId).lean().exec();
     log.debug('File removed from repository');
-    const ff = FileMapper.toFile(f);
 
-    const result = await deleteFileFromBucket(getPrefixedName(ff));
+    const result = await deleteFileFromBucket(f.storagePath);
     log.debug('File removed from storage %o', result);
 
+    const ff = FileMapper.toFile(f);
     return ff;
   }
 }

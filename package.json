@@ -8,6 +8,7 @@
     "start:nx": "yarn nx run-many --parallel --target=serve --projects=server,client ",
     "start:server": "node dist/apps/server/main.js",
     "build": "yarn build:server",
+    "build:all": "yarn build:server && yarn build:client",
     "build:client": "yarn run-s generate build:clientapp",
     "build:server": "yarn run-s generate build:serverapp",
     "build:clientapp": "yarn nx run-many --target=build --projects=client",

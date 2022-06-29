@@ -1,10 +1,8 @@
-import { getPrefixedName } from '../../domains/file';
 import { QueryResolvers, MutationResolvers, File } from '../../generated/graphql';
 import { getSignedUrlForDownload, getSignedUrlForUpload } from '../../utils/aws-s3';
+import { storagePath } from '../../utils/storage-path';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
-
-const prefixedFileName = (prefix: string, fileName: string): string => `${prefix}/${fileName}`;
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getProgramFiles: async (_parent, { programId }, { dataSources }) =>
@@ -12,13 +10,19 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
   getEventFiles: async (_parent, { eventId }, { dataSources }) =>
     dataSources.file.getEventFiles(eventId),
   getProgramFileUploadUrl: async (_parent, { programId, input }, _ds) =>
-    getSignedUrlForUpload(prefixedFileName(programId.toString(), input.name), input.type),
+    getSignedUrlForUpload(
+      storagePath(input.name, 'programDoc', programId.toString()),
+      input.contentType
+    ),
   getEventFileUploadUrl: async (_parent, { eventId, input }, _ds) =>
-    getSignedUrlForUpload(prefixedFileName(eventId.toString(), input.name), input.type),
+    getSignedUrlForUpload(
+      storagePath(input.name, 'eventDoc', eventId.toString()),
+      input.contentType
+    ),
 };
 
 export const typeResolver: Resolver<File> = {
-  url: async (parent, _args, _ds) => getSignedUrlForDownload(getPrefixedName(parent), parent.type),
+  url: async (parent, _args, _ds) => getSignedUrlForDownload(parent.storagePath, parent.type),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

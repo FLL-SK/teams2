@@ -8,13 +8,12 @@ export const FileMapper = {
     }
     const u: Omit<Required<File>, '__typename'> = {
       id: file._id,
+      type: file.type,
       name: file.name,
       size: file.size,
-      type: file.type,
+      contentType: file.contentType,
       updatedOn: file.updatedOn,
-      programId: file.programId,
-      eventId: file.eventId,
-      teamId: file.teamId,
+      storagePath: file.storagePath,
 
       url: null,
     };

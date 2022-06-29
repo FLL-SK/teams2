@@ -113,7 +113,7 @@ export function ProgramPage() {
     async (files: FileList) => {
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
-        const ff: FileUploadInput = { name: f.name, size: f.size, type: f.type };
+        const ff: FileUploadInput = { name: f.name, size: f.size, contentType: f.type };
         getUploadUrl({
           variables: { programId: id ?? '0', input: ff },
           onCompleted: async (data) => {
