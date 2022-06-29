@@ -1,14 +1,18 @@
 # import * from "./shared/scalars.graphql"
 # import * from "./shared/types.graphql"
 
+enum FileType {
+  programDoc
+  eventDoc
+}
+
 type File implements INode {
   id: ID!
-  programId: ID
-  eventId: ID
-  teamId: ID
   name: String!
+  storagePath: String!
+  type: FileType!
   size: Int!
-  type: String!
+  contentType: String!
   url: String!
   updatedOn: DateTime!
 }
@@ -16,7 +20,7 @@ type File implements INode {
 input FileUploadInput {
   name: String!
   size: Int!
-  type: String!
+  contentType: String!
 }
 
 extend type Query {

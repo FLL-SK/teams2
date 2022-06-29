@@ -3,6 +3,7 @@ fragment FileFragment on File {
   name
   size
   type
+  contentType
   updatedOn
   url
 }
