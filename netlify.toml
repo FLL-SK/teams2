@@ -14,4 +14,4 @@
 # when using this option and avoid committing  
 # sensitive values to public source repositories.
 [context.staging.environment]
-  NX_API_URL = "https://fll-teams2-staging.herokuapp.com/"
+  NX_API_URL = "https://fll-teams2-staging.herokuapp.com"
