@@ -1,0 +1,17 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production]
+  command = "make production"
+  [context.production.environment]
+    NX_API_URL = "https://fll-teams2.herokuapp.com"
+
+# Deploy Preview context:
+# All deploys generated from a pull/merge request
+# will inherit these settings. Be mindful 
+# when using this option and avoid committing  
+# sensitive values to public source repositories.
+[context.staging.environment]
+  NX_API_URL = "https://fll-teams2-staging.herokuapp.com/"
