@@ -1,3 +1,4 @@
+# replacing __redirects file with this configuration
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -8,10 +9,6 @@
   [context.production.environment]
     NX_API_URL = "https://fll-teams2.herokuapp.com"
 
-# Deploy Preview context:
-# All deploys generated from a pull/merge request
-# will inherit these settings. Be mindful 
-# when using this option and avoid committing  
-# sensitive values to public source repositories.
+# Deploy staging branch context:
 [context.staging.environment]
   NX_API_URL = "https://fll-teams2-staging.herokuapp.com"
