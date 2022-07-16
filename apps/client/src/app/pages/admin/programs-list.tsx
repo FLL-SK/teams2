@@ -3,17 +3,13 @@ import { Box, Text } from 'grommet';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
-import styled from 'styled-components';
 import { ListRow } from '../../components/list-row';
 import { formatDate } from '@teams2/dateutils';
+import { TextStriked } from '../../components/text-striked';
 
 interface ProgramsListProps {
   programs: ProgramListFragmentFragment[];
 }
-
-const StrikedText = styled(Text)<{ striked?: boolean }>`
-  text-decoration: ${(p) => (p.striked ? 'line-through' : undefined)};
-`;
 
 export function ProgramsList({ programs }: ProgramsListProps) {
   const navigate = useNavigate();
@@ -27,7 +23,7 @@ export function ProgramsList({ programs }: ProgramsListProps) {
           hoverIndicator
           pad={{ vertical: 'small', horizontal: 'small' }}
         >
-          <StrikedText striked={!!program.deletedOn}>{program.name}</StrikedText>
+          <TextStriked striked={!!program.deletedOn}>{program.name}</TextStriked>
           <Text>{formatDate(program.startDate)}</Text>
           <Text>{formatDate(program.endDate)}</Text>
         </ListRow>

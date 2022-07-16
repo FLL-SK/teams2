@@ -12,6 +12,7 @@ export const appPath = {
   signup: '/signup',
   forgotPassword: '/forgot-password',
   team: (id = '') => `/team/${id}`,
+  teams: '/teams',
   event: (id = '') => `/event/${id}`,
   program: (id = '') => `/program/${id}`,
   page404: '/404',

@@ -8,7 +8,7 @@ import { ForgotPasswordPage } from './pages/auth/forgot-password-page';
 import { ProfilePage } from './pages/profile/profile-page';
 import { ResetPasswordPage } from './pages/auth/reset-password-page';
 import { SignupPage } from './pages/auth/signup-page';
-import { TeamPage } from './pages/team/team-page';
+import { TeamListPage } from './pages/team-list/team-list-page';
 import { EventPage } from './pages/event/event-page';
 import { Page404 } from './pages/404/404-page';
 import { AdminPage } from './pages/admin/admin-page';
@@ -31,7 +31,7 @@ export function AppRouter() {
         path={appPath.team(':id')}
         element={
           <RequireAuth>
-            <TeamPage />
+            <TeamListPage />
           </RequireAuth>
         }
       />
@@ -48,6 +48,14 @@ export function AppRouter() {
         element={
           <RequireAuth>
             <AdminPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={appPath.teams}
+        element={
+          <RequireAuth>
+            <TeamListPage />
           </RequireAuth>
         }
       />
