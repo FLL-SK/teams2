@@ -11,7 +11,7 @@ import { SignupPage } from './pages/auth/signup-page';
 import { TeamListPage } from './pages/team-list/team-list-page';
 import { EventPage } from './pages/event/event-page';
 import { Page404 } from './pages/404/404-page';
-import { AdminPage } from './pages/admin/admin-page';
+import { SettingsPage } from './pages/settings/admin-page';
 import { ProgramPage } from './pages/program/program-page';
 import { RegisterPage } from './pages/register/register-page';
 import { TeamPage } from './pages/team/team-page';
@@ -45,10 +45,10 @@ export function AppRouter() {
       <Route path={appPath.signup} element={<SignupPage />} />
       <Route path={appPath.page404} element={<Page404 />} />
       <Route
-        path={appPath.admin}
+        path={appPath.settings}
         element={
           <RequireAuth>
-            <AdminPage />
+            <SettingsPage />
           </RequireAuth>
         }
       />

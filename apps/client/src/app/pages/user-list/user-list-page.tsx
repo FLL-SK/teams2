@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { TeamListFragmentFragment, useGetTeamsQuery } from '../../generated/graphql';
-import { TeamList } from './components/team-list';
+import { UserList } from './components/user-list';
 import { Close, Filter } from 'grommet-icons';
-import TeamSidebar from './components/team-sidebar';
+import UserSidebar from './components/user-sidebar';
 import { BasePage } from '../../components/base-page';
 
-export function TeamListPage() {
+export function UserListPage() {
   const navigate = useNavigate();
   const { isAdmin } = useAppUser();
   const [selectedTeam, setSelectedTeam] = React.useState<string>();
@@ -55,7 +55,7 @@ export function TeamListPage() {
 
   return (
     <BasePage title="Tímy" loading={teamsLoading}>
-      <TeamList
+      <UserList
         rowCount={searchResults.length}
         rowGetter={rowGetter}
         actionPanel={
@@ -86,7 +86,7 @@ export function TeamListPage() {
         }}
       />
       {selectedTeam && (
-        <TeamSidebar
+        <UserSidebar
           team={searchList.find((item) => item.value.id === selectedTeam)?.value}
           onClose={() => setSelectedTeam(undefined)}
         />

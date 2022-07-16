@@ -16,7 +16,7 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { UserList } from './user-list';
 
-export function AdminPage() {
+export function SettingsPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
   const { user, loading } = useAppUser();
   const [showInactivePrograms, setShowInactivePrograms] = useState(false);

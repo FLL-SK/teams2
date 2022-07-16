@@ -6,9 +6,8 @@ import { TeamListFragmentFragment } from '../../../generated/graphql';
 import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
-import styled from 'styled-components';
 
-type TeamListProps = {
+type UserListProps = {
   rowCount: number;
   rowGetter: (index: number) => TeamListFragmentFragment | null;
   onEmptyList?: () => unknown;
@@ -16,11 +15,11 @@ type TeamListProps = {
   onSelect: (team: TeamListFragmentFragment) => unknown;
 };
 
-interface TeamListRowProps {
+interface UserListRowProps {
   data: TeamListFragmentFragment;
 }
 
-function TeamListRow(props: TeamListRowProps) {
+function UserListRow(props: UserListRowProps) {
   const { data } = props;
   return (
     <>
@@ -37,27 +36,19 @@ function TeamListRow(props: TeamListRowProps) {
   );
 }
 
-const ListWrapper = styled(Box)`
-  overflow-x: clip;
-  overflow-y: hidden;
-  min-height: 100%;
-`;
-
-export function TeamList(props: TeamListProps) {
+export function UserList(props: UserListProps) {
   const { rowCount, rowGetter, actionPanel, onSelect } = props;
 
   return (
-    <ListWrapper>
-      <BaseList
-        actionPanel={actionPanel}
-        renderRow={(data) => <TeamListRow data={data} />}
-        cols="1fr 1fr 1fr"
-        rowCount={rowCount}
-        rowGetter={rowGetter}
-        rowHeight={50}
-        columnGap="medium"
-        onRowSelect={(team) => onSelect && onSelect(team)}
-      />
-    </ListWrapper>
+    <BaseList
+      actionPanel={actionPanel}
+      renderRow={(data) => <UserListRow data={data} />}
+      cols="1fr 1fr 1fr"
+      rowCount={rowCount}
+      rowGetter={rowGetter}
+      rowHeight={50}
+      columnGap="medium"
+      onRowSelect={(team) => onSelect && onSelect(team)}
+    />
   );
 }
