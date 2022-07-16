@@ -44,6 +44,12 @@ function MainNav({ direction }: { direction: DirectionType }) {
         </Anchor>
 
         {appUser?.isAdmin && (
+          <Anchor onClick={() => setNavLink(appPath.teams)}>
+            <Text>Tímy</Text>
+          </Anchor>
+        )}
+
+        {appUser?.isAdmin && (
           <Anchor onClick={() => setNavLink(appPath.admin)}>
             <Text>Admin</Text>
           </Anchor>

@@ -14,6 +14,7 @@ import { Page404 } from './pages/404/404-page';
 import { AdminPage } from './pages/admin/admin-page';
 import { ProgramPage } from './pages/program/program-page';
 import { RegisterPage } from './pages/register/register-page';
+import { TeamPage } from './pages/team/team-page';
 
 export function AppRouter() {
   return (
@@ -31,7 +32,7 @@ export function AppRouter() {
         path={appPath.team(':id')}
         element={
           <RequireAuth>
-            <TeamListPage />
+            <TeamPage />
           </RequireAuth>
         }
       />

@@ -4,7 +4,7 @@ import 'react-virtualized/styles.css';
 import { ListRow } from '../../components/list/list-row';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
-import { breakpoints, Density } from '../../theme';
+import { breakpoints } from '../../theme';
 import { Box } from 'grommet';
 import { ListHeaderRow } from './list-header-row';
 import { EdgeSizeType } from 'grommet/utils';
@@ -80,7 +80,6 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
       </ListRow>
     );
   };
-
 
   return (
     <Container heightOffset={heightOffset ?? 150}>
