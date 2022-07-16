@@ -1,5 +1,4 @@
 export function uploadS3XHR(file: File, signedUrl: string): Promise<boolean> {
-  console.log('XHR', file, signedUrl);
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', signedUrl);

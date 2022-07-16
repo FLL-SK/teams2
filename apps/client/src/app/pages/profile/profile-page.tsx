@@ -16,11 +16,12 @@ import {
 } from '../../generated/graphql';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { useAppUser } from '../../components/app-user/use-app-user';
+import { LabelValueGroup } from '../../components/label-value-group';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, isUser, xOut, user, isSuperAdmin } = useAppUser();
+  const { isAdmin, isUser, xOut, isSuperAdmin } = useAppUser();
   const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
 
@@ -37,38 +38,17 @@ export function ProfilePage() {
     <BasePage title="Profil používateľa" loading={loading}>
       <PanelGroup>
         <Panel title="Detaily" gap="small">
-          <LabelValue
-            label="Meno"
-            value={data?.getUser?.name ?? '-'}
-            direction="row"
-            labelWidth="100px"
-          />
-          <LabelValue
-            label="Email"
-            value={canEdit ? data?.getUser?.username : xOut()}
-            direction="row"
-            labelWidth="100px"
-          />
-          <LabelValue
-            label="Telefón"
-            value={canEdit ? data?.getUser?.phone ?? '-' : xOut()}
-            direction="row"
-            labelWidth="100px"
-          />
-          {data?.getUser?.isAdmin && (
-            <LabelValue
-              labelWidth="100px"
-              label="Admin"
-              value={data?.getUser?.isAdmin ? 'Áno' : 'Nie'}
-            />
-          )}
-          {data?.getUser?.isSuperAdmin && (
-            <LabelValue
-              labelWidth="100px"
-              label="SuperAdmin"
-              value={data?.getUser?.isSuperAdmin ? 'Áno' : 'Nie'}
-            />
-          )}
+          <LabelValueGroup direction="row" labelWidth="100px" gap="medium">
+            <LabelValue label="Meno" value={data?.getUser?.name ?? '-'} />
+            <LabelValue label="Email" value={canEdit ? data?.getUser?.username : xOut()} />
+            <LabelValue label="Telefón" value={canEdit ? data?.getUser?.phone ?? '-' : xOut()} />
+            {data?.getUser?.isAdmin && (
+              <LabelValue label="Admin" value={data?.getUser?.isAdmin ? 'Áno' : 'Nie'} />
+            )}
+            {data?.getUser?.isSuperAdmin && (
+              <LabelValue label="SuperAdmin" value={data?.getUser?.isSuperAdmin ? 'Áno' : 'Nie'} />
+            )}
+          </LabelValueGroup>
 
           {isSuperAdmin() && !data?.getUser?.isAdmin && (
             <Box>

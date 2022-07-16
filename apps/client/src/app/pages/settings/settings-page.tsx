@@ -6,19 +6,12 @@ import { useState } from 'react';
 import { BasePage } from '../../components/base-page';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { Panel, PanelGroup } from '../../components/panel';
-import {
-  useCreateProgramMutation,
-  useGetProgramsQuery,
-  useGetTeamsQuery,
-  useGetUsersQuery,
-} from '../../generated/graphql';
-import { ProgramsList } from './programs-list';
+import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/graphql';
+import { ProgramsList } from './components/programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
-import { TeamsList } from './teams-list';
-import { UserList } from './user-list';
 
-export function AdminPage() {
+export function SettingsPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
   const { user, loading } = useAppUser();
   const [showInactivePrograms, setShowInactivePrograms] = useState(false);
@@ -29,9 +22,6 @@ export function AdminPage() {
     loading: programsLoading,
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
-
-  const { data: teamsData, loading: teamsLoading } = useGetTeamsQuery();
-  const { data: userData, loading: userLoading } = useGetUsersQuery();
 
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 
@@ -44,7 +34,7 @@ export function AdminPage() {
     .filter((p) => showInactivePrograms || (p.endDate > today && !p.deletedOn));
 
   return (
-    <BasePage title="Admin" loading={loading}>
+    <BasePage title="Nastavenia" loading={loading}>
       <PanelGroup>
         <Panel title="Programy" gap="medium">
           <Box direction="row" justify="between">
@@ -61,12 +51,6 @@ export function AdminPage() {
             />
           </Box>
           {programsLoading ? <Spinner /> : <ProgramsList programs={programs} />}
-        </Panel>
-        <Panel title="Tímy">
-          {teamsLoading ? <Spinner /> : <TeamsList teams={teamsData?.getTeams ?? []} />}
-        </Panel>
-        <Panel title="Používatelia">
-          {userLoading ? <Spinner /> : <UserList users={userData?.getUsers ?? []} />}
         </Panel>
       </PanelGroup>
 

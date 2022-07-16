@@ -20,6 +20,7 @@ import {
 } from '../../generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
+import { LabelValueGroup } from '../../components/label-value-group';
 
 export function TeamPage() {
   const { id } = useParams();
@@ -88,8 +89,10 @@ export function TeamPage() {
     <BasePage title="Tím" loading={teamLoading}>
       <PanelGroup>
         <Panel title="Detaily tímu" gap="small">
-          <LabelValue label="Názov" labelWidth="150px" value={team?.name} />
-          <LabelValue label="Zriaďovateľ" labelWidth="150px" value={fullAddress(team?.address)} />
+          <LabelValueGroup labelWidth="150px" gap="medium">
+            <LabelValue label="Názov" value={team?.name} />
+            <LabelValue label="Zriaďovateľ" value={fullAddress(team?.address)} />
+          </LabelValueGroup>
           <Box direction="row">
             <Button label="Zmeniť" onClick={() => setShowEditDialog(true)} disabled={!canEdit} />
           </Box>

@@ -8,20 +8,15 @@ import { Notifications } from './components/notifications/notifications';
 export function AppLayout() {
   return (
     <Grommet theme={defaultTheme}>
-      <BodyWrapper>
-        <Notifications />
+      <AppPageWrapper>
         <AppRouter />
-      </BodyWrapper>
+        <Notifications />
+      </AppPageWrapper>
     </Grommet>
   );
 }
 
-const BodyWrapper = styled(Box)`
+const AppPageWrapper = styled(Box)`
   min-height: 100vh;
-  max-width: 100%;
-  margin: 0 auto;
-
-  @media ${device.tablet} {
-    max-width: 800px;
-  }
+  min-width: 100%;
 `;
