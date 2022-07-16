@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Nav, Anchor, Sidebar, Text } from 'grommet';
 import { useEffect, useState } from 'react';
@@ -8,69 +8,32 @@ import { Logo } from './logo';
 import { useAuthenticate } from './auth/useAuthenticate';
 import { useAppUser } from './app-user/use-app-user';
 
+interface AnchorNavProps {
+  path: string;
+  title: string;
+}
+
 function Menu() {
-  const { isAuthenticated, user, logout } = useAuthenticate();
   const location = useLocation();
   const navigate = useNavigate();
-  const [navLink, setNavLink] = useState<string>();
-  const [doLogout, setDoLogout] = useState(false);
+
   const { user: appUser } = useAppUser();
 
-  useEffect(() => {
-    if (navLink) {
-      navigate(navLink, { state: { from: location } });
-    }
-    return () => {
-      setNavLink(undefined);
-    };
-  }, [location, navLink, navigate]);
-
-  useEffect(() => {
-    if (doLogout) {
-      logout();
-      navigate('/');
-    }
-    return () => setDoLogout(false);
-  }, [doLogout, logout, navigate]);
+  const AnchorNav = useCallback(
+    ({ path, title }: AnchorNavProps) => (
+      <Anchor onClick={() => navigate(path, { state: { from: location } })}>
+        <Text>{title}</Text>
+      </Anchor>
+    ),
+    [navigate, location]
+  );
 
   return (
-    <Nav align="center" justify="between">
-      <Box gap="medium" align="center">
-        <Box height="30px" />
-        <Anchor onClick={() => setNavLink('/')}>
-          <Text>Turnaje</Text>
-        </Anchor>
-
-        {appUser?.isAdmin && (
-          <Anchor onClick={() => setNavLink(appPath.teams)}>
-            <Text>Tímy</Text>
-          </Anchor>
-        )}
-
-        {appUser?.isAdmin && (
-          <Anchor onClick={() => setNavLink(appPath.users)}>
-            <Text>Používatelia</Text>
-          </Anchor>
-        )}
-
-        {appUser?.isAdmin && (
-          <Anchor onClick={() => setNavLink(appPath.settings)}>
-            <Text>Nastavenia</Text>
-          </Anchor>
-        )}
-
-        {isAuthenticated && (
-          <Anchor onClick={() => setNavLink(appPath.profile(user?.id))}>
-            <Text>Môj profil</Text>
-          </Anchor>
-        )}
-
-        {!isAuthenticated && (
-          <Anchor onClick={() => setNavLink(appPath.login)}>
-            <Text>Prihlásiť sa</Text>
-          </Anchor>
-        )}
-      </Box>
+    <Nav align="center" justify="between" gap="medium">
+      <AnchorNav path="/" title="Turnaje" />
+      {appUser?.isAdmin && <AnchorNav path={appPath.teams} title="Tímy" />}
+      {appUser?.isAdmin && <AnchorNav path={appPath.users} title="Používatelia" />}
+      {appUser?.isAdmin && <AnchorNav path={appPath.settings} title="Nastavenia" />}
     </Nav>
   );
 }
@@ -80,7 +43,7 @@ const Footer = () => {
   const { isAuthenticated, user, logout } = useAuthenticate();
 
   return (
-    <>
+    <Nav gap="medium" align="center">
       {isAuthenticated && (
         <Anchor onClick={() => navigate(appPath.profile(user?.id))}>
           <Text>Môj profil</Text>
@@ -96,7 +59,7 @@ const Footer = () => {
           <Text>Odhlásiť sa</Text>
         </Anchor>
       )}
-    </>
+    </Nav>
   );
 };
 
