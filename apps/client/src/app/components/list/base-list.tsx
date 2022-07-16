@@ -5,7 +5,7 @@ import { ListRow } from '../../components/list/list-row';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 import { breakpoints } from '../../theme';
-import { Box, Grid } from 'grommet';
+import { Box } from 'grommet';
 import { ListHeaderRow } from './list-header-row';
 import { EdgeSizeType } from 'grommet/utils';
 
