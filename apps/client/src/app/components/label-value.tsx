@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'grommet';
 import { ReactNode } from 'react';
+import { LabelValueGroupContext } from './label-value-group';
 
 interface LabelValueProps {
   label: string;
@@ -13,12 +14,19 @@ interface LabelValueProps {
 export const LabelValue = (props: LabelValueProps) => {
   const { label, value = '', direction = 'row', labelWidth, children } = props;
   return (
-    <Box direction={direction} gap={direction !== 'row' ? 'medium' : undefined}>
-      <Box width={labelWidth}>
-        <Text weight="bold">{label}</Text>
-      </Box>
-      {typeof value === 'string' && <Text>{value}</Text>}
-      {children}
-    </Box>
+    <LabelValueGroupContext.Consumer>
+      {(context) => {
+        const dir = direction ?? context.direction;
+        return (
+          <Box direction={dir} gap={dir !== 'row' ? 'medium' : undefined}>
+            <Box width={labelWidth ?? context.labelWidth}>
+              <Text weight="bold">{label}</Text>
+            </Box>
+            {typeof value === 'string' && <Text>{value}</Text>}
+            {children}
+          </Box>
+        );
+      }}
+    </LabelValueGroupContext.Consumer>
   );
 };
