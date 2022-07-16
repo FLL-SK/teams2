@@ -64,10 +64,41 @@ function Menu() {
             <Text>Môj profil</Text>
           </Anchor>
         )}
+
+        {!isAuthenticated && (
+          <Anchor onClick={() => setNavLink(appPath.login)}>
+            <Text>Prihlásiť sa</Text>
+          </Anchor>
+        )}
       </Box>
     </Nav>
   );
 }
+
+const Footer = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuthenticate();
+
+  return (
+    <>
+      {isAuthenticated && (
+        <Anchor onClick={() => navigate(appPath.profile(user?.id))}>
+          <Text>Môj profil</Text>
+        </Anchor>
+      )}
+      {!isAuthenticated && (
+        <Anchor onClick={() => navigate(appPath.login)}>
+          <Text>Prihlásiť sa</Text>
+        </Anchor>
+      )}
+      {isAuthenticated && (
+        <Anchor onClick={() => logout()}>
+          <Text>Odhlásiť sa</Text>
+        </Anchor>
+      )}
+    </>
+  );
+};
 
 interface MainMenuProps {
   responsiveSize: string;
@@ -83,6 +114,7 @@ export function MainMenu(props: MainMenuProps) {
       pad="medium"
       height="100vh"
       header={<Logo width="100%" />}
+      footer={<Footer />}
       overflow="hidden"
     >
       <Menu />

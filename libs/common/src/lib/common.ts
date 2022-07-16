@@ -6,7 +6,7 @@ export const appPath = {
   settings: '/settings',
   passwordReset: '/password-reset',
   login: '/login',
-  logou: '/logout',
+  logout: '/logout',
   profile: (id = '') => `/profile/${id}`,
   register: (team = '') => `/register/${team}`,
   signup: '/signup',
