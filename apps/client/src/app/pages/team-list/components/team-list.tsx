@@ -27,9 +27,6 @@ function TeamListRow(props: TeamListRowProps) {
       <ListCol linkPath={appPath.team(data.id)}>
         <TextStriked striked={!!data.deletedOn}>{data.name}</TextStriked>
       </ListCol>
-      <ListCol>
-        <Text>{data.name}</Text>
-      </ListCol>
       <ListCol kind="detail">
         <Text>{fullAddress(data.address)}</Text>
       </ListCol>
@@ -51,7 +48,7 @@ export function TeamList(props: TeamListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <TeamListRow data={data} />}
-        cols="1fr 1fr 1fr"
+        cols="1fr 2fr"
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={50}

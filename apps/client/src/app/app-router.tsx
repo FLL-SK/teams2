@@ -11,10 +11,11 @@ import { SignupPage } from './pages/auth/signup-page';
 import { TeamListPage } from './pages/team-list/team-list-page';
 import { EventPage } from './pages/event/event-page';
 import { Page404 } from './pages/404/404-page';
-import { SettingsPage } from './pages/settings/admin-page';
+import { SettingsPage } from './pages/settings/settings-page';
 import { ProgramPage } from './pages/program/program-page';
 import { RegisterPage } from './pages/register/register-page';
 import { TeamPage } from './pages/team/team-page';
+import { UserListPage } from './pages/user-list/user-list-page';
 
 export function AppRouter() {
   return (
@@ -57,6 +58,14 @@ export function AppRouter() {
         element={
           <RequireAuth>
             <TeamListPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={appPath.users}
+        element={
+          <RequireAuth>
+            <UserListPage />
           </RequireAuth>
         }
       />

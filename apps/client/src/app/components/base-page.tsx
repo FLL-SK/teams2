@@ -18,7 +18,7 @@ const PageWrapper = styled(Box)`
 const PageContent = styled(Box)`
   height: 100%;
   width: 100%;
-  overflow: auto;
+  /*overflow: auto;*/
 `;
 
 const PageTitle = ({ title }: { title?: string }) => (

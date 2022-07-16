@@ -1,26 +1,28 @@
 import React from 'react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
-import { ClosableSidebar, Sidebar } from '../../../components/sidebar';
+import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
-import { TeamListFragmentFragment } from '../../../generated/graphql';
+import { UserListFragmentFragment } from '../../../generated/graphql';
 
 interface UserSidebarProps {
-  team?: TeamListFragmentFragment;
+  user?: UserListFragmentFragment;
   onClose: () => unknown;
 }
 
 export function UserSidebar(props: UserSidebarProps) {
-  const { team, onClose } = props;
-  if (!team) {
+  const { user, onClose } = props;
+  if (!user) {
     return null;
   }
   return (
-    <ClosableSidebar onClose={onClose} show={!!team}>
-      <SidebarPanelGroup title="Team">
+    <ClosableSidebar onClose={onClose} show={!!user}>
+      <SidebarPanelGroup title="Používateľ">
         <SidebarPanel>
-          <LabelValueGroup>
-            <LabelValue label="Name" value={team.name} />
+          <LabelValueGroup direction="row" gap="medium">
+            <LabelValue label="Meno" value={user.name} />
+            <LabelValue label="email" value={user.username} />
+            <LabelValue label="Telefón" value={user.phone} />
           </LabelValueGroup>
         </SidebarPanel>
       </SidebarPanelGroup>

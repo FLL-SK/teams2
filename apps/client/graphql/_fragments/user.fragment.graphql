@@ -3,6 +3,7 @@ fragment UserListFragment on User {
   name
   username
   phone
+  deletedOn
 
   isAdmin
   isSuperAdmin

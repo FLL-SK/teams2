@@ -3,7 +3,7 @@ import { Box, Button, TextInput } from 'grommet';
 import { useNavigate } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
-import { TeamListFragmentFragment, useGetTeamsQuery } from '../../generated/graphql';
+import { useGetUsersQuery, UserListFragmentFragment } from '../../generated/graphql';
 import { UserList } from './components/user-list';
 import { Close, Filter } from 'grommet-icons';
 import UserSidebar from './components/user-sidebar';
@@ -15,18 +15,18 @@ export function UserListPage() {
   const [selectedTeam, setSelectedTeam] = React.useState<string>();
   const [showFilter, setShowFilter] = React.useState(false);
 
-  const { data: teamsData, loading: teamsLoading, error: teamsError } = useGetTeamsQuery();
+  const { data: usersData, loading: usersLoading, error: usersError } = useGetUsersQuery();
 
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState<TeamListFragmentFragment[]>([]);
+  const [searchResults, setSearchResults] = useState<UserListFragmentFragment[]>([]);
 
   const searchList = useMemo(
     () =>
-      (teamsData?.getTeams ?? []).map((t) => ({
-        text: `${t.name.toLocaleLowerCase()} ${t.address.city.toLocaleLowerCase()}`,
+      (usersData?.getUsers ?? []).map((t) => ({
+        text: `${t.name.toLocaleLowerCase()} ${t.username.toLocaleLowerCase()}`,
         value: t,
       })),
-    [teamsData]
+    [usersData]
   );
 
   useEffect(() => {
@@ -43,18 +43,18 @@ export function UserListPage() {
     setSearchResults(results);
   };
 
-  if (teamsError) {
-    return <ErrorPage title="Chyba pri získavaní zoznamu tímov." />;
+  if (usersError) {
+    return <ErrorPage title="Chyba pri získavaní zoznamu používateľov." />;
   }
 
   const rowGetter = (index: number) => (index < searchResults.length ? searchResults[index] : null);
 
   if (!isAdmin) {
-    return <ErrorPage title="Nemáte oprávnenie na zobrazenie tímov." />;
+    return <ErrorPage title="Nemáte oprávnenie na zobrazenie používateľov." />;
   }
 
   return (
-    <BasePage title="Tímy" loading={teamsLoading}>
+    <BasePage title="Používatelia" loading={usersLoading}>
       <UserList
         rowCount={searchResults.length}
         rowGetter={rowGetter}
@@ -62,7 +62,7 @@ export function UserListPage() {
           <Box direction="row">
             <form onSubmit={handleSearchSubmit}>
               <TextInput
-                placeholder="Hľadať názov tímu/mesto"
+                placeholder="Hľadať meno/email používateľa"
                 onChange={({ target }) => setSearchText(target.value)}
                 value={searchText}
               />
@@ -87,7 +87,7 @@ export function UserListPage() {
       />
       {selectedTeam && (
         <UserSidebar
-          team={searchList.find((item) => item.value.id === selectedTeam)?.value}
+          user={searchList.find((item) => item.value.id === selectedTeam)?.value}
           onClose={() => setSelectedTeam(undefined)}
         />
       )}

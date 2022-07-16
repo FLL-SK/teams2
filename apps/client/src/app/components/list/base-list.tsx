@@ -5,7 +5,7 @@ import { ListRow } from '../../components/list/list-row';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 import { breakpoints } from '../../theme';
-import { Box } from 'grommet';
+import { Box, Grid } from 'grommet';
 import { ListHeaderRow } from './list-header-row';
 import { EdgeSizeType } from 'grommet/utils';
 
@@ -32,7 +32,7 @@ const Container = styled.div<{ heightOffset: number }>`
 `;
 
 const ContentPanel = styled(Box)`
-  height: 100%;
+  height: 90%;
   width: 100%;
 `;
 
@@ -52,7 +52,6 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
     renderRow,
     cols,
     rowHeight,
-    heightOffset,
     actionPanel,
     columnGap: gap,
     onRowSelect,
@@ -82,7 +81,7 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
   };
 
   return (
-    <Container heightOffset={heightOffset ?? 150}>
+    <Box height="100%">
       <ListHeaderRow justifyContent={actionsJustifyContent}>{actionPanel}</ListHeaderRow>
       <ContentPanel>
         <AutoSizer>
@@ -101,6 +100,6 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
           )}
         </AutoSizer>
       </ContentPanel>
-    </Container>
+    </Box>
   );
 }

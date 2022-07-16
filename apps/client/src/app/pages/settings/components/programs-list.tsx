@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Text } from 'grommet';
-import { ProgramListFragmentFragment } from '../../generated/graphql';
+import { ProgramListFragmentFragment } from '../../../generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
-import { ListRow } from '../../components/list-row';
+import { ListRow } from '../../../components/list-row';
 import { formatDate } from '@teams2/dateutils';
-import { TextStriked } from '../../components/text-striked';
+import { TextStriked } from '../../../components/text-striked';
 
 interface ProgramsListProps {
   programs: ProgramListFragmentFragment[];

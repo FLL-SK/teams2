@@ -6,15 +6,10 @@ import { useState } from 'react';
 import { BasePage } from '../../components/base-page';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { Panel, PanelGroup } from '../../components/panel';
-import {
-  useCreateProgramMutation,
-  useGetProgramsQuery,
-  useGetUsersQuery,
-} from '../../generated/graphql';
-import { ProgramsList } from './programs-list';
+import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/graphql';
+import { ProgramsList } from './components/programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
-import { UserList } from './user-list';
 
 export function SettingsPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
@@ -28,8 +23,6 @@ export function SettingsPage() {
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
 
-  const { data: userData, loading: userLoading } = useGetUsersQuery();
-
   const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
 
   if (!loading && !user?.isAdmin) {
@@ -41,7 +34,7 @@ export function SettingsPage() {
     .filter((p) => showInactivePrograms || (p.endDate > today && !p.deletedOn));
 
   return (
-    <BasePage title="Admin" loading={loading}>
+    <BasePage title="Nastavenia" loading={loading}>
       <PanelGroup>
         <Panel title="Programy" gap="medium">
           <Box direction="row" justify="between">
@@ -58,10 +51,6 @@ export function SettingsPage() {
             />
           </Box>
           {programsLoading ? <Spinner /> : <ProgramsList programs={programs} />}
-        </Panel>
-
-        <Panel title="Používatelia">
-          {userLoading ? <Spinner /> : <UserList users={userData?.getUsers ?? []} />}
         </Panel>
       </PanelGroup>
 

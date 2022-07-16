@@ -6,7 +6,7 @@ import styled, { CSSProperties } from 'styled-components';
 import { Density, getColor, margins } from '../../theme';
 
 const Container = styled(Box)<{ cols: string; padding?: PadType; gap?: EdgeSizeType }>`
-  border: 1px solid ${getColor('light-2')};
+  border-bottom: 1px solid ${getColor('light-2')};
   padding: ${(p) => p.padding};
   display: grid;
   grid-auto-flow: column;
