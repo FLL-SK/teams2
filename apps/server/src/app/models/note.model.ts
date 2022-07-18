@@ -1,0 +1,42 @@
+import { Schema, model, Model, Document } from 'mongoose';
+import { DeleteResult, ObjectId } from 'mongodb';
+import { FileType } from '../generated/graphql';
+
+const Types = Schema.Types;
+
+export interface NoteData {
+  _id?: ObjectId;
+  type: FileType;
+  ref: ObjectId;
+  text: string;
+  title?: string;
+  createdOn: Date;
+  createdBy: ObjectId;
+  deletedOn?: Date;
+  deletedBy?: ObjectId;
+}
+
+export type NoteDocument = (Document<unknown, unknown, NoteData> & NoteData) | null;
+
+export interface NoteModel extends Model<NoteData> {
+  clean(): Promise<DeleteResult>; // remove all docs from repo
+}
+
+const schema = new Schema<NoteData, NoteModel>({
+  type: { type: String, required: true },
+  ref: { type: Types.ObjectId, required: true },
+  text: { type: Types.String, required: true },
+  title: { type: Types.String },
+  createdOn: { type: Types.Date, required: true },
+  createdBy: { type: Types.ObjectId, required: true },
+  deletedOn: { type: Types.Date },
+  deletedBy: { type: Types.ObjectId },
+});
+
+schema.index({ type: 1, ref: 1 });
+
+schema.static('clean', function () {
+  return this.deleteMany().exec();
+});
+
+export const noteRepository = model<NoteData, NoteModel>('Note', schema);

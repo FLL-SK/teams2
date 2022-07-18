@@ -10,6 +10,7 @@ import * as InvoiceItem from './invoice-item.resolvers';
 import * as Address from './address.resolvers';
 import * as Invoice from './invoice.resolvers';
 import * as File from './file.resolvers';
+import * as Tag from './tag.resolvers';
 
 export const resolvers: Resolvers<ApolloContext> = {
   Query: {
@@ -22,6 +23,7 @@ export const resolvers: Resolvers<ApolloContext> = {
     ...Invoice.queryResolvers,
     ...Address.queryResolvers,
     ...File.queryResolvers,
+    ...Tag.queryResolvers,
   },
   Mutation: {
     ...User.mutationResolvers,
@@ -33,6 +35,7 @@ export const resolvers: Resolvers<ApolloContext> = {
     ...Invoice.mutationResolvers,
     ...Address.mutationResolvers,
     ...File.mutationResolvers,
+    ...Tag.mutationResolvers,
   },
   User: User.typeResolver,
   Event: Event.typeResolver,
@@ -43,4 +46,5 @@ export const resolvers: Resolvers<ApolloContext> = {
   Invoice: Invoice.typeResolver,
   Address: Address.typeResolver,
   File: File.typeResolver,
+  Tag: Tag.typeResolver,
 };

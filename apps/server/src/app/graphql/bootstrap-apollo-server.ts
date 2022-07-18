@@ -15,6 +15,7 @@ import {
   FileDataSource,
   InvoiceDataSource,
   ProgramDataSource,
+  TagDataSource,
   TeamDataSource,
   UserDataSource,
 } from './datasources';
@@ -46,6 +47,7 @@ export async function bootstrapApolloServer(app: Application): Promise<void> {
       invoice: new InvoiceDataSource(),
       file: new FileDataSource(),
       eventTeam: new EventTeamDataSource(),
+      tag: new TagDataSource(),
     }),
     introspection: true,
     debug: true,

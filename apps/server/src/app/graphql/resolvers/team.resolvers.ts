@@ -10,6 +10,7 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 export const typeResolver: Resolver<Team> = {
   coaches: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamCoaches(id),
   events: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamEvents(id),
+  tags: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamTags(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
@@ -22,4 +23,9 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.team.addCoachToTeam(teamId, userId),
   removeCoachFromTeam: async (_parent, { teamId, userId }, { dataSources }) =>
     dataSources.team.removeCoachFromTeam(teamId, userId),
+
+  addTagToTeam: (_parent, { teamId, tagId }, { dataSources }) =>
+    dataSources.team.addTagToTeam(teamId, tagId),
+  removeTagFromTeam: async (_parent, { teamId, tagId }, { dataSources }) =>
+    dataSources.team.removeTagFromTeam(teamId, tagId),
 };
