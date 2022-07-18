@@ -7,3 +7,5 @@ export * from './invoice.model';
 export * from './invoice-item.model';
 export * from './address.model';
 export * from './file.model';
+export * from './tag.model';
+export * from './note.model';

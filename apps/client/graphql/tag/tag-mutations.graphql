@@ -1,0 +1,17 @@
+mutation createTag($input: TagInput!) {
+  createTag(input: $input) {
+    ...TagFragment
+  }
+}
+
+mutation updateTag($id: ID!, $input: TagInput!) {
+  updateTag(id: $id, input: $input) {
+    ...TagFragment
+  }
+}
+
+mutation deleteTag($id: ID!) {
+  deleteTag(id: $id) {
+    ...TagFragment
+  }
+}

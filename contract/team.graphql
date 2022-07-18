@@ -3,11 +3,13 @@
 
 # import * from "./user.graphql"
 # import * from "./event.graphql"
+# import * from "./tag.graphql"
 
 type Team implements INode {
   id: ID!
   name: String!
   coachesIds: [ID!]!
+  tagIds: [ID!]!
 
   address: Address!
   billTo: Address
@@ -19,6 +21,7 @@ type Team implements INode {
 
   coaches: [User!]!
   events: [EventTeam!]!
+  tags: [Tag!]!
 }
 
 input CreateTeamInput {
@@ -53,6 +56,8 @@ type UpdateTeamPayload implements IMutationPayload {
 
 input TeamFilterInput {
   isActive: Boolean
+  hasTags: [ID!]
+  participatedInProgram: ID
 }
 
 extend type Query {
@@ -67,4 +72,7 @@ extend type Mutation {
 
   addCoachToTeam(teamId: ID!, userId: ID!): Team!
   removeCoachFromTeam(teamId: ID!, userId: ID!): Team!
+
+  addTagToTeam(teamId: ID!, tagId: ID!): Team
+  removeTagFromTeam(teamId: ID!, tagId: ID!): Team
 }

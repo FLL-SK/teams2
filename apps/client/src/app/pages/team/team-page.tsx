@@ -14,6 +14,8 @@ import {
   CreateTeamInput,
   UpdateTeamInput,
   useAddCoachToTeamMutation,
+  useAddTagToTeamMutation,
+  useDeleteTagMutation,
   useGetTeamQuery,
   useRemoveCoachFromTeamMutation,
   useUpdateTeamMutation,
@@ -21,6 +23,7 @@ import {
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { LabelValueGroup } from '../../components/label-value-group';
+import { TagList } from '../../components/tag-list';
 
 export function TeamPage() {
   const { id } = useParams();
@@ -38,6 +41,8 @@ export function TeamPage() {
   } = useGetTeamQuery({ variables: { id: id ?? '0' } });
   const [addCoach] = useAddCoachToTeamMutation();
   const [removeCoach] = useRemoveCoachFromTeamMutation();
+  const [removeTag] = useDeleteTagMutation();
+  const [addTag] = useAddTagToTeamMutation();
 
   const [updateTeam] = useUpdateTeamMutation();
 
@@ -127,6 +132,18 @@ export function TeamPage() {
                 users={team?.coaches ?? []}
                 onAdd={(userId) => addCoach({ variables: { teamId: id ?? '0', userId } })}
                 onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
+              />
+            </Box>
+          </Panel>
+        )}
+
+        {isAdmin() && (
+          <Panel title="Štítky">
+            <Box direction="row" wrap>
+              <TagList
+                tags={team?.tags}
+                onRemove={(id) => removeTag({ variables: { id } })}
+                onAdd={(tag) => addTag({ variables: { teamId: team?.id ?? '0', tagId: tag.id } })}
               />
             </Box>
           </Panel>

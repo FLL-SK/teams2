@@ -1,0 +1,6 @@
+fragment TagFragment on Tag {
+  id
+  label
+  color
+  deletedOn
+}

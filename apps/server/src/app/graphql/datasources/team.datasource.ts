@@ -1,7 +1,13 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import { eventTeamRepository, TeamData, teamRepository, userRepository } from '../../models';
+import {
+  eventTeamRepository,
+  tagRepository,
+  TeamData,
+  teamRepository,
+  userRepository,
+} from '../../models';
 import {
   CreateTeamInput,
   CreateTeamPayload,
@@ -10,10 +16,13 @@ import {
   UpdateTeamPayload,
   User,
   EventTeam,
+  Tag,
+  TeamFilterInput,
 } from '../../generated/graphql';
-import { EventTeamMapper, TeamMapper, UserMapper } from '../mappers';
+import { EventTeamMapper, TagMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
+import { FilterQuery } from 'mongoose';
 
 export class TeamDataSource extends BaseDataSource {
   private loader: Dataloader<string, Team, string>;
@@ -39,8 +48,16 @@ export class TeamDataSource extends BaseDataSource {
     return team;
   }
 
-  async getTeams(): Promise<Team[]> {
-    const teams = await teamRepository.find().sort({ name: 1 }).exec();
+  async getTeams(filter: TeamFilterInput): Promise<Team[]> {
+    const q: FilterQuery<TeamData> = {};
+    if (filter.isActive) {
+      q.deletedOn = null;
+    }
+    if (filter.hasTags) {
+      q.tagIds = { $all: filter.hasTags };
+    }
+
+    const teams = await teamRepository.find(q).sort({ name: 1 }).exec();
     return teams.map((t) => TeamMapper.toTeam(t));
   }
 
@@ -49,6 +66,7 @@ export class TeamDataSource extends BaseDataSource {
 
     const t: TeamData = {
       name: input.name,
+      tagIds: [],
       address: {
         name: input.orgName,
         street: input.street,
@@ -103,6 +121,9 @@ export class TeamDataSource extends BaseDataSource {
     if (!t) {
       throw new Error('Team not found');
     }
+    if (!t.coachesIds || t.coachesIds.length === 0) {
+      return [];
+    }
     const coaches = await Promise.all(
       t.coachesIds.map(async (c) => userRepository.findById(c).lean().exec())
     );
@@ -112,5 +133,39 @@ export class TeamDataSource extends BaseDataSource {
   async getTeamEvents(teamId: ObjectId): Promise<EventTeam[]> {
     const events = await eventTeamRepository.find({ teamId: teamId }).exec();
     return events.map((c) => EventTeamMapper.toEventTeam(c));
+  }
+
+  async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
+    const t = await teamRepository.findByIdAndUpdate(
+      { _id: teamId },
+      { $addToSet: { tagIds: tagId } },
+      { new: true }
+    );
+    return TeamMapper.toTeam(t);
+  }
+
+  async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
+    const t = await teamRepository.findByIdAndUpdate(
+      { _id: teamId },
+      { $pull: { tagIds: tagId } },
+      { new: true }
+    );
+    return TeamMapper.toTeam(t);
+  }
+
+  async getTeamTags(teamId: ObjectId): Promise<Tag[]> {
+    const t = await teamRepository.findById(teamId).lean().exec();
+    if (!t) {
+      throw new Error('Team not found');
+    }
+    if (!t.tagIds || t.tagIds.length === 0) {
+      return [];
+    }
+
+    const tags = await Promise.all(
+      t.tagIds.map(async (c) => tagRepository.findById(c).lean().exec())
+    );
+
+    return tags.filter((c) => !!c).map((c) => TagMapper.toTag(c));
   }
 }
