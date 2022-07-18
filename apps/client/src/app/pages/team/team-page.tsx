@@ -73,7 +73,6 @@ export function TeamPage() {
   );
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
-    console.log('submit', data);
     const input: UpdateTeamInput = {
       name: data.name,
       address: {

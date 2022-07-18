@@ -58,7 +58,6 @@ export function TeamListPage() {
   const handleApplyFilter = useCallback(
     (filter: TeamListFilterValues) => {
       const sp = constructTeamListSearchParams(filter);
-      console.log('handleApplyFilter', filter, sp);
       setSearchParams(new URLSearchParams(sp));
     },
     [setSearchParams]
