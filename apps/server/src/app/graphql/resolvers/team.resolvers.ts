@@ -4,16 +4,13 @@ import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getTeam: async (_parent, { id }, { dataSources }) => dataSources.team.getTeam(id),
-  getTeams: async (_parent, _args, { dataSources }) => dataSources.team.getTeams(),
+  getTeams: async (_parent, { filter }, { dataSources }) => dataSources.team.getTeams(filter),
 };
 
 export const typeResolver: Resolver<Team> = {
   coaches: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamCoaches(id),
   events: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamEvents(id),
-  tags: async ({ id }, _args, { dataSources }) => {
-    console.log('heeere');
-    return await dataSources.team.getTeamTags(id);
-  },
+  tags: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamTags(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

@@ -19,12 +19,18 @@ export class TagDataSource extends BaseDataSource {
     super.initialize(config);
   }
 
+  async getTag(id: ObjectId): Promise<Tag> {
+    const tag = await tagRepository.findById(id).exec();
+    return TagMapper.toTag(tag);
+  }
+
   async getTags(includeDeleted = false): Promise<Tag[]> {
     const q: FilterQuery<TagData> = {};
     if (!includeDeleted) {
       q.deletedOn = null;
     }
     const tags = await tagRepository.find(q).sort({ label: 1 }).exec();
+    console.log('tags', tags);
     return tags.map(TagMapper.toTag);
   }
 

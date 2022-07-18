@@ -17,10 +17,12 @@ import {
   User,
   EventTeam,
   Tag,
+  TeamFilterInput,
 } from '../../generated/graphql';
 import { EventTeamMapper, TagMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
+import { FilterQuery } from 'mongoose';
 
 export class TeamDataSource extends BaseDataSource {
   private loader: Dataloader<string, Team, string>;
@@ -46,8 +48,16 @@ export class TeamDataSource extends BaseDataSource {
     return team;
   }
 
-  async getTeams(): Promise<Team[]> {
-    const teams = await teamRepository.find().sort({ name: 1 }).exec();
+  async getTeams(filter: TeamFilterInput): Promise<Team[]> {
+    const q: FilterQuery<TeamData> = {};
+    if (filter.isActive) {
+      q.deletedOn = null;
+    }
+    if (filter.hasTags) {
+      q.tagIds = { $all: filter.hasTags };
+    }
+
+    const teams = await teamRepository.find(q).sort({ name: 1 }).exec();
     return teams.map((t) => TeamMapper.toTeam(t));
   }
 

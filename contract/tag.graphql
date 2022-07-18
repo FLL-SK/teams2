@@ -26,6 +26,7 @@ input TagInput {
 }
 
 extend type Query {
+  getTag(id: ID!): Tag
   getTags(includeDeleted: Boolean): [Tag!]!
 }
 

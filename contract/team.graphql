@@ -56,6 +56,8 @@ type UpdateTeamPayload implements IMutationPayload {
 
 input TeamFilterInput {
   isActive: Boolean
+  hasTags: [ID!]
+  participatedInProgram: ID
 }
 
 extend type Query {

@@ -2,7 +2,11 @@ import { QueryResolvers, MutationResolvers, Tag } from '../../generated/graphql'
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
 
-export const queryResolvers: QueryResolvers<ApolloContext> = {};
+export const queryResolvers: QueryResolvers<ApolloContext> = {
+  getTag: async (_parent, { id }, { dataSources }) => dataSources.tag.getTag(id),
+  getTags: async (_parent, { includeDeleted }, { dataSources }) =>
+    dataSources.tag.getTags(includeDeleted),
+};
 
 export const typeResolver: Resolver<Tag> = {};
 

@@ -11,10 +11,11 @@ interface TagListProps {
   onRemove: (id: string) => void;
   onAdd?: (tag: TagFragmentFragment) => void;
   disabled?: boolean;
+  noCreate?: boolean;
 }
 
 export function TagList(props: TagListProps) {
-  const { tags, onRemove, disabled, onAdd } = props;
+  const { tags, onRemove, disabled, onAdd, noCreate } = props;
   const [isAdding, setIsAdding] = useState(false);
 
   if (!tags) {
@@ -31,6 +32,7 @@ export function TagList(props: TagListProps) {
               setIsAdding(false);
             }}
             onClose={() => setIsAdding(false)}
+            readonly={noCreate}
           />
         </Box>
       )}

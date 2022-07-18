@@ -1,24 +1,68 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, TextInput } from 'grommet';
-import { useNavigate } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
-import { TeamListFragmentFragment, useGetTeamsQuery } from '../../generated/graphql';
+import {
+  TeamFilterInput,
+  TeamListFragmentFragment,
+  useGetTeamsLazyQuery,
+} from '../../generated/graphql';
 import { TeamList } from './components/team-list';
 import { Close, Filter } from 'grommet-icons';
 import TeamSidebar from './components/team-sidebar';
 import { BasePage } from '../../components/base-page';
+import TeamListFilter, { TeamListFilterValues } from './components/team-list-filter';
+import { useSearchParams } from 'react-router-dom';
+
+function parseTeamListSearchParams(searchParams: URLSearchParams): TeamListFilterValues {
+  const values: TeamListFilterValues = {};
+  if (searchParams.has('t')) {
+    values.tags = searchParams.getAll('t');
+  }
+  return values;
+}
+
+function constructTeamListSearchParams(values: TeamListFilterValues): URLSearchParams {
+  const searchParams = new URLSearchParams();
+  if (values.tags) {
+    values.tags.forEach((tag) => searchParams.append('t', tag));
+  }
+  return searchParams;
+}
 
 export function TeamListPage() {
-  const navigate = useNavigate();
   const { isAdmin } = useAppUser();
-  const [selectedTeam, setSelectedTeam] = React.useState<string>();
-  const [showFilter, setShowFilter] = React.useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<string>();
+  const [showFilter, setShowFilter] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filter, setFilter] = useState<TeamListFilterValues>({});
 
-  const { data: teamsData, loading: teamsLoading, error: teamsError } = useGetTeamsQuery();
+  const [fetchTeams, { data: teamsData, error: teamsDataError, loading: teamsLoading }] =
+    useGetTeamsLazyQuery();
 
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState<TeamListFragmentFragment[]>([]);
+
+  useEffect(() => {
+    const flt = parseTeamListSearchParams(searchParams);
+
+    const f: TeamFilterInput = {};
+    if (flt.tags) {
+      f.hasTags = flt.tags;
+    }
+
+    fetchTeams({ variables: { filter: f } });
+    setFilter(flt);
+  }, [fetchTeams, searchParams]);
+
+  const handleApplyFilter = useCallback(
+    (filter: TeamListFilterValues) => {
+      const sp = constructTeamListSearchParams(filter);
+      console.log('handleApplyFilter', filter, sp);
+      setSearchParams(new URLSearchParams(sp));
+    },
+    [setSearchParams]
+  );
 
   const searchList = useMemo(
     () =>
@@ -43,7 +87,7 @@ export function TeamListPage() {
     setSearchResults(results);
   };
 
-  if (teamsError) {
+  if (teamsDataError) {
     return <ErrorPage title="Chyba pri získavaní zoznamu tímov." />;
   }
 
@@ -91,6 +135,12 @@ export function TeamListPage() {
           onClose={() => setSelectedTeam(undefined)}
         />
       )}
+      <TeamListFilter
+        show={showFilter}
+        onClose={() => setShowFilter(false)}
+        values={filter}
+        onChange={handleApplyFilter}
+      />
     </BasePage>
   );
 }
