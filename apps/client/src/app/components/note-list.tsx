@@ -2,14 +2,15 @@ import React from 'react';
 import { Box } from 'grommet';
 import styled from 'styled-components';
 import { NoteDetail } from './note-detail';
+import { Note, useDeleteNoteMutation, useUpdateNoteMutation } from '../generated/graphql';
+import { InPlaceMarkdown } from './inplace-markdown';
 
 const Wrapper = styled(Box)`
   margin: 5px 0;
 `;
 
 interface NoteListProps {
-  notes?: Array<Omit<INote, 'creator'>>;
-  preview?: PreviewType;
+  notes?: Array<Omit<Note, 'creator'>>;
   onCreate?: (text: string) => void;
   onListChanged?: () => void;
   placeholder?: string;
@@ -17,37 +18,20 @@ interface NoteListProps {
 }
 
 export function NoteList(props: NoteListProps) {
-  const { notes, onCreate, onListChanged, preview, placeholder, disabled } = props;
+  const { notes, onCreate, onListChanged, placeholder, disabled } = props;
 
-  const { saveHandler } = useSaveHandler();
   const [updateNoteMutation] = useUpdateNoteMutation();
   const [deleteNoteMutation] = useDeleteNoteMutation();
-  const { t } = useTranslation();
 
-  const updateNote = async (note: INote) => {
-    await saveHandler({
-      saveFn: async () => {
-        const { id, text } = note;
-        const response = await updateNoteMutation({ variables: { input: { id, text } } });
-        return response.data?.updateNote;
-      },
-      onSuccess: () => {
-        onListChanged && onListChanged();
-      },
-    });
+  const updateNote = async (note: Note) => {
+    const { id, text } = note;
+    const response = await updateNoteMutation({ variables: { id, input: { text } } });
   };
 
-  const deleteNote = async (note: INote) => {
-    await saveHandler({
-      saveFn: async () => {
-        const { id } = note;
-        await deleteNoteMutation({ variables: { input: { id } } });
-        return {};
-      },
-      onSuccess: () => {
-        onListChanged && onListChanged();
-      },
-    });
+  const deleteNote = async (note: Note) => {
+    const { id } = note;
+    await deleteNoteMutation({ variables: { id } });
+    onListChanged && onListChanged();
   };
 
   return (
@@ -57,9 +41,7 @@ export function NoteList(props: NoteListProps) {
           <InPlaceMarkdown
             value=""
             onSubmit={(value) => value && onCreate(value)}
-            preview={preview}
-            placeholder={placeholder ? placeholder : t('components.NoteList.addNotePlaceholder')}
-            clickable={true}
+            placeholder={placeholder ? placeholder : 'Pridaj poznámku'}
             disabled={disabled}
           />
         </Box>
@@ -71,7 +53,6 @@ export function NoteList(props: NoteListProps) {
             note={note}
             onDelete={deleteNote}
             onUpdate={updateNote}
-            background="light"
             disabled={disabled}
           />
         ))}

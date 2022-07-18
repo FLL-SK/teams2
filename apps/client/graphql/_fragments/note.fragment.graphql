@@ -1,5 +1,7 @@
 fragment NoteFragment on Note {
   id
+  type
+  ref
   title
   text
   createdOn
@@ -8,4 +10,10 @@ fragment NoteFragment on Note {
   updatedBy
   deletedOn
   deletedBy
+
+  creator {
+    id
+    name
+    username
+  }
 }

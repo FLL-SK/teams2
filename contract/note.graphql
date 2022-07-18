@@ -1,8 +1,10 @@
 # import * from "./shared/scalars.graphql"
 # import * from "./shared/types.graphql"
+# import * from "./user.graphql"
 
 enum NoteType {
   team
+  registration
 }
 
 type Note implements INode {
@@ -12,12 +14,14 @@ type Note implements INode {
   text: String!
   title: String
 
-  createdOn: DateTime
+  createdOn: DateTime!
   createdBy: ID
   updatedOn: DateTime
   updatedBy: ID
   deletedOn: DateTime
   deletedBy: ID
+
+  creator: User
 }
 
 input NoteCreateInput {

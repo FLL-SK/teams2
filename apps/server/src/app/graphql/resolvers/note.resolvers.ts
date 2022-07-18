@@ -8,7 +8,9 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
     dataSources.note.getNotes(type, ref, includeDeleted),
 };
 
-export const typeResolver: Resolver<Note> = {};
+export const typeResolver: Resolver<Note> = {
+  creator: async ({ createdBy }, _args, { dataSources }) => dataSources.user.getUser(createdBy),
+};
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
   createNote: (_parent, { input }, { dataSources }) => dataSources.note.createNote(input),

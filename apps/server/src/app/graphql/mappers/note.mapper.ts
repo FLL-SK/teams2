@@ -19,6 +19,8 @@ export const NoteMapper = {
       updatedBy: note.updatedBy,
       deletedOn: note.deletedOn,
       deletedBy: note.deletedBy,
+
+      creator: null,
     };
     return u;
   },

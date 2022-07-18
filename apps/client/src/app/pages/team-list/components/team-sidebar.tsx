@@ -1,6 +1,8 @@
+import { Spinner } from 'grommet';
 import React from 'react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
+import { NoteList } from '../../../components/note-list';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
@@ -8,6 +10,7 @@ import {
   TeamListFragmentFragment,
   useAddTagToTeamMutation,
   useDeleteTagMutation,
+  useGetNotesQuery,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
@@ -20,6 +23,9 @@ export function TeamSidebar(props: TeamSidebarProps) {
   const { team, onClose } = props;
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
+  const { data: notesData, loading: notesLoading } = useGetNotesQuery({
+    variables: { type: 'team', ref: team?.id ?? '0' },
+  });
   if (!team) {
     return null;
   }
@@ -38,6 +44,9 @@ export function TeamSidebar(props: TeamSidebarProps) {
             onRemove={(id) => removeTag({ variables: { id } })}
             onAdd={(tag) => addTag({ variables: { teamId: team.id, tagId: tag.id } })}
           />
+        </SidebarPanel>
+        <SidebarPanel label="Poznámky">
+          {notesLoading ? <Spinner /> : <NoteList notes={notesData?.getNotes ?? []} />}
         </SidebarPanel>
       </SidebarPanelGroup>
     </ClosableSidebar>
