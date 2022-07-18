@@ -1,12 +1,12 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { FileType } from '../generated/graphql';
+import { NoteType } from '../generated/graphql';
 
 const Types = Schema.Types;
 
 export interface NoteData {
   _id?: ObjectId;
-  type: FileType;
+  type: NoteType;
   ref: ObjectId;
   text: string;
   title?: string;

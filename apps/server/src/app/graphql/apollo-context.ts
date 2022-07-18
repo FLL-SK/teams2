@@ -3,6 +3,7 @@ import {
   EventTeamDataSource,
   FileDataSource,
   InvoiceDataSource,
+  NoteDataSource,
   ProgramDataSource,
   TagDataSource,
   TeamDataSource,
@@ -29,6 +30,7 @@ export type ApolloContextDataSources = {
   invoice: InvoiceDataSource;
   file: FileDataSource;
   tag: TagDataSource;
+  note: NoteDataSource;
 };
 
 interface UserDataExtended extends UserData {

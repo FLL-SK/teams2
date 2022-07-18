@@ -8,3 +8,4 @@ export * from './invoice-item.mapper';
 export * from './invoice.mapper';
 export * from './file.mapper';
 export * from './tag.mapper';
+export * from './note.mapper';
