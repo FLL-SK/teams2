@@ -103,19 +103,20 @@ export function TeamListPage() {
         rowCount={searchResults.length}
         rowGetter={rowGetter}
         actionPanel={
-          <Box direction="row">
+          <Box direction="row" width="100%">
             <form onSubmit={handleSearchSubmit}>
               <TextInput
                 placeholder="Hľadať názov tímu/mesto"
                 onChange={({ target }) => setSearchText(target.value)}
                 value={searchText}
+                width="auto"
               />
               <button hidden type="submit" />
             </form>
             <Button icon={<Close />} onClick={() => setSearchText('')} />
             <Button
               plain
-              icon={<Filter />}
+              icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}
               tip="Filter"
               onClick={() => {
                 setShowFilter(true);
