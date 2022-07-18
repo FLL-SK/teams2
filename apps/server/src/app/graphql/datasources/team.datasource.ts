@@ -111,6 +111,9 @@ export class TeamDataSource extends BaseDataSource {
     if (!t) {
       throw new Error('Team not found');
     }
+    if (!t.coachesIds || t.coachesIds.length === 0) {
+      return [];
+    }
     const coaches = await Promise.all(
       t.coachesIds.map(async (c) => userRepository.findById(c).lean().exec())
     );
@@ -145,9 +148,14 @@ export class TeamDataSource extends BaseDataSource {
     if (!t) {
       throw new Error('Team not found');
     }
+    if (!t.tagIds || t.tagIds.length === 0) {
+      return [];
+    }
+
     const tags = await Promise.all(
       t.tagIds.map(async (c) => tagRepository.findById(c).lean().exec())
     );
+
     return tags.filter((c) => !!c).map((c) => TagMapper.toTag(c));
   }
 }

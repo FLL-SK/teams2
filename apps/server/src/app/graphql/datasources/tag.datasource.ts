@@ -29,7 +29,8 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async createTag(input: TagInput): Promise<Tag> {
-    const tag = await tagRepository.create(input);
+    const t: TagData = { color: 'TC1', ...input };
+    const tag = await tagRepository.create(t);
     return TagMapper.toTag(tag);
   }
 

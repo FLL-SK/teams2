@@ -22,7 +22,7 @@ type Tag implements INode {
 
 input TagInput {
   label: String!
-  color: TagColorType!
+  color: TagColorType
 }
 
 extend type Query {

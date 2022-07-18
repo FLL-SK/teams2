@@ -1,4 +1,5 @@
 import { ColorType } from 'grommet/utils';
+import { TagColorType } from '../generated/graphql';
 
 const brandColor = '#4E96D9';
 
@@ -13,7 +14,7 @@ const statusColors: Record<string, string> = {
   warning: '#FFAA15',
   ok: '#00C781',
   unknown: '#CCCCCC',
-  disabled: '#CCCCCC'
+  disabled: '#CCCCCC',
 };
 const darkColors = ['#333333', '#555555', '#777777', '#999999', '#999999', '#999999'];
 const lightColors = ['#F8F8F8', '#F2F2F2', '#EDEDED', '#DADADA', '#DADADA', '#DADADA'];
@@ -25,26 +26,26 @@ export const _colors = {
   active: 'rgba(221, 221, 221, 0.5)',
   'background-back': {
     light: '#EDF1F5',
-    dark: '#21242e'
+    dark: '#21242e',
   },
   'background-front': {
     light: '#C8DFF4',
-    dark: '#31343e'
+    dark: '#31343e',
   },
   'background-contrast': {
     light: '#33333310',
-    dark: '#FFFFFF18'
+    dark: '#FFFFFF18',
   },
   'active-background': 'background-contrast',
   'active-text': 'text-strong',
   black: '#000000',
   border: {
     dark: 'rgba(255, 255, 255, 0.33)',
-    light: 'rgba(0, 0, 0, 0.33)'
+    light: 'rgba(0, 0, 0, 0.33)',
   },
   control: {
     dark: 'accent-1',
-    light: 'brand'
+    light: 'brand',
   },
   focus: focusColor,
   'graph-0': 'accent-1',
@@ -56,27 +57,27 @@ export const _colors = {
   selected: 'brand',
   text: {
     dark: '#f8f8f8',
-    light: '#444444'
+    light: '#444444',
   },
   'text-strong': {
     dark: '#FFFFFF',
-    light: '#000000'
+    light: '#000000',
   },
   'text-weak': {
     dark: '#CCCCCC',
-    light: '#555555'
+    light: '#555555',
   },
   'text-xweak': {
     dark: '#BBBBBB',
-    light: '#666666'
+    light: '#666666',
   },
   icon: {
     dark: '#f8f8f8',
-    light: '#666666'
+    light: '#666666',
   },
   'selected-background': 'brand',
   'selected-text': 'text-strong',
-  white: '#FFFFFF'
+  white: '#FFFFFF',
 };
 
 const colorArray = function colorArray(array: Array<string>, prefix: string) {
@@ -148,3 +149,17 @@ export function getColor(colorName: keyof Colors, light = true) {
   const pair = color as ThemeColorPair;
   return light ? pair.light : pair.dark;
 }
+
+const tagColors: Record<TagColorType, string> = {
+  TC1: 'white',
+  TC2: 'gray',
+  TC3: 'limegreen',
+  TC4: 'orange',
+  TC5: 'orangered',
+  TC6: 'red',
+  TC7: 'purple',
+  TC8: 'blue',
+};
+
+export const getTagColor = (color?: TagColorType | null) => (color ? tagColors[color] : undefined);
+export const getTagColorCodes = (): TagColorType[] => Object.keys(tagColors) as TagColorType[];
