@@ -1,0 +1,11 @@
+fragment NoteFragment on Note {
+  id
+  title
+  text
+  createdOn
+  createdBy
+  updatedOn
+  updatedBy
+  deletedOn
+  deletedBy
+}

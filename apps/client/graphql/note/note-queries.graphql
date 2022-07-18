@@ -1,0 +1,5 @@
+query getNotes($type: NoteType!, $ref: ID!, $includeDeleted: Boolean) {
+  getNotes(type: $type, ref: $ref, includeDeleted: $includeDeleted) {
+    ...NoteFragment
+  }
+}
