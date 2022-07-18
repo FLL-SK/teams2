@@ -12,13 +12,14 @@ interface LabelValueProps {
 }
 
 export const LabelValue = (props: LabelValueProps) => {
-  const { label, value = '', direction = 'row', labelWidth, children } = props;
+  const { label, value = '', direction, labelWidth, children } = props;
   return (
     <LabelValueGroupContext.Consumer>
       {(context) => {
         const dir = direction ?? context.direction;
+
         return (
-          <Box direction={dir} gap={dir !== 'row' ? 'medium' : undefined}>
+          <Box direction={dir}>
             <Box width={labelWidth ?? context.labelWidth}>
               <Text weight="bold">{label}</Text>
             </Box>

@@ -37,3 +37,15 @@ mutation removeCoachFromTeam($teamId: ID!, $userId: ID!) {
     ...TeamFragment
   }
 }
+
+mutation addTagToTeam($teamId: ID!, $tagId: ID!) {
+  addTagToTeam(teamId: $teamId, tagId: $tagId) {
+    ...TeamFragment
+  }
+}
+
+mutation removeTagFromTeam($teamId: ID!, $tagId: ID!) {
+  removeTagFromTeam(teamId: $teamId, tagId: $tagId) {
+    ...TeamFragment
+  }
+}

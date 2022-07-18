@@ -11,6 +11,7 @@ export const TeamMapper = {
       id: team._id,
       name: team.name,
       coachesIds: team.coachesIds,
+      tagIds: team.tagIds,
 
       address: AddressMapper.toAddress(team.address),
       billTo: AddressMapper.toAddress(team.billTo),
@@ -22,6 +23,7 @@ export const TeamMapper = {
 
       coaches: [],
       events: [],
+      tags: [],
     };
     return u;
   },

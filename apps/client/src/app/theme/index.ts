@@ -3,7 +3,7 @@ import { EdgeSizeType, GapType } from 'grommet/utils';
 import { css } from 'styled-components';
 import { _colors, getColor } from './colors';
 
-export { getColor } from './colors';
+export { getColor, getTagColor, getTagColorCodes } from './colors';
 
 export type Density = 'high' | 'medium' | 'low';
 

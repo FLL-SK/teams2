@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { appPath } from '@teams2/common';
-import { Box, Nav, Anchor, Sidebar, Text } from 'grommet';
-import { useEffect, useState } from 'react';
+import { Nav, Anchor, Sidebar, Text } from 'grommet';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';

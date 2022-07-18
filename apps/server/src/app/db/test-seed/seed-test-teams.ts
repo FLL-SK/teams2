@@ -1,7 +1,7 @@
 import { TeamData, teamRepository, userRepository } from '../../models';
 import { logger } from '@teams2/logger';
 
-type TestSeedData = TeamData & { coaches?: string[] };
+type TestSeedData = Omit<TeamData, 'tagIds'> & { coaches?: string[] };
 
 export const seedTestTeamsData: TestSeedData[] = [
   {
@@ -101,6 +101,7 @@ export async function seedTestTeams() {
       billTo: d.billTo,
       shipTo: d.shipTo,
       address: d.address,
+      tagIds: [],
     };
 
     for (const username of d.coaches) {

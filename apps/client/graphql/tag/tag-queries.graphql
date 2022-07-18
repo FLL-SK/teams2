@@ -1,0 +1,5 @@
+query getTags($includeDeleted: Boolean) {
+  getTags(includeDeleted: $includeDeleted) {
+    ...TagFragment
+  }
+}

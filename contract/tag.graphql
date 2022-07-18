@@ -1,0 +1,37 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+enum TagColorType {
+  TC1
+  TC2
+  TC3
+  TC4
+  TC5
+  TC6
+  TC7
+  TC8
+}
+
+type Tag implements INode {
+  id: ID!
+  label: String!
+  color: TagColorType!
+  deletedOn: DateTime
+  deletedBy: ID
+}
+
+input TagInput {
+  label: String!
+  color: TagColorType
+}
+
+extend type Query {
+  getTag(id: ID!): Tag
+  getTags(includeDeleted: Boolean): [Tag!]!
+}
+
+extend type Mutation {
+  createTag(input: TagInput!): Tag
+  updateTag(id: ID!, input: TagInput!): Tag
+  deleteTag(id: ID!): Tag
+}
