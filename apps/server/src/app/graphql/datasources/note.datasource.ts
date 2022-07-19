@@ -8,7 +8,6 @@ import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
 import { FilterQuery } from 'mongoose';
-import { guardAdmin } from '../../utils/guard';
 
 export class NoteDataSource extends BaseDataSource {
   constructor() {
@@ -21,14 +20,14 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async getNote(id: ObjectId): Promise<Note> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const note = await noteRepository.findById(id).exec();
     return NoteMapper.toNote(note);
   }
 
   async getNotes(type: NoteType, ref: ObjectId, includeDeleted = false): Promise<Note[]> {
     const q: FilterQuery<NoteData> = { type, ref };
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     if (!includeDeleted) {
       q.deletedOn = null;
     }
@@ -38,20 +37,20 @@ export class NoteDataSource extends BaseDataSource {
 
   async createNote(input: NoteCreateInput): Promise<Note> {
     const createdBy = this.context.user._id;
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const n: NoteData = { ...input, createdOn: new Date(), createdBy };
     const note = await noteRepository.create(n);
     return NoteMapper.toNote(note);
   }
 
   async updateNote(id: ObjectId, input: NoteUpdateInput): Promise<Note> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const note = await noteRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return NoteMapper.toNote(note);
   }
 
   async deleteNote(id: ObjectId): Promise<Note> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const note = await noteRepository
       .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })
       .exec();

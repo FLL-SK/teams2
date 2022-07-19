@@ -23,7 +23,6 @@ import { EventTeamMapper, TagMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
 import { FilterQuery } from 'mongoose';
-import { guardAdmin, guardCoach } from '../../utils/guard';
 
 export class TeamDataSource extends BaseDataSource {
   private loader: Dataloader<string, Team, string>;
@@ -85,13 +84,14 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
-    guardCoach(this.context.user, id) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || (await this.userGuard.isCoach(id)) || this.userGuard.failed();
+
     const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return { team: TeamMapper.toTeam(u) };
   }
 
   async deleteTeam(id: ObjectId): Promise<Team> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const u = await teamRepository.findByIdAndDelete(id).exec();
     return TeamMapper.toTeam(u);
   }
@@ -102,7 +102,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
-    guardCoach(this.context.user, teamId) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || (await this.userGuard.isCoach(teamId)) || this.userGuard.failed();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { coachesIds: coachId } },
@@ -112,7 +113,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeCoachFromTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
-    guardCoach(this.context.user, teamId) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || (await this.userGuard.isCoach(teamId)) || this.userGuard.failed();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { coachesIds: coachId } },
@@ -141,7 +143,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { tagIds: tagId } },
@@ -151,7 +154,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { tagIds: tagId } },
@@ -161,7 +165,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamTags(teamId: ObjectId): Promise<Tag[]> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
+
     const t = await teamRepository.findById(teamId).lean().exec();
     if (!t) {
       throw new Error('Team not found');

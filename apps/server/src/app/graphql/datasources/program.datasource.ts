@@ -18,7 +18,6 @@ import { EventMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
-import { guardAdmin, guardProgramManager } from '../../utils/guard';
 
 export class ProgramDataSource extends BaseDataSource {
   private loader: Dataloader<string, Program, string>;
@@ -55,21 +54,26 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async createProgram(input: CreateProgramInput): Promise<CreateProgramPayload> {
-    guardAdmin(this.context.user);
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const u: ProgramData = { ...input, managersIds: [] };
     const nu = await programRepository.create(u);
     return { program: ProgramMapper.toProgram(nu) };
   }
 
   async updateProgram(id: ObjectId, input: UpdateProgramInput): Promise<UpdateProgramPayload> {
-    guardProgramManager(this.context.user, id) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isProgramManager(id)) ||
+      this.userGuard.failed();
+
     const u: Partial<ProgramData> = input;
     const nu = await programRepository.findByIdAndUpdate(id, u, { new: true }).exec();
     return { program: ProgramMapper.toProgram(nu) };
   }
 
   async deleteProgram(id: ObjectId): Promise<Program> {
-    guardProgramManager(this.context.user, id) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isProgramManager(id)) ||
+      this.userGuard.failed();
     const u = await programRepository.findByIdAndDelete(id).exec();
     return ProgramMapper.toProgram(u);
   }
@@ -80,7 +84,9 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async addProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
-    guardProgramManager(this.context.user, programId) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isProgramManager(programId)) ||
+      this.userGuard.failed();
     const u: UpdateQuery<ProgramData> = { $addToSet: { managersIds: userId } };
     const program = await programRepository
       .findOneAndUpdate({ _id: programId }, u, { new: true })
@@ -89,7 +95,9 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async removeProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
-    guardProgramManager(this.context.user, programId) || guardAdmin(this.context.user);
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isProgramManager(programId)) ||
+      this.userGuard.failed();
     const program = await programRepository
       .findOneAndUpdate({ _id: programId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();
