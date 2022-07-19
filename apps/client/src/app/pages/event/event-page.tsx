@@ -33,6 +33,7 @@ import { ChangeTeamEventDialog } from '../../components/dialogs/change-team-even
 import { useParams } from 'react-router-dom';
 import { fullAddress } from '../../utils/format-address';
 import { Group } from 'grommet-icons';
+import { LabelValueGroup } from '../../components/label-value-group';
 
 export function EventPage() {
   const { id } = useParams();
@@ -77,27 +78,27 @@ export function EventPage() {
       <Box gap="medium">
         <Panel title="Detaily turnaja">
           <Box gap="medium">
-            <LabelValue label="Program" labelWidth="150px">
-              <Text>
-                <Anchor label={event?.program.name} href={appPath.program(event?.programId)} />
-              </Text>
-            </LabelValue>
-            <LabelValue label="Názov" labelWidth="150px" value={event?.name} />
-            <LabelValue
-              label="Dátum turnaja"
-              labelWidth="150px"
-              value={event?.date ? formatDate(event?.date) : 'neurčený'}
-            />
-            <LabelValue label="Podmienky" labelWidth="150px">
-              <Box background="light-2" flex pad="small">
-                <Markdown>{event?.conditions ?? ''}</Markdown>
-              </Box>
-            </LabelValue>
-            <LabelValue
-              label="Termín registrácie"
-              labelWidth="150px"
-              value={formatDate(event?.registrationEnd ? event?.registrationEnd : 'neurčený')}
-            />
+            <LabelValueGroup labelWidth="200px" gap="small" direction="row">
+              <LabelValue label="Program">
+                <Text>
+                  <Anchor label={event?.program.name} href={appPath.program(event?.programId)} />
+                </Text>
+              </LabelValue>
+              <LabelValue label="Názov" value={event?.name} />
+              <LabelValue
+                label="Dátum turnaja"
+                value={event?.date ? formatDate(event?.date) : 'neurčený'}
+              />
+              <LabelValue label="Podmienky">
+                <Box background="light-2" flex pad="small">
+                  <Markdown>{event?.conditions ?? ''}</Markdown>
+                </Box>
+              </LabelValue>
+              <LabelValue
+                label="Koniec registrácie"
+                value={event?.registrationEnd ? formatDate(event?.registrationEnd) : 'neurčený'}
+              />
+            </LabelValueGroup>
 
             <Box direction="row">
               <Button

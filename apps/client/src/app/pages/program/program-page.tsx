@@ -37,8 +37,7 @@ import { FileTile } from '../../components/file-tile';
 import { FileUploadControl } from '../../components/file-upload-control';
 import { uploadS3XHR } from '../../utils/upload-s3-xhr';
 import { formatDate } from '@teams2/dateutils';
-
-const labelWidth = '150px';
+import { LabelValueGroup } from '../../components/label-value-group';
 
 export function ProgramPage() {
   const { id } = useParams();
@@ -146,27 +145,27 @@ export function ProgramPage() {
       )}
       <PanelGroup>
         <Panel title="Detaily programu" gap="medium">
-          <LabelValue label="Názov" labelWidth={labelWidth} value={program?.name} />
-          <LabelValue
-            label="Začiatok"
-            labelWidth={labelWidth}
-            value={program?.startDate ? formatDate(program?.startDate) : 'neurčený'}
-          />
-          <LabelValue
-            label="Koniec"
-            labelWidth={labelWidth}
-            value={program?.endDate ? formatDate(program?.endDate) : 'neurčený'}
-          />
-          <LabelValue label="Popis" labelWidth={labelWidth}>
-            <Box background="light-2" flex pad="small">
-              <Markdown>{program?.description ?? ''}</Markdown>
-            </Box>
-          </LabelValue>
-          <LabelValue label="Podmienky" labelWidth={labelWidth}>
-            <Box background="light-2" flex pad="small">
-              <Markdown>{program?.conditions ?? ''}</Markdown>
-            </Box>
-          </LabelValue>
+          <LabelValueGroup labelWidth="150px" direction="row" gap="small">
+            <LabelValue label="Názov" value={program?.name} />
+            <LabelValue
+              label="Začiatok"
+              value={program?.startDate ? formatDate(program?.startDate) : 'neurčený'}
+            />
+            <LabelValue
+              label="Koniec"
+              value={program?.endDate ? formatDate(program?.endDate) : 'neurčený'}
+            />
+            <LabelValue label="Popis">
+              <Box background="light-2" flex pad="small">
+                <Markdown>{program?.description ?? ''}</Markdown>
+              </Box>
+            </LabelValue>
+            <LabelValue label="Podmienky">
+              <Box background="light-2" flex pad="small">
+                <Markdown>{program?.conditions ?? ''}</Markdown>
+              </Box>
+            </LabelValue>
+          </LabelValueGroup>
           <Box direction="row">
             <Button
               label="Zmeniť"
