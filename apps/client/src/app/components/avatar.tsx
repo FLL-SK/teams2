@@ -1,18 +1,25 @@
 import React from 'react';
-import { User } from '../generated/graphql';
 import { Avatar as GrommetAvatar, Text } from 'grommet';
 
 interface AvatarProps {
-  user?: Pick<User, 'id' | 'name' | 'username'> | null;
+  name?: string;
+  username?: string;
+  size?: 'small' | 'medium' | 'large';
 }
 
-export function Avatar({ user }: AvatarProps) {
-  const n = user ? (user.name ?? user.username).toLocaleUpperCase().split(/\s+|[.@]/) : ['X', 'Y'];
+export function Avatar({ username, name, size }: AvatarProps) {
+  const n =
+    username || name
+      ? `${name ?? ''} ${username ?? ''}`
+          .toLocaleUpperCase()
+          .split(/\s+|[.@]/)
+          .filter((w) => w.length > 0)
+      : ['X', 'Y'];
   return (
-    <GrommetAvatar background="accent-2">
-      <Text>
-        {n[0]}
-        {n[1]}
+    <GrommetAvatar background="accent-2" size={size}>
+      <Text size={size} color="white">
+        {n[0][0]}
+        {n[1][0]}
       </Text>
     </GrommetAvatar>
   );
