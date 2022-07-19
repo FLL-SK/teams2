@@ -43,7 +43,7 @@ export function EventListTile(props: EventListTileProps) {
       <Tip content="Počet tímov">
         <Box direction="row" gap="xsmall" align="center">
           <Group />
-          <Text>{event.eventTeams.length}</Text>
+          <Text>{event.registrations.length}</Text>
         </Box>
       </Tip>
 

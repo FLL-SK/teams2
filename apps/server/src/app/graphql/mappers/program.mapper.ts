@@ -23,6 +23,7 @@ export const ProgramMapper = {
       invoiceItems: [],
       managers: [],
       events: [],
+      registrations: [],
     };
     return u;
   },

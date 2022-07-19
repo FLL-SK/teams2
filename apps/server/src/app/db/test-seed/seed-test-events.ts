@@ -1,8 +1,8 @@
 import {
   EventData,
   eventRepository,
-  EventTeamData,
-  eventTeamRepository,
+  RegistrationData,
+  registrationRepository,
   InvoiceItemData,
   invoiceItemRepository,
   programRepository,
@@ -11,7 +11,6 @@ import {
 } from '../../models';
 import { addDays } from 'date-fns';
 import { logger } from '@teams2/logger';
-import { ObjectId } from 'mongodb';
 
 type TestSeedData = Omit<EventData, 'programId'> & {
   managers?: string[];
@@ -54,6 +53,7 @@ export const seedTestEventData: TestSeedData[] = [
 const log = logger('testseed:Events');
 
 export async function seedTestEvents() {
+  const adminUser = await userRepository.findOne({ email: 'admin@test' }).exec();
   for (const d of seedTestEventData) {
     const p = await programRepository.findOne({ name: d.program }).lean().exec();
     if (!p) {
@@ -84,8 +84,14 @@ export async function seedTestEvents() {
 
     for (const teamName of d.teams) {
       const t = await teamRepository.findOne({ name: teamName });
-      const et: EventTeamData = { eventId: nu._id, teamId: t._id, registeredOn: new Date() };
-      await eventTeamRepository.create(et);
+      const et: RegistrationData = {
+        programId: p._id,
+        eventId: nu._id,
+        teamId: t._id,
+        registeredOn: new Date(),
+        registeredBy: t.coachesIds.length > 0 ? t.coachesIds[0] : adminUser._id,
+      };
+      await registrationRepository.create(et);
     }
 
     await nu.save();

@@ -21,7 +21,7 @@ export const EventMapper = {
       deletedBy: event.deletedBy,
 
       invoiceItems: [],
-      eventTeams: [],
+      registrations: [],
       managers: [],
       program: null,
     };

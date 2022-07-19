@@ -5,6 +5,7 @@
 # import * from "./user.graphql"
 # import * from "./event.graphql"
 # import * from "./invoice.graphql"
+# import * from "./registration.graphql"
 
 type Program implements INode {
   id: ID!
@@ -24,6 +25,7 @@ type Program implements INode {
 
   events: [Event!]!
   managers: [User!]!
+  registrations: [Registration!]!
 }
 
 input CreateProgramInput {

@@ -17,4 +17,5 @@ export const appPath = {
   event: (id = '') => `/event/${id}`,
   program: (id = '') => `/program/${id}`,
   page404: '/404',
+  registrations: '/registrations',
 };
