@@ -16,6 +16,7 @@ import { ProgramPage } from './pages/program/program-page';
 import { RegisterPage } from './pages/register/register-page';
 import { TeamPage } from './pages/team/team-page';
 import { UserListPage } from './pages/user-list/user-list-page';
+import { RegistrationsPage } from './pages/registrations/registrations-page';
 
 export function AppRouter() {
   return (
@@ -66,6 +67,14 @@ export function AppRouter() {
         element={
           <RequireAuth>
             <UserListPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={appPath.registrations}
+        element={
+          <RequireAuth>
+            <RegistrationsPage />
           </RequireAuth>
         }
       />
