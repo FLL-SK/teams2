@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import styled from 'styled-components';
 import { NoteDetail } from './note-detail';
 import { Note, useDeleteNoteMutation, useUpdateNoteMutation } from '../generated/graphql';
 import { InPlaceMarkdown } from './inplace-markdown';
+import { Add } from 'grommet-icons';
 
 const Wrapper = styled(Box)`
   margin: 5px 0;
@@ -15,10 +16,11 @@ interface NoteListProps {
   onListChanged?: () => void;
   placeholder?: string;
   disabled?: boolean;
+  limit?: number;
 }
 
 export function NoteList(props: NoteListProps) {
-  const { notes, onCreate, onListChanged, placeholder, disabled } = props;
+  const { notes, onCreate, onListChanged, placeholder, disabled, limit = 100 } = props;
 
   const [updateNoteMutation] = useUpdateNoteMutation();
   const [deleteNoteMutation] = useDeleteNoteMutation();
@@ -37,26 +39,34 @@ export function NoteList(props: NoteListProps) {
   return (
     <Wrapper>
       {!disabled && onCreate && (
-        <Box background={'light-1'}>
+        <Box background={'light-3'}>
           <InPlaceMarkdown
-            value=""
+            key={Date.now()}
+            value={undefined}
             onSubmit={(value) => value && onCreate(value)}
-            placeholder={placeholder ? placeholder : 'Pridaj poznámku'}
+            placeholder={placeholder ? placeholder : 'kliknutím pridať poznámku...'}
             disabled={disabled}
           />
         </Box>
       )}
-      <Box direction="column">
-        {notes?.map((note) => (
-          <NoteDetail
-            key={note.id}
-            note={note}
-            onDelete={deleteNote}
-            onUpdate={updateNote}
-            disabled={disabled}
-          />
-        ))}
+      <Box>
+        {(notes ?? [])
+          .filter((v, idx) => idx < limit)
+          .map((note) => (
+            <NoteDetail
+              key={note.id}
+              note={note}
+              onDelete={deleteNote}
+              onUpdate={updateNote}
+              disabled={disabled}
+            />
+          ))}
       </Box>
+      {limit < (notes ?? []).length && (
+        <Box>
+          <Text size="small" color="dark-5">{`Zobrazovaných je ostatných ${limit} záznamov`}</Text>
+        </Box>
+      )}
     </Wrapper>
   );
 }

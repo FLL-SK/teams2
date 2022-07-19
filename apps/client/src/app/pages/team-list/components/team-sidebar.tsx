@@ -9,6 +9,7 @@ import { TagList } from '../../../components/tag-list';
 import {
   TeamListFragmentFragment,
   useAddTagToTeamMutation,
+  useCreateNoteMutation,
   useDeleteTagMutation,
   useGetNotesQuery,
 } from '../../../generated/graphql';
@@ -21,11 +22,19 @@ interface TeamSidebarProps {
 
 export function TeamSidebar(props: TeamSidebarProps) {
   const { team, onClose } = props;
-  const [removeTag] = useDeleteTagMutation();
-  const [addTag] = useAddTagToTeamMutation();
-  const { data: notesData, loading: notesLoading } = useGetNotesQuery({
+
+  const {
+    data: notesData,
+    loading: notesLoading,
+    refetch: notesRefetch,
+  } = useGetNotesQuery({
     variables: { type: 'team', ref: team?.id ?? '0' },
   });
+
+  const [removeTag] = useDeleteTagMutation();
+  const [addTag] = useAddTagToTeamMutation();
+  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+
   if (!team) {
     return null;
   }
@@ -46,7 +55,17 @@ export function TeamSidebar(props: TeamSidebarProps) {
           />
         </SidebarPanel>
         <SidebarPanel label="Poznámky">
-          {notesLoading ? <Spinner /> : <NoteList notes={notesData?.getNotes ?? []} />}
+          {notesLoading ? (
+            <Spinner />
+          ) : (
+            <NoteList
+              notes={notesData?.getNotes ?? []}
+              limit={3}
+              onCreate={(text) =>
+                createNote({ variables: { input: { type: 'team', ref: team.id, text } } })
+              }
+            />
+          )}
         </SidebarPanel>
       </SidebarPanelGroup>
     </ClosableSidebar>

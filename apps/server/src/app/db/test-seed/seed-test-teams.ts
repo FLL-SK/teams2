@@ -23,12 +23,27 @@ export const seedTestTeamsData: TestSeedData[] = [
       {
         user: 'admin@test',
         createdOffset: 0,
-        text: 'Note 1',
+        text: 'Note 1 hwe oh wefoi weoioe oi o weoif',
       },
       {
         user: 'progmgr1@test',
         createdOffset: -2,
-        text: 'Note 2',
+        text: 'Note 2 opw úo w po wepfo powe fpo powe ej w e ',
+      },
+      {
+        user: 'coach1@test',
+        createdOffset: -3,
+        text: 'Note 3 rwefewfgwwwf  werf',
+      },
+      {
+        user: 'progmgr1@test',
+        createdOffset: -4,
+        text: 'Note 4 eregww wwerf qo  izoiez orzoi wqezo ioi qiwz qw šr u',
+      },
+      {
+        user: 'admin@test',
+        createdOffset: -5,
+        text: 'Note 5 ergeg weu pouiew  ep euepu',
       },
     ],
     address: {

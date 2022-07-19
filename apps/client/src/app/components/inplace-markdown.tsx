@@ -1,25 +1,27 @@
-import { Box, Markdown, TextArea } from 'grommet';
+import { Box, Button, Markdown, TextArea } from 'grommet';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
 interface InPlaceMarkdownProps {
-  value: string;
+  value?: string;
   onSubmit: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
-  editing?: boolean;
 }
 
 const Container = styled(Box)`
   margin: 5px 0;
+  min-height: 12pt;
+  min-width: 100px;
   width: 100%;
   height: 100%;
 `;
 
 export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
-  const { value, onSubmit, disabled, editing, placeholder } = props;
+  const { value, onSubmit, disabled, placeholder } = props;
 
   const [valueState, setValueState] = useState(value);
+  const [editing, setEditing] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValueState(event.target.value);
@@ -27,20 +29,26 @@ export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(valueState);
+    onSubmit(valueState ?? '');
+    setEditing(false);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && event.shiftKey) {
       event.preventDefault();
-      onSubmit(valueState);
+      onSubmit(valueState ?? '');
+      setEditing(false);
+    }
+    if (event.key === 'Escape') {
+      setValueState(value);
+      setEditing(false);
     }
   };
 
   if (!editing) {
     return (
-      <Container>
-        <Markdown>{valueState}</Markdown>
+      <Container onClick={() => setEditing(true)} hoverIndicator>
+        <Markdown>{value ?? placeholder ?? 'kliknutím editovať'}</Markdown>
       </Container>
     );
   }
@@ -49,10 +57,10 @@ export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
     <Container>
       <form onSubmit={handleSubmit}>
         <TextArea
+          autoFocus
           value={valueState}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
           disabled={disabled}
         />
       </form>
