@@ -2,7 +2,7 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import {
-  eventTeamRepository,
+  registrationRepository,
   tagRepository,
   TeamData,
   teamRepository,
@@ -15,11 +15,11 @@ import {
   UpdateTeamInput,
   UpdateTeamPayload,
   User,
-  EventTeam,
+  Registration,
   Tag,
   TeamFilterInput,
 } from '../../generated/graphql';
-import { EventTeamMapper, TagMapper, TeamMapper, UserMapper } from '../mappers';
+import { RegistrationMapper, TagMapper, TeamMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
 import { FilterQuery } from 'mongoose';
@@ -137,9 +137,9 @@ export class TeamDataSource extends BaseDataSource {
     return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
   }
 
-  async getTeamEvents(teamId: ObjectId): Promise<EventTeam[]> {
-    const events = await eventTeamRepository.find({ teamId: teamId }).exec();
-    return events.map((c) => EventTeamMapper.toEventTeam(c));
+  async getTeamEvents(teamId: ObjectId): Promise<Registration[]> {
+    const events = await registrationRepository.find({ teamId: teamId }).exec();
+    return events.map((c) => RegistrationMapper.toRegistration(c));
   }
 
   async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {

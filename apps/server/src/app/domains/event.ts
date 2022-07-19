@@ -100,7 +100,7 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
   const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
   const program = await dataSources.program.getProgram(event.programId);
 
-  const evt = await dataSources.eventTeam.getEventTeams(eventId);
+  const evt = await dataSources.registration.getEventTeams(eventId);
   // get data for sending emails to coaches
   const teams = await Promise.all(
     evt.map(async (t) => ({

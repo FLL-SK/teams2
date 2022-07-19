@@ -4,8 +4,9 @@ import { BaseDataSource } from './_base.datasource';
 import {
   EventData,
   eventRepository,
-  EventTeamData,
-  eventTeamRepository,
+  programRepository,
+  RegistrationData,
+  registrationRepository,
   userRepository,
 } from '../../models';
 import {
@@ -81,7 +82,7 @@ export class EventDataSource extends BaseDataSource {
   async deleteEvent(id: ObjectId): Promise<Event> {
     this.userGuard.isAdmin() || this.userGuard.failed();
 
-    const teams = await eventTeamRepository.find({ eventId: id }).lean().exec();
+    const teams = await registrationRepository.find({ eventId: id }).lean().exec();
     if (teams.length > 0) {
       return null;
     }
@@ -96,8 +97,15 @@ export class EventDataSource extends BaseDataSource {
 
   async addTeamToEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
     // guarded from event business logic
-    const et: EventTeamData = { eventId, teamId, registeredOn: new Date() };
-    await eventTeamRepository.create(et);
+    const ev = await eventRepository.findById(eventId).exec();
+    const et: RegistrationData = {
+      programId: ev.programId,
+      eventId,
+      teamId,
+      registeredOn: new Date(),
+      registeredBy: this.context.user._id,
+    };
+    await registrationRepository.create(et);
     const event = await eventRepository.findById(eventId).exec();
 
     return EventMapper.toEvent(event);
@@ -105,7 +113,7 @@ export class EventDataSource extends BaseDataSource {
 
   async removeTeamFromEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
     // guarded from event business logic
-    await eventTeamRepository.deleteOne({ eventId, teamId }).exec();
+    await registrationRepository.deleteOne({ eventId, teamId }).exec();
     const event = await eventRepository.findById(eventId).exec();
     return EventMapper.toEvent(event);
   }

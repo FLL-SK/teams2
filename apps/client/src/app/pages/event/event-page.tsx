@@ -68,7 +68,7 @@ export function EventPage() {
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const invoiceItems = event?.invoiceItems ?? [];
-  const eventTeams = [...(eventData?.getEvent.eventTeams ?? [])].sort((a, b) =>
+  const eventTeams = [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
     a.team.name < b.team.name ? -1 : 1
   );
 

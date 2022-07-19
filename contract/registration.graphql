@@ -1,0 +1,18 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./team.graphql"
+# import * from "./user.graphql"
+# import * from "./event.graphql"
+
+type Registration implements INode {
+  id: ID!
+  eventId: ID!
+  teamId: ID!
+  registeredOn: DateTime
+  teamSize: Int
+  sizeConfirmedOn: DateTime
+
+  event: Event!
+  team: Team!
+}

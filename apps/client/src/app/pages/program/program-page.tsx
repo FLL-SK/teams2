@@ -100,7 +100,7 @@ export function ProgramPage() {
 
   const handleDeleteEvent = useCallback(
     async (e: EventListFragmentFragment) => {
-      if (e.eventTeams.length === 0) {
+      if (e.registrations.length === 0) {
         deleteEvent({ variables: { id: e.id } });
       }
       //FIXME - nicer alerting

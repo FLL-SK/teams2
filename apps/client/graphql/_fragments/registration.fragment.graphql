@@ -1,0 +1,22 @@
+fragment RegistrationListFragment on Registration {
+  id
+  registeredOn
+  teamSize
+  sizeConfirmedOn
+}
+
+fragment RegistrationEventFragment on Registration {
+  ...RegistrationListFragment
+
+  event {
+    ...EventListFragment
+  }
+}
+
+fragment RegistrationTeamFragment on Registration {
+  ...RegistrationListFragment
+
+  team {
+    ...TeamListFragment
+  }
+}

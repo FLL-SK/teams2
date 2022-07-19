@@ -5,18 +5,7 @@
 # import * from "./user.graphql"
 # import * from "./program.graphql"
 # import * from "./invoice.graphql"
-
-type EventTeam implements INode {
-  id: ID!
-  eventId: ID!
-  teamId: ID!
-  registeredOn: DateTime
-  teamSize: Int
-  sizeConfirmedOn: DateTime
-
-  event: Event!
-  team: Team!
-}
+# import * from "./registration.graphql"
 
 type Event implements INode {
   id: ID!
@@ -34,7 +23,7 @@ type Event implements INode {
   deletedOn: DateTime
   deletedBy: ID
 
-  eventTeams: [EventTeam!]!
+  registrations: [Registration!]!
   managers: [User!]!
   program: Program!
 }

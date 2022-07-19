@@ -22,7 +22,7 @@ fragment TeamFragment on Team {
     ...UserListFragment
   }
   events {
-    ...EventTeamEventFragment
+    ...RegistrationEventFragment
   }
   billTo {
     ...AddressFragment
