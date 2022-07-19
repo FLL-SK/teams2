@@ -13,6 +13,8 @@ export const typeResolver: Resolver<Program> = {
   events: async ({ id }, _args, { dataSources }) => dataSources.program.getProgramEvents(id),
   invoiceItems: async ({ id }, _args, { dataSources }) =>
     dataSources.invoice.getProgramInvoiceItems(id),
+  registrations: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getProgramRegistrations(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

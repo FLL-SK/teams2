@@ -49,6 +49,7 @@ function Menu() {
       {appUser?.isAdmin && (
         <MenuButton path={appPath.teams} title="Tímy" icon={<Group color="brand" />} />
       )}
+      {appUser?.isAdmin && <MenuButton path={appPath.registrations} title="Registrácie" />}
       {appUser?.isAdmin && <MenuButton path={appPath.users} title="Používatelia" />}
       {appUser?.isAdmin && <MenuButton path={appPath.settings} title="Nastavenia" />}
     </Nav>
