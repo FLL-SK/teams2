@@ -83,7 +83,11 @@ export function EventPage() {
               </Text>
             </LabelValue>
             <LabelValue label="Názov" labelWidth="150px" value={event?.name} />
-            <LabelValue label="Dátum turnaja" labelWidth="150px" value={formatDate(event?.date)} />
+            <LabelValue
+              label="Dátum turnaja"
+              labelWidth="150px"
+              value={event?.date ? formatDate(event?.date) : 'neurčený'}
+            />
             <LabelValue label="Podmienky" labelWidth="150px">
               <Box background="light-2" flex pad="small">
                 <Markdown>{event?.conditions ?? ''}</Markdown>
@@ -92,7 +96,7 @@ export function EventPage() {
             <LabelValue
               label="Termín registrácie"
               labelWidth="150px"
-              value={formatDate(event?.registrationEnd)}
+              value={formatDate(event?.registrationEnd ? event?.registrationEnd : 'neurčený')}
             />
 
             <Box direction="row">

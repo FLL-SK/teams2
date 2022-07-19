@@ -150,9 +150,13 @@ export function ProgramPage() {
           <LabelValue
             label="Začiatok"
             labelWidth={labelWidth}
-            value={formatDate(program?.startDate)}
+            value={program?.startDate ? formatDate(program?.startDate) : 'neurčený'}
           />
-          <LabelValue label="Koniec" labelWidth={labelWidth} value={formatDate(program?.endDate)} />
+          <LabelValue
+            label="Koniec"
+            labelWidth={labelWidth}
+            value={program?.endDate ? formatDate(program?.endDate) : 'neurčený'}
+          />
           <LabelValue label="Popis" labelWidth={labelWidth}>
             <Box background="light-2" flex pad="small">
               <Markdown>{program?.description ?? ''}</Markdown>
