@@ -6,6 +6,7 @@ import { useGetTagsQuery } from '../../../generated/graphql';
 
 export interface RegistrationListFilterValues {
   tags?: string[];
+  programId?: string | null;
 }
 
 interface RegistrationListFilterProps {

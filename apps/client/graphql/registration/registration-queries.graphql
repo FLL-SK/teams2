@@ -1,0 +1,11 @@
+query getProgramRegistrations($programId: ID!) {
+  getProgramRegistrations(programId: $programId) {
+    ...RegistrationTeamFragment
+  }
+}
+
+query getEventRegistrations($eventId: ID!) {
+  getEventRegistrations(eventId: $eventId) {
+    ...RegistrationTeamFragment
+  }
+}

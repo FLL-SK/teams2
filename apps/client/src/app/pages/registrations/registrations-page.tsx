@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, TextInput } from 'grommet';
+import { Box, Button, Grid, TextInput } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import {
+  RegistrationTeamFragmentFragment,
   TeamFilterInput,
-  TeamListFragmentFragment,
-  useGetTeamsLazyQuery,
+  useGetProgramRegistrationsLazyQuery,
+  useGetProgramsQuery,
 } from '../../generated/graphql';
-import { TeamList } from './components/team-list';
+import { RegistrationList } from './components/registration-list';
 import { Close, Filter } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';
 import { BasePage } from '../../components/base-page';
@@ -15,6 +16,7 @@ import RegistrationListFilter, {
   RegistrationListFilterValues,
 } from './components/registration-list-filter';
 import { useSearchParams } from 'react-router-dom';
+import { ProgramTile } from './components/program-tile';
 
 function parseRegistrationsSearchParams(
   searchParams: URLSearchParams
@@ -23,6 +25,10 @@ function parseRegistrationsSearchParams(
   if (searchParams.has('t')) {
     values.tags = searchParams.getAll('t');
   }
+  if (searchParams.has('p')) {
+    values.programId = searchParams.get('p');
+  }
+
   return values;
 }
 
@@ -30,6 +36,9 @@ function constructRegistrationsSearchParams(values: RegistrationListFilterValues
   const searchParams = new URLSearchParams();
   if (values.tags) {
     values.tags.forEach((tag) => searchParams.append('t', tag));
+  }
+  if (values.programId) {
+    searchParams.append('p', values.programId);
   }
   return searchParams;
 }
@@ -41,11 +50,13 @@ export function RegistrationsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
-  const [fetchTeams, { data: teamsData, error: teamsDataError, loading: teamsLoading }] =
-    useGetTeamsLazyQuery();
+  const { data: programsData, loading: programsLoading } = useGetProgramsQuery();
+
+  const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
+    useGetProgramRegistrationsLazyQuery();
 
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState<TeamListFragmentFragment[]>([]);
+  const [searchResults, setSearchResults] = useState<RegistrationTeamFragmentFragment[]>([]);
 
   useEffect(() => {
     const flt = parseRegistrationsSearchParams(searchParams);
@@ -55,9 +66,10 @@ export function RegistrationsPage() {
       f.hasTags = flt.tags;
     }
 
-    fetchTeams({ variables: { filter: f } });
+    fetchRegistrations({ variables: { programId: flt.programId ?? '0' } });
+
     setFilter(flt);
-  }, [fetchTeams, searchParams]);
+  }, [fetchRegistrations, searchParams]);
 
   const handleApplyFilter = useCallback(
     (filter: RegistrationListFilterValues) => {
@@ -69,11 +81,11 @@ export function RegistrationsPage() {
 
   const searchList = useMemo(
     () =>
-      (teamsData?.getTeams ?? []).map((t) => ({
-        text: `${t.name.toLocaleLowerCase()} ${t.address.city.toLocaleLowerCase()}`,
+      (regsData?.getProgramRegistrations ?? []).map((t) => ({
+        text: `${t.team.name.toLocaleLowerCase()} ${t.team.address.city.toLocaleLowerCase()}`,
         value: t,
       })),
-    [teamsData]
+    [regsData]
   );
 
   useEffect(() => {
@@ -90,19 +102,30 @@ export function RegistrationsPage() {
     setSearchResults(results);
   };
 
-  if (teamsDataError) {
-    return <ErrorPage title="Chyba pri získavaní zoznamu tímov." />;
+  if (regsDataError) {
+    //return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
   }
 
   const rowGetter = (index: number) => (index < searchResults.length ? searchResults[index] : null);
 
   if (!isAdmin) {
-    return <ErrorPage title="Nemáte oprávnenie na zobrazenie tímov." />;
+    return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
   return (
-    <BasePage title="Tímy" loading={teamsLoading}>
-      <TeamList
+    <BasePage title="Registrácie" loading={programsLoading}>
+      <Grid columns={['1/3', '1/3', '1/3']} gap="small" pad="medium">
+        {(programsData?.getPrograms ?? []).map((p) => (
+          <ProgramTile
+            key={p.id}
+            program={p}
+            selected={p.id === filter.programId}
+            onClick={(prg) => handleApplyFilter({ ...filter, programId: prg.id })}
+          />
+        ))}
+      </Grid>
+
+      <RegistrationList
         rowCount={searchResults.length}
         rowGetter={rowGetter}
         actionPanel={
@@ -133,9 +156,10 @@ export function RegistrationsPage() {
           setShowFilter(false);
         }}
       />
+
       {selectedTeam && (
         <RegistrationSidebar
-          team={searchList.find((item) => item.value.id === selectedTeam)?.value}
+          registration={searchList.find((item) => item.value.id === selectedTeam)?.value}
           onClose={() => setSelectedTeam(undefined)}
         />
       )}

@@ -1,3 +1,4 @@
+import { formatDate } from '@teams2/dateutils';
 import { Spinner } from 'grommet';
 import React from 'react';
 import { LabelValue } from '../../../components/label-value';
@@ -7,7 +8,7 @@ import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
 import {
-  TeamListFragmentFragment,
+  RegistrationTeamFragmentFragment,
   useAddTagToTeamMutation,
   useCreateNoteMutation,
   useDeleteTagMutation,
@@ -16,45 +17,63 @@ import {
 import { fullAddress } from '../../../utils/format-address';
 
 interface RegistrationSidebarProps {
-  team?: TeamListFragmentFragment;
+  registration?: RegistrationTeamFragmentFragment;
   onClose: () => unknown;
 }
 
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
-  const { team, onClose } = props;
+  const { registration, onClose } = props;
 
   const {
     data: notesData,
     loading: notesLoading,
     refetch: notesRefetch,
   } = useGetNotesQuery({
-    variables: { type: 'team', ref: team?.id ?? '0' },
+    variables: { type: 'registration', ref: registration?.id ?? '0' },
   });
 
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
-  if (!team) {
+  if (!registration) {
     return null;
   }
   return (
-    <ClosableSidebar onClose={onClose} show={!!team}>
+    <ClosableSidebar onClose={onClose} show={!!registration}>
       <SidebarPanelGroup title="Team" gap="medium">
-        <SidebarPanel>
+        <SidebarPanel label="Tím">
           <LabelValueGroup direction="column" gap="small">
-            <LabelValue label="Názov" value={team.name} />
-            <LabelValue label="Zriaďovateľ" value={fullAddress(team.address)} />
+            <LabelValue label="Názov" value={registration.team.name} />
+            <LabelValue label="Zriaďovateľ" value={fullAddress(registration.team.address)} />
           </LabelValueGroup>
         </SidebarPanel>
-        <SidebarPanel label="Štítky">
+        <SidebarPanel label="Štítky tímu">
           <TagList
-            tags={team.tags}
+            tags={registration.team.tags}
             onRemove={(id) => removeTag({ variables: { id } })}
-            onAdd={(tag) => addTag({ variables: { teamId: team.id, tagId: tag.id } })}
+            onAdd={(tag) => addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })}
           />
         </SidebarPanel>
-        <SidebarPanel label="Poznámky">
+        <SidebarPanel label="Registrácia">
+          <LabelValueGroup direction="column" gap="small">
+            <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
+            <LabelValue
+              label="Faktúra"
+              value={registration.invoiceIssuedOn ? formatDate(registration.invoiceIssuedOn) : '-'}
+            />
+            <LabelValue
+              label="Zaplatená"
+              value={registration.paidOn ? formatDate(registration.paidOn) : '-'}
+            />
+            <LabelValue label="Zásielka č." value={registration.shipmentGroup ?? '-'} />
+            <LabelValue
+              label="Odoslaná"
+              value={registration.shippedOn ? formatDate(registration.shippedOn) : '-'}
+            />
+          </LabelValueGroup>
+        </SidebarPanel>
+        <SidebarPanel label="Poznámky k registrácii">
           {notesLoading ? (
             <Spinner />
           ) : (
@@ -62,7 +81,9 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
               notes={notesData?.getNotes ?? []}
               limit={3}
               onCreate={(text) =>
-                createNote({ variables: { input: { type: 'team', ref: team.id, text } } })
+                createNote({
+                  variables: { input: { type: 'registration', ref: registration.id, text } },
+                })
               }
             />
           )}

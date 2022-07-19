@@ -29,12 +29,12 @@ export class RegistrationDataSource extends BaseDataSource {
     return event;
   }
 
-  async getEventTeams(eventId: ObjectId): Promise<Registration[]> {
+  async getEventRegistrations(eventId: ObjectId): Promise<Registration[]> {
     const teams = await registrationRepository.find({ eventId }).sort({ registeredOn: 1 }).exec();
     return teams.map(RegistrationMapper.toRegistration);
   }
 
-  async getProgramTeams(programId: ObjectId): Promise<Registration[]> {
+  async getProgramRegistrations(programId: ObjectId): Promise<Registration[]> {
     const teams = await registrationRepository.find({ programId }).sort({ registeredOn: 1 }).exec();
     return teams.map(RegistrationMapper.toRegistration);
   }

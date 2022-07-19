@@ -1,6 +1,15 @@
 fragment RegistrationListFragment on Registration {
   id
+  eventId
+  programId
+
   registeredOn
+
+  invoiceIssuedOn
+  paidOn
+  shipmentGroup
+  shippedOn
+
   teamSize
   sizeConfirmedOn
 }

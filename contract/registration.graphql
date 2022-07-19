@@ -7,12 +7,31 @@
 
 type Registration implements INode {
   id: ID!
+  programId: ID!
   eventId: ID!
   teamId: ID!
-  registeredOn: DateTime
+
+  registeredOn: DateTime!
+  registeredBy: ID!
+
+  invoiceIssuedOn: DateTime
+  invoiceIssuedBy: ID!
+
+  paidOn: DateTime
+
+  shipmentGroup: String
+  shippedOn: DateTime
+
   teamSize: Int
   sizeConfirmedOn: DateTime
 
   event: Event!
   team: Team!
+  registeredByUser: User!
+  invoiceIssuedByUser: User!
+}
+
+extend type Query {
+  getProgramRegistrations(programId: ID!): [Registration!]!
+  getEventRegistrations(eventId: ID!): [Registration!]!
 }
