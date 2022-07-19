@@ -20,10 +20,10 @@ const logLib = logger('domain:Event');
 export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, ctx: ApolloContext) {
   const log = logLib.extend('registerTeam');
   log.info('Registering team %s to event %s', teamId, eventId);
-  const { user, dataSources } = ctx;
-  if (!user.isAdmin && !user.isCoachOf(teamId)) {
+  const { userGuard, dataSources } = ctx;
+  if (!userGuard.isAdmin() && !(await userGuard.isCoach(teamId))) {
     //TODO nicer error handling
-    console.log('Not authorized to register', user.isAdmin, user.isCoachOf(teamId));
+    console.log('Not authorized to register');
     return null;
   }
   const event = await dataSources.event.addTeamToEvent(eventId, teamId);
@@ -64,11 +64,11 @@ export async function unregisterTeamFromEvent(
   eventId: ObjectId,
   ctx: ApolloContext
 ) {
-  const { user, dataSources } = ctx;
+  const { dataSources, userGuard } = ctx;
 
-  if (!user.isAdmin && !user.isEventManagerOf(eventId)) {
+  if (!userGuard.isAdmin() && !(await userGuard.isEventManager(eventId))) {
     //TODO nicer error handling
-    console.log('Not authorized to unregister', user.isAdmin, user, user.isEventManagerOf(eventId));
+    console.log('Not authorized to unregister');
     return null;
   }
 
@@ -92,7 +92,7 @@ export async function unregisterTeamFromEvent(
 }
 
 export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloContext) {
-  const { dataSources, user } = ctx;
+  const { dataSources } = ctx;
   const log = logLib.extend('sendNotify');
   log.debug('Going to sent notifications');
   const event = await eventRepository.findById(eventId).exec();
