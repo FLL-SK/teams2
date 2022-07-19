@@ -22,6 +22,7 @@ import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
+import { guardAdmin, guardEventManager } from '../../utils/guard';
 
 export class EventDataSource extends BaseDataSource {
   private loader: Dataloader<string, Event, string>;
@@ -63,18 +64,21 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async createEvent(input: CreateEventInput): Promise<CreateEventPayload> {
+    guardAdmin(this.context.user);
     const u: EventData = { ...input, managersIds: [] };
     const nu = await eventRepository.create(u);
     return { event: EventMapper.toEvent(nu) };
   }
 
   async updateEvent(id: ObjectId, input: UpdateEventInput): Promise<UpdateEventPayload> {
+    guardEventManager(this.context.user, id) || guardAdmin(this.context.user);
     const u: Partial<EventData> = input;
     const nu = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
     return { event: EventMapper.toEvent(nu) };
   }
 
   async deleteEvent(id: ObjectId): Promise<Event> {
+    guardAdmin(this.context.user);
     const teams = await eventTeamRepository.find({ eventId: id }).lean().exec();
     if (teams.length > 0) {
       return null;
@@ -89,6 +93,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async addTeamToEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
+    // guarded from event business logic
     const et: EventTeamData = { eventId, teamId, registeredOn: new Date() };
     await eventTeamRepository.create(et);
     const event = await eventRepository.findById(eventId).exec();
@@ -97,12 +102,14 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async removeTeamFromEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
+    // guarded from event business logic
     await eventTeamRepository.deleteOne({ eventId, teamId }).exec();
     const event = await eventRepository.findById(eventId).exec();
     return EventMapper.toEvent(event);
   }
 
   async addEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
+    guardEventManager(this.context.user, eventId) || guardAdmin(this.context.user);
     const event = await eventRepository
       .findOneAndUpdate({ _id: eventId }, { $addToSet: { managersIds: userId } }, { new: true })
       .exec();
@@ -110,6 +117,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async removeEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
+    guardEventManager(this.context.user, eventId) || guardAdmin(this.context.user);
     const event = await eventRepository
       .findOneAndUpdate({ _id: eventId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();

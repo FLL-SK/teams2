@@ -9,6 +9,12 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import { deleteFileFromBucket } from '../../utils/aws-s3';
 import { storagePath } from '../../utils/storage-path';
+import {
+  guardAdmin,
+  guardEventManager,
+  guardLoggedIn,
+  guardProgramManager,
+} from '../../utils/guard';
 
 export class FileDataSource extends BaseDataSource {
   constructor() {
@@ -21,6 +27,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getProgramFiles(programId: ObjectId): Promise<File[]> {
+    guardLoggedIn(this.context.user);
     const files = await fileRepository
       .find({ type: 'programDoc', ref: programId.toString() })
       .sort({ name: 1 })
@@ -29,6 +36,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getEventFiles(eventId: ObjectId): Promise<File[]> {
+    guardLoggedIn(this.context.user);
     const files = await fileRepository
       .find({ type: 'eventDoc', ref: eventId.toString() })
       .sort({ name: 1 })
@@ -37,6 +45,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {
+    guardProgramManager(this.context.user, programId) || guardAdmin(this.context.user);
     const log = this.logBase.extend('addPFile');
     const nf: FileData = {
       type: 'programDoc',
@@ -53,6 +62,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addEventFile(eventId: ObjectId, input: FileUploadInput): Promise<File> {
+    guardEventManager(this.context.user, eventId) || guardAdmin(this.context.user);
     const log = this.logBase.extend('addFFile');
     const nf: FileData = {
       type: 'eventDoc',
@@ -70,6 +80,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async removeFile(fileId: ObjectId): Promise<File> {
+    guardAdmin(this.context.user);
     const log = this.logBase.extend('removeFile');
 
     const f = await fileRepository.findByIdAndDelete(fileId).lean().exec();

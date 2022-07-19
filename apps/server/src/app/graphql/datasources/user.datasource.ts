@@ -14,6 +14,7 @@ import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
+import { guardAdmin, guardSelf, guardSuperAdmin } from '../../utils/guard';
 
 export class UserDataSource extends BaseDataSource {
   private loader: Dataloader<string, User, string>;
@@ -38,6 +39,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
+    guardAdmin(this.context.user);
     const q: FilterQuery<UserData> = {};
     if (filter) {
       const { isActive } = filter;
@@ -55,23 +57,27 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async createUser(input: CreateUserInput): Promise<CreateUserPayload> {
+    guardAdmin(this.context.user);
     const u: UserData = input;
     const nu = await userRepository.create(u);
     return { user: UserMapper.toUser(nu) };
   }
 
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
+    guardSelf(this.context.user, id) || guardAdmin(this.context.user);
     const u: Partial<UserData> = input;
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
     return { user: UserMapper.toUser(nu) };
   }
 
   async deleteUser(id: ObjectId): Promise<User> {
+    guardAdmin(this.context.user);
     const u = await userRepository.findByIdAndDelete(id).lean().exec();
     return UserMapper.toUser(u);
   }
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
+    guardSelf(this.context.user, id) || guardAdmin(this.context.user);
     const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
     return UserMapper.toUser(u);
   }
@@ -82,6 +88,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
+    guardSuperAdmin(this.context.user);
     //TODO: authorized?
     const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
     return UserMapper.toUser(u);
