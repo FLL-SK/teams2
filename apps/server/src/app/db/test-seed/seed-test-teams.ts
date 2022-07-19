@@ -1,13 +1,51 @@
-import { TeamData, teamRepository, userRepository } from '../../models';
+import {
+  eventRepository,
+  NoteData,
+  noteRepository,
+  TeamData,
+  teamRepository,
+  userRepository,
+} from '../../models';
 import { logger } from '@teams2/logger';
+import { addDays } from 'date-fns';
 
-type TestSeedData = Omit<TeamData, 'tagIds'> & { coaches?: string[] };
+type TestSeedData = Omit<TeamData, 'tagIds'> & {
+  coaches?: string[];
+  notes?: { user: string; createdOffset: number; text: string }[];
+};
 
 export const seedTestTeamsData: TestSeedData[] = [
   {
     name: 'Team1',
     coachesIds: [],
     coaches: ['coach1@test'],
+    notes: [
+      {
+        user: 'admin@test',
+        createdOffset: 0,
+        text: 'Note 1 hwe oh wefoi weoioe oi o weoif',
+      },
+      {
+        user: 'progmgr1@test',
+        createdOffset: -2,
+        text: 'Note 2 opw úo w po wepfo powe fpo powe ej w e ',
+      },
+      {
+        user: 'coach1@test',
+        createdOffset: -3,
+        text: 'Note 3 rwefewfgwwwf  werf',
+      },
+      {
+        user: 'progmgr1@test',
+        createdOffset: -4,
+        text: 'Note 4 eregww wwerf qo  izoiez orzoi wqezo ioi qiwz qw šr u',
+      },
+      {
+        user: 'admin@test',
+        createdOffset: -5,
+        text: 'Note 5 ergeg weu pouiew  ep euepu',
+      },
+    ],
     address: {
       name: 'Adr name',
       street: 'Adre street',
@@ -114,5 +152,28 @@ export async function seedTestTeams() {
     const nu = await teamRepository.create(t);
 
     log.debug(`Team created name=%s id=%s`, nu.name, nu._id);
+
+    if (d.notes) {
+      log.debug('Creating notes');
+      for (const note of d.notes) {
+        const u = await userRepository.findOne({ username: note.user }).exec();
+        if (u) {
+          const n: NoteData = {
+            type: 'team',
+            ref: nu._id,
+            createdBy: u._id,
+            createdOn: addDays(new Date(), note.createdOffset),
+            text: note.text,
+          };
+          try {
+            log.debug(`Going to create note %o`, n);
+            await noteRepository.create(n);
+            log.debug(`Note created =%o`, n);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    }
   }
 }

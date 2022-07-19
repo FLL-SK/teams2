@@ -1,0 +1,48 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+# import * from "./user.graphql"
+
+enum NoteType {
+  team
+  registration
+}
+
+type Note implements INode {
+  id: ID!
+  type: NoteType!
+  ref: ID!
+  text: String!
+  title: String
+
+  createdOn: DateTime!
+  createdBy: ID
+  updatedOn: DateTime
+  updatedBy: ID
+  deletedOn: DateTime
+  deletedBy: ID
+
+  creator: User
+}
+
+input NoteCreateInput {
+  type: NoteType!
+  ref: ID!
+  text: String!
+  title: String
+}
+
+input NoteUpdateInput {
+  text: String
+  title: String
+}
+
+extend type Query {
+  getNote(id: ID!): Note
+  getNotes(type: NoteType!, ref: ID!, includeDeleted: Boolean): [Note!]!
+}
+
+extend type Mutation {
+  createNote(input: NoteCreateInput!): Note
+  updateNote(id: ID!, input: NoteUpdateInput!): Note
+  deleteNote(id: ID!): Note
+}

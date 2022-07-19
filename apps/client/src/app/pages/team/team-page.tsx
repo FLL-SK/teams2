@@ -1,6 +1,6 @@
 import React from 'react';
 import { appPath } from '@teams2/common';
-import { Box, Button, CheckBox } from 'grommet';
+import { Box, Button, CheckBox, Spinner } from 'grommet';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
@@ -16,14 +16,17 @@ import {
   useAddCoachToTeamMutation,
   useAddTagToTeamMutation,
   useDeleteTagMutation,
+  useGetNotesQuery,
   useGetTeamQuery,
   useRemoveCoachFromTeamMutation,
   useUpdateTeamMutation,
+  useCreateNoteMutation,
 } from '../../generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
+import { NoteList } from '../../components/note-list';
 
 export function TeamPage() {
   const { id } = useParams();
@@ -39,10 +42,22 @@ export function TeamPage() {
     loading: teamLoading,
     error: teamError,
   } = useGetTeamQuery({ variables: { id: id ?? '0' } });
+
+  const {
+    data: notesData,
+    loading: notesLoading,
+    refetch: notesRefetch,
+  } = useGetNotesQuery({
+    variables: { type: 'team', ref: id ?? '0' },
+  });
+
   const [addCoach] = useAddCoachToTeamMutation();
   const [removeCoach] = useRemoveCoachFromTeamMutation();
+
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
+
+  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
   const [updateTeam] = useUpdateTeamMutation();
 
@@ -73,7 +88,6 @@ export function TeamPage() {
   );
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
-    console.log('submit', data);
     const input: UpdateTeamInput = {
       name: data.name,
       address: {
@@ -146,6 +160,21 @@ export function TeamPage() {
                 onAdd={(tag) => addTag({ variables: { teamId: team?.id ?? '0', tagId: tag.id } })}
               />
             </Box>
+          </Panel>
+        )}
+        {isAdmin() && (
+          <Panel title="Poznámky">
+            {notesLoading ? (
+              <Spinner />
+            ) : (
+              <NoteList
+                notes={notesData?.getNotes ?? []}
+                limit={20}
+                onCreate={(text) =>
+                  createNote({ variables: { input: { type: 'team', ref: id, text } } })
+                }
+              />
+            )}
           </Panel>
         )}
       </PanelGroup>

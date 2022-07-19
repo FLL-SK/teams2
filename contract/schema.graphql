@@ -8,6 +8,7 @@
 # import * from "./invoice.graphql"
 # import * from "./file.graphql"
 # import * from "./tag.graphql"
+# import * from "./note.graphql"
 
 schema {
   query: Query

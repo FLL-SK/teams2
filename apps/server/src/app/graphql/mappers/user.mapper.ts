@@ -11,10 +11,12 @@ export const UserMapper = {
       name: user.name ?? '',
       username: user.username,
       phone: user.phone ?? '',
+
       deletedOn: user.deletedOn,
       deletedBy: user.deletedBy,
       isAdmin: user.isAdmin,
       isSuperAdmin: user.isSuperAdmin,
+
       coachingTeams: [],
       managingEvents: [],
       managingPrograms: [],

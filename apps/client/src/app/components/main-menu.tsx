@@ -1,38 +1,56 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { appPath } from '@teams2/common';
-import { Nav, Anchor, Sidebar, Text } from 'grommet';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Nav, Sidebar, Button } from 'grommet';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';
 import { useAuthenticate } from './auth/useAuthenticate';
 import { useAppUser } from './app-user/use-app-user';
+import { Group } from 'grommet-icons';
+import { getColor } from '../theme';
+import styled from 'styled-components';
 
-interface AnchorNavProps {
-  path: string;
+interface MenuButtonProps {
+  icon?: JSX.Element;
+  path?: string;
   title: string;
+  from?: Location;
+  onClick?: () => void;
 }
 
-function Menu() {
-  const location = useLocation();
+const StyledButton = styled(Button)`
+  font-weight: bold;
+  color: ${getColor('brand')};
+  width: 100%;
+`;
+
+const MenuButton = ({ path, title, icon, onClick }: MenuButtonProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { user: appUser } = useAppUser();
-
-  const AnchorNav = useCallback(
-    ({ path, title }: AnchorNavProps) => (
-      <Anchor onClick={() => navigate(path, { state: { from: location } })}>
-        <Text>{title}</Text>
-      </Anchor>
-    ),
-    [navigate, location]
+  return (
+    <StyledButton
+      plain
+      label={title}
+      icon={icon}
+      onClick={() =>
+        onClick ? onClick() : path ? navigate(path, { state: { from: location } }) : null
+      }
+    />
   );
+};
+
+function Menu() {
+  const { user: appUser } = useAppUser();
 
   return (
     <Nav align="center" justify="between" gap="medium">
-      <AnchorNav path="/" title="Turnaje" />
-      {appUser?.isAdmin && <AnchorNav path={appPath.teams} title="Tímy" />}
-      {appUser?.isAdmin && <AnchorNav path={appPath.users} title="Používatelia" />}
-      {appUser?.isAdmin && <AnchorNav path={appPath.settings} title="Nastavenia" />}
+      <MenuButton path="/" title="Turnaje" />
+      {appUser?.isAdmin && (
+        <MenuButton path={appPath.teams} title="Tímy" icon={<Group color="brand" />} />
+      )}
+      {appUser?.isAdmin && <MenuButton path={appPath.users} title="Používatelia" />}
+      {appUser?.isAdmin && <MenuButton path={appPath.settings} title="Nastavenia" />}
     </Nav>
   );
 }
@@ -43,20 +61,16 @@ const Footer = () => {
 
   return (
     <Nav gap="medium" align="center">
+      {isAuthenticated && <MenuButton path={appPath.profile(user?.id)} title={'Môj profil'} />}
+      {!isAuthenticated && <MenuButton path={appPath.login} title={'Prihlásiť sa'} />}
       {isAuthenticated && (
-        <Anchor onClick={() => navigate(appPath.profile(user?.id))}>
-          <Text>Môj profil</Text>
-        </Anchor>
-      )}
-      {!isAuthenticated && (
-        <Anchor onClick={() => navigate(appPath.login)}>
-          <Text>Prihlásiť sa</Text>
-        </Anchor>
-      )}
-      {isAuthenticated && (
-        <Anchor onClick={() => logout()}>
-          <Text>Odhlásiť sa</Text>
-        </Anchor>
+        <MenuButton
+          title={'Odhlásiť sa'}
+          onClick={() => {
+            navigate('/');
+            logout();
+          }}
+        />
       )}
     </Nav>
   );

@@ -3,13 +3,14 @@ import {
   EventTeamDataSource,
   FileDataSource,
   InvoiceDataSource,
+  NoteDataSource,
   ProgramDataSource,
   TagDataSource,
   TeamDataSource,
   UserDataSource,
 } from './datasources';
-import { UserData } from '../models';
-import { ObjectId } from 'mongodb';
+import { UserDataNoPassword } from '../models';
+import { UserGuard } from '../utils/user-guard';
 
 export interface AuthProfileData {
   email: string;
@@ -17,6 +18,7 @@ export interface AuthProfileData {
 
 export const apolloContextEmpty: ApolloContext = {
   user: null,
+  userGuard: new UserGuard(null),
   userTimeZone: 'Europe/Bratislava',
 };
 
@@ -29,17 +31,12 @@ export type ApolloContextDataSources = {
   invoice: InvoiceDataSource;
   file: FileDataSource;
   tag: TagDataSource;
+  note: NoteDataSource;
 };
 
-interface UserDataExtended extends UserData {
-  isUser: (userId: ObjectId) => boolean;
-  isProgramManagerOf: (programId: ObjectId) => boolean;
-  isEventManagerOf: (eventId: ObjectId) => boolean;
-  isCoachOf: (teamId: ObjectId) => boolean;
-}
-
 export interface ApolloContext {
-  user: Omit<UserDataExtended, 'password'> | null;
+  user: UserDataNoPassword | null;
+  userGuard: UserGuard;
   userTimeZone: string;
   dataSources?: ApolloContextDataSources;
   authProfileData?: AuthProfileData;

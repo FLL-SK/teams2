@@ -37,7 +37,7 @@ export function EventListTile(props: EventListTileProps) {
 
       <Box direction="row" gap="xsmall" align="center">
         <Calendar />
-        <Text>{formatDate(event.date)}</Text>
+        <Text>{event.date ? formatDate(event.date) : 'neurčený'}</Text>
       </Box>
 
       <Tip content="Počet tímov">

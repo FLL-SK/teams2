@@ -21,7 +21,11 @@ export function Sidebar(props: SidebarProps) {
   return (
     <Box height="100vh" width={width} background="brandLighter" pad="small">
       <Box direction="row" align="center" justify="between">
-        {(title || onClose) && <Text weight="bold">{title ?? ''}</Text>}
+        {(title || onClose) && (
+          <Text weight="bold" size="large">
+            {title ?? ''}
+          </Text>
+        )}
         {onClose && <Button icon={<Close size="small" />} onClick={() => onClose && onClose()} />}
       </Box>
       <Box height="100%" width="100%">

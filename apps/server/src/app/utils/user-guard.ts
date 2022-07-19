@@ -1,0 +1,65 @@
+import { ObjectId } from 'mongodb';
+import { eventRepository, programRepository, teamRepository, UserDataNoPassword } from '../models';
+
+export class UserGuard {
+  protected user: UserDataNoPassword;
+  protected coachOfTeams?: string[];
+  protected eventManagerOfEvents?: string[];
+  protected programManagerOfPrograms?: string[];
+  protected message: string;
+
+  constructor(user: UserDataNoPassword, message?: string) {
+    this.user = user;
+    this.message = message || 'Not authorized';
+  }
+
+  isSuperAdmin() {
+    return this.user.isSuperAdmin;
+  }
+
+  isAdmin() {
+    return this.user.isAdmin || this.user.isSuperAdmin;
+  }
+
+  isLoggedIn() {
+    return !!this.user;
+  }
+
+  isSelf(userId: ObjectId) {
+    return this.user._id.equals(userId);
+  }
+
+  async isCoach(teamId: ObjectId) {
+    if (!this.coachOfTeams) {
+      this.coachOfTeams =
+        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
+          t._id.toString()
+        ) ?? [];
+    }
+    return this.coachOfTeams.includes(teamId.toString());
+  }
+
+  async isEventManager(eventId: ObjectId) {
+    if (!this.eventManagerOfEvents) {
+      this.eventManagerOfEvents =
+        (await eventRepository.findEventsManagedByUser(this.user._id, { _id: 1 }))?.map((e) =>
+          e._id.toString()
+        ) ?? [];
+    }
+    return this.eventManagerOfEvents.includes(eventId.toString());
+  }
+
+  async isProgramManager(programId: ObjectId) {
+    if (!this.programManagerOfPrograms) {
+      this.programManagerOfPrograms =
+        (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>
+          p._id.toString()
+        ) ?? [];
+    }
+    return this.programManagerOfPrograms.includes(programId.toString());
+  }
+
+  failed() {
+    throw new Error(this.message);
+  }
+}
