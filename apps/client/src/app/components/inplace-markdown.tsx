@@ -1,4 +1,4 @@
-import { Box, Button, Markdown, TextArea } from 'grommet';
+import { Box, Markdown, TextArea } from 'grommet';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
