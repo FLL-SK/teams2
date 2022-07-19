@@ -8,6 +8,7 @@ interface TagProps {
   onClick?: () => void;
   onRemove?: () => void;
   color?: string;
+  size?: 'small' | 'medium' | 'large';
 }
 
 const RedClose = styled(Close)`
@@ -17,7 +18,7 @@ const RedClose = styled(Close)`
 `;
 
 export function Tag(props: TagProps) {
-  const { value, onClick, onRemove, color } = props;
+  const { value, onClick, onRemove, color, size } = props;
   return (
     <Box
       margin="xsmall"
@@ -30,11 +31,9 @@ export function Tag(props: TagProps) {
       color={color}
     >
       {onClick ? (
-        <Button plain onClick={onClick}>
-          {value}
-        </Button>
+        <Button plain onClick={onClick} size={size} label={value} />
       ) : (
-        <Text>{value}</Text>
+        <Text size={size}>{value}</Text>
       )}
       {onRemove && <Button plain icon={<RedClose size="small" />} onClick={onRemove} />}
     </Box>

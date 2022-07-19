@@ -1,0 +1,17 @@
+mutation createNote($input: NoteCreateInput!) {
+  createNote(input: $input) {
+    ...NoteFragment
+  }
+}
+
+mutation updateNote($id: ID!, $input: NoteUpdateInput!) {
+  updateNote(id: $id, input: $input) {
+    ...NoteFragment
+  }
+}
+
+mutation deleteNote($id: ID!) {
+  deleteNote(id: $id) {
+    ...NoteFragment
+  }
+}

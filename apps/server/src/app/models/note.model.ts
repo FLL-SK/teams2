@@ -1,17 +1,19 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { FileType } from '../generated/graphql';
+import { NoteType } from '../generated/graphql';
 
 const Types = Schema.Types;
 
 export interface NoteData {
   _id?: ObjectId;
-  type: FileType;
+  type: NoteType;
   ref: ObjectId;
   text: string;
   title?: string;
   createdOn: Date;
   createdBy: ObjectId;
+  updatedOn?: Date;
+  updatedBy?: ObjectId;
   deletedOn?: Date;
   deletedBy?: ObjectId;
 }
@@ -29,11 +31,13 @@ const schema = new Schema<NoteData, NoteModel>({
   title: { type: Types.String },
   createdOn: { type: Types.Date, required: true },
   createdBy: { type: Types.ObjectId, required: true },
+  updatedOn: { type: Types.Date },
+  updatedBy: { type: Types.ObjectId },
   deletedOn: { type: Types.Date },
   deletedBy: { type: Types.ObjectId },
 });
 
-schema.index({ type: 1, ref: 1 });
+schema.index({ type: 1, ref: 1, createdOn: 1 });
 
 schema.static('clean', function () {
   return this.deleteMany().exec();

@@ -30,7 +30,6 @@ export class TagDataSource extends BaseDataSource {
       q.deletedOn = null;
     }
     const tags = await tagRepository.find(q).sort({ label: 1 }).exec();
-    console.log('tags', tags);
     return tags.map(TagMapper.toTag);
   }
 

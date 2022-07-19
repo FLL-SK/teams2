@@ -23,9 +23,9 @@ export function TeamListFilter(props: TeamListFilterProps) {
   const addTagToFilter = useCallback(
     (id: string) => {
       if (!filterTags.includes(id)) {
-        const nf = [...filterTags, id];
-        setFilterTags(nf); //FIXME: needed if onchnage will trigger rerender?
-        onChange({ ...values, tags: nf });
+        const tags = [...filterTags, id];
+        setFilterTags(tags); //FIXME: needed if onchnage will trigger rerender?
+        onChange({ ...values, tags });
       }
     },
     [filterTags, onChange, values]
@@ -33,9 +33,15 @@ export function TeamListFilter(props: TeamListFilterProps) {
 
   const removeTagFromFilter = useCallback(
     (id: string) => {
-      const nf = filterTags.filter((t) => t !== id);
-      setFilterTags(nf); //FIXME: needed if onchnage will trigger rerender?
-      onChange({ ...values, tags: nf });
+      const tags = filterTags.filter((t) => t !== id);
+      setFilterTags(tags); //FIXME: needed if onchnage will trigger rerender?
+      if (tags.length === 0) {
+        const nf = { ...values };
+        delete nf.tags;
+        onChange(nf);
+      } else {
+        onChange({ ...values, tags });
+      }
     },
     [filterTags, onChange, values]
   );

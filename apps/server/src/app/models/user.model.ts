@@ -16,6 +16,8 @@ export interface UserData {
   isSuperAdmin?: boolean;
 }
 
+export type UserDataNoPassword = Omit<UserData, 'password'>;
+
 export type UserDocument = (Document<unknown, unknown, UserData> & UserData) | null;
 
 export interface UserModel extends Model<UserData> {
