@@ -135,7 +135,7 @@ export function RegistrationsPage() {
   );
 
   if (regsDataError) {
-    return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
+    //return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
   }
 
   const rowGetter = (index: number) => (index < registrations.length ? registrations[index] : null);
@@ -149,6 +149,7 @@ export function RegistrationsPage() {
       {!filter.programId && (
         <Text>Najskôr vyberte vo filtri program, pre ktorý sa majú registrácie zobraziť.</Text>
       )}
+      {regsDataError && <Text>Chyba pri získavaní zoznamu registrácií.</Text>}
 
       {filter.programId && (
         <RegistrationList
