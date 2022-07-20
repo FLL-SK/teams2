@@ -40,7 +40,7 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
     return null;
   }
   return (
-    <ClosableSidebar onClose={onClose} show={!!registration}>
+    <ClosableSidebar onClose={onClose} show={!!registration} width="350px">
       <SidebarPanelGroup title="Team" gap="medium">
         <SidebarPanel label="Tím">
           <LabelValueGroup direction="column" gap="small">
