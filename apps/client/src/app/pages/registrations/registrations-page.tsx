@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Grid, TextInput } from 'grommet';
+import { Box, Button, TextInput, Text } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import {
   RegistrationTeamFragmentFragment,
   TeamFilterInput,
+  useGetProgramLazyQuery,
   useGetProgramRegistrationsLazyQuery,
-  useGetProgramsQuery,
 } from '../../generated/graphql';
 import { RegistrationList } from './components/registration-list';
 import { Close, Filter } from 'grommet-icons';
@@ -16,7 +16,6 @@ import RegistrationListFilter, {
   RegistrationListFilterValues,
 } from './components/registration-list-filter';
 import { useSearchParams } from 'react-router-dom';
-import { ProgramTile } from './components/program-tile';
 
 function parseRegistrationsSearchParams(
   searchParams: URLSearchParams
@@ -43,6 +42,8 @@ function constructRegistrationsSearchParams(values: RegistrationListFilterValues
   return searchParams;
 }
 
+const localStoreFilterEntry = 'registrations-filter';
+
 export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
   const [selectedTeam, setSelectedTeam] = useState<string>();
@@ -50,14 +51,61 @@ export function RegistrationsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
-  const { data: programsData, loading: programsLoading } = useGetProgramsQuery();
-
   const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
     useGetProgramRegistrationsLazyQuery();
+  const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
+    useGetProgramLazyQuery();
 
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState<RegistrationTeamFragmentFragment[]>([]);
+  const [registrations, setRegistrations] = useState<RegistrationTeamFragmentFragment[]>([]);
 
+  // prepare search entries for text search
+  const searchOptions = useMemo(
+    () =>
+      (regsData?.getProgramRegistrations ?? []).map((t) => ({
+        text: `${t.team.name.toLocaleLowerCase()} ${t.team.address.city.toLocaleLowerCase()}`,
+        value: t,
+      })),
+    [regsData]
+  );
+
+  const applyFilter = useCallback(
+    (item: RegistrationTeamFragmentFragment) => {
+      let ok = true;
+      if (filter.tags) {
+        ok = ok && filter.tags.every((t) => item.team.tags.findIndex((tt) => tt.id === t) > -1);
+      }
+      return ok;
+    },
+    [filter]
+  );
+
+  // apply full text search
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const results = searchOptions
+      .filter((item) => item.text.includes(searchText.toLocaleLowerCase()))
+      .map((item) => item.value)
+      .filter(applyFilter);
+    setRegistrations(results);
+  };
+
+  // if no search text, show all teams
+  useEffect(() => {
+    if (searchText.length === 0) {
+      setRegistrations(searchOptions.map((l) => l.value).filter(applyFilter));
+    }
+  }, [searchText, searchOptions, applyFilter]);
+
+  // if no searchParams provided for the page, then get filter from the local store
+  useEffect(() => {
+    const s = localStorage.getItem(localStoreFilterEntry);
+    if (searchParams.entries.length === 0 && s) {
+      setSearchParams(new URLSearchParams(s));
+    }
+  }, [searchParams, setSearchParams]);
+
+  // process changed searchParams
   useEffect(() => {
     const flt = parseRegistrationsSearchParams(searchParams);
 
@@ -71,100 +119,79 @@ export function RegistrationsPage() {
     setFilter(flt);
   }, [fetchRegistrations, searchParams]);
 
+  // get registrations for selected program
+  useEffect(() => {
+    fetchProgram({ variables: { id: filter.programId ?? '0' } });
+  }, [fetchProgram, filter.programId]);
+
+  // apply filter
   const handleApplyFilter = useCallback(
     (filter: RegistrationListFilterValues) => {
       const sp = constructRegistrationsSearchParams(filter);
+      localStorage.setItem(localStoreFilterEntry, sp.toString());
       setSearchParams(new URLSearchParams(sp));
     },
     [setSearchParams]
   );
 
-  const searchList = useMemo(
-    () =>
-      (regsData?.getProgramRegistrations ?? []).map((t) => ({
-        text: `${t.team.name.toLocaleLowerCase()} ${t.team.address.city.toLocaleLowerCase()}`,
-        value: t,
-      })),
-    [regsData]
-  );
-
-  useEffect(() => {
-    if (searchText.length === 0) {
-      setSearchResults(searchList.map((l) => l.value));
-    }
-  }, [searchText, searchList]);
-
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const results = searchList
-      .filter((item) => item.text.includes(searchText.toLocaleLowerCase()))
-      .map((item) => item.value);
-    setSearchResults(results);
-  };
-
   if (regsDataError) {
-    //return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
+    return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
   }
 
-  const rowGetter = (index: number) => (index < searchResults.length ? searchResults[index] : null);
+  const rowGetter = (index: number) => (index < registrations.length ? registrations[index] : null);
 
   if (!isAdmin) {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
   return (
-    <BasePage title="Registrácie" loading={programsLoading}>
-      <Grid columns={['1/3', '1/3', '1/3']} gap="small" pad="medium">
-        {(programsData?.getPrograms ?? []).map((p) => (
-          <ProgramTile
-            key={p.id}
-            program={p}
-            selected={p.id === filter.programId}
-            onClick={(prg) => handleApplyFilter({ ...filter, programId: prg.id })}
-          />
-        ))}
-      </Grid>
+    <BasePage title={`Registrácie pre ${progData?.getProgram.name ?? ''}`} loading={regsLoading}>
+      {!filter.programId && (
+        <Text>Najskôr vyberte vo filtri program, pre ktorý sa majú registrácie zobraziť.</Text>
+      )}
 
-      <RegistrationList
-        rowCount={searchResults.length}
-        rowGetter={rowGetter}
-        actionPanel={
-          <Box direction="row" width="100%">
-            <form onSubmit={handleSearchSubmit}>
-              <TextInput
-                placeholder="Hľadať názov tímu/mesto"
-                onChange={({ target }) => setSearchText(target.value)}
-                value={searchText}
-                width="auto"
+      {filter.programId && (
+        <RegistrationList
+          rowCount={registrations.length}
+          rowGetter={rowGetter}
+          actionPanel={
+            <Box direction="row" width="100%">
+              <form onSubmit={handleSearchSubmit}>
+                <TextInput
+                  placeholder="Hľadať názov tímu/mesto"
+                  onChange={({ target }) => setSearchText(target.value)}
+                  value={searchText}
+                  width="auto"
+                />
+                <button hidden type="submit" />
+              </form>
+              <Button icon={<Close />} onClick={() => setSearchText('')} />
+              <Button
+                plain
+                icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}
+                tip="Filter"
+                onClick={() => {
+                  setShowFilter(true);
+                  setSelectedTeam(undefined);
+                }}
               />
-              <button hidden type="submit" />
-            </form>
-            <Button icon={<Close />} onClick={() => setSearchText('')} />
-            <Button
-              plain
-              icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}
-              tip="Filter"
-              onClick={() => {
-                setShowFilter(true);
-                setSelectedTeam(undefined);
-              }}
-            />
-          </Box>
-        }
-        onSelect={(t) => {
-          setSelectedTeam(t.id);
-          setShowFilter(false);
-        }}
-      />
+            </Box>
+          }
+          onSelect={(t) => {
+            setSelectedTeam(t.id);
+            setShowFilter(false);
+          }}
+        />
+      )}
 
       {selectedTeam && (
         <RegistrationSidebar
-          registration={searchList.find((item) => item.value.id === selectedTeam)?.value}
+          registration={searchOptions.find((item) => item.value.id === selectedTeam)?.value}
           onClose={() => setSelectedTeam(undefined)}
         />
       )}
       <RegistrationListFilter
-        show={showFilter}
+        show={showFilter || !filter.programId}
         onClose={() => setShowFilter(false)}
         values={filter}
         onChange={handleApplyFilter}

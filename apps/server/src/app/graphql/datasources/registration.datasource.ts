@@ -38,4 +38,53 @@ export class RegistrationDataSource extends BaseDataSource {
     const teams = await registrationRepository.find({ programId }).sort({ registeredOn: 1 }).exec();
     return teams.map(RegistrationMapper.toRegistration);
   }
+
+  async setInvoicedOn(id: ObjectId, invoiceIssuedOn: Date): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { invoiceIssuedOn }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async clearInvoicedOn(id: ObjectId): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { invoiceIssuedOn: null }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async setPaidOn(id: ObjectId, paidOn: Date): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { paidOn }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async clearPaidOn(id: ObjectId): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { paidOn: null }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async setShippedOn(id: ObjectId, shippedOn: Date): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { shippedOn }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async clearShippedOn(id: ObjectId): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { shippedOn: null }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async setShipmentGroup(id: ObjectId, shipmentGroup: string): Promise<Registration> {
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { shipmentGroup }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
 }

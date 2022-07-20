@@ -7,6 +7,9 @@ const timeZone = 'Europe/Bratislava';
 export const formatDate = (date: Date | string | number) =>
   format(new Date(date), 'P', { locale: sk });
 
+export const toUtcDateTime = (date: Date | string | number) =>
+  zonedTimeToUtc(new Date(date), timeZone);
+
 export const toZonedDateTime = (date: Date | string | number) =>
   utcToZonedTime(new Date(date), timeZone);
 
