@@ -18,4 +18,19 @@ export const typeResolver: Resolver<Registration> = {
     dataSources.user.getUser(invoiceIssuedBy),
 };
 
-export const mutationResolvers: MutationResolvers<ApolloContext> = {};
+export const mutationResolvers: MutationResolvers<ApolloContext> = {
+  registrationSetInvoiced: async (_parent, { id, date }, { dataSources }) =>
+    dataSources.registration.setInvoicedOn(id, date),
+  registrationClearInvoiced: async (_parent, { id }, { dataSources }) =>
+    dataSources.registration.clearInvoicedOn(id),
+  registrationSetPaid: async (_parent, { id, date }, { dataSources }) =>
+    dataSources.registration.setPaidOn(id, date),
+  registrationClearPaid: async (_parent, { id }, { dataSources }) =>
+    dataSources.registration.clearPaidOn(id),
+  registrationSetShipmentGroup: async (_parent, { id, group }, { dataSources }) =>
+    dataSources.registration.setShipmentGroup(id, group),
+  registrationSetShipped: async (_parent, { id, date }, { dataSources }) =>
+    dataSources.registration.setShippedOn(id, date),
+  registrationClearShipped: async (_parent, { id }, { dataSources }) =>
+    dataSources.registration.clearShippedOn(id),
+};
