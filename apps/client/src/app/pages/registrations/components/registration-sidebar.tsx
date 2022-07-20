@@ -1,5 +1,5 @@
-import { formatDate } from '@teams2/dateutils';
-import { Spinner } from 'grommet';
+import { formatDate, toUtcDateString } from '@teams2/dateutils';
+import { Anchor, Box, Spinner, Text } from 'grommet';
 import React from 'react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
@@ -13,6 +13,13 @@ import {
   useCreateNoteMutation,
   useDeleteTagMutation,
   useGetNotesQuery,
+  useRegistrationClearInvoicedMutation,
+  useRegistrationClearPaidMutation,
+  useRegistrationClearShippedMutation,
+  useRegistrationSetInvoicedMutation,
+  useRegistrationSetPaidMutation,
+  useRegistrationSetShipmentGroupMutation,
+  useRegistrationSetShippedMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
@@ -36,11 +43,19 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const [addTag] = useAddTagToTeamMutation();
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
+  const [setInvoiced] = useRegistrationSetInvoicedMutation();
+  const [clearInvoiced] = useRegistrationClearInvoicedMutation();
+  const [setPaid] = useRegistrationSetPaidMutation();
+  const [clearPaid] = useRegistrationClearPaidMutation();
+  const [setShipped] = useRegistrationSetShippedMutation();
+  const [clearShipped] = useRegistrationClearShippedMutation();
+  const [setShipmentGroup] = useRegistrationSetShipmentGroupMutation();
+
   if (!registration) {
     return null;
   }
   return (
-    <ClosableSidebar onClose={onClose} show={!!registration}>
+    <ClosableSidebar onClose={onClose} show={!!registration} width="350px">
       <SidebarPanelGroup title="Team" gap="medium">
         <SidebarPanel label="Tím">
           <LabelValueGroup direction="column" gap="small">
@@ -58,19 +73,75 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
         <SidebarPanel label="Registrácia">
           <LabelValueGroup direction="column" gap="small">
             <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
-            <LabelValue
-              label="Faktúra"
-              value={registration.invoiceIssuedOn ? formatDate(registration.invoiceIssuedOn) : '-'}
-            />
-            <LabelValue
-              label="Zaplatená"
-              value={registration.paidOn ? formatDate(registration.paidOn) : '-'}
-            />
+            <LabelValue label="Faktúra">
+              <Box direction="row" width="100%" justify="between">
+                <Text>
+                  {registration.invoiceIssuedOn ? formatDate(registration.invoiceIssuedOn) : '-'}
+                </Text>
+                {registration.invoiceIssuedOn ? (
+                  <Anchor
+                    size="small"
+                    label="Zruš faktúru"
+                    onClick={() => clearInvoiced({ variables: { id: registration.id } })}
+                  />
+                ) : (
+                  <Anchor
+                    size="small"
+                    label="Vystav faktúru"
+                    onClick={() =>
+                      setInvoiced({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) },
+                      })
+                    }
+                  />
+                )}
+              </Box>
+            </LabelValue>
+            <LabelValue label="Zaplatená">
+              <Box direction="row" width="100%" justify="between">
+                <Text>{registration.paidOn ? formatDate(registration.paidOn) : '-'}</Text>
+                {registration.paidOn ? (
+                  <Anchor
+                    size="small"
+                    label="Zruš zaplatenie"
+                    onClick={() => clearPaid({ variables: { id: registration.id } })}
+                  />
+                ) : (
+                  <Anchor
+                    size="small"
+                    label="Označ zaplatená"
+                    onClick={() =>
+                      setPaid({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) },
+                      })
+                    }
+                  />
+                )}
+              </Box>
+            </LabelValue>
             <LabelValue label="Zásielka č." value={registration.shipmentGroup ?? '-'} />
-            <LabelValue
-              label="Odoslaná"
-              value={registration.shippedOn ? formatDate(registration.shippedOn) : '-'}
-            />
+            <LabelValue label="Odoslaná">
+              <Box direction="row" width="100%" justify="between">
+                <Text>{registration.shippedOn ? formatDate(registration.shippedOn) : '-'}</Text>
+                {registration.shippedOn ? (
+                  <Anchor
+                    size="small"
+                    label="Zruš odoslanie"
+                    onClick={() => clearShipped({ variables: { id: registration.id } })}
+                  />
+                ) : (
+                  <Anchor
+                    size="small"
+                    label="Označ odoslaná"
+                    onClick={() =>
+                      setShipped({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) },
+                      })
+                    }
+                  />
+                )}
+              </Box>
+            </LabelValue>
           </LabelValueGroup>
         </SidebarPanel>
         <SidebarPanel label="Poznámky k registrácii">

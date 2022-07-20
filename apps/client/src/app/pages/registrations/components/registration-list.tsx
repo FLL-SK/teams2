@@ -32,13 +32,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
           {fullAddress(data.team.address)}
         </Text>
       </ListCol>
-      <ListCol>
-        <Box direction="row">
-          {data.team.tags.map((tag) => (
-            <Tag key={tag.id} value={tag.label} size="small" />
-          ))}
-        </Box>
-      </ListCol>
+
       <ListCol>
         <Text>{formatDate(data.registeredOn)}</Text>
       </ListCol>
@@ -54,6 +48,14 @@ function RegistrationListRow(props: RegistrationListRowProps) {
 
       <ListCol>
         <Text>{data.shippedOn ? formatDate(data.shippedOn) : '-'}</Text>
+      </ListCol>
+
+      <ListCol>
+        <Box direction="row">
+          {data.team.tags.map((tag) => (
+            <Tag key={tag.id} value={tag.label} size="small" />
+          ))}
+        </Box>
       </ListCol>
     </>
   );
@@ -73,7 +75,7 @@ export function RegistrationList(props: RegistrationListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="1fr 1fr 100px 100px 100px 100px 100px"
+        cols="1fr 100px 100px 100px 100px 100px 1fr "
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={50}

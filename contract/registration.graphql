@@ -35,3 +35,13 @@ extend type Query {
   getProgramRegistrations(programId: ID!): [Registration!]!
   getEventRegistrations(eventId: ID!): [Registration!]!
 }
+
+extend type Mutation {
+  registrationSetInvoiced(id: ID!, date: DateTime): Registration
+  registrationClearInvoiced(id: ID!): Registration
+  registrationSetPaid(id: ID!, date: DateTime): Registration
+  registrationClearPaid(id: ID!): Registration
+  registrationSetShipmentGroup(id: ID!, group: String): Registration
+  registrationSetShipped(id: ID!, date: DateTime): Registration
+  registrationClearShipped(id: ID!): Registration
+}
