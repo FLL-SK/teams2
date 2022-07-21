@@ -2818,6 +2818,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/flat@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@types/flat/-/flat-5.0.2.tgz#642a51a037d1f52fda082312b0e4566dc09a9f8f"
+  integrity sha512-3zsplnP2djeps5P9OyarTxwRpMLoe5Ash8aL9iprw0JxB+FAHjY+ifn4yZUuW4/9hqtnmor6uvjSRzJhiVbrEQ==
+
 "@types/fs-extra@^8.0.1":
   version "8.1.2"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.2.tgz#7125cc2e4bdd9bd2fc83005ffdb1d0ba00cca61f"
@@ -12587,6 +12592,10 @@ ws@^8.3.0, ws@^8.4.2:
   version "8.8.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.8.0.tgz#8e71c75e2f6348dbf8d78005107297056cb77769"
   integrity sha512-JDAgSYQ1ksuwqfChJusw1LSJ8BizJ2e/vVu5Lxjq3YvNJNlROv1ui4i+c/kUUrPheBvQl4c5UbERhTwKa6QBJQ==
+
+"xlsx@https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz":
+  version "0.18.9"
+  resolved "https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz#d1d36c31dd0cc7a2d93885822252f7bae5aa2dbc"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"

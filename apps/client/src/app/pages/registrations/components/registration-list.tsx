@@ -9,6 +9,7 @@ import { fullAddress } from '../../../utils/format-address';
 import styled from 'styled-components';
 import { Tag } from '../../../components/tag';
 import { formatDate } from '@teams2/dateutils';
+import { Index } from 'react-virtualized';
 
 type RegistrationListProps = {
   rowCount: number;
@@ -28,34 +29,36 @@ function RegistrationListRow(props: RegistrationListRowProps) {
     <>
       <ListCol linkPath={appPath.team(data.team.id)}>
         <TextStriked striked={!!data.team.deletedOn}>{data.team.name}</TextStriked>
-        <Text size="small" color="dark-5" wordBreak="normal">
+        <Text size="small" color="dark-5" truncate="tip">
           {fullAddress(data.team.address)}
         </Text>
-      </ListCol>
-
-      <ListCol>
-        <Text>{formatDate(data.registeredOn)}</Text>
-      </ListCol>
-      <ListCol>
-        <Text>{data.invoiceIssuedOn ? formatDate(data.invoiceIssuedOn) : '-'}</Text>
-      </ListCol>
-      <ListCol>
-        <Text>{data.paidOn ? formatDate(data.paidOn) : '-'}</Text>
-      </ListCol>
-      <ListCol>
-        <Text>{data.shipmentGroup ?? '-'}</Text>
-      </ListCol>
-
-      <ListCol>
-        <Text>{data.shippedOn ? formatDate(data.shippedOn) : '-'}</Text>
-      </ListCol>
-
-      <ListCol>
         <Box direction="row">
           {data.team.tags.map((tag) => (
             <Tag key={tag.id} value={tag.label} size="small" />
           ))}
         </Box>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">{formatDate(data.registeredOn)}</Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">
+          {data.invoiceIssuedOn ? formatDate(data.invoiceIssuedOn) : '-'}
+        </Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">{data.paidOn ? formatDate(data.paidOn) : '-'}</Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">{data.shipmentGroup ?? '-'}</Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">{data.shippedOn ? formatDate(data.shippedOn) : '-'}</Text>
       </ListCol>
     </>
   );
@@ -70,15 +73,18 @@ const ListWrapper = styled(Box)`
 export function RegistrationList(props: RegistrationListProps) {
   const { rowCount, rowGetter, actionPanel, onSelect } = props;
 
+  const getHeight = ({ index }: Index) =>
+    (rowGetter(index)?.team?.tags.length ?? 0) > 0 ? 100 : 50;
+
   return (
     <ListWrapper>
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="1fr 100px 100px 100px 100px 100px 1fr "
+        cols="450px 100px 100px 100px 100px 100px"
         rowCount={rowCount}
         rowGetter={rowGetter}
-        rowHeight={50}
+        rowHeight={getHeight}
         columnGap="medium"
         onRowSelect={(team) => onSelect && onSelect(team)}
       />

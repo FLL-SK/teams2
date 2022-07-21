@@ -40,7 +40,14 @@ export function AppRouter() {
       />
       <Route path={appPath.event(':id')} element={<EventPage />} />
       <Route path={appPath.program(':id')} element={<ProgramPage />} />
-      <Route path={appPath.register(':id')} element={<RegisterPage />} />
+      <Route
+        path={appPath.register(':id')}
+        element={
+          <RequireAuth>
+            <RegisterPage />
+          </RequireAuth>
+        }
+      />
       <Route path={appPath.login} element={<LoginPage />} />
       <Route path={appPath.forgotPassword} element={<ForgotPasswordPage />} />
       <Route path={appPath.passwordReset} element={<ResetPasswordPage />} />
