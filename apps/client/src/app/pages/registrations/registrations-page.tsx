@@ -9,13 +9,15 @@ import {
   useGetProgramRegistrationsLazyQuery,
 } from '../../generated/graphql';
 import { RegistrationList } from './components/registration-list';
-import { Close, Filter } from 'grommet-icons';
+import { Close, Download, Filter } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';
 import { BasePage } from '../../components/base-page';
 import RegistrationListFilter, {
   RegistrationListFilterValues,
 } from './components/registration-list-filter';
 import { useSearchParams } from 'react-router-dom';
+import { exportRegistrations } from '../../utils/export-registrations';
+import { exportRegistrationsForShipping } from '../../utils/export-registrations-for-shipping';
 
 function parseRegistrationsSearchParams(
   searchParams: URLSearchParams
@@ -144,6 +146,8 @@ export function RegistrationsPage() {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
+  console.log(registrations);
+
   return (
     <BasePage title={`Registrácie pre ${progData?.getProgram.name ?? ''}`} loading={regsLoading}>
       {!filter.programId && (
@@ -156,24 +160,32 @@ export function RegistrationsPage() {
           rowGetter={rowGetter}
           actionPanel={
             <Box direction="row" width="100%">
-              <form onSubmit={handleSearchSubmit}>
-                <TextInput
-                  placeholder="Hľadať názov tímu/mesto"
-                  onChange={({ target }) => setSearchText(target.value)}
-                  value={searchText}
-                  width="auto"
-                />
-                <button hidden type="submit" />
-              </form>
+              <Box width="200px">
+                <form onSubmit={handleSearchSubmit}>
+                  <TextInput
+                    placeholder="Hľadať názov tímu/mesto"
+                    onChange={({ target }) => setSearchText(target.value)}
+                    value={searchText}
+                    width="auto"
+                  />
+                  <button hidden type="submit" />
+                </form>
+              </Box>
               <Button icon={<Close />} onClick={() => setSearchText('')} />
               <Button
-                plain
                 icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}
                 tip="Filter"
                 onClick={() => {
                   setShowFilter(true);
                   setSelectedTeam(undefined);
                 }}
+              />
+              <Button
+                icon={<Download />}
+                tip="Export"
+                onClick={() =>
+                  exportRegistrationsForShipping(progData?.getProgram.name ?? '', registrations)
+                }
               />
             </Box>
           }
