@@ -10,8 +10,6 @@ import { ErrorPage } from '../../components/error-page';
 import {
   Address,
   UpdateTeamInput,
-  useCreateRegistrationInvoiceMutation,
-  useEmailInvoiceMutation,
   useGetTeamQuery,
   useRegisterTeamForEventMutation,
   useUpdateTeamMutation,
@@ -43,8 +41,7 @@ export function RegisterPage() {
   const { isAdmin, isTeamCoach } = useAppUser();
   const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
-  const [invoiceNo, setInvoiceNo] = useState<string | undefined>();
-  const [sentOn, setSentOn] = useState<Date | undefined>();
+
   const [timeoutError, setTimeoutError] = useState<boolean>(false);
   const { notify } = useNotification();
 
@@ -63,10 +60,6 @@ export function RegisterPage() {
   });
   const [updateTeam] = useUpdateTeamMutation();
   const [registerTeam] = useRegisterTeamForEventMutation();
-
-  // creating an invoice triggers sending an email to the billing contact
-  const [createInvoice] = useCreateRegistrationInvoiceMutation();
-  const [emailInvoice] = useEmailInvoiceMutation();
 
   const canRegister = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
@@ -87,24 +80,9 @@ export function RegisterPage() {
         return;
       }
       setStep('success');
-
-      const r2 = await createInvoice({ variables: { teamId: _teamId, eventId: _eventId } });
-      if (!r2.data?.createRegistrationInvoice) {
-        notify.error('Nepodarilo sa vytvoriť faktúru.');
-        return;
-      }
-      setInvoiceNo(r2.data.createRegistrationInvoice.number);
-
-      const r3 = await emailInvoice({ variables: { id: r2.data.createRegistrationInvoice.id } });
-      if (!r3.data?.emailInvoice) {
-        notify.error('Nepodarilo sa odoslať faktúru emailom.');
-        return;
-      }
-      setSentOn(r3.data.emailInvoice.sentOn ? new Date(r3.data.emailInvoice.sentOn) : undefined);
-
       clearTimeout(ti);
     },
-    [createInvoice, emailInvoice, notify, registerTeam, teamId]
+    [notify, registerTeam, teamId]
   );
 
   if (!canRegister) {
@@ -185,8 +163,6 @@ export function RegisterPage() {
             team={team}
             details={registerDetails}
             nextStep={() => navigate(appPath.team(teamId))}
-            invoiceNo={invoiceNo}
-            sentOn={sentOn}
             timeoutError={timeoutError}
           />
         )}

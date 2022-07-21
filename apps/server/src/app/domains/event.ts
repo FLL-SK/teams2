@@ -21,11 +21,13 @@ export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, c
   const log = logLib.extend('registerTeam');
   log.info('Registering team %s to event %s', teamId, eventId);
   const { userGuard, dataSources } = ctx;
+
   if (!userGuard.isAdmin() && !(await userGuard.isCoach(teamId))) {
     //TODO nicer error handling
     console.log('Not authorized to register');
     return null;
   }
+
   const event = await dataSources.event.addTeamToEvent(eventId, teamId);
   const team = await dataSources.team.getTeam(teamId);
   if (!event || !team) {
