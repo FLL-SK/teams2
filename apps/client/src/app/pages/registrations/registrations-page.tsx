@@ -146,8 +146,6 @@ export function RegistrationsPage() {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
-  console.log(registrations);
-
   return (
     <BasePage title={`Registrácie pre ${progData?.getProgram.name ?? ''}`} loading={regsLoading}>
       {!filter.programId && (
