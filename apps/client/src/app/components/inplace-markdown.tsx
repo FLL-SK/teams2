@@ -1,5 +1,5 @@
-import { Box, Markdown, TextArea } from 'grommet';
-import React, { useState } from 'react';
+import { Anchor, Box, Markdown, TextArea } from 'grommet';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 interface InPlaceMarkdownProps {
@@ -23,27 +23,40 @@ export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
   const [valueState, setValueState] = useState(value);
   const [editing, setEditing] = useState(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValueState(event.target.value);
-  };
+  }, []);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const doSubmit = useCallback(() => {
     onSubmit(valueState ?? '');
     setEditing(false);
-  };
+  }, [valueState, onSubmit]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && event.shiftKey) {
+  const doCancel = useCallback(() => {
+    setValueState(value);
+    setEditing(false);
+  }, [value]);
+
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      onSubmit(valueState ?? '');
-      setEditing(false);
-    }
-    if (event.key === 'Escape') {
-      setValueState(value);
-      setEditing(false);
-    }
-  };
+      doSubmit();
+    },
+    [doSubmit]
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (event.key === 'Enter' && event.shiftKey) {
+        event.preventDefault();
+        doSubmit();
+      }
+      if (event.key === 'Escape') {
+        doCancel();
+      }
+    },
+    [doCancel, doSubmit]
+  );
 
   if (!editing) {
     return (
@@ -64,6 +77,10 @@ export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
           disabled={disabled}
         />
       </form>
+      <Box direction="row" justify="end" gap="medium" pad="small">
+        <Anchor size="small" onClick={() => doCancel()} label="Zrušiť" />
+        <Anchor size="small" onClick={() => doSubmit()} label="Uložiť" />
+      </Box>
     </Container>
   );
 }
