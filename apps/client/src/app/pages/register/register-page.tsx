@@ -107,6 +107,10 @@ export function RegisterPage() {
     [createInvoice, emailInvoice, notify, registerTeam, teamId]
   );
 
+  if (!canRegister) {
+    return <ErrorPage title={`Nemáte oprávnenie na registráciu tímu na turnaj.`} />;
+  }
+
   if (!teamId || teamError) {
     return <ErrorPage title="Tím nenájdený" error={teamError} />;
   }
