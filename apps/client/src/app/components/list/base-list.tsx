@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, AutoSizer, ListRowProps } from 'react-virtualized';
+import { List, AutoSizer, ListRowProps, ListProps } from 'react-virtualized';
 import 'react-virtualized/styles.css';
 import { ListRow } from '../../components/list/list-row';
 import { ReactNode } from 'react';
@@ -9,20 +9,18 @@ import { Box } from 'grommet';
 import { ListHeaderRow } from './list-header-row';
 import { EdgeSizeType } from 'grommet/utils';
 
-type BaseListProps<T = unknown> = {
-  rowCount: number;
+interface BaseListProps<T = unknown> extends Omit<ListProps, 'height' | 'width' | 'rowRenderer'> {
   rowGetter: (index: number) => T | null;
   onEmptyList?: () => unknown;
   renderRow: (data: T) => ReactNode;
   cols?: string;
-  rowHeight?: number;
   actionPanel?: ReactNode | null;
   heightOffset?: number;
   columnGap?: EdgeSizeType;
   onRowSelect?: (value: T) => unknown;
   actionsJustifyContent?: string;
   footerPanel?: ReactNode | null;
-};
+}
 
 const Container = styled.div<{ heightOffset: number }>`
   /*max-width: ${breakpoints.tablet};*/
@@ -56,6 +54,7 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
     columnGap: gap,
     onRowSelect,
     actionsJustifyContent,
+    ...listProps
   } = props;
 
   const rowRenderer = (props: ListRowProps) => {
@@ -87,10 +86,11 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
         <AutoSizer>
           {({ width, height }) => (
             <List
+              {...listProps}
               height={height}
               width={width}
               headerHeight={0}
-              rowHeight={rowHeight ?? 80}
+              rowHeight={rowHeight}
               rowClassName={getRowClassName}
               rowCount={rowCount}
               rowGetter={rowGetter}
