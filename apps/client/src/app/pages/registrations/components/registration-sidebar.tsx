@@ -1,6 +1,7 @@
 import { formatDate, toUtcDateString } from '@teams2/dateutils';
 import { Anchor, Box, Spinner, Text } from 'grommet';
-import React from 'react';
+import React, { useState } from 'react';
+import { EditShipmentGroupDialog } from '../../../components/dialogs/edit-shipment-group-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { NoteList } from '../../../components/note-list';
@@ -31,6 +32,8 @@ interface RegistrationSidebarProps {
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const { registration, onClose } = props;
 
+  const [showEditShipmentGroupDialog, setShowEditShipmentGroupDialog] = useState(false);
+
   const {
     data: notesData,
     loading: notesLoading,
@@ -55,112 +58,133 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
     return null;
   }
   return (
-    <ClosableSidebar onClose={onClose} show={!!registration} width="350px">
-      <SidebarPanelGroup title="Team" gap="medium">
-        <SidebarPanel label="Tím">
-          <LabelValueGroup direction="column" gap="small">
-            <LabelValue label="Názov" value={registration.team.name} />
-            <LabelValue label="Zriaďovateľ" value={fullAddress(registration.team.address)} />
-          </LabelValueGroup>
-        </SidebarPanel>
-        <SidebarPanel label="Štítky tímu">
-          <TagList
-            tags={registration.team.tags}
-            onRemove={(id) => removeTag({ variables: { id } })}
-            onAdd={(tag) => addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })}
-          />
-        </SidebarPanel>
-        <SidebarPanel label="Registrácia">
-          <LabelValueGroup direction="column" gap="small">
-            <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
-            <LabelValue label="Faktúra">
-              <Box direction="row" width="100%" justify="between">
-                <Text>
-                  {registration.invoiceIssuedOn ? formatDate(registration.invoiceIssuedOn) : '-'}
-                </Text>
-                {registration.invoiceIssuedOn ? (
-                  <Anchor
-                    size="small"
-                    label="Zruš faktúru"
-                    onClick={() => clearInvoiced({ variables: { id: registration.id } })}
-                  />
-                ) : (
-                  <Anchor
-                    size="small"
-                    label="Vystav faktúru"
-                    onClick={() =>
-                      setInvoiced({
-                        variables: { id: registration.id, date: toUtcDateString(new Date()) },
-                      })
-                    }
-                  />
-                )}
-              </Box>
-            </LabelValue>
-            <LabelValue label="Zaplatená">
-              <Box direction="row" width="100%" justify="between">
-                <Text>{registration.paidOn ? formatDate(registration.paidOn) : '-'}</Text>
-                {registration.paidOn ? (
-                  <Anchor
-                    size="small"
-                    label="Zruš zaplatenie"
-                    onClick={() => clearPaid({ variables: { id: registration.id } })}
-                  />
-                ) : (
-                  <Anchor
-                    size="small"
-                    label="Označ zaplatená"
-                    onClick={() =>
-                      setPaid({
-                        variables: { id: registration.id, date: toUtcDateString(new Date()) },
-                      })
-                    }
-                  />
-                )}
-              </Box>
-            </LabelValue>
-            <LabelValue label="Zásielka č." value={registration.shipmentGroup ?? '-'} />
-            <LabelValue label="Odoslaná">
-              <Box direction="row" width="100%" justify="between">
-                <Text>{registration.shippedOn ? formatDate(registration.shippedOn) : '-'}</Text>
-                {registration.shippedOn ? (
-                  <Anchor
-                    size="small"
-                    label="Zruš odoslanie"
-                    onClick={() => clearShipped({ variables: { id: registration.id } })}
-                  />
-                ) : (
-                  <Anchor
-                    size="small"
-                    label="Označ odoslaná"
-                    onClick={() =>
-                      setShipped({
-                        variables: { id: registration.id, date: toUtcDateString(new Date()) },
-                      })
-                    }
-                  />
-                )}
-              </Box>
-            </LabelValue>
-          </LabelValueGroup>
-        </SidebarPanel>
-        <SidebarPanel label="Poznámky k registrácii">
-          {notesLoading ? (
-            <Spinner />
-          ) : (
-            <NoteList
-              notes={notesData?.getNotes ?? []}
-              limit={3}
-              onCreate={(text) =>
-                createNote({
-                  variables: { input: { type: 'registration', ref: registration.id, text } },
-                })
+    <>
+      <ClosableSidebar onClose={onClose} show={!!registration} width="350px">
+        <SidebarPanelGroup title="Team" gap="medium">
+          <SidebarPanel label="Tím">
+            <LabelValueGroup direction="column" gap="small">
+              <LabelValue label="Názov" value={registration.team.name} />
+              <LabelValue label="Zriaďovateľ" value={fullAddress(registration.team.address)} />
+            </LabelValueGroup>
+          </SidebarPanel>
+          <SidebarPanel label="Štítky tímu">
+            <TagList
+              tags={registration.team.tags}
+              onRemove={(id) => removeTag({ variables: { id } })}
+              onAdd={(tag) =>
+                addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })
               }
             />
-          )}
-        </SidebarPanel>
-      </SidebarPanelGroup>
-    </ClosableSidebar>
+          </SidebarPanel>
+          <SidebarPanel label="Registrácia">
+            <LabelValueGroup direction="column" gap="small">
+              <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
+              <LabelValue label="Faktúra">
+                <Box direction="row" width="100%" justify="between">
+                  <Text>
+                    {registration.invoiceIssuedOn ? formatDate(registration.invoiceIssuedOn) : '-'}
+                  </Text>
+                  {registration.invoiceIssuedOn ? (
+                    <Anchor
+                      size="small"
+                      label="Zruš faktúru"
+                      onClick={() => clearInvoiced({ variables: { id: registration.id } })}
+                    />
+                  ) : (
+                    <Anchor
+                      size="small"
+                      label="Vystav faktúru"
+                      onClick={() =>
+                        setInvoiced({
+                          variables: { id: registration.id, date: toUtcDateString(new Date()) },
+                        })
+                      }
+                    />
+                  )}
+                </Box>
+              </LabelValue>
+              <LabelValue label="Zaplatená">
+                <Box direction="row" width="100%" justify="between">
+                  <Text>{registration.paidOn ? formatDate(registration.paidOn) : '-'}</Text>
+                  {registration.paidOn ? (
+                    <Anchor
+                      size="small"
+                      label="Zruš zaplatenie"
+                      onClick={() => clearPaid({ variables: { id: registration.id } })}
+                    />
+                  ) : (
+                    <Anchor
+                      size="small"
+                      label="Označ zaplatená"
+                      onClick={() =>
+                        setPaid({
+                          variables: { id: registration.id, date: toUtcDateString(new Date()) },
+                        })
+                      }
+                    />
+                  )}
+                </Box>
+              </LabelValue>
+              <LabelValue label="Zásielka č.">
+                <Box direction="row" width="100%" justify="between">
+                  <Text>{registration.shipmentGroup ?? '-'}</Text>
+                  {!registration.shippedOn && (
+                    <Anchor
+                      size="small"
+                      label="Nastav"
+                      onClick={() => setShowEditShipmentGroupDialog(true)}
+                    />
+                  )}
+                </Box>
+              </LabelValue>
+              <LabelValue label="Odoslaná">
+                <Box direction="row" width="100%" justify="between">
+                  <Text>{registration.shippedOn ? formatDate(registration.shippedOn) : '-'}</Text>
+                  {registration.shippedOn ? (
+                    <Anchor
+                      size="small"
+                      label="Zruš odoslanie"
+                      onClick={() => clearShipped({ variables: { id: registration.id } })}
+                    />
+                  ) : (
+                    <Anchor
+                      size="small"
+                      label="Označ odoslaná"
+                      onClick={() =>
+                        setShipped({
+                          variables: { id: registration.id, date: toUtcDateString(new Date()) },
+                        })
+                      }
+                    />
+                  )}
+                </Box>
+              </LabelValue>
+            </LabelValueGroup>
+          </SidebarPanel>
+          <SidebarPanel label="Poznámky k registrácii">
+            {notesLoading ? (
+              <Spinner />
+            ) : (
+              <NoteList
+                notes={notesData?.getNotes ?? []}
+                limit={3}
+                onCreate={(text) =>
+                  createNote({
+                    variables: { input: { type: 'registration', ref: registration.id, text } },
+                  })
+                }
+              />
+            )}
+          </SidebarPanel>
+        </SidebarPanelGroup>
+      </ClosableSidebar>
+      <EditShipmentGroupDialog
+        show={showEditShipmentGroupDialog}
+        group={registration.shipmentGroup}
+        onClose={() => setShowEditShipmentGroupDialog(false)}
+        onSubmit={(group) => setShipmentGroup({ variables: { id: registration.id, group } })}
+      />
+    </>
   );
 }
 

@@ -16,7 +16,6 @@ import RegistrationListFilter, {
   RegistrationListFilterValues,
 } from './components/registration-list-filter';
 import { useSearchParams } from 'react-router-dom';
-import { exportRegistrations } from '../../utils/export-registrations';
 import { exportRegistrationsForShipping } from '../../utils/export-registrations-for-shipping';
 
 function parseRegistrationsSearchParams(
@@ -48,8 +47,9 @@ const localStoreFilterEntry = 'registrations-filter';
 
 export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
-  const [selectedTeam, setSelectedTeam] = useState<string>();
+  const [selectedReg, setSelectedReg] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
@@ -176,7 +176,7 @@ export function RegistrationsPage() {
                 tip="Filter"
                 onClick={() => {
                   setShowFilter(true);
-                  setSelectedTeam(undefined);
+                  setSelectedReg(undefined);
                 }}
               />
               <Button
@@ -189,16 +189,16 @@ export function RegistrationsPage() {
             </Box>
           }
           onSelect={(t) => {
-            setSelectedTeam(t.id);
+            setSelectedReg(t.id);
             setShowFilter(false);
           }}
         />
       )}
 
-      {selectedTeam && (
+      {selectedReg && (
         <RegistrationSidebar
-          registration={searchOptions.find((item) => item.value.id === selectedTeam)?.value}
-          onClose={() => setSelectedTeam(undefined)}
+          registration={searchOptions.find((item) => item.value.id === selectedReg)?.value}
+          onClose={() => setSelectedReg(undefined)}
         />
       )}
       <RegistrationListFilter
