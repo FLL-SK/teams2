@@ -26,6 +26,6 @@ fragment RegistrationTeamFragment on Registration {
   ...RegistrationListFragment
 
   team {
-    ...TeamListFragment
+    ...TeamFragment
   }
 }

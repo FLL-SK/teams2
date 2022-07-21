@@ -25,7 +25,7 @@ const ColoredTag = styled(Box)<{
   background-color: ${({ tagColor }) => tagColor && getTagColor(tagColor)};
   border-style: solid;
   border-width: 1px;
-  border-radius: 20px;
+  border-radius: 6px;
   border-color: ${getColor('icon')};
   cursor: ${({ disabled, editable }) => (editable && !disabled ? 'pointer' : 'auto')};
 `;
@@ -51,7 +51,7 @@ export const TagPill = ({
     <ColoredTag
       ref={ref}
       direction="row"
-      pad="xsmall"
+      pad="xxsmall"
       gap="xsmall"
       align="center"
       tagColor={color}

@@ -2,18 +2,20 @@ import React from 'react';
 import { Box, Text, Button } from 'grommet';
 import { Close } from 'grommet-icons';
 import styled from 'styled-components';
+import { getTagColor } from '../theme';
+import { TagColorType } from '../generated/graphql';
 
 interface TagProps {
   value: string;
   onClick?: () => void;
   onRemove?: () => void;
-  color?: string;
+  color?: TagColorType;
   size?: 'small' | 'medium' | 'large';
 }
 
-const RedClose = styled(Close)`
+const ColoredClose = styled(Close)<{ color?: string }>`
   :hover {
-    stroke: red;
+    stroke: ${(p) => p.color};
   }
 `;
 
@@ -22,20 +24,28 @@ export function Tag(props: TagProps) {
   return (
     <Box
       margin="xsmall"
-      round="small"
+      round="xsmall"
       direction="row"
       gap="small"
       border="all"
       align="center"
-      pad="xsmall"
-      color={color}
+      pad="xxsmall"
+      background={getTagColor(color)?.background}
     >
       {onClick ? (
         <Button plain onClick={onClick} size={size} label={value} />
       ) : (
-        <Text size={size}>{value}</Text>
+        <Text size={size} color={getTagColor(color)?.text}>
+          {value}
+        </Text>
       )}
-      {onRemove && <Button plain icon={<RedClose size="small" />} onClick={onRemove} />}
+      {onRemove && (
+        <Button
+          plain
+          icon={<ColoredClose size="small" color={getTagColor(color)?.text} />}
+          onClick={onRemove}
+        />
+      )}
     </Box>
   );
 }

@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { eventRepository, programRepository, teamRepository, UserDataNoPassword } from '../models';
 
 export class UserGuard {
-  protected user: UserDataNoPassword;
+  protected user?: UserDataNoPassword;
   protected coachOfTeams?: string[];
   protected eventManagerOfEvents?: string[];
   protected programManagerOfPrograms?: string[];
@@ -14,11 +14,11 @@ export class UserGuard {
   }
 
   isSuperAdmin() {
-    return this.user.isSuperAdmin;
+    return this.user ? this.user.isSuperAdmin : false;
   }
 
   isAdmin() {
-    return this.user.isAdmin || this.user.isSuperAdmin;
+    return this.user ? this.user.isAdmin || this.user.isSuperAdmin : false;
   }
 
   isLoggedIn() {
@@ -26,10 +26,13 @@ export class UserGuard {
   }
 
   isSelf(userId: ObjectId) {
-    return this.user._id.equals(userId);
+    return this.user ? this.user._id.equals(userId) : false;
   }
 
   async isCoach(teamId: ObjectId) {
+    if (!this.user) {
+      return false;
+    }
     if (!this.coachOfTeams) {
       this.coachOfTeams =
         (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
@@ -40,6 +43,9 @@ export class UserGuard {
   }
 
   async isEventManager(eventId: ObjectId) {
+    if (!this.user) {
+      return false;
+    }
     if (!this.eventManagerOfEvents) {
       this.eventManagerOfEvents =
         (await eventRepository.findEventsManagedByUser(this.user._id, { _id: 1 }))?.map((e) =>
@@ -50,6 +56,9 @@ export class UserGuard {
   }
 
   async isProgramManager(programId: ObjectId) {
+    if (!this.user) {
+      return false;
+    }
     if (!this.programManagerOfPrograms) {
       this.programManagerOfPrograms =
         (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>

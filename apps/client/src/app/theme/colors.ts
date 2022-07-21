@@ -150,15 +150,15 @@ export function getColor(colorName: keyof Colors, light = true) {
   return light ? pair.light : pair.dark;
 }
 
-const tagColors: Record<TagColorType, string> = {
-  TC1: 'white',
-  TC2: 'gray',
-  TC3: 'limegreen',
-  TC4: 'orange',
-  TC5: 'orangered',
-  TC6: 'red',
-  TC7: 'purple',
-  TC8: 'blue',
+const tagColors: Record<TagColorType, { background: string; text: string }> = {
+  TC1: { background: 'white', text: 'black' },
+  TC2: { background: 'gray', text: 'black' },
+  TC3: { background: 'limegreen', text: 'black' },
+  TC4: { background: 'orange', text: 'white' },
+  TC5: { background: 'orangered', text: 'white' },
+  TC6: { background: 'red', text: 'white' },
+  TC7: { background: 'purple', text: 'white' },
+  TC8: { background: 'blue', text: 'white' },
 };
 
 export const getTagColor = (color?: TagColorType | null) => (color ? tagColors[color] : undefined);
