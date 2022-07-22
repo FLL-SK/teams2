@@ -5,37 +5,22 @@ import { eventRepository, registrationRepository, teamRepository } from '../../m
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
-  //await moveToRegistrationCollection();
-  await addProjectIdToRegistration();
+  await billToShipRegistraion();
 }
 
-async function addTagFieldToTeam() {
-  const debug = debugLib('upgrade:addTagFieldToTeam');
-  debug('addTagFieldToTeam');
-  const t = await teamRepository.updateMany({ teamIds: null }, { $set: { teamIds: [] } }).exec();
-  debug('updated %o', t);
-}
-
-async function moveToRegistrationCollection() {
-  const debug = debugLib('upgrade:moveToReg');
-  const et = await mongoose.connection.db.collection('eventteams').find({}).toArray();
-  console.log(et);
-  debug('moveToRegistrationCollection');
-  const res = await mongoose.connection.db
-    .collection('eventteams')
-    .aggregate([{ $match: {} }, { $out: 'registrations' }])
-    .toArray();
-  debug('updated %o', res);
-}
-
-async function addProjectIdToRegistration() {
-  const debug = debugLib('upgrade:addProjectIdToRegistration');
-  debug('addProjectIdToRegistration');
-  const events = await eventRepository.find({}).exec();
-  for (const event of events) {
-    await registrationRepository
-      .updateMany({ eventId: event._id, programId: null }, { $set: { programId: event.programId } })
-      .exec();
+async function billToShipRegistraion() {
+  const debug = debugLib('upgrade:billToShipRegistration');
+  debug('billToShipRegistration');
+  const registrations = await registrationRepository.find({}).exec();
+  for (const registration of registrations) {
+    const team = await teamRepository.findById(registration.teamId).exec();
+    if (!registration.billTo && team) {
+      registration.billTo = team.billTo ?? team.address;
+    }
+    if (!registration.shipTo && team) {
+      registration.shipTo = team.shipTo ?? team.billTo ?? team.address;
+    }
+    await registration.save();
   }
-  debug('updated %d events', events.length);
+  debug('updated %d registrations', registrations.length);
 }
