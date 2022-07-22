@@ -88,6 +88,8 @@ export async function seedTestEvents() {
         programId: p._id,
         eventId: nu._id,
         teamId: t._id,
+        billTo: t.billTo ?? t.address,
+        shipTo: t.shipTo ?? t.billTo ?? t.address,
         registeredOn: new Date(),
         registeredBy: t.coachesIds.length > 0 ? t.coachesIds[0] : adminUser._id,
       };

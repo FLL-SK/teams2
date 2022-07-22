@@ -1,4 +1,4 @@
-fragment ProgramListFragment on Program {
+fragment ProgramBasicFragment on Program {
   id
   name
   description
@@ -11,6 +11,10 @@ fragment ProgramListFragment on Program {
 
   deletedOn
   deletedBy
+}
+
+fragment ProgramListFragment on Program {
+  ...ProgramBasicFragment
 }
 
 fragment ProgramFragment on Program {

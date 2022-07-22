@@ -4,6 +4,7 @@
 # import * from "./team.graphql"
 # import * from "./user.graphql"
 # import * from "./event.graphql"
+# import * from "./program.graphql"
 
 type Registration implements INode {
   id: ID!
@@ -13,6 +14,9 @@ type Registration implements INode {
 
   registeredOn: DateTime!
   registeredBy: ID!
+
+  billTo: Address!
+  shipTo: Address!
 
   invoiceIssuedOn: DateTime
   invoiceIssuedBy: ID!
@@ -27,11 +31,13 @@ type Registration implements INode {
 
   event: Event!
   team: Team!
+  program: Program!
   registeredByUser: User!
   invoiceIssuedByUser: User!
 }
 
 extend type Query {
+  getRegistration(id: ID!): Registration
   getProgramRegistrations(programId: ID!): [Registration!]!
   getEventRegistrations(eventId: ID!): [Registration!]!
 }
@@ -44,4 +50,7 @@ extend type Mutation {
   registrationSetShipmentGroup(id: ID!, group: String): Registration
   registrationSetShipped(id: ID!, date: DateTime): Registration
   registrationClearShipped(id: ID!): Registration
+  registrationSetTeamSize(id: ID!, size: Int): Registration
+  registrationSetTeamSizeConfirmed(id: ID!, date: DateTime): Registration
+  registrationClearTeamSizeConfirmed(id: ID!): Registration
 }

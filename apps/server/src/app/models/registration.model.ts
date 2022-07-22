@@ -1,5 +1,6 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
+import { AddressData, addressSchema } from './address.model';
 
 const Types = Schema.Types;
 
@@ -8,6 +9,9 @@ export interface RegistrationData {
   programId: ObjectId;
   eventId: ObjectId;
   teamId: ObjectId;
+
+  billTo: AddressData;
+  shipTo: AddressData;
 
   registeredOn: Date;
   registeredBy: ObjectId;
@@ -36,6 +40,9 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   programId: { type: Types.ObjectId, ref: 'Program', required: true },
   eventId: { type: Types.ObjectId, ref: 'Event', required: true },
   teamId: { type: Types.ObjectId, ref: 'Team', required: true },
+
+  billTo: { type: addressSchema, required: true },
+  shipTo: { type: addressSchema, required: true },
 
   registeredOn: { type: Types.Date, required: true },
   registeredBy: { type: Types.ObjectId, ref: 'User', required: true },

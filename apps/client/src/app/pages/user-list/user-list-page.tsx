@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, TextInput } from 'grommet';
-import { useNavigate } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { useGetUsersQuery, UserListFragmentFragment } from '../../generated/graphql';
@@ -10,7 +9,6 @@ import UserSidebar from './components/user-sidebar';
 import { BasePage } from '../../components/base-page';
 
 export function UserListPage() {
-  const navigate = useNavigate();
   const { isAdmin } = useAppUser();
   const [selectedTeam, setSelectedTeam] = React.useState<string>();
   const [showFilter, setShowFilter] = React.useState(false);

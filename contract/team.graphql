@@ -21,7 +21,7 @@ type Team implements INode {
   deletedBy: ID
 
   coaches: [User!]!
-  events: [Registration!]!
+  registrations: [Registration!]!
   tags: [Tag!]!
 }
 

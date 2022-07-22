@@ -1,4 +1,4 @@
-import { RegistrationTeamFragmentFragment } from '../generated/graphql';
+import { RegistrationListFragmentFragment } from '../generated/graphql';
 import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
 import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
 
@@ -32,7 +32,7 @@ export const fields: Json2AoaInputType[] = [
 
 export function exportRegistrations(
   programName: string,
-  registrations: RegistrationTeamFragmentFragment[]
+  registrations: RegistrationListFragmentFragment[]
 ) {
   const aoa: ArrayOfArraysOfAny = json2Aoa(registrations, fields);
   const today = new Date().toISOString().substring(0, 10);

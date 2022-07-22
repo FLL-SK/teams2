@@ -3,7 +3,7 @@ import { Box, Button, TextInput, Text } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import {
-  RegistrationTeamFragmentFragment,
+  RegistrationListFragmentFragment,
   TeamFilterInput,
   useGetProgramLazyQuery,
   useGetProgramRegistrationsLazyQuery,
@@ -16,7 +16,6 @@ import RegistrationListFilter, {
   RegistrationListFilterValues,
 } from './components/registration-list-filter';
 import { useSearchParams } from 'react-router-dom';
-import { exportRegistrations } from '../../utils/export-registrations';
 import { exportRegistrationsForShipping } from '../../utils/export-registrations-for-shipping';
 
 function parseRegistrationsSearchParams(
@@ -28,6 +27,21 @@ function parseRegistrationsSearchParams(
   }
   if (searchParams.has('p')) {
     values.programId = searchParams.get('p');
+  }
+  if (searchParams.has('sg')) {
+    values.shipmentGroup = searchParams.get('sg');
+  }
+  if (searchParams.has('ni')) {
+    values.notInvoiced = searchParams.get('ni') === 'true';
+  }
+  if (searchParams.has('np')) {
+    values.notPaid = searchParams.get('np') === 'true';
+  }
+  if (searchParams.has('ns')) {
+    values.notShipped = searchParams.get('ns') === 'true';
+  }
+  if (searchParams.has('nc')) {
+    values.notConfirmedSize = searchParams.get('nc') === 'true';
   }
 
   return values;
@@ -41,6 +55,22 @@ function constructRegistrationsSearchParams(values: RegistrationListFilterValues
   if (values.programId) {
     searchParams.append('p', values.programId);
   }
+  if (values.shipmentGroup) {
+    searchParams.append('sg', values.shipmentGroup);
+  }
+  if (values.notInvoiced) {
+    searchParams.append('ni', 'true');
+  }
+  if (values.notPaid) {
+    searchParams.append('np', 'true');
+  }
+  if (values.notShipped) {
+    searchParams.append('ns', 'true');
+  }
+  if (values.notConfirmedSize) {
+    searchParams.append('nc', 'true');
+  }
+
   return searchParams;
 }
 
@@ -48,18 +78,21 @@ const localStoreFilterEntry = 'registrations-filter';
 
 export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
-  const [selectedTeam, setSelectedTeam] = useState<string>();
+  const [selectedReg, setSelectedReg] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
-  const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
-    useGetProgramRegistrationsLazyQuery();
+  const [
+    fetchRegistrations,
+    { data: regsData, error: regsDataError, loading: regsLoading, refetch: regsRefetch },
+  ] = useGetProgramRegistrationsLazyQuery();
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
     useGetProgramLazyQuery();
 
   const [searchText, setSearchText] = useState('');
-  const [registrations, setRegistrations] = useState<RegistrationTeamFragmentFragment[]>([]);
+  const [registrations, setRegistrations] = useState<RegistrationListFragmentFragment[]>([]);
 
   // prepare search entries for text search
   const searchOptions = useMemo(
@@ -72,10 +105,22 @@ export function RegistrationsPage() {
   );
 
   const applyFilter = useCallback(
-    (item: RegistrationTeamFragmentFragment) => {
+    (item: RegistrationListFragmentFragment) => {
       let ok = true;
       if (filter.tags) {
         ok = ok && filter.tags.every((t) => item.team.tags.findIndex((tt) => tt.id === t) > -1);
+      }
+      if (filter.notInvoiced) {
+        ok = ok && !item.invoiceIssuedOn;
+      }
+      if (filter.notPaid) {
+        ok = ok && !item.paidOn;
+      }
+      if (filter.notShipped) {
+        ok = ok && !item.shippedOn;
+      }
+      if (filter.notConfirmedSize) {
+        ok = ok && !item.sizeConfirmedOn;
       }
       return ok;
     },
@@ -116,14 +161,18 @@ export function RegistrationsPage() {
       f.hasTags = flt.tags;
     }
 
-    fetchRegistrations({ variables: { programId: flt.programId ?? '0' } });
+    if (flt.programId) {
+      fetchRegistrations({ variables: { programId: flt.programId ?? '0' } });
+    }
 
     setFilter(flt);
   }, [fetchRegistrations, searchParams]);
 
   // get registrations for selected program
   useEffect(() => {
-    fetchProgram({ variables: { id: filter.programId ?? '0' } });
+    if (filter.programId) {
+      fetchProgram({ variables: { id: filter.programId ?? '0' } });
+    }
   }, [fetchProgram, filter.programId]);
 
   // apply filter
@@ -136,24 +185,21 @@ export function RegistrationsPage() {
     [setSearchParams]
   );
 
-  if (regsDataError) {
-    //return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
-  }
-
   const rowGetter = (index: number) => (index < registrations.length ? registrations[index] : null);
 
   if (!isAdmin) {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
-  console.log(registrations);
-
   return (
-    <BasePage title={`Registrácie pre ${progData?.getProgram.name ?? ''}`} loading={regsLoading}>
+    <BasePage
+      title={`Registrácie pre ${progData?.getProgram.name ?? ''}`}
+      loading={regsLoading || progLoading}
+    >
       {!filter.programId && (
         <Text>Najskôr vyberte vo filtri program, pre ktorý sa majú registrácie zobraziť.</Text>
       )}
-      {regsDataError && <Text>Chyba pri získavaní zoznamu registrácií.</Text>}
+      {(regsDataError || progDataError) && <Text>Chyba pri získavaní zoznamu registrácií.</Text>}
 
       {filter.programId && (
         <RegistrationList
@@ -174,11 +220,11 @@ export function RegistrationsPage() {
               </Box>
               <Button icon={<Close />} onClick={() => setSearchText('')} />
               <Button
-                icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}
+                icon={Object.keys(filter).length > 1 ? <Filter color="red" /> : <Filter />}
                 tip="Filter"
                 onClick={() => {
                   setShowFilter(true);
-                  setSelectedTeam(undefined);
+                  setSelectedReg(undefined);
                 }}
               />
               <Button
@@ -191,16 +237,16 @@ export function RegistrationsPage() {
             </Box>
           }
           onSelect={(t) => {
-            setSelectedTeam(t.id);
+            setSelectedReg(t.id);
             setShowFilter(false);
           }}
         />
       )}
 
-      {selectedTeam && (
+      {selectedReg && (
         <RegistrationSidebar
-          registration={searchOptions.find((item) => item.value.id === selectedTeam)?.value}
-          onClose={() => setSelectedTeam(undefined)}
+          registrationId={selectedReg}
+          onClose={() => setSelectedReg(undefined)}
         />
       )}
       <RegistrationListFilter
