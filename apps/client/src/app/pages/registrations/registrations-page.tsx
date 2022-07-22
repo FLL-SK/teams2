@@ -28,6 +28,21 @@ function parseRegistrationsSearchParams(
   if (searchParams.has('p')) {
     values.programId = searchParams.get('p');
   }
+  if (searchParams.has('sg')) {
+    values.shipmentGroup = searchParams.get('sg');
+  }
+  if (searchParams.has('ni')) {
+    values.notInvoiced = searchParams.get('ni') === 'true';
+  }
+  if (searchParams.has('np')) {
+    values.notPaid = searchParams.get('np') === 'true';
+  }
+  if (searchParams.has('ns')) {
+    values.notShipped = searchParams.get('ns') === 'true';
+  }
+  if (searchParams.has('nc')) {
+    values.notConfirmedSize = searchParams.get('nc') === 'true';
+  }
 
   return values;
 }
@@ -40,6 +55,22 @@ function constructRegistrationsSearchParams(values: RegistrationListFilterValues
   if (values.programId) {
     searchParams.append('p', values.programId);
   }
+  if (values.shipmentGroup) {
+    searchParams.append('sg', values.shipmentGroup);
+  }
+  if (values.notInvoiced) {
+    searchParams.append('ni', 'true');
+  }
+  if (values.notPaid) {
+    searchParams.append('np', 'true');
+  }
+  if (values.notShipped) {
+    searchParams.append('ns', 'true');
+  }
+  if (values.notConfirmedSize) {
+    searchParams.append('nc', 'true');
+  }
+
   return searchParams;
 }
 
@@ -53,8 +84,10 @@ export function RegistrationsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
-  const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
-    useGetProgramRegistrationsLazyQuery();
+  const [
+    fetchRegistrations,
+    { data: regsData, error: regsDataError, loading: regsLoading, refetch: regsRefetch },
+  ] = useGetProgramRegistrationsLazyQuery();
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
     useGetProgramLazyQuery();
 
@@ -76,6 +109,18 @@ export function RegistrationsPage() {
       let ok = true;
       if (filter.tags) {
         ok = ok && filter.tags.every((t) => item.team.tags.findIndex((tt) => tt.id === t) > -1);
+      }
+      if (filter.notInvoiced) {
+        ok = ok && !item.invoiceIssuedOn;
+      }
+      if (filter.notPaid) {
+        ok = ok && !item.paidOn;
+      }
+      if (filter.notShipped) {
+        ok = ok && !item.shippedOn;
+      }
+      if (filter.notConfirmedSize) {
+        ok = ok && !item.sizeConfirmedOn;
       }
       return ok;
     },
@@ -146,6 +191,8 @@ export function RegistrationsPage() {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
+  console.log(selectedReg);
+
   return (
     <BasePage title={`Registrácie pre ${progData?.getProgram.name ?? ''}`} loading={regsLoading}>
       {!filter.programId && (
@@ -199,6 +246,7 @@ export function RegistrationsPage() {
         <RegistrationSidebar
           registration={searchOptions.find((item) => item.value.id === selectedReg)?.value}
           onClose={() => setSelectedReg(undefined)}
+          onChanged={() => regsRefetch()}
         />
       )}
       <RegistrationListFilter

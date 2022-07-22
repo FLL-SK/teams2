@@ -4,7 +4,6 @@ import { BaseDataSource } from './_base.datasource';
 import {
   EventData,
   eventRepository,
-  programRepository,
   RegistrationData,
   registrationRepository,
   userRepository,

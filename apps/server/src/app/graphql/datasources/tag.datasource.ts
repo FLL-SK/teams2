@@ -8,8 +8,11 @@ import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
 import { FilterQuery } from 'mongoose';
+import * as Dataloader from 'dataloader';
 
 export class TagDataSource extends BaseDataSource {
+  private loader: Dataloader<string, Tag, string>;
+
   constructor() {
     super();
     this.logBase = logger('DS:Tag');
@@ -17,11 +20,17 @@ export class TagDataSource extends BaseDataSource {
 
   initialize(config: DataSourceConfig<ApolloContext>) {
     super.initialize(config);
+    this.loader = new Dataloader(this.loaderFn.bind(this));
+  }
+
+  private async loaderFn(ids: string[]): Promise<Tag[]> {
+    const data = await tagRepository.find({ _id: { $in: ids } }).exec();
+    return data.map(TagMapper.toTag.bind(this));
   }
 
   async getTag(id: ObjectId): Promise<Tag> {
-    const tag = await tagRepository.findById(id).exec();
-    return TagMapper.toTag(tag);
+    const tag = this.loader.load(id.toString());
+    return tag;
   }
 
   async getTags(includeDeleted = false): Promise<Tag[]> {

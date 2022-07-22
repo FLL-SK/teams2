@@ -1,7 +1,8 @@
 fragment RegistrationListFragment on Registration {
   id
-  eventId
+  teamId
   programId
+  eventId
 
   registeredOn
 

@@ -34,7 +34,6 @@ export class UserDataSource extends BaseDataSource {
 
   async getUser(id: ObjectId): Promise<User> {
     return this.loader.load(id.toString());
-    //return UserMapper.toUser(await userRepository.findById(id).lean().exec());
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {

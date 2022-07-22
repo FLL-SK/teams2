@@ -60,6 +60,16 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       <ListCol>
         <Text alignSelf="center">{data.shippedOn ? formatDate(data.shippedOn) : '-'}</Text>
       </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">{data.teamSize ?? '-'}</Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">
+          {data.sizeConfirmedOn ? formatDate(data.sizeConfirmedOn) : '-'}
+        </Text>
+      </ListCol>
     </>
   );
 }
@@ -81,7 +91,7 @@ export function RegistrationList(props: RegistrationListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="450px 100px 100px 100px 100px 100px"
+        cols="450px 100px 100px 100px 100px 100px 50px 100px"
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={getHeight}

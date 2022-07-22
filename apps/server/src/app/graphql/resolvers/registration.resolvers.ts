@@ -10,7 +10,11 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 };
 
 export const typeResolver: Resolver<Registration> = {
-  team: async ({ teamId }, _args, { dataSources }) => dataSources.team.getTeam(teamId),
+  team: async ({ teamId }, _args, { dataSources }) => {
+    const t = await dataSources.team.getTeam(teamId);
+    console.log('TeamResolver: teamId: ', teamId.toHexString(), t.id.toHexString());
+    return t;
+  },
   event: async ({ eventId }, _args, { dataSources }) => dataSources.event.getEvent(eventId),
   registeredByUser: async ({ registeredBy }, _args, { dataSources }) =>
     dataSources.user.getUser(registeredBy),
@@ -33,4 +37,10 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.registration.setShippedOn(id, date),
   registrationClearShipped: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearShippedOn(id),
+  registrationSetTeamSize: async (_parent, { id, size }, { dataSources }) =>
+    dataSources.registration.setTeamSize(id, size),
+  registrationSetTeamSizeConfirmed: async (_parent, { id, date }, { dataSources }) =>
+    dataSources.registration.setTeamSizeConfirmedOn(id, date),
+  registrationClearTeamSizeConfirmed: async (_parent, { id }, { dataSources }) =>
+    dataSources.registration.clearTeamSizeConfirmedOn(id),
 };

@@ -42,9 +42,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeam(id: ObjectId): Promise<Team> {
-    //const team = TeamMapper.toTeam(await teamRepository.findById(id).exec());
     const team = this.loader.load(id.toString());
-
     return team;
   }
 

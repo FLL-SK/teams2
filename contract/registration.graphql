@@ -44,4 +44,7 @@ extend type Mutation {
   registrationSetShipmentGroup(id: ID!, group: String): Registration
   registrationSetShipped(id: ID!, date: DateTime): Registration
   registrationClearShipped(id: ID!): Registration
+  registrationSetTeamSize(id: ID!, size: Int): Registration
+  registrationSetTeamSizeConfirmed(id: ID!, date: DateTime): Registration
+  registrationClearTeamSizeConfirmed(id: ID!): Registration
 }

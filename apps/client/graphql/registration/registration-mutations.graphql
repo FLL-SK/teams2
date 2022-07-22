@@ -1,4 +1,4 @@
-mutation registrationSetInvoiced($id: ID!, $date: DateTime) {
+mutation registrationSetInvoiced($id: ID!, $date: DateTime!) {
   registrationSetInvoiced(id: $id, date: $date) {
     ...RegistrationTeamFragment
   }
@@ -10,7 +10,7 @@ mutation registrationClearInvoiced($id: ID!) {
   }
 }
 
-mutation registrationSetPaid($id: ID!, $date: DateTime) {
+mutation registrationSetPaid($id: ID!, $date: DateTime!) {
   registrationSetPaid(id: $id, date: $date) {
     ...RegistrationTeamFragment
   }
@@ -22,7 +22,7 @@ mutation registrationClearPaid($id: ID!) {
   }
 }
 
-mutation registrationSetShipped($id: ID!, $date: DateTime) {
+mutation registrationSetShipped($id: ID!, $date: DateTime!) {
   registrationSetShipped(id: $id, date: $date) {
     ...RegistrationTeamFragment
   }
@@ -36,6 +36,24 @@ mutation registrationClearShipped($id: ID!) {
 
 mutation registrationSetShipmentGroup($id: ID!, $group: String!) {
   registrationSetShipmentGroup(id: $id, group: $group) {
+    ...RegistrationTeamFragment
+  }
+}
+
+mutation registrationSetTeamSize($id: ID!, $size: Int!) {
+  registrationSetTeamSize(id: $id, size: $size) {
+    ...RegistrationTeamFragment
+  }
+}
+
+mutation registrationSetTeamSizeConfirmed($id: ID!, $date: DateTime!) {
+  registrationSetTeamSizeConfirmed(id: $id, date: $date) {
+    ...RegistrationTeamFragment
+  }
+}
+
+mutation registrationClearTeamSizeConfirmed($id: ID!) {
+  registrationClearTeamSizeConfirmed(id: $id) {
     ...RegistrationTeamFragment
   }
 }

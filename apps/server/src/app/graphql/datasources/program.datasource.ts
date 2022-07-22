@@ -40,7 +40,6 @@ export class ProgramDataSource extends BaseDataSource {
     const log = this.logBase.extend('getP');
     log.debug('id=%s', id);
     const program = this.loader.load(id.toString());
-    //const program = ProgramMapper.toProgram(await programRepository.findById(id).exec());
     log.debug('id=%s done', id);
     return program;
   }

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Anchor } from 'grommet';
+import { Anchor, CheckBox, TextInput } from 'grommet';
 import { SelectProgram } from '../../../components/select-program';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
@@ -10,6 +10,11 @@ import { useGetTagsQuery } from '../../../generated/graphql';
 export interface RegistrationListFilterValues {
   tags?: string[];
   programId?: string | null;
+  shipmentGroup?: string | null;
+  notInvoiced?: boolean;
+  notPaid?: boolean;
+  notShipped?: boolean;
+  notConfirmedSize?: boolean;
 }
 
 interface RegistrationListFilterProps {
@@ -57,6 +62,38 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
           <SelectProgram
             onSelect={(prg) => onChange({ ...values, programId: prg.id })}
             value={values.programId ?? ''}
+          />
+        </SidebarPanel>
+        <SidebarPanel>
+          <CheckBox
+            toggle={true}
+            label="Nefakturované"
+            checked={values.notInvoiced ?? false}
+            onChange={() => onChange({ ...values, notInvoiced: !values.notInvoiced })}
+          />
+          <CheckBox
+            toggle={true}
+            label="Nezaplatené"
+            checked={values.notPaid ?? false}
+            onChange={() => onChange({ ...values, notPaid: !values.notPaid })}
+          />
+          <CheckBox
+            toggle={true}
+            label="Neodoslané"
+            checked={values.notShipped ?? false}
+            onChange={() => onChange({ ...values, notShipped: !values.notShipped })}
+          />
+          <CheckBox
+            toggle={true}
+            label="Nepotvrdený počet"
+            checked={values.notConfirmedSize ?? false}
+            onChange={() => onChange({ ...values, notConfirmedSize: !values.notConfirmedSize })}
+          />
+        </SidebarPanel>
+        <SidebarPanel label="Zásielka č.">
+          <TextInput
+            value={values.shipmentGroup ?? ''}
+            onChange={(e) => onChange({ ...values, shipmentGroup: e.target.value })}
           />
         </SidebarPanel>
         <SidebarPanel label="Štítky">
