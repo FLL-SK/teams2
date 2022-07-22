@@ -4,37 +4,73 @@ import styled from 'styled-components';
 import { Note } from '../generated/graphql';
 import { useAppUser } from './app-user/use-app-user';
 import { formatDate, toZonedDateTime } from '@teams2/dateutils';
+import { Edit, Trash } from 'grommet-icons';
 
 const NoteWrapper = styled(Box)`
   margin: 5px 0;
 `;
 
-const NoteTextWrapper = styled(Box)`
+const NoteTextWrapper = styled(Box)<{ disabled?: boolean }>`
   display: block;
+  position: relative;
+  cursor: ${({ disabled }) => (disabled ? 'auto' : 'pointer')};
+  .note-actions {
+    visibility: hidden;
+  }
+  &:hover,
+  &:focus {
+    .note-actions {
+      visibility: ${({ disabled }) => (disabled ? 'hidden' : 'visible')};
+    }
+  }
 `;
 
-const NoteHeader = ({
-  createdOn,
-  updatedOn,
-  username,
-  name,
-}: {
+interface NoteHeaderProps {
   createdOn: Date;
   updatedOn?: Date;
   username: string;
   name: string;
-}) => {
-  return (
-    <Box direction="row" align="center" gap="small">
-      {/* <Avatar name={name} username={username} size="small" /> */}
-      <Text size="small" color="dark-5">
-        {formatDate(createdOn)}
-        {updatedOn ? ` (zmenená)` : null}
-      </Text>
+}
 
-      <Text size="small" color="dark-5">
-        {username}
-      </Text>
+const NoteHeader = (props: NoteHeaderProps) => {
+  const { createdOn, updatedOn, username } = props;
+  return (
+    <Box direction="row" align="center" gap="small" justify="between">
+      {/* <Avatar name={name} username={username} size="small" /> */}
+      <Box direction="row" align="center" gap="small">
+        <Text size="small" color="dark-5">
+          {formatDate(createdOn)}
+          {updatedOn ? ` (zmenená)` : null}
+        </Text>
+
+        <Text size="small" color="dark-5">
+          {username}
+        </Text>
+      </Box>
+    </Box>
+  );
+};
+
+interface NoteActionsProps {
+  canEdit: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+const NoteActions = (props: NoteActionsProps) => {
+  const { canEdit, onEdit, onDelete } = props;
+  return (
+    <Box
+      className="note-actions"
+      direction="row"
+      align="center"
+      style={{ position: 'absolute', zIndex: 100, top: 0 }}
+      justify="end"
+      width="100%"
+      background={{ color: 'light-2', opacity: 'strong' }}
+    >
+      {canEdit && <Button onClick={() => onEdit()} icon={<Edit color="brand" />} color="white" />}
+      {canEdit && <Button onClick={() => onDelete && onDelete()} icon={<Trash color="brand" />} />}
     </Box>
   );
 };
@@ -65,31 +101,14 @@ export function NoteDetail(props: NoteDetailProps) {
 
       <Box width="100%" gap="xsmall">
         {!editing && (
-          <>
-            <NoteTextWrapper background="light-3">
-              <Markdown>{note.text}</Markdown>
-            </NoteTextWrapper>
-            {!disabled && (
-              <Box direction="row" gap="small" justify="end">
-                {isNoteCreator && (
-                  <Anchor
-                    size="small"
-                    onClick={() => setEditing(true)}
-                    label="Upraviť"
-                    color="brand"
-                  />
-                )}
-                {(isNoteCreator || isAdmin) && (
-                  <Anchor
-                    size="small"
-                    onClick={() => onDelete && onDelete(note)}
-                    label="Odstrániť"
-                    color="brand"
-                  />
-                )}
-              </Box>
-            )}
-          </>
+          <NoteTextWrapper background="light-3">
+            <Markdown>{note.text}</Markdown>
+            <NoteActions
+              canEdit={isNoteCreator || isAdmin()}
+              onEdit={() => setEditing(true)}
+              onDelete={() => onDelete && onDelete(note)}
+            />
+          </NoteTextWrapper>
         )}
         {editing && (
           <>

@@ -172,7 +172,7 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
               ) : (
                 <NoteList
                   notes={notesData?.getNotes ?? []}
-                  limit={3}
+                  limit={10}
                   onCreate={(text) =>
                     createNote({
                       variables: { input: { type: 'registration', ref: registration.id, text } },
