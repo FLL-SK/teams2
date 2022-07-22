@@ -29,4 +29,7 @@ fragment RegistrationTeamFragment on Registration {
   team {
     ...TeamFragment
   }
+  event {
+    ...EventListFragment
+  }
 }

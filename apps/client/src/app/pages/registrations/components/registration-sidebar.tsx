@@ -68,16 +68,22 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
   }
   return (
     <>
-      <ClosableSidebar onClose={onClose} show={!!registration} width="350px" title="Tím">
-        <Box margin={{ top: '10px', bottom: '10px' }}>
-          <Text>{registration.team.name}</Text>
-        </Box>
+      <ClosableSidebar onClose={onClose} show={!!registration} width="350px" title="Registrácia">
+        <SidebarPanel>
+          <LabelValueGroup direction="column" gap="small">
+            <LabelValue label="Turnaj" value={registration.event.name} />
+            <LabelValue label="Tím" value={registration.team.name} />
+          </LabelValueGroup>
+        </SidebarPanel>
 
         <SidebarPanelGroup title="Team" gap="medium">
           <Box overflow={{ vertical: 'auto' }} gap="medium">
             <SidebarPanel>
               <LabelValueGroup direction="column" gap="small">
-                <LabelValue label="Zriaďovateľ" value={fullAddress(registration.team.address)} />
+                <LabelValue
+                  label="Zriaďovateľ tímu"
+                  value={fullAddress(registration.team.address)}
+                />
               </LabelValueGroup>
             </SidebarPanel>
             <SidebarPanel label="Štítky tímu">

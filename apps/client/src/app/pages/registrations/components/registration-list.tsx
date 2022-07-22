@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Box, Text, Tip } from 'grommet';
+import { Box, Paragraph, Text, Tip } from 'grommet';
 import { Deliver, Document, Group, Halt, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
@@ -103,6 +103,12 @@ function RegistrationListRow(props: RegistrationListRowProps) {
           )}
         </Text>
       </ListCol>
+
+      <ListCol>
+        <Text color="dark-5" truncate="tip">
+          {data.event.name}
+        </Text>
+      </ListCol>
     </>
   );
 }
@@ -124,7 +130,7 @@ export function RegistrationList(props: RegistrationListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="450px 30px 30px 30px 80px 30px 50px 30px"
+        cols="350px 30px 30px 30px 80px 30px 50px 30px auto"
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={getHeight}

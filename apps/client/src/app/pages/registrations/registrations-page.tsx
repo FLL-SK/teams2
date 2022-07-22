@@ -161,14 +161,18 @@ export function RegistrationsPage() {
       f.hasTags = flt.tags;
     }
 
-    fetchRegistrations({ variables: { programId: flt.programId ?? '0' } });
+    if (flt.programId) {
+      fetchRegistrations({ variables: { programId: flt.programId ?? '0' } });
+    }
 
     setFilter(flt);
   }, [fetchRegistrations, searchParams]);
 
   // get registrations for selected program
   useEffect(() => {
-    fetchProgram({ variables: { id: filter.programId ?? '0' } });
+    if (filter.programId) {
+      fetchProgram({ variables: { id: filter.programId ?? '0' } });
+    }
   }, [fetchProgram, filter.programId]);
 
   // apply filter
@@ -186,8 +190,6 @@ export function RegistrationsPage() {
   if (!isAdmin) {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
-
-  console.log(filter);
 
   return (
     <BasePage

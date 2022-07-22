@@ -9,7 +9,7 @@ fragment EventListFragment on Event {
   conditions
 
   registrations {
-    ...RegistrationListFragment
+    id
   }
 
   managersIds
