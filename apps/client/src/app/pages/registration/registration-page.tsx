@@ -104,7 +104,7 @@ export function RegistrationPage() {
                 <LabelValueGroup labelWidth="150px" gap="small" direction="row">
                   <LabelValue label="Fakturačná adresa" value={fullAddress(reg.billTo)} />
                   <LabelValue label="Fakturačný kontakt">
-                    <Paragraph>
+                    <Paragraph margin={'none'}>
                       {reg.billTo.contactName}
                       <br />
                       {reg.billTo.email}
@@ -127,7 +127,7 @@ export function RegistrationPage() {
                 <LabelValueGroup labelWidth="150px" gap="small" direction="row">
                   <LabelValue label="Dodacia adresa" value={fullAddress(reg.shipTo)} />
                   <LabelValue label="Kontakt">
-                    <Paragraph>
+                    <Paragraph margin="none">
                       {reg.shipTo.contactName}
                       <br />
                       {reg.shipTo.email}
