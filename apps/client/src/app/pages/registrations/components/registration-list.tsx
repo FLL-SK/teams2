@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { Box, Text } from 'grommet';
+import { Box, Text, Tip } from 'grommet';
+import { Deliver, Document, Group, Halt, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
 import { RegistrationTeamFragmentFragment } from '../../../generated/graphql';
@@ -40,17 +41,35 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{formatDate(data.registeredOn)}</Text>
-      </ListCol>
-
-      <ListCol>
         <Text alignSelf="center">
-          {data.invoiceIssuedOn ? formatDate(data.invoiceIssuedOn) : '-'}
+          <Tip content={`Registrovaný ${formatDate(data.registeredOn)}`}>
+            <Halt />
+          </Tip>
         </Text>
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{data.paidOn ? formatDate(data.paidOn) : '-'}</Text>
+        <Text alignSelf="center">
+          {data.invoiceIssuedOn ? (
+            <Tip content={`Faktúra vystavená ${formatDate(data.invoiceIssuedOn)}`}>
+              <Document />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">
+          {data.paidOn ? (
+            <Tip content={`Faktúra zaplatená ${formatDate(data.paidOn)}`}>
+              <Money />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
       </ListCol>
 
       <ListCol>
@@ -58,7 +77,15 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{data.shippedOn ? formatDate(data.shippedOn) : '-'}</Text>
+        <Text alignSelf="center">
+          {data.shippedOn ? (
+            <Tip content={`Zásielka odoslaná ${formatDate(data.shippedOn)}`}>
+              <Deliver />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
       </ListCol>
 
       <ListCol>
@@ -67,7 +94,13 @@ function RegistrationListRow(props: RegistrationListRowProps) {
 
       <ListCol>
         <Text alignSelf="center">
-          {data.sizeConfirmedOn ? formatDate(data.sizeConfirmedOn) : '-'}
+          {data.sizeConfirmedOn ? (
+            <Tip content={`Veľkosť tímu potvrdená ${formatDate(data.sizeConfirmedOn)}`}>
+              <Group />
+            </Tip>
+          ) : (
+            '-'
+          )}
         </Text>
       </ListCol>
     </>
@@ -91,7 +124,7 @@ export function RegistrationList(props: RegistrationListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="450px 100px 100px 100px 100px 100px 50px 100px"
+        cols="450px 30px 30px 30px 80px 30px 50px 30px"
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={getHeight}

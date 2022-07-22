@@ -187,7 +187,7 @@ export function RegistrationsPage() {
     return <ErrorPage title="Nemáte oprávnenie na zobrazenie registrácií." />;
   }
 
-  console.log(selectedReg);
+  console.log(filter);
 
   return (
     <BasePage
@@ -218,7 +218,7 @@ export function RegistrationsPage() {
               </Box>
               <Button icon={<Close />} onClick={() => setSearchText('')} />
               <Button
-                icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}
+                icon={Object.keys(filter).length > 1 ? <Filter color="red" /> : <Filter />}
                 tip="Filter"
                 onClick={() => {
                   setShowFilter(true);
@@ -245,7 +245,6 @@ export function RegistrationsPage() {
         <RegistrationSidebar
           registration={searchOptions.find((item) => item.value.id === selectedReg)?.value}
           onClose={() => setSelectedReg(undefined)}
-          onChanged={() => regsRefetch()}
         />
       )}
       <RegistrationListFilter

@@ -32,11 +32,10 @@ import { SetClearDate } from './set-clear-date';
 interface RegistrationSidebarProps {
   registration?: RegistrationTeamFragmentFragment;
   onClose: () => unknown;
-  onChanged: () => unknown;
 }
 
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
-  const { registration, onClose, onChanged } = props;
+  const { registration, onClose } = props;
 
   const [showEditShipmentGroupDialog, setShowEditShipmentGroupDialog] = useState(false);
   const [showEditTeamSizeDialog, setShowEditTeamSizeDialog] = useState(false);
@@ -51,7 +50,7 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
 
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
-  const [createNote] = useCreateNoteMutation({ onCompleted: () => onChanged() });
+  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
   const [setInvoiced] = useRegistrationSetInvoicedMutation();
   const [clearInvoiced] = useRegistrationClearInvoicedMutation();
@@ -69,109 +68,114 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
   }
   return (
     <>
-      <ClosableSidebar onClose={onClose} show={!!registration} width="350px">
+      <ClosableSidebar onClose={onClose} show={!!registration} width="350px" title="Tím">
+        <Box margin={{ top: '10px', bottom: '10px' }}>
+          <Text>{registration.team.name}</Text>
+        </Box>
+
         <SidebarPanelGroup title="Team" gap="medium">
-          <SidebarPanel label="Tím">
-            <LabelValueGroup direction="column" gap="small">
-              <LabelValue label="Názov" value={registration.team.name} />
-              <LabelValue label="Zriaďovateľ" value={fullAddress(registration.team.address)} />
-            </LabelValueGroup>
-          </SidebarPanel>
-          <SidebarPanel label="Štítky tímu">
-            <TagList
-              tags={registration.team.tags}
-              onRemove={(id) => removeTag({ variables: { id } })}
-              onAdd={(tag) =>
-                addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })
-              }
-            />
-          </SidebarPanel>
-          <SidebarPanel label="Registrácia">
-            <LabelValueGroup direction="column" gap="small">
-              <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
-              <LabelValue label="Faktúra">
-                <SetClearDate
-                  date={registration.invoiceIssuedOn}
-                  onClear={() => clearInvoiced({ variables: { id: registration.id } })}
-                  onSet={() =>
-                    setInvoiced({
-                      variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
-                    })
-                  }
-                />
-              </LabelValue>
-              <LabelValue label="Zaplatená">
-                <SetClearDate
-                  date={registration.paidOn}
-                  onClear={() => clearPaid({ variables: { id: registration.id } })}
-                  onSet={() =>
-                    setPaid({
-                      variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
-                    })
-                  }
-                />
-              </LabelValue>
-              <LabelValue label="Zásielka č.">
-                <Box direction="row" width="100%" justify="between">
-                  <Text>{registration.shipmentGroup ?? '-'}</Text>
-                  {!registration.shippedOn && (
+          <Box overflow={{ vertical: 'auto' }} gap="medium">
+            <SidebarPanel>
+              <LabelValueGroup direction="column" gap="small">
+                <LabelValue label="Zriaďovateľ" value={fullAddress(registration.team.address)} />
+              </LabelValueGroup>
+            </SidebarPanel>
+            <SidebarPanel label="Štítky tímu">
+              <TagList
+                tags={registration.team.tags}
+                onRemove={(id) => removeTag({ variables: { id } })}
+                onAdd={(tag) =>
+                  addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })
+                }
+              />
+            </SidebarPanel>
+            <SidebarPanel label="Registrácia">
+              <LabelValueGroup direction="column" gap="small" labelWidth="250px">
+                <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
+                <LabelValue label="Faktúra">
+                  <SetClearDate
+                    date={registration.invoiceIssuedOn}
+                    onClear={() => clearInvoiced({ variables: { id: registration.id } })}
+                    onSet={() =>
+                      setInvoiced({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
+                      })
+                    }
+                  />
+                </LabelValue>
+                <LabelValue label="Zaplatená">
+                  <SetClearDate
+                    date={registration.paidOn}
+                    onClear={() => clearPaid({ variables: { id: registration.id } })}
+                    onSet={() =>
+                      setPaid({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
+                      })
+                    }
+                  />
+                </LabelValue>
+                <LabelValue label="Zásielka č.">
+                  <Box direction="row" width="100%" justify="between">
+                    <Text>{registration.shipmentGroup ?? '-'}</Text>
+                    {!registration.shippedOn && (
+                      <Anchor
+                        size="small"
+                        label="Nastav"
+                        onClick={() => setShowEditShipmentGroupDialog(true)}
+                      />
+                    )}
+                  </Box>
+                </LabelValue>
+                <LabelValue label="Odoslaná">
+                  <SetClearDate
+                    date={registration.shippedOn}
+                    onClear={() => clearShipped({ variables: { id: registration.id } })}
+                    onSet={() =>
+                      setShipped({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
+                      })
+                    }
+                  />
+                </LabelValue>
+                <LabelValue label="Veľkosť tímu">
+                  <Box direction="row" width="100%" justify="between">
+                    <Text>{registration.teamSize ?? '-'}</Text>
                     <Anchor
                       size="small"
                       label="Nastav"
-                      onClick={() => setShowEditShipmentGroupDialog(true)}
+                      onClick={() => setShowEditTeamSizeDialog(true)}
                     />
-                  )}
-                </Box>
-              </LabelValue>
-              <LabelValue label="Odoslaná">
-                <SetClearDate
-                  date={registration.shippedOn}
-                  onClear={() => clearShipped({ variables: { id: registration.id } })}
-                  onSet={() =>
-                    setShipped({
-                      variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
-                    })
-                  }
-                />
-              </LabelValue>
-              <LabelValue label="Počet členov">
-                <Box direction="row" width="100%" justify="between">
-                  <Text>{registration.teamSize ?? '-'}</Text>
-                  <Anchor
-                    size="small"
-                    label="Nastav"
-                    onClick={() => setShowEditTeamSizeDialog(true)}
+                  </Box>
+                </LabelValue>
+                <LabelValue label="Veľkosť tímu potvrdená">
+                  <SetClearDate
+                    date={registration.sizeConfirmedOn}
+                    onClear={() => clearSizeConfirmed({ variables: { id: registration.id } })}
+                    onSet={() =>
+                      setSizeConfirmed({
+                        variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
+                      })
+                    }
                   />
-                </Box>
-              </LabelValue>
-              <LabelValue label="Počet členov potvrdený">
-                <SetClearDate
-                  date={registration.sizeConfirmedOn}
-                  onClear={() => clearSizeConfirmed({ variables: { id: registration.id } })}
-                  onSet={() =>
-                    setSizeConfirmed({
-                      variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
+                </LabelValue>
+              </LabelValueGroup>
+            </SidebarPanel>
+            <SidebarPanel label="Poznámky k registrácii">
+              {notesLoading ? (
+                <Spinner />
+              ) : (
+                <NoteList
+                  notes={notesData?.getNotes ?? []}
+                  limit={3}
+                  onCreate={(text) =>
+                    createNote({
+                      variables: { input: { type: 'registration', ref: registration.id, text } },
                     })
                   }
                 />
-              </LabelValue>
-            </LabelValueGroup>
-          </SidebarPanel>
-          <SidebarPanel label="Poznámky k registrácii">
-            {notesLoading ? (
-              <Spinner />
-            ) : (
-              <NoteList
-                notes={notesData?.getNotes ?? []}
-                limit={3}
-                onCreate={(text) =>
-                  createNote({
-                    variables: { input: { type: 'registration', ref: registration.id, text } },
-                  })
-                }
-              />
-            )}
-          </SidebarPanel>
+              )}
+            </SidebarPanel>
+          </Box>
         </SidebarPanelGroup>
       </ClosableSidebar>
       <EditShipmentGroupDialog
