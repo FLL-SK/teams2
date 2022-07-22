@@ -10,11 +10,7 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 };
 
 export const typeResolver: Resolver<Registration> = {
-  team: async ({ teamId }, _args, { dataSources }) => {
-    const t = await dataSources.team.getTeam(teamId);
-    console.log('TeamResolver: teamId: ', teamId.toHexString(), t.id.toHexString());
-    return t;
-  },
+  team: async ({ teamId }, _args, { dataSources }) => dataSources.team.getTeam(teamId),
   event: async ({ eventId }, _args, { dataSources }) => dataSources.event.getEvent(eventId),
   registeredByUser: async ({ registeredBy }, _args, { dataSources }) =>
     dataSources.user.getUser(registeredBy),

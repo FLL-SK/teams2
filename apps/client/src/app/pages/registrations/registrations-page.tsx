@@ -181,10 +181,6 @@ export function RegistrationsPage() {
     [setSearchParams]
   );
 
-  if (regsDataError) {
-    //return <ErrorPage title="Chyba pri získavaní zoznamu registrácií." />;
-  }
-
   const rowGetter = (index: number) => (index < registrations.length ? registrations[index] : null);
 
   if (!isAdmin) {
@@ -194,11 +190,14 @@ export function RegistrationsPage() {
   console.log(selectedReg);
 
   return (
-    <BasePage title={`Registrácie pre ${progData?.getProgram.name ?? ''}`} loading={regsLoading}>
+    <BasePage
+      title={`Registrácie pre ${progData?.getProgram.name ?? ''}`}
+      loading={regsLoading || progLoading}
+    >
       {!filter.programId && (
         <Text>Najskôr vyberte vo filtri program, pre ktorý sa majú registrácie zobraziť.</Text>
       )}
-      {regsDataError && <Text>Chyba pri získavaní zoznamu registrácií.</Text>}
+      {(regsDataError || progDataError) && <Text>Chyba pri získavaní zoznamu registrácií.</Text>}
 
       {filter.programId && (
         <RegistrationList

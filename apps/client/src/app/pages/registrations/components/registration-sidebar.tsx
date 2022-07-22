@@ -38,8 +38,6 @@ interface RegistrationSidebarProps {
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const { registration, onClose, onChanged } = props;
 
-  console.log(registration);
-
   const [showEditShipmentGroupDialog, setShowEditShipmentGroupDialog] = useState(false);
   const [showEditTeamSizeDialog, setShowEditTeamSizeDialog] = useState(false);
 

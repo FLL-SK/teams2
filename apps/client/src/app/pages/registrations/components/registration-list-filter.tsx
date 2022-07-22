@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { Anchor, CheckBox, TextInput } from 'grommet';
+import { Anchor, CheckBox, Spinner, TextInput } from 'grommet';
 import { SelectProgram } from '../../../components/select-program';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
@@ -27,7 +27,7 @@ interface RegistrationListFilterProps {
 export function RegistrationListFilter(props: RegistrationListFilterProps) {
   const { onClose, show, onChange, values } = props;
 
-  const { data: tagsData, loading: loadingTags, error: tagsError } = useGetTagsQuery();
+  const { data: tagsData, loading: loadingTags } = useGetTagsQuery();
 
   const filterTags = useMemo(() => values.tags ?? [], [values.tags]);
 
@@ -97,12 +97,15 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
           />
         </SidebarPanel>
         <SidebarPanel label="Štítky">
-          <TagList
-            tags={(tagsData?.getTags ?? []).filter((t) => filterTags.includes(t.id))}
-            onRemove={(id) => removeTagFromFilter(id)}
-            onAdd={(tag) => addTagToFilter(tag.id)}
-            noCreate
-          />
+          {loadingTags && <Spinner />}
+          {!loadingTags && (
+            <TagList
+              tags={(tagsData?.getTags ?? []).filter((t) => filterTags.includes(t.id))}
+              onRemove={(id) => removeTagFromFilter(id)}
+              onAdd={(tag) => addTagToFilter(tag.id)}
+              noCreate
+            />
+          )}
         </SidebarPanel>
         <SidebarPanel label="">
           <Anchor onClick={() => onChange({ programId: values.programId })}>Zrušiť filter</Anchor>
