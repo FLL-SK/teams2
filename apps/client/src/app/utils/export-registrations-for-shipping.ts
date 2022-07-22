@@ -8,41 +8,58 @@ export const fields: Json2AoaInputType[] = [
     id: 'team.name',
   },
   {
+    label: 'Turnaj',
+    id: 'event.name',
+  },
+
+  {
     label: 'Registrovaný',
     id: 'registeredOn',
-    value: (x: Record<string, unknown>) => new Date(x.registeredOn as string),
+    value: (x: Record<string, unknown>) =>
+      x.registeredOn ? new Date(x.registeredOn as string) : '',
   },
   {
-    label: 'Zásielka č.',
+    label: 'Fakturované',
+    id: 'invoiceIssuedOn',
+    value: (x: Record<string, unknown>) =>
+      x.invoiceIssuedOn ? new Date(x.invoiceIssuedOn as string) : '',
+  },
+  {
+    label: 'Zaplatené',
+    id: 'paidOn',
+    value: (x: Record<string, unknown>) => (x.paidOn ? new Date(x.paidOn as string) : ''),
+  },
+  {
+    label: 'Dodacia skupina',
     id: 'shippingGroup',
   },
   {
     label: 'Adresa-názov',
-    id: 'team.shipTo.name',
+    id: 'shipTo.name',
   },
   {
     label: 'Adresa-mesto',
-    id: 'team.shipTo.city',
+    id: 'shipTo.city',
   },
   {
     label: 'Adresa-ulica',
-    id: 'team.shipTo.city',
+    id: 'shipTo.city',
   },
   {
     label: 'Adresa-PSČ',
-    id: 'team.shipTo.zip',
+    id: 'shipTo.zip',
   },
   {
     label: 'Kontakt-meno',
-    id: 'team.shipTo.contactName',
+    id: 'shipTo.contactName',
   },
   {
     label: 'Kontakt-telefon',
-    id: 'team.shipTo.phone',
+    id: 'shipTo.phone',
   },
   {
     label: 'Kontakt-email',
-    id: 'team.shipTo.email',
+    id: 'shipTo.email',
   },
 ];
 

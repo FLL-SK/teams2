@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { formatDate } from '@teams2/dateutils';
-import { Box, Spinner, Text } from 'grommet';
+import { Anchor, Box, Spinner, Text } from 'grommet';
 
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
@@ -24,6 +24,7 @@ import { FieldShipmentGroup } from './field-shipmentGroup';
 import { FieldShippedOn } from './field-shippedOn';
 import { FieldTeamSize } from './field-teamSize';
 import { FieldTeamSizeConfirmedOn } from './field-teamSizeConfirmedOn';
+import { appPath } from '@teams2/common';
 
 interface RegistrationSidebarProps {
   registrationId?: string;
@@ -66,8 +67,14 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
     >
       <SidebarPanel>
         <LabelValueGroup direction="column" gap="small">
-          <LabelValue label="Turnaj" value={registration.event.name} />
-          <LabelValue label="Tím" value={registration.team.name} />
+          <LabelValue label="Turnaj">
+            <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
+          </LabelValue>
+          <LabelValue label="Tím">
+            <Box direction="row" gap="small" width="100%">
+              <Anchor href={appPath.team(registration.team.id)} label={registration.team.name} />
+            </Box>
+          </LabelValue>
         </LabelValueGroup>
       </SidebarPanel>
 

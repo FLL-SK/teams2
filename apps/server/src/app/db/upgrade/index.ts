@@ -5,7 +5,6 @@ import { eventRepository, registrationRepository, teamRepository } from '../../m
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
-  await billToShipRegistraion();
 }
 
 async function billToShipRegistraion() {

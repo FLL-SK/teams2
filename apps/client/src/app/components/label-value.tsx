@@ -20,7 +20,12 @@ export const LabelValue = (props: LabelValueProps) => {
 
         return (
           <Box direction={dir}>
-            <Box width={labelWidth ?? context.labelWidth}>
+            <Box
+              width={{
+                width: labelWidth ?? context.labelWidth,
+                min: labelWidth ?? context.labelWidth,
+              }}
+            >
               <Text weight="bold">{label}</Text>
             </Box>
             {typeof value === 'string' && <Text>{value}</Text>}
