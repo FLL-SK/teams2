@@ -4,16 +4,15 @@ import { useState } from 'react';
 
 import {
   EventListFragmentFragment,
-  TeamListFragmentFragment,
+  TeamBasicFragmentFragment,
   useGetEventsQuery,
-  useGetProgramQuery,
 } from '../../generated/graphql';
 import { Modal } from '../modal';
 import { LabelValue } from '../label-value';
 
 interface ChangeTeamEventDialogProps {
   show?: boolean;
-  team?: TeamListFragmentFragment;
+  team?: TeamBasicFragmentFragment;
   event?: EventListFragmentFragment;
   onClose: () => void;
   onSubmit?: (newEvent: EventListFragmentFragment) => unknown;

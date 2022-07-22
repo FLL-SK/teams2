@@ -13,7 +13,7 @@ import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
   InvoiceItemFragmentFragment,
-  TeamListFragmentFragment,
+  TeamBasicFragmentFragment,
   useAddEventManagerMutation,
   useCreateEventInvoiceItemMutation,
   useDeleteEventInvoiceItemMutation,
@@ -38,8 +38,8 @@ import { LabelValueGroup } from '../../components/label-value-group';
 export function EventPage() {
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
-  const [teamToUnregister, setTeamToUnregister] = useState<TeamListFragmentFragment>();
-  const [teamToSwitch, setTeamToSwitch] = useState<TeamListFragmentFragment>();
+  const [teamToUnregister, setTeamToUnregister] = useState<TeamBasicFragmentFragment>();
+  const [teamToSwitch, setTeamToSwitch] = useState<TeamBasicFragmentFragment>();
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 

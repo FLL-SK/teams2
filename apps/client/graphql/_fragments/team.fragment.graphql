@@ -1,18 +1,28 @@
-fragment TeamListFragment on Team {
+fragment TeamBasicFragment on Team {
   id
   name
-  coachesIds
 
   address {
     ...AddressFragment
   }
-
-  tags {
-    ...TagFragment
+  shipTo {
+    ...AddressFragment
+  }
+  billTo {
+    ...AddressFragment
   }
 
   deletedOn
   deletedBy
+}
+
+fragment TeamListFragment on Team {
+  ...TeamBasicFragment
+  coachesIds
+
+  tags {
+    ...TagFragment
+  }
 }
 
 fragment TeamFragment on Team {
@@ -21,8 +31,8 @@ fragment TeamFragment on Team {
   coaches {
     ...UserListFragment
   }
-  events {
-    ...RegistrationEventFragment
+  registrations {
+    ...RegistrationListFragment
   }
   billTo {
     ...AddressFragment

@@ -1,5 +1,6 @@
 import { formatDate, toUtcDateString } from '@teams2/dateutils';
 import { Anchor, Box, Spinner, Text } from 'grommet';
+import { CoatCheck } from 'grommet-icons';
 import React, { useState } from 'react';
 import { EditShipmentGroupDialog } from '../../../components/dialogs/edit-shipment-group-dialog';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
@@ -10,11 +11,11 @@ import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
 import {
-  RegistrationTeamFragmentFragment,
   useAddTagToTeamMutation,
   useCreateNoteMutation,
   useDeleteTagMutation,
   useGetNotesQuery,
+  useGetRegistrationQuery,
   useRegistrationClearInvoicedMutation,
   useRegistrationClearPaidMutation,
   useRegistrationClearShippedMutation,
@@ -30,12 +31,12 @@ import { fullAddress } from '../../../utils/format-address';
 import { SetClearDate } from './set-clear-date';
 
 interface RegistrationSidebarProps {
-  registration?: RegistrationTeamFragmentFragment;
+  registrationId?: string;
   onClose: () => unknown;
 }
 
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
-  const { registration, onClose } = props;
+  const { registrationId, onClose } = props;
 
   const [showEditShipmentGroupDialog, setShowEditShipmentGroupDialog] = useState(false);
   const [showEditTeamSizeDialog, setShowEditTeamSizeDialog] = useState(false);
@@ -45,7 +46,11 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
     loading: notesLoading,
     refetch: notesRefetch,
   } = useGetNotesQuery({
-    variables: { type: 'registration', ref: registration?.id ?? '0' },
+    variables: { type: 'registration', ref: registrationId ?? '0' },
+  });
+
+  const { data: regData, loading: regLoading } = useGetRegistrationQuery({
+    variables: { id: registrationId ?? '0' },
   });
 
   const [removeTag] = useDeleteTagMutation();
@@ -56,19 +61,28 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const [clearInvoiced] = useRegistrationClearInvoicedMutation();
   const [setPaid] = useRegistrationSetPaidMutation();
   const [clearPaid] = useRegistrationClearPaidMutation();
-  const [setShipped] = useRegistrationSetShippedMutation({ onCompleted: () => notesRefetch() });
+  const [setShipped] = useRegistrationSetShippedMutation();
   const [clearShipped] = useRegistrationClearShippedMutation();
   const [setShipmentGroup] = useRegistrationSetShipmentGroupMutation();
   const [setTeamSize] = useRegistrationSetTeamSizeMutation();
   const [setSizeConfirmed] = useRegistrationSetTeamSizeConfirmedMutation();
   const [clearSizeConfirmed] = useRegistrationClearTeamSizeConfirmedMutation();
 
+  const registration = regData?.getRegistration;
+
   if (!registration) {
     return null;
   }
+
   return (
     <>
-      <ClosableSidebar onClose={onClose} show={!!registration} width="350px" title="Registrácia">
+      <ClosableSidebar
+        onClose={onClose}
+        show={!!registration}
+        width="350px"
+        title="Registrácia"
+        gap="small"
+      >
         <SidebarPanel>
           <LabelValueGroup direction="column" gap="small">
             <LabelValue label="Turnaj" value={registration.event.name} />
@@ -84,6 +98,18 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
                   label="Zriaďovateľ tímu"
                   value={fullAddress(registration.team.address)}
                 />
+              </LabelValueGroup>
+            </SidebarPanel>
+            <SidebarPanel label="Tréneri">
+              <LabelValueGroup direction="column" gap="small" labelWidth="250px">
+                {registration.team.coaches
+                  .filter((coach) => !coach.deletedOn)
+                  .map((coach) => (
+                    <LabelValue label={coach.name} key={coach.id}>
+                      <Text>{coach.username}</Text>
+                      <Text>{coach.phone}</Text>
+                    </LabelValue>
+                  ))}
               </LabelValueGroup>
             </SidebarPanel>
             <SidebarPanel label="Štítky tímu">

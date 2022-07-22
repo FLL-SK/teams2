@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Markdown, TextArea, Text, Anchor } from 'grommet';
+import { Box, Button, Markdown, TextArea, Text } from 'grommet';
 import styled from 'styled-components';
 import { Note } from '../generated/graphql';
 import { useAppUser } from './app-user/use-app-user';

@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import { Box, Paragraph, Text, Tip } from 'grommet';
+import { Box, Text, Tip } from 'grommet';
 import { Deliver, Document, Group, Halt, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
-import { RegistrationTeamFragmentFragment } from '../../../generated/graphql';
+import { RegistrationListFragmentFragment } from '../../../generated/graphql';
 import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
@@ -14,14 +14,14 @@ import { Index } from 'react-virtualized';
 
 type RegistrationListProps = {
   rowCount: number;
-  rowGetter: (index: number) => RegistrationTeamFragmentFragment | null;
+  rowGetter: (index: number) => RegistrationListFragmentFragment | null;
   onEmptyList?: () => unknown;
   actionPanel: ReactNode;
-  onSelect: (team: RegistrationTeamFragmentFragment) => unknown;
+  onSelect: (team: RegistrationListFragmentFragment) => unknown;
 };
 
 interface RegistrationListRowProps {
-  data: RegistrationTeamFragmentFragment;
+  data: RegistrationListFragmentFragment;
 }
 
 function RegistrationListRow(props: RegistrationListRowProps) {

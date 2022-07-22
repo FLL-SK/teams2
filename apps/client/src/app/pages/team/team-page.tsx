@@ -68,7 +68,7 @@ export function TeamPage() {
 
   const events = useMemo(
     () =>
-      (team?.events ?? []).filter(
+      (team?.registrations ?? []).filter(
         (et) =>
           !et.event.deletedOn &&
           (!et.event.date ||
@@ -78,9 +78,9 @@ export function TeamPage() {
     [team, showActiveEventsOnly, today]
   );
 
-  const activeEvents = useMemo(
+  const activeRegistrations = useMemo(
     () =>
-      (team?.events ?? []).filter(
+      (team?.registrations ?? []).filter(
         (et) =>
           !et.event.deletedOn && (!et.event.date || (et.event.date ?? '').substring(0, 10) >= today)
       ),
@@ -122,7 +122,7 @@ export function TeamPage() {
             <Button
               label="Registrovať tím"
               onClick={() => navigate(appPath.register(id))}
-              disabled={activeEvents.length > 0}
+              disabled={activeRegistrations.length > 0}
             />
             <CheckBox
               toggle

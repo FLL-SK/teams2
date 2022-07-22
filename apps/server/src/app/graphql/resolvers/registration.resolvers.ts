@@ -3,6 +3,8 @@ import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
+  getRegistration: async (_parent, { id }, { dataSources }) =>
+    dataSources.registration.getRegistration(id),
   getEventRegistrations: async (_parent, { eventId }, { dataSources }) =>
     dataSources.registration.getEventRegistrations(eventId),
   getProgramRegistrations: async (_parent, { programId }, { dataSources }) =>
@@ -10,6 +12,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 };
 
 export const typeResolver: Resolver<Registration> = {
+  program: async ({ programId }, _args, { dataSources }) =>
+    dataSources.program.getProgram(programId),
   team: async ({ teamId }, _args, { dataSources }) => dataSources.team.getTeam(teamId),
   event: async ({ eventId }, _args, { dataSources }) => dataSources.event.getEvent(eventId),
   registeredByUser: async ({ registeredBy }, _args, { dataSources }) =>

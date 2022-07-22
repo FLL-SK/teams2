@@ -25,6 +25,7 @@ export const RegistrationMapper = {
 
       team: null,
       event: null,
+      program: null,
       registeredByUser: null,
       invoiceIssuedByUser: null,
     };

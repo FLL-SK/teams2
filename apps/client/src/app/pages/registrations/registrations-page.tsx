@@ -3,7 +3,7 @@ import { Box, Button, TextInput, Text } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import {
-  RegistrationTeamFragmentFragment,
+  RegistrationListFragmentFragment,
   TeamFilterInput,
   useGetProgramLazyQuery,
   useGetProgramRegistrationsLazyQuery,
@@ -92,7 +92,7 @@ export function RegistrationsPage() {
     useGetProgramLazyQuery();
 
   const [searchText, setSearchText] = useState('');
-  const [registrations, setRegistrations] = useState<RegistrationTeamFragmentFragment[]>([]);
+  const [registrations, setRegistrations] = useState<RegistrationListFragmentFragment[]>([]);
 
   // prepare search entries for text search
   const searchOptions = useMemo(
@@ -105,7 +105,7 @@ export function RegistrationsPage() {
   );
 
   const applyFilter = useCallback(
-    (item: RegistrationTeamFragmentFragment) => {
+    (item: RegistrationListFragmentFragment) => {
       let ok = true;
       if (filter.tags) {
         ok = ok && filter.tags.every((t) => item.team.tags.findIndex((tt) => tt.id === t) > -1);
@@ -245,7 +245,7 @@ export function RegistrationsPage() {
 
       {selectedReg && (
         <RegistrationSidebar
-          registration={searchOptions.find((item) => item.value.id === selectedReg)?.value}
+          registrationId={selectedReg}
           onClose={() => setSelectedReg(undefined)}
         />
       )}

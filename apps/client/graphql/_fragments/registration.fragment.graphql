@@ -1,4 +1,4 @@
-fragment RegistrationListFragment on Registration {
+fragment RegistrationBasicFragment on Registration {
   id
   teamId
   programId
@@ -15,21 +15,38 @@ fragment RegistrationListFragment on Registration {
   sizeConfirmedOn
 }
 
-fragment RegistrationEventFragment on Registration {
-  ...RegistrationListFragment
+fragment RegistrationListFragment on Registration {
+  ...RegistrationBasicFragment
 
   event {
     ...EventListFragment
   }
+
+  program {
+    id
+    name
+  }
+
+  team {
+    id
+    name
+    deletedOn
+    address {
+      ...AddressFragment
+    }
+    shipTo {
+      ...AddressFragment
+    }
+    tags {
+      ...TagFragment
+    }
+  }
 }
 
-fragment RegistrationTeamFragment on Registration {
+fragment RegistrationFragment on Registration {
   ...RegistrationListFragment
 
   team {
     ...TeamFragment
-  }
-  event {
-    ...EventListFragment
   }
 }
