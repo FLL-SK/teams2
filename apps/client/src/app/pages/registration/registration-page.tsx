@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paragraph, Spinner, Text } from 'grommet';
+import { Anchor, Box, Paragraph, Spinner, Text } from 'grommet';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -25,6 +25,7 @@ import { FieldInvoiceIssuedOn } from '../registrations/components/field-invoiceI
 import { FieldPaidOn } from '../registrations/components/field-paidOn';
 import { FieldTeamSize } from '../registrations/components/field-teamSize';
 import { FieldTeamSizeConfirmedOn } from '../registrations/components/field-teamSizeConfirmedOn';
+import { appPath } from '@teams2/common';
 
 const columnWidth = '460px';
 
@@ -69,9 +70,15 @@ export function RegistrationPage() {
             <Panel title="Detaily registrácie" wrap direction="row" gap="small">
               <Box width={columnWidth}>
                 <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-                  <LabelValue label="Program" value={reg?.program?.name} />
-                  <LabelValue label="Turnaj" value={reg?.event?.name} />
-                  <LabelValue label="Tím" value={reg?.team?.name} />
+                  <LabelValue label="Program">
+                    <Anchor label={reg.program.name} href={appPath.program(reg.program.id)} />
+                  </LabelValue>
+                  <LabelValue label="Turnaj">
+                    <Anchor label={reg.event.name} href={appPath.event(reg.event.id)} />
+                  </LabelValue>
+                  <LabelValue label="Tím">
+                    <Anchor label={reg.team.name} href={appPath.team(reg.team.id)} />
+                  </LabelValue>
                   <LabelValue label="Zriaďovateľ tímu" value={fullAddress(reg.team.address)} />
                   <LabelValue label="Dátum registrácie" value={formatDate(reg.registeredOn)} />
                 </LabelValueGroup>
@@ -104,7 +111,7 @@ export function RegistrationPage() {
                 <LabelValueGroup labelWidth="150px" gap="small" direction="row">
                   <LabelValue label="Fakturačná adresa" value={fullAddress(reg.billTo)} />
                   <LabelValue label="Fakturačný kontakt">
-                    <Paragraph>
+                    <Paragraph margin={'none'}>
                       {reg.billTo.contactName}
                       <br />
                       {reg.billTo.email}
@@ -127,7 +134,7 @@ export function RegistrationPage() {
                 <LabelValueGroup labelWidth="150px" gap="small" direction="row">
                   <LabelValue label="Dodacia adresa" value={fullAddress(reg.shipTo)} />
                   <LabelValue label="Kontakt">
-                    <Paragraph>
+                    <Paragraph margin="none">
                       {reg.shipTo.contactName}
                       <br />
                       {reg.shipTo.email}
