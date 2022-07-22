@@ -94,29 +94,6 @@ export class EventDataSource extends BaseDataSource {
     return events.map((t) => EventMapper.toEvent(t));
   }
 
-  async addTeamToEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
-    // guarded from event business logic
-    const ev = await eventRepository.findById(eventId).exec();
-    const et: RegistrationData = {
-      programId: ev.programId,
-      eventId,
-      teamId,
-      registeredOn: new Date(),
-      registeredBy: this.context.user._id,
-    };
-    await registrationRepository.create(et);
-    const event = await eventRepository.findById(eventId).exec();
-
-    return EventMapper.toEvent(event);
-  }
-
-  async removeTeamFromEvent(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
-    // guarded from event business logic
-    await registrationRepository.deleteOne({ eventId, teamId }).exec();
-    const event = await eventRepository.findById(eventId).exec();
-    return EventMapper.toEvent(event);
-  }
-
   async addEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||

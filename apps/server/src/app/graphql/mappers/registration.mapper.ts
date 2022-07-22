@@ -1,5 +1,6 @@
 import { RegistrationData } from '../../models';
 import { Registration } from '../../generated/graphql';
+import { AddressMapper } from './address.mapper';
 
 export const RegistrationMapper = {
   toRegistration(registration: RegistrationData | null | undefined): Registration | null {
@@ -11,6 +12,9 @@ export const RegistrationMapper = {
       programId: registration.programId,
       eventId: registration.eventId,
       teamId: registration.teamId,
+
+      billTo: AddressMapper.toAddress(registration.billTo),
+      shipTo: AddressMapper.toAddress(registration.shipTo),
 
       registeredOn: registration.registeredOn,
       registeredBy: registration.registeredBy,

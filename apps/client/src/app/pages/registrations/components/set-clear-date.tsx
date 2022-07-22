@@ -7,19 +7,22 @@ interface SetClearDateProps {
   date?: string | null;
   onSet: () => void;
   onClear: () => void;
+  canEdit?: boolean;
 }
 
 export function SetClearDate(props: SetClearDateProps) {
-  const { date, onSet, onClear } = props;
+  const { date, onSet, onClear, canEdit } = props;
 
   return (
     <Box direction="row" width="100%" justify="between">
       <Text>{date ? formatDate(date) : '-'}</Text>
-      {date ? (
-        <Anchor size="small" label="Zruš potvrdenie" onClick={() => onClear()} />
-      ) : (
-        <Anchor size="small" label="Potvrď" onClick={() => onSet()} />
-      )}
+
+      {canEdit &&
+        (date ? (
+          <Anchor size="small" label="Zruš potvrdenie" onClick={() => onClear()} />
+        ) : (
+          <Anchor size="small" label="Potvrď" onClick={() => onSet()} />
+        ))}
     </Box>
   );
 }

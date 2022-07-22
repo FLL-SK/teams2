@@ -15,6 +15,9 @@ type Registration implements INode {
   registeredOn: DateTime!
   registeredBy: ID!
 
+  billTo: Address!
+  shipTo: Address!
+
   invoiceIssuedOn: DateTime
   invoiceIssuedBy: ID!
 

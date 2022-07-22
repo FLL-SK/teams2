@@ -4,6 +4,14 @@ fragment RegistrationBasicFragment on Registration {
   programId
   eventId
 
+  billTo {
+    ...AddressFragment
+  }
+
+  shipTo {
+    ...AddressFragment
+  }
+
   registeredOn
 
   invoiceIssuedOn

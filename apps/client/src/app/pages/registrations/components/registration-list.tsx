@@ -28,7 +28,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
   const { data } = props;
   return (
     <>
-      <ListCol linkPath={appPath.team(data.team.id)}>
+      <ListCol linkPath={appPath.registration(data.id)}>
         <TextStriked striked={!!data.team.deletedOn}>{data.team.name}</TextStriked>
         <Text size="small" color="dark-5" truncate="tip">
           {fullAddress(data.team.address)}

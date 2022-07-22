@@ -1,7 +1,12 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import { registrationRepository } from '../../models';
+import {
+  eventRepository,
+  RegistrationData,
+  registrationRepository,
+  teamRepository,
+} from '../../models';
 import { Registration } from '../../generated/graphql';
 import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
@@ -30,6 +35,40 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.failed();
     const reg = this.loader.load(id.toString());
     return reg;
+  }
+
+  async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+    this.userGuard.isAdmin() || this.userGuard.isCoach(teamId) || this.userGuard.failed();
+    const event = await eventRepository.findById(eventId).exec();
+    const team = await teamRepository.findById(teamId).exec();
+    if (!team || !event) {
+      throw new Error('Team or event not found');
+    }
+    const newReg: RegistrationData = {
+      programId: event.programId,
+      eventId,
+      teamId,
+      registeredOn: new Date(),
+      registeredBy: this.context.user._id,
+      shipTo: team.shipTo,
+      billTo: team.billTo,
+    };
+
+    const registration = new registrationRepository(newReg);
+    await registration.save();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async deleteRegistration(id: ObjectId): Promise<Registration> {
+    this.userGuard.isAdmin() || this.userGuard.failed();
+    const registration = await registrationRepository.findByIdAndDelete({ _id: id }).exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async deleteRegistrationET(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+    this.userGuard.isAdmin() || this.userGuard.failed();
+    const registration = await registrationRepository.findOneAndDelete({ eventId, teamId }).exec();
+    return RegistrationMapper.toRegistration(registration);
   }
 
   async getEventRegistrations(eventId: ObjectId): Promise<Registration[]> {

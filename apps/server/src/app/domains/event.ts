@@ -1,7 +1,7 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { SwitchTeamEventPayload } from '../generated/graphql';
+import { RegisterTeamPayload, SwitchTeamEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
 import { eventRepository } from '../models';
 import {
@@ -17,7 +17,11 @@ import { logger } from '@teams2/logger';
 
 const logLib = logger('domain:Event');
 
-export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, ctx: ApolloContext) {
+export async function registerTeamToEvent(
+  teamId: ObjectId,
+  eventId: ObjectId,
+  ctx: ApolloContext
+): Promise<RegisterTeamPayload> {
   const log = logLib.extend('registerTeam');
   log.info('Registering team %s to event %s', teamId, eventId);
   const { userGuard, dataSources } = ctx;
@@ -28,17 +32,20 @@ export async function registerTeamToEvent(teamId: ObjectId, eventId: ObjectId, c
     return null;
   }
 
-  const event = await dataSources.event.addTeamToEvent(eventId, teamId);
   const team = await dataSources.team.getTeam(teamId);
-  if (!event || !team) {
+  const registration = await dataSources.registration.createRegistration(eventId, teamId);
+
+  if (!registration || !team) {
     return null;
   }
 
-  //TODO promise.all
-  const program = await dataSources.program.getProgram(event.programId);
-  const eventMgrs = await dataSources.event.getEventManagers(eventId);
-  const programMgrs = await dataSources.program.getProgramManagers(event.programId);
-  const coaches = await dataSources.team.getTeamCoaches(teamId);
+  const [event, program, eventMgrs, programMgrs, coaches] = await Promise.all([
+    dataSources.event.getEvent(eventId),
+    dataSources.program.getProgram(registration.programId),
+    dataSources.event.getEventManagers(eventId),
+    dataSources.program.getProgramManagers(registration.programId),
+    dataSources.team.getTeamCoaches(teamId),
+  ]);
 
   const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
   const coachEmails = coaches.map((c) => c.username);
@@ -74,14 +81,20 @@ export async function unregisterTeamFromEvent(
     return null;
   }
 
-  const event = await dataSources.event.removeTeamFromEvent(eventId, teamId);
+  const registration = await dataSources.registration.deleteRegistrationET(eventId, teamId);
   const team = await dataSources.team.getTeam(teamId);
 
-  //TODO promise.all
-  const program = await dataSources.program.getProgram(event.programId);
-  const eventMgrs = await dataSources.event.getEventManagers(eventId);
-  const programMgrs = await dataSources.program.getProgramManagers(event.programId);
-  const coaches = await dataSources.team.getTeamCoaches(teamId);
+  if (!registration || !team) {
+    return null;
+  }
+
+  const [event, program, eventMgrs, programMgrs, coaches] = await Promise.all([
+    dataSources.event.getEvent(eventId),
+    dataSources.program.getProgram(registration.programId),
+    dataSources.event.getEventManagers(eventId),
+    dataSources.program.getProgramManagers(registration.programId),
+    dataSources.team.getTeamCoaches(teamId),
+  ]);
 
   const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
   const coachEmails = coaches.map((c) => c.username);
