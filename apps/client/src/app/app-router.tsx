@@ -17,6 +17,7 @@ import { RegisterPage } from './pages/register/register-page';
 import { TeamPage } from './pages/team/team-page';
 import { UserListPage } from './pages/user-list/user-list-page';
 import { RegistrationsPage } from './pages/registrations/registrations-page';
+import { RegistrationPage } from './pages/registration/registration-page';
 
 export function AppRouter() {
   return (
@@ -40,6 +41,7 @@ export function AppRouter() {
       />
       <Route path={appPath.event(':id')} element={<EventPage />} />
       <Route path={appPath.program(':id')} element={<ProgramPage />} />
+      <Route path={appPath.registration(':id')} element={<RegistrationPage />} />
       <Route
         path={appPath.register(':id')}
         element={

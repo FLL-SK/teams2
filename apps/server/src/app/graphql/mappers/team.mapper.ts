@@ -22,7 +22,7 @@ export const TeamMapper = {
       deletedBy: team.deletedBy,
 
       coaches: [],
-      events: [],
+      registrations: [],
       tags: [],
     };
     return u;

@@ -9,7 +9,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 
 export const typeResolver: Resolver<Team> = {
   coaches: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamCoaches(id),
-  events: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamEvents(id),
+  registrations: async ({ id }, _args, { dataSources }) =>
+    dataSources.team.getTeamRegistrations(id),
   tags: async ({ id }, _args, { dataSources }) => dataSources.team.getTeamTags(id),
 };
 

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Menu, MenuProps } from 'grommet';
 import { Menu as MenuIcon } from 'grommet-icons';
-import { TeamListFragmentFragment } from '../../generated/graphql';
+import { TeamBasicFragmentFragment } from '../../generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 
 interface TeamMenuProps {
-  team: TeamListFragmentFragment;
-  onUnregister: (t: TeamListFragmentFragment) => unknown;
-  onChangeEvent: (t: TeamListFragmentFragment) => unknown;
+  team: TeamBasicFragmentFragment;
+  onUnregister: (t: TeamBasicFragmentFragment) => unknown;
+  onChangeEvent: (t: TeamBasicFragmentFragment) => unknown;
   onClose?: () => unknown;
   canEdit?: boolean;
 }

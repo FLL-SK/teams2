@@ -1,8 +1,9 @@
 import React, { ReactNode } from 'react';
-import { Box, Text } from 'grommet';
+import { Box, Text, Tip } from 'grommet';
+import { Deliver, Document, Group, Halt, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
-import { RegistrationTeamFragmentFragment } from '../../../generated/graphql';
+import { RegistrationListFragmentFragment } from '../../../generated/graphql';
 import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
@@ -13,21 +14,21 @@ import { Index } from 'react-virtualized';
 
 type RegistrationListProps = {
   rowCount: number;
-  rowGetter: (index: number) => RegistrationTeamFragmentFragment | null;
+  rowGetter: (index: number) => RegistrationListFragmentFragment | null;
   onEmptyList?: () => unknown;
   actionPanel: ReactNode;
-  onSelect: (team: RegistrationTeamFragmentFragment) => unknown;
+  onSelect: (team: RegistrationListFragmentFragment) => unknown;
 };
 
 interface RegistrationListRowProps {
-  data: RegistrationTeamFragmentFragment;
+  data: RegistrationListFragmentFragment;
 }
 
 function RegistrationListRow(props: RegistrationListRowProps) {
   const { data } = props;
   return (
     <>
-      <ListCol linkPath={appPath.team(data.team.id)}>
+      <ListCol linkPath={appPath.registration(data.id)}>
         <TextStriked striked={!!data.team.deletedOn}>{data.team.name}</TextStriked>
         <Text size="small" color="dark-5" truncate="tip">
           {fullAddress(data.team.address)}
@@ -40,17 +41,35 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{formatDate(data.registeredOn)}</Text>
-      </ListCol>
-
-      <ListCol>
         <Text alignSelf="center">
-          {data.invoiceIssuedOn ? formatDate(data.invoiceIssuedOn) : '-'}
+          <Tip content={`Registrovaný ${formatDate(data.registeredOn)}`}>
+            <Halt />
+          </Tip>
         </Text>
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{data.paidOn ? formatDate(data.paidOn) : '-'}</Text>
+        <Text alignSelf="center">
+          {data.invoiceIssuedOn ? (
+            <Tip content={`Faktúra vystavená ${formatDate(data.invoiceIssuedOn)}`}>
+              <Document />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">
+          {data.paidOn ? (
+            <Tip content={`Faktúra zaplatená ${formatDate(data.paidOn)}`}>
+              <Money />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
       </ListCol>
 
       <ListCol>
@@ -58,7 +77,37 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{data.shippedOn ? formatDate(data.shippedOn) : '-'}</Text>
+        <Text alignSelf="center">
+          {data.shippedOn ? (
+            <Tip content={`Zásielka odoslaná ${formatDate(data.shippedOn)}`}>
+              <Deliver />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">{data.teamSize ?? '-'}</Text>
+      </ListCol>
+
+      <ListCol>
+        <Text alignSelf="center">
+          {data.sizeConfirmedOn ? (
+            <Tip content={`Veľkosť tímu potvrdená ${formatDate(data.sizeConfirmedOn)}`}>
+              <Group />
+            </Tip>
+          ) : (
+            '-'
+          )}
+        </Text>
+      </ListCol>
+
+      <ListCol>
+        <Text color="dark-5" truncate="tip">
+          {data.event.name}
+        </Text>
       </ListCol>
     </>
   );
@@ -81,7 +130,7 @@ export function RegistrationList(props: RegistrationListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="450px 100px 100px 100px 100px 100px"
+        cols="350px 30px 30px 30px 80px 30px 50px 30px auto"
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={getHeight}

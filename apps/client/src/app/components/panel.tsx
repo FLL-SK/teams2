@@ -1,15 +1,12 @@
 import React from 'react';
-import { Box, Text } from 'grommet';
-import { GapType } from 'grommet/utils';
+import { Box, BoxExtendedProps, Text } from 'grommet';
 
-interface PanelProps {
+interface PanelProps extends BoxExtendedProps {
   title?: string;
-  children: React.ReactNode;
-  gap?: GapType;
 }
 
 export function Panel(props: PanelProps) {
-  const { children, title, gap } = props;
+  const { children, title, ...boxProps } = props;
 
   return (
     <Box background="light-1" gap="small">
@@ -18,13 +15,15 @@ export function Panel(props: PanelProps) {
           {title}{' '}
         </Text>
       </Box>
-      <Box pad={{ vertical: 'small', horizontal: 'medium' }} gap={gap}>
+      <Box pad={{ vertical: 'small', horizontal: 'medium' }} {...boxProps}>
         {children}
       </Box>
     </Box>
   );
 }
 
-export const PanelGroup = ({ children }: { children: React.ReactNode }) => (
-  <Box gap="medium">{children}</Box>
+export const PanelGroup = ({ children, ...boxProps }: BoxExtendedProps) => (
+  <Box gap="medium" {...boxProps}>
+    {children}
+  </Box>
 );

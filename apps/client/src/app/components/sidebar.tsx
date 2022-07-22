@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Layer, Text } from 'grommet';
 import { Close } from 'grommet-icons';
-import { WidthType } from 'grommet/utils';
+import { GapType, WidthType } from 'grommet/utils';
 import { ReactNode } from 'react';
 
 interface SidebarProps {
@@ -9,6 +9,7 @@ interface SidebarProps {
   children?: ReactNode | null;
   width?: WidthType;
   title?: string;
+  gap?: GapType;
 }
 
 interface ClosableSidebarProps extends SidebarProps {
@@ -16,7 +17,7 @@ interface ClosableSidebarProps extends SidebarProps {
 }
 
 export function Sidebar(props: SidebarProps) {
-  const { onClose, children, width = '300px', title = '' } = props;
+  const { onClose, children, width = '300px', title = '', gap } = props;
 
   return (
     <Box height="100vh" width={width} background="brandLighter" pad="small">
@@ -28,7 +29,7 @@ export function Sidebar(props: SidebarProps) {
         )}
         {onClose && <Button icon={<Close size="small" />} onClick={() => onClose && onClose()} />}
       </Box>
-      <Box height="100%" width="100%">
+      <Box height="100%" width="100%" gap={gap}>
         {children}
       </Box>
     </Box>
@@ -36,7 +37,7 @@ export function Sidebar(props: SidebarProps) {
 }
 
 export function ClosableSidebar(props: ClosableSidebarProps) {
-  const { show, onClose, children, width = '300px', title } = props;
+  const { show, onClose, children, width = '300px', title, gap } = props;
 
   if (!show) {
     return null;
@@ -48,7 +49,7 @@ export function ClosableSidebar(props: ClosableSidebarProps) {
       modal={false}
       position="right"
     >
-      <Sidebar onClose={onClose} width={width} title={title}>
+      <Sidebar onClose={onClose} width={width} title={title} gap={gap}>
         {children}
       </Sidebar>
     </Layer>

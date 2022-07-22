@@ -6,36 +6,52 @@ export const seedTestUsersData: UserData[] = [
     username: 'admin@test',
     password: 'admin',
     isAdmin: true,
+    name: 'Admin Fullname',
+    phone: '01/123456789',
   },
   {
     username: 'coach1@test',
     password: 'coach1',
+    name: 'Coach1 Fullname',
+    phone: '02/123456789',
   },
   {
     username: 'coach2@test',
     password: 'coach2',
+    name: 'Coach2 Fullname',
+    phone: '03/123456789',
   },
   {
     username: 'coach3@test',
     password: 'coach3',
+    name: 'Coach3 Fullname',
+    phone: '04/123456789',
   },
   {
     username: 'eventmgr1@test',
     password: 'eventmgr1',
+    name: 'Eventmgr1 Fullname',
+    phone: '05/123456789',
   },
 
   {
     username: 'eventmgr2@test',
     password: 'eventmgr2',
+    name: 'Eventmgr2 Fullname',
+    phone: '06/123456789',
   },
 
   {
     username: 'progmgr1@test',
     password: 'progmgr1',
+    name: 'Progmgr1 Fullname',
+    phone: '07/123456789',
   },
   {
     username: 'progmgr2@test',
     password: 'progmgr2',
+    name: 'Progmgr2 Fullname',
+    phone: '08/123456789',
   },
 ];
 
@@ -47,6 +63,8 @@ export async function seedTestUsers() {
       username: d.username,
       password: d.password, // hashed in pre-save hook
       isAdmin: d.isAdmin,
+      name: d.name,
+      phone: d.phone,
     };
 
     const nu = await userRepository.create(u);

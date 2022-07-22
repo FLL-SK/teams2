@@ -42,9 +42,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeam(id: ObjectId): Promise<Team> {
-    //const team = TeamMapper.toTeam(await teamRepository.findById(id).exec());
     const team = this.loader.load(id.toString());
-
     return team;
   }
 
@@ -137,8 +135,8 @@ export class TeamDataSource extends BaseDataSource {
     return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
   }
 
-  async getTeamEvents(teamId: ObjectId): Promise<Registration[]> {
-    const events = await registrationRepository.find({ teamId: teamId }).exec();
+  async getTeamRegistrations(teamId: ObjectId): Promise<Registration[]> {
+    const events = await registrationRepository.find({ teamId }).exec();
     return events.map((c) => RegistrationMapper.toRegistration(c));
   }
 
