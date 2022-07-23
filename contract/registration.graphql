@@ -36,6 +36,11 @@ type Registration implements INode {
   invoiceIssuedByUser: User!
 }
 
+input RegistrationInput {
+  billTo: AddressInput
+  shipTo: AddressInput
+}
+
 extend type Query {
   getRegistration(id: ID!): Registration
   getProgramRegistrations(programId: ID!): [Registration!]!
@@ -53,4 +58,6 @@ extend type Mutation {
   registrationSetTeamSize(id: ID!, size: Int): Registration
   registrationSetTeamSizeConfirmed(id: ID!, date: DateTime): Registration
   registrationClearTeamSizeConfirmed(id: ID!): Registration
+
+  updateRegistration(id: ID!, input: RegistrationInput!): Registration
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import { InvoiceItemFragmentFragment } from '../generated/graphql';
 import { JustifiedText } from './justified-text';
-import { ListHeader, ListRow } from './list-row';
+import { ListHeader2, ListRow2 } from './list-row';
 import { Close } from 'grommet-icons';
 
 interface InvoiceItemListProps {
@@ -17,14 +17,14 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
 
   return (
     <Box>
-      <ListHeader columns="1fr 75px 100px 150px auto" pad="small">
+      <ListHeader2 columns="1fr 75px 100px 150px auto" pad="small">
         <JustifiedText justify="start">Položka</JustifiedText>
         <JustifiedText justify="center">Množstvo</JustifiedText>
         <JustifiedText justify="center">Cena</JustifiedText>
         <JustifiedText justify="center">Cena celkom</JustifiedText>
-      </ListHeader>
+      </ListHeader2>
       {items.map((item) => (
-        <ListRow
+        <ListRow2
           key={item.id}
           columns="1fr 75px 100px 150px auto"
           pad="small"
@@ -55,7 +55,7 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
               }}
             />
           )}
-        </ListRow>
+        </ListRow2>
       ))}
     </Box>
   );

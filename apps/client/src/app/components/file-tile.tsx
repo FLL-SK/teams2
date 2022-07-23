@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import { FileFragmentFragment } from '../generated/graphql';
-import { ListRow } from './list-row';
+import { ListRow2 } from './list-row';
 import { Close } from 'grommet-icons';
 
 interface FileTileProps {
@@ -26,7 +26,7 @@ export function FileTile(props: FileTileProps) {
 
   return (
     <Box flex>
-      <ListRow
+      <ListRow2
         columns="1fr 100px auto"
         align="center"
         pad={{ left: 'small', right: 'small' }}
@@ -42,7 +42,7 @@ export function FileTile(props: FileTileProps) {
             onDelete && onDelete(file);
           }}
         />
-      </ListRow>
+      </ListRow2>
     </Box>
   );
 }

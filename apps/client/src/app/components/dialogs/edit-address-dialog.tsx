@@ -3,13 +3,13 @@ import { Box, Button, Form, FormField, Grid } from 'grommet';
 import { Modal } from '../modal';
 
 interface EditAddressDialogProps {
-  address?: FormFields;
+  address?: EditAddressDialogFields;
   onClose: () => void;
-  onSubmit: (data: FormFields) => Promise<unknown>;
+  onSubmit: (data: EditAddressDialogFields) => Promise<unknown>;
   show?: boolean;
 }
 
-interface FormFields {
+export interface EditAddressDialogFields {
   name: string;
   street: string;
   city: string;
@@ -18,7 +18,7 @@ interface FormFields {
 
 export function EditAddressDialog(props: EditAddressDialogProps) {
   const { onClose, onSubmit, show = true, address } = props;
-  const [formValues, setFormValues] = useState<FormFields>();
+  const [formValues, setFormValues] = useState<EditAddressDialogFields>();
 
   useEffect(() => {
     setFormValues({
@@ -33,7 +33,7 @@ export function EditAddressDialog(props: EditAddressDialogProps) {
     return null;
   }
 
-  const handleSubmit = async ({ value }: { value: FormFields }) => {
+  const handleSubmit = async ({ value }: { value: EditAddressDialogFields }) => {
     await onSubmit(value);
     onClose();
   };
