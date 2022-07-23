@@ -17,11 +17,11 @@ const Container = styled(Box)<ListRowProps>`
   }
 `;
 
-export const ListRow = ({ columns, ...rest }: ListRowProps) => (
+export const ListRow2 = ({ columns, ...rest }: ListRowProps) => (
   <Container direction="row" columns={columns} {...rest} />
 );
 
-export const ListHeader = styled(Box)<ListRowProps>`
+export const ListHeader2 = styled(Box)<ListRowProps>`
   font-weight: bold;
   text-decoration: underline;
   width: 100%;

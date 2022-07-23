@@ -6,7 +6,7 @@ import { BorderType } from 'grommet/utils';
 
 import { EventListFragmentFragment } from '../generated/graphql';
 import { getColor } from '../theme';
-import { ListRow } from './list-row';
+import { ListRow2 } from './list-row';
 
 interface EventListTileProps {
   event: EventListFragmentFragment;
@@ -23,7 +23,7 @@ export function EventListTile(props: EventListTileProps) {
     : { side: 'top' };
 
   return (
-    <ListRow
+    <ListRow2
       columns="1fr 180px 75px auto"
       onClick={onClick}
       pad="small"
@@ -58,6 +58,6 @@ export function EventListTile(props: EventListTileProps) {
           }}
         />
       )}
-    </ListRow>
+    </ListRow2>
   );
 }

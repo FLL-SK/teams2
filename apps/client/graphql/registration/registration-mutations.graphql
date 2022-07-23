@@ -57,3 +57,9 @@ mutation registrationClearTeamSizeConfirmed($id: ID!) {
     ...RegistrationBasicFragment
   }
 }
+
+mutation updateRegistration($id: ID!, $input: RegistrationInput!) {
+  updateRegistration(id: $id, input: $input) {
+    ...RegistrationBasicFragment
+  }
+}

@@ -27,6 +27,7 @@ import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
+import { TeamRegistrationsList } from './components/team-registrations';
 
 export function TeamPage() {
   const { id } = useParams();
@@ -66,14 +67,14 @@ export function TeamPage() {
   const canEdit = isAdmin() || isTeamCoach(id);
   const team = teamData?.getTeam;
 
-  const events = useMemo(
+  const registrations = useMemo(
     () =>
       (team?.registrations ?? []).filter(
-        (et) =>
-          !et.event.deletedOn &&
-          (!et.event.date ||
+        (reg) =>
+          !reg.event.deletedOn &&
+          (!reg.event.date ||
             !showActiveEventsOnly ||
-            (et.event.date ?? '').substring(0, 10) >= today)
+            (reg.event.date ?? '').substring(0, 10) >= today)
       ),
     [team, showActiveEventsOnly, today]
   );
@@ -109,7 +110,7 @@ export function TeamPage() {
       <PanelGroup>
         <Panel title="Detaily tímu" gap="small">
           <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-            <LabelValue label="Názov" value={team?.name} />
+            <LabelValue label="Názov tímu" value={team?.name} />
             <LabelValue label="Zriaďovateľ" value={fullAddress(team?.address)} />
           </LabelValueGroup>
           <Box direction="row">
@@ -126,16 +127,12 @@ export function TeamPage() {
             />
             <CheckBox
               toggle
-              label="Iba aktívne"
+              label="Zobraziť iba aktívne"
               defaultChecked={showActiveEventsOnly}
               onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
-          <EventList
-            events={[...events.map((e) => e.event)].sort((a, b) =>
-              (a.date ?? '') < (b.date ?? '') ? 1 : -1
-            )}
-          />
+          <TeamRegistrationsList registrations={activeRegistrations} />
         </Panel>
 
         {canEdit && (
