@@ -8,7 +8,7 @@ import { BasePage } from '../../components/base-page';
 import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
 import { ErrorPage } from '../../components/error-page';
 import { LabelValue } from '../../components/label-value';
-import { ListRow } from '../../components/list-row';
+import { ListRow2 } from '../../components/list-row';
 import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
@@ -139,7 +139,7 @@ export function EventPage() {
         <Panel title="Tímy">
           <Box direction="row" wrap>
             {eventTeams.map((t, idx) => (
-              <ListRow key={t.id} columns="50px 1fr 80px auto" pad="small" align="center">
+              <ListRow2 key={t.id} columns="50px 1fr 80px auto" pad="small" align="center">
                 <Text>{idx + 1}</Text>
                 <Box>
                   <Text>{t.team.name}</Text>
@@ -161,7 +161,7 @@ export function EventPage() {
                     canEdit={canEdit}
                   />
                 </Box>
-              </ListRow>
+              </ListRow2>
             ))}
           </Box>
         </Panel>

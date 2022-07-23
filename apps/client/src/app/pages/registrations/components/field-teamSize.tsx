@@ -18,10 +18,9 @@ export const FieldTeamSize = (props: {
       <Box direction="row" width="100%" justify="between">
         <Text>{registration.teamSize ?? '-'}</Text>
 
-        {isAdmin() ||
-          (isTeamCoach(registration.teamId) && (
-            <Anchor size="small" label="Nastav" onClick={() => setShowDialog(true)} />
-          ))}
+        {(isAdmin() || isTeamCoach(registration.teamId)) && (
+          <Anchor size="small" label="Nastav" onClick={() => setShowDialog(true)} />
+        )}
       </Box>
 
       <EditTeamSizeDialog

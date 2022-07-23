@@ -1,6 +1,6 @@
 import { Box, Button, FileInput } from 'grommet';
 import React, { useState } from 'react';
-import { ListRow } from './list-row';
+import { ListRow2 } from './list-row';
 
 interface FileUploadControlProps {
   disabled?: boolean;
@@ -22,7 +22,7 @@ export function FileUploadControl(props: FileUploadControlProps) {
   const [toUpload, setToUpload] = useState<FileList>();
 
   return (
-    <ListRow columns="1fr 10px auto" align="center">
+    <ListRow2 columns="1fr 10px auto" align="center">
       <FileInput
         name="file"
         messages={messages}
@@ -45,6 +45,6 @@ export function FileUploadControl(props: FileUploadControlProps) {
           }}
         />
       </Box>
-    </ListRow>
+    </ListRow2>
   );
 }
