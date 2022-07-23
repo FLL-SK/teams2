@@ -23,6 +23,8 @@ export const typeResolver: Resolver<Registration> = {
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
+  updateRegistration: async (_parent, { id, input }, { dataSources }) =>
+    dataSources.registration.updateRegistration(id, input),
   registrationSetInvoiced: async (_parent, { id, date }, { dataSources }) =>
     dataSources.registration.setInvoicedOn(id, date),
   registrationClearInvoiced: async (_parent, { id }, { dataSources }) =>

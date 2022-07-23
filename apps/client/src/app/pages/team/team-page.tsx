@@ -109,7 +109,7 @@ export function TeamPage() {
       <PanelGroup>
         <Panel title="Detaily tímu" gap="small">
           <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-            <LabelValue label="Názov" value={team?.name} />
+            <LabelValue label="Názov tímu" value={team?.name} />
             <LabelValue label="Zriaďovateľ" value={fullAddress(team?.address)} />
           </LabelValueGroup>
           <Box direction="row">
