@@ -18,13 +18,19 @@ export const RegistrationMapper = {
 
       registeredOn: registration.registeredOn,
       registeredBy: registration.registeredBy,
+
+      invoiceItems: [],
       invoiceIssuedOn: registration.invoiceIssuedOn,
       invoiceIssuedBy: registration.invoiceIssuedBy,
       paidOn: registration.paidOn,
+
       shipmentGroup: registration.shipmentGroup,
       shippedOn: registration.shippedOn,
 
-      teamSize: registration.teamSize,
+      girlCount: registration.girlCount ?? 0,
+      boyCount: registration.boyCount ?? 0,
+      coachCount: registration.coachCount ?? 0,
+
       sizeConfirmedOn: registration.sizeConfirmedOn,
 
       team: null,

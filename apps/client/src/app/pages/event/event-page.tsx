@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Markdown, Text } from 'grommet';
@@ -34,6 +34,7 @@ import { useParams } from 'react-router-dom';
 import { fullAddress } from '../../utils/format-address';
 import { Group } from 'grommet-icons';
 import { LabelValueGroup } from '../../components/label-value-group';
+import { formatTeamSize } from '../../utils/format-teamsize';
 
 export function EventPage() {
   const { id } = useParams();
@@ -69,8 +70,12 @@ export function EventPage() {
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const invoiceItems = event?.invoiceItems ?? [];
-  const eventTeams = [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
-    a.team.name < b.team.name ? -1 : 1
+  const eventRegs = React.useMemo(
+    () =>
+      [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
+        a.team.name < b.team.name ? -1 : 1
+      ),
+    [eventData]
   );
 
   return (
@@ -138,24 +143,24 @@ export function EventPage() {
 
         <Panel title="Tímy">
           <Box direction="row" wrap>
-            {eventTeams.map((t, idx) => (
-              <ListRow2 key={t.id} columns="50px 1fr 80px auto" pad="small" align="center">
+            {eventRegs.map((reg, idx) => (
+              <ListRow2 key={reg.id} columns="50px 1fr 80px auto" pad="small" align="center">
                 <Text>{idx + 1}</Text>
                 <Box>
-                  <Text>{t.team.name}</Text>
-                  <Text size="small">{fullAddress(t.team.address)}</Text>
+                  <Text>{reg.team.name}</Text>
+                  <Text size="small">{fullAddress(reg.team.address)}</Text>
                 </Box>
                 <Box direction="row" gap="small">
                   <Group />
                   <Text>
-                    {t.teamSize}
-                    {!t.sizeConfirmedOn && ' ?'}
+                    {formatTeamSize(reg)}
+                    {!reg.sizeConfirmedOn && ' ?'}
                   </Text>
                 </Box>
 
                 <Box width="50px" justify="end">
                   <TeamMenu
-                    team={t.team}
+                    team={reg.team}
                     onUnregister={(tt) => setTeamToUnregister(tt)}
                     onChangeEvent={(tt) => setTeamToSwitch(tt)}
                     canEdit={canEdit}

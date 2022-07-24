@@ -39,8 +39,8 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.registration.setShippedOn(id, date),
   registrationClearShipped: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearShippedOn(id),
-  registrationSetTeamSize: async (_parent, { id, size }, { dataSources }) =>
-    dataSources.registration.setTeamSize(id, size),
+  registrationSetTeamSize: async (_parent, { id, input }, { dataSources }) =>
+    dataSources.registration.setTeamSize(id, input),
   registrationSetTeamSizeConfirmed: async (_parent, { id, date }, { dataSources }) =>
     dataSources.registration.setTeamSizeConfirmedOn(id, date),
   registrationClearTeamSizeConfirmed: async (_parent, { id }, { dataSources }) =>

@@ -24,7 +24,9 @@ export interface RegistrationData {
   shipmentGroup?: string;
   shippedOn?: Date;
 
-  teamSize?: number;
+  girlCount?: number;
+  boyCount?: number;
+  coachCount?: number;
   sizeConfirmedOn?: Date;
 }
 
@@ -52,7 +54,9 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   shipmentGroup: { type: Types.String },
   shippedOn: { type: Types.Date },
 
-  teamSize: { type: Types.Number, default: 0 },
+  girlCount: { type: Types.Number, default: 0 },
+  boyCount: { type: Types.Number, default: 0 },
+  coachCount: { type: Types.Number, default: 0 },
   sizeConfirmedOn: { type: Types.Date },
 });
 

@@ -82,20 +82,6 @@ export async function seedTestEvents() {
       }
     }
 
-    for (const teamName of d.teams) {
-      const t = await teamRepository.findOne({ name: teamName });
-      const et: RegistrationData = {
-        programId: p._id,
-        eventId: nu._id,
-        teamId: t._id,
-        billTo: t.billTo ?? t.address,
-        shipTo: t.shipTo ?? t.billTo ?? t.address,
-        registeredOn: new Date(),
-        registeredBy: t.coachesIds.length > 0 ? t.coachesIds[0] : adminUser._id,
-      };
-      await registrationRepository.create(et);
-    }
-
     await nu.save();
 
     // create invoice items for an event

@@ -7,7 +7,7 @@ import {
   registrationRepository,
   teamRepository,
 } from '../../models';
-import { Registration, RegistrationInput } from '../../generated/graphql';
+import { Registration, RegistrationInput, TeamSizeInput } from '../../generated/graphql';
 import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
@@ -147,10 +147,10 @@ export class RegistrationDataSource extends BaseDataSource {
     return RegistrationMapper.toRegistration(registration);
   }
 
-  async setTeamSize(id: ObjectId, teamSize: number): Promise<Registration> {
+  async setTeamSize(id: ObjectId, input: TeamSizeInput): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.failed();
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { teamSize }, { new: true })
+      .findByIdAndUpdate(id, { ...input }, { new: true })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }

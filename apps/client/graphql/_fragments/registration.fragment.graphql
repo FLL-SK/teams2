@@ -19,7 +19,9 @@ fragment RegistrationBasicFragment on Registration {
   shipmentGroup
   shippedOn
 
-  teamSize
+  girlCount
+  boyCount
+  coachCount
   sizeConfirmedOn
 }
 

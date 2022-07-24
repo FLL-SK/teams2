@@ -40,8 +40,8 @@ mutation registrationSetShipmentGroup($id: ID!, $group: String!) {
   }
 }
 
-mutation registrationSetTeamSize($id: ID!, $size: Int!) {
-  registrationSetTeamSize(id: $id, size: $size) {
+mutation registrationSetTeamSize($id: ID!, $input: TeamSizeInput!) {
+  registrationSetTeamSize(id: $id, input: $input) {
     ...RegistrationBasicFragment
   }
 }

@@ -5,6 +5,7 @@
 # import * from "./user.graphql"
 # import * from "./event.graphql"
 # import * from "./program.graphql"
+# import * from "./invoice.graphql"
 
 type Registration implements INode {
   id: ID!
@@ -18,6 +19,8 @@ type Registration implements INode {
   billTo: Address!
   shipTo: Address!
 
+  invoiceItems: [InvoiceItem!]!
+
   invoiceIssuedOn: DateTime
   invoiceIssuedBy: ID!
 
@@ -26,7 +29,9 @@ type Registration implements INode {
   shipmentGroup: String
   shippedOn: DateTime
 
-  teamSize: Int
+  girlCount: Int!
+  boyCount: Int!
+  coachCount: Int!
   sizeConfirmedOn: DateTime
 
   event: Event!
@@ -41,6 +46,12 @@ input RegistrationInput {
   shipTo: AddressInput
 }
 
+input TeamSizeInput {
+  girlCount: Int!
+  boyCount: Int!
+  coachCount: Int!
+}
+
 extend type Query {
   getRegistration(id: ID!): Registration
   getProgramRegistrations(programId: ID!): [Registration!]!
@@ -50,12 +61,17 @@ extend type Query {
 extend type Mutation {
   registrationSetInvoiced(id: ID!, date: DateTime): Registration
   registrationClearInvoiced(id: ID!): Registration
+
   registrationSetPaid(id: ID!, date: DateTime): Registration
   registrationClearPaid(id: ID!): Registration
+
   registrationSetShipmentGroup(id: ID!, group: String): Registration
+
   registrationSetShipped(id: ID!, date: DateTime): Registration
   registrationClearShipped(id: ID!): Registration
-  registrationSetTeamSize(id: ID!, size: Int): Registration
+
+  registrationSetTeamSize(id: ID!, input: TeamSizeInput!): Registration
+
   registrationSetTeamSizeConfirmed(id: ID!, date: DateTime): Registration
   registrationClearTeamSizeConfirmed(id: ID!): Registration
 
