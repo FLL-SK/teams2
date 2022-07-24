@@ -40,8 +40,8 @@ mutation registrationSetShipmentGroup($id: ID!, $group: String!) {
   }
 }
 
-mutation registrationSetTeamSize($id: ID!, $size: Int!) {
-  registrationSetTeamSize(id: $id, size: $size) {
+mutation registrationSetTeamSize($id: ID!, $input: TeamSizeInput!) {
+  registrationSetTeamSize(id: $id, input: $input) {
     ...RegistrationBasicFragment
   }
 }
@@ -60,6 +60,18 @@ mutation registrationClearTeamSizeConfirmed($id: ID!) {
 
 mutation updateRegistration($id: ID!, $input: RegistrationInput!) {
   updateRegistration(id: $id, input: $input) {
+    ...RegistrationBasicFragment
+  }
+}
+
+mutation createRegistrationInvoice($id: ID!) {
+  createRegistrationInvoice(id: $id) {
+    ...RegistrationBasicFragment
+  }
+}
+
+mutation emailRegistrationInvoice($id: ID!) {
+  emailRegistrationInvoice(id: $id) {
     ...RegistrationBasicFragment
   }
 }

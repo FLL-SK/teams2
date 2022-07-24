@@ -1,11 +1,17 @@
-mutation createRegistrationInvoice($eventId: ID!, $teamId: ID!) {
-  createRegistrationInvoice(eventId: $eventId, teamId: $teamId) {
-    ...InvoiceFragment
+mutation createInvoiceItem($type: InvoiceItemType!, $refId: ID!, $item: InvoiceItemInput!) {
+  createInvoiceItem(type: $type, refId: $refId, item: $item) {
+    ...InvoiceItemFragment
   }
 }
 
-mutation emailInvoice($id: ID!) {
-  emailInvoice(id: $id) {
-    ...InvoiceFragment
+mutation updateInvoiceItem($id: ID!, $item: InvoiceItemInput!) {
+  updateInvoiceItem(id: $id, item: $item) {
+    ...InvoiceItemFragment
+  }
+}
+
+mutation deleteInvoiceItem($id: ID!) {
+  deleteInvoiceItem(id: $id) {
+    ...InvoiceItemFragment
   }
 }

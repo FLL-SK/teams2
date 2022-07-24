@@ -27,11 +27,4 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.program.addProgramManager(programId, userId),
   removeProgramManager: (_parent, { programId, userId }, { dataSources }) =>
     dataSources.program.removeProgramManager(programId, userId),
-
-  createProgramInvoiceItem: (_parent, { programId, item }, { dataSources }) =>
-    dataSources.invoice.createProgramInvoiceItem(programId, item),
-  updateProgramInvoiceItem: (_parent, { programId, itemId, item }, { dataSources }) =>
-    dataSources.invoice.updateProgramInvoiceItem(programId, itemId, item),
-  deleteProgramInvoiceItem: (_parent, { programId, itemId }, { dataSources }) =>
-    dataSources.invoice.deleteProgramInvoiceItem(programId, itemId),
 };

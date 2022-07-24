@@ -18,13 +18,18 @@ export interface RegistrationData {
 
   invoiceIssuedOn?: Date;
   invoiceIssuedBy?: ObjectId;
+  invoiceSentOn?: Date;
+  invoiceRef?: string;
+  invoiceNote?: string;
 
   paidOn?: Date;
 
   shipmentGroup?: string;
   shippedOn?: Date;
 
-  teamSize?: number;
+  girlCount?: number;
+  boyCount?: number;
+  coachCount?: number;
   sizeConfirmedOn?: Date;
 }
 
@@ -46,13 +51,21 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
 
   registeredOn: { type: Types.Date, required: true },
   registeredBy: { type: Types.ObjectId, ref: 'User', required: true },
+
   invoiceIssuedOn: { type: Types.Date },
   invoiceIssuedBy: { type: Types.ObjectId, ref: 'User' },
+  invoiceSentOn: { type: Types.Date },
+  invoiceRef: { type: Types.String },
+  invoiceNote: { type: Types.String },
+
   paidOn: { type: Types.Date },
+
   shipmentGroup: { type: Types.String },
   shippedOn: { type: Types.Date },
 
-  teamSize: { type: Types.Number, default: 0 },
+  girlCount: { type: Types.Number, default: 0 },
+  boyCount: { type: Types.Number, default: 0 },
+  coachCount: { type: Types.Number, default: 0 },
   sizeConfirmedOn: { type: Types.Date },
 });
 

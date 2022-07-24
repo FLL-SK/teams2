@@ -15,11 +15,18 @@ fragment RegistrationBasicFragment on Registration {
   registeredOn
 
   invoiceIssuedOn
+  invoiceSentOn
+  invoiceNote
+  invoiceRef
+
   paidOn
+
   shipmentGroup
   shippedOn
 
-  teamSize
+  girlCount
+  boyCount
+  coachCount
   sizeConfirmedOn
 }
 
@@ -56,5 +63,9 @@ fragment RegistrationFragment on Registration {
 
   team {
     ...TeamFragment
+  }
+
+  invoiceItems {
+    ...InvoiceItemFragment
   }
 }

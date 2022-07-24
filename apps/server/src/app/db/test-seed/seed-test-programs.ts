@@ -21,7 +21,7 @@ export const seedTestProgramData: TestSeedData[] = [
     startOffset: -100,
     endOffset: 100,
     managersIds: [],
-    managers: ['progmgr1@test', 'progmgr2@test'],
+    managers: ['devtest+progmgr1@fll.sk', 'devtest+progmgr2@fll.sk'],
     description: '**Program1 description**\n* a\n* b\n* c',
     invoiceItems: [
       { lineNo: 1, text: 'Item1', unitPrice: 100, quantity: 1, note: 'Note1' },
@@ -34,7 +34,7 @@ export const seedTestProgramData: TestSeedData[] = [
     startOffset: -100,
     endOffset: -2,
     managersIds: [],
-    managers: ['progmgr2@test'],
+    managers: ['devtest+progmgr2@fll.sk'],
     description: '**Program2 description**\n* a\n* b\n* c',
 
     invoiceItems: [{ lineNo: 1, text: 'Item21', unitPrice: 21, quantity: 1 }],
@@ -45,7 +45,7 @@ export const seedTestProgramData: TestSeedData[] = [
     endOffset: 20,
     deletedOn: new Date(),
     managersIds: [],
-    managers: ['progmgr2@test'],
+    managers: ['devtest+progmgr2@fll.sk'],
     invoiceItems: [],
   },
 ];

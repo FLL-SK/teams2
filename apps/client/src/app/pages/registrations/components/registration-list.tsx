@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Tag } from '../../../components/tag';
 import { formatDate } from '@teams2/dateutils';
 import { Index } from 'react-virtualized';
+import { formatTeamSize } from '../../../utils/format-teamsize';
 
 type RegistrationListProps = {
   rowCount: number;
@@ -89,7 +90,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       </ListCol>
 
       <ListCol>
-        <Text alignSelf="center">{data.teamSize ?? '-'}</Text>
+        <Text alignSelf="center">{formatTeamSize(data)}</Text>
       </ListCol>
 
       <ListCol>

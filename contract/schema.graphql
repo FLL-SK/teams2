@@ -5,7 +5,7 @@
 # import * from "./team.graphql"
 # import * from "./event.graphql"
 # import * from "./program.graphql"
-# import * from "./invoice.graphql"
+# import * from "./invoice-item.graphql"
 # import * from "./file.graphql"
 # import * from "./tag.graphql"
 # import * from "./note.graphql"

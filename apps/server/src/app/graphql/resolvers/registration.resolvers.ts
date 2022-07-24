@@ -1,6 +1,7 @@
 import { QueryResolvers, MutationResolvers, Registration } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
+import { emailRegistrationInvoice, createRegistrationInvoice } from '../../domains/invoice';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
@@ -20,13 +21,15 @@ export const typeResolver: Resolver<Registration> = {
     dataSources.user.getUser(registeredBy),
   invoiceIssuedByUser: async ({ invoiceIssuedBy }, _args, { dataSources }) =>
     dataSources.user.getUser(invoiceIssuedBy),
+  invoiceItems: async ({ id }, _args, { dataSources }) =>
+    dataSources.invoice.getRegistrationInvoiceItems(id),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
   updateRegistration: async (_parent, { id, input }, { dataSources }) =>
     dataSources.registration.updateRegistration(id, input),
-  registrationSetInvoiced: async (_parent, { id, date }, { dataSources }) =>
-    dataSources.registration.setInvoicedOn(id, date),
+  registrationSetInvoiced: async (_parent, { id, date, ref }, { dataSources }) =>
+    dataSources.registration.setInvoicedOn(id, date, ref),
   registrationClearInvoiced: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearInvoicedOn(id),
   registrationSetPaid: async (_parent, { id, date }, { dataSources }) =>
@@ -39,10 +42,20 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.registration.setShippedOn(id, date),
   registrationClearShipped: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearShippedOn(id),
-  registrationSetTeamSize: async (_parent, { id, size }, { dataSources }) =>
-    dataSources.registration.setTeamSize(id, size),
+  registrationSetTeamSize: async (_parent, { id, input }, { dataSources }) =>
+    dataSources.registration.setTeamSize(id, input),
   registrationSetTeamSizeConfirmed: async (_parent, { id, date }, { dataSources }) =>
     dataSources.registration.setTeamSizeConfirmedOn(id, date),
   registrationClearTeamSizeConfirmed: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearTeamSizeConfirmedOn(id),
+
+  createRegistrationInvoice: async (_parent, { id }, context) => {
+    const r = await createRegistrationInvoice(id, context);
+    if (r.invoiceIssuedOn) {
+      return emailRegistrationInvoice(id, context);
+    }
+    return r;
+  },
+  emailRegistrationInvoice: async (_parent, { id }, context) =>
+    emailRegistrationInvoice(id, context),
 };

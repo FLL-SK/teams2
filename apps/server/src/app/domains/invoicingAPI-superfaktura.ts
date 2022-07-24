@@ -29,10 +29,11 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
   }
 
   constructInvoice(
-    teamName: string,
+    name: string,
     billTo: Address,
     shipTo: Address | undefined,
-    items: Omit<InvoiceItem, 'id'>[]
+    items: Omit<InvoiceItem, 'id'>[],
+    note: string
   ): SFInvoice {
     const sfi: SFInvoice = {};
     sfi.Client = {
@@ -48,6 +49,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
 
       email: billTo.email,
       phone: billTo.phone,
+      update_addressbook: 1,
     };
 
     if (shipTo) {
@@ -58,8 +60,9 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     }
 
     sfi.Invoice = {
-      name: `Registrácia tímu ${teamName}`,
+      name: name,
       payment_type: 'transfer',
+      header_comment: note,
     };
 
     sfi.InvoiceItem = items.map((itm) => ({
@@ -78,7 +81,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     const config = getServerConfig();
 
     try {
-      log.debug('Posting to SF');
+      log.debug('Posting to SF %o', invoice);
       const result = await axios.post(
         `${config.invoicing.sf.apiUrl}/invoices/create`,
         'data=' + JSON.stringify(invoice),
