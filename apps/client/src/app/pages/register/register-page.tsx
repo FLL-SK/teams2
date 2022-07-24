@@ -141,6 +141,9 @@ export function RegisterPage() {
               if (a) {
                 u.shipTo = a;
               }
+              if (ub) {
+                u.shipTo = registerDetails.billTo;
+              }
               updateTeam({ variables: { id: teamId, input: u } });
               setRegisterDetails({ ...registerDetails, shipTo: a, useBillTo: ub });
             }}
