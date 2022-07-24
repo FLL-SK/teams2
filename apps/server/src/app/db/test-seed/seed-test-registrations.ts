@@ -11,6 +11,7 @@ import {
 } from '../../models';
 import { addDays } from 'date-fns';
 import { logger } from '@teams2/logger';
+import { admin_username } from './seed-test-users';
 
 type TestSeedData = Omit<
   RegistrationData,
@@ -62,7 +63,7 @@ export const seedTestRegistrationData: TestSeedData[] = [
 const log = logger('testseed:Registrations');
 
 export async function seedTestRegistrations() {
-  const adminUser = await userRepository.findOne({ email: 'admin@test' }).exec();
+  const adminUser = await userRepository.findOne({ email: admin_username }).exec();
   for (const d of seedTestRegistrationData) {
     const e = await eventRepository.findOne({ name: d.event }).exec();
     if (!e) {

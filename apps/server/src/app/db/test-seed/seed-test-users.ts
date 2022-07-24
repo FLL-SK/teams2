@@ -1,54 +1,56 @@
 import { UserData, userRepository } from '../../models';
 import { logger } from '@teams2/logger';
 
+export const admin_username = 'devtest+admin@fll.sk';
+
 export const seedTestUsersData: UserData[] = [
   {
-    username: 'admin@test',
+    username: admin_username,
     password: 'admin',
     isAdmin: true,
     name: 'Admin Fullname',
     phone: '01/123456789',
   },
   {
-    username: 'coach1@test',
+    username: 'devtest+coach1@fll.sk',
     password: 'coach1',
     name: 'Coach1 Fullname',
     phone: '02/123456789',
   },
   {
-    username: 'coach2@test',
+    username: 'devtest+coach2@fll.sk',
     password: 'coach2',
     name: 'Coach2 Fullname',
     phone: '03/123456789',
   },
   {
-    username: 'coach3@test',
+    username: 'devtest+coach3@fll.sk',
     password: 'coach3',
     name: 'Coach3 Fullname',
     phone: '04/123456789',
   },
   {
-    username: 'eventmgr1@test',
+    username: 'devtest+eventmgr1@fll.sk',
     password: 'eventmgr1',
     name: 'Eventmgr1 Fullname',
     phone: '05/123456789',
   },
 
   {
-    username: 'eventmgr2@test',
+    username: 'devtest+eventmgr2@fll.sk',
     password: 'eventmgr2',
     name: 'Eventmgr2 Fullname',
     phone: '06/123456789',
   },
 
   {
-    username: 'progmgr1@test',
+    username: 'devtest+progmgr1@fll.sk',
     password: 'progmgr1',
     name: 'Progmgr1 Fullname',
     phone: '07/123456789',
   },
   {
-    username: 'progmgr2@test',
+    username: 'devtest+progmgr2@fll.sk',
     password: 'progmgr2',
     name: 'Progmgr2 Fullname',
     phone: '08/123456789',

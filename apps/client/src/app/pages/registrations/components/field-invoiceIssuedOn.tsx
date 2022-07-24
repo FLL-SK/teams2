@@ -18,7 +18,7 @@ export const FieldInvoiceIssuedOn = (props: {
   const [setInvoiced] = useRegistrationSetInvoicedMutation();
   const [clearInvoiced] = useRegistrationClearInvoicedMutation();
   return (
-    <LabelValue label="Faktúra">
+    <LabelValue label="Faktúra vystavená">
       <SetClearDate
         canEdit={isAdmin()}
         date={registration.invoiceIssuedOn}

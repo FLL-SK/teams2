@@ -64,8 +64,8 @@ mutation updateRegistration($id: ID!, $input: RegistrationInput!) {
   }
 }
 
-mutation createRegistrationInvoice($id: ID!, $send: Boolean) {
-  createRegistrationInvoice(id: $id, send: $send) {
+mutation createRegistrationInvoice($id: ID!) {
+  createRegistrationInvoice(id: $id) {
     ...RegistrationBasicFragment
   }
 }

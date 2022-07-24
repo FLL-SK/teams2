@@ -49,6 +49,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
 
       email: billTo.email,
       phone: billTo.phone,
+      update_addressbook: 1,
     };
 
     if (shipTo) {
@@ -80,7 +81,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     const config = getServerConfig();
 
     try {
-      log.debug('Posting to SF');
+      log.debug('Posting to SF %o', invoice);
       const result = await axios.post(
         `${config.invoicing.sf.apiUrl}/invoices/create`,
         'data=' + JSON.stringify(invoice),

@@ -1,3 +1,4 @@
+import { appPath } from '@teams2/common';
 import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import React, { useState } from 'react';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
@@ -81,6 +82,16 @@ export function InvoicingPanel(props: PanelInvoicingProps) {
               </Box>
             </LabelValue>
             <FieldInvoiceIssuedOn registration={reg} />
+            {reg.invoiceRef && (
+              <LabelValue label="">
+                <Anchor
+                  disabled={!reg.invoiceRef}
+                  size="small"
+                  label="Otvoriť"
+                  href={appPath.sfShowInvoice(reg.invoiceRef)}
+                />
+              </LabelValue>
+            )}
             <FieldPaidOn registration={reg} />
           </LabelValueGroup>
           <Box direction="row" width="100%" justify="end">

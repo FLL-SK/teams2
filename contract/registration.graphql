@@ -81,6 +81,6 @@ extend type Mutation {
 
   updateRegistration(id: ID!, input: RegistrationInput!): Registration
 
-  createRegistrationInvoice(id: ID!, send: Boolean): Registration
+  createRegistrationInvoice(id: ID!): Registration
   emailRegistrationInvoice(id: ID!): Registration
 }

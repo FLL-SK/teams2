@@ -52,7 +52,7 @@ export async function createRegistrationInvoice(
     new Date(result.createdOn),
     result.id
   );
-  return RegistrationMapper.toRegistration(r);
+  return r;
 }
 
 export async function emailRegistrationInvoice(
@@ -92,7 +92,7 @@ export async function emailRegistrationInvoice(
   }
 
   const ni = await registrationRepository.findOneAndUpdate(
-    { id },
+    { _id: id },
     { invoiceSentOn: new Date() },
     { new: true }
   );

@@ -49,9 +49,9 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   registrationClearTeamSizeConfirmed: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearTeamSizeConfirmedOn(id),
 
-  createRegistrationInvoice: async (_parent, { id, send }, context) => {
+  createRegistrationInvoice: async (_parent, { id }, context) => {
     const r = await createRegistrationInvoice(id, context);
-    if (send) {
+    if (r.invoiceIssuedOn) {
       return emailRegistrationInvoice(id, context);
     }
     return r;
