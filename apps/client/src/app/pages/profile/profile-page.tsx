@@ -33,7 +33,7 @@ export function ProfilePage() {
   const [setAdmin] = useSetAdminMutation({ onCompleted: () => refetch() });
   const [updateUser] = useUpdateUserMutation();
 
-  if (!id || error) {
+  if (!id || (error && !loading)) {
     return <ErrorPage title="Profil nenájdený." />;
   }
 
