@@ -19,4 +19,5 @@ export const appPath = {
   page404: '/404',
   registrations: '/registrations',
   registration: (id = '') => `/registration/${id}`,
+  sfShowInvoice: (id = '') => `${process.env.NX_SF_API_URL}/invoices/view/${id}`,
 };

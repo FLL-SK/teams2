@@ -3,7 +3,6 @@ import {
   eventRepository,
   fileRepository,
   invoiceItemRepository,
-  invoiceRepository,
   noteRepository,
   programRepository,
   registrationRepository,
@@ -13,6 +12,7 @@ import {
 } from '../../models';
 import { seedTestEvents } from './seed-test-events';
 import { seedTestPrograms } from './seed-test-programs';
+import { seedTestRegistrations } from './seed-test-registrations';
 import { seedTestTeams } from './seed-test-teams';
 
 import { seedTestUsers } from './seed-test-users';
@@ -29,7 +29,6 @@ export async function testDbSeed() {
     await teamRepository.clean();
     await userRepository.clean();
     await invoiceItemRepository.clean();
-    await invoiceRepository.clean();
     await registrationRepository.clean();
     await fileRepository.clean();
 
@@ -41,6 +40,8 @@ export async function testDbSeed() {
     await seedTestPrograms();
     log.debug('Seeding events:');
     await seedTestEvents();
+    log.debug('Seeding registrations:');
+    await seedTestRegistrations();
   }
 
   return;

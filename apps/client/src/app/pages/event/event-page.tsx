@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Markdown, Text } from 'grommet';
@@ -15,13 +15,13 @@ import {
   InvoiceItemFragmentFragment,
   TeamBasicFragmentFragment,
   useAddEventManagerMutation,
-  useCreateEventInvoiceItemMutation,
-  useDeleteEventInvoiceItemMutation,
+  useCreateInvoiceItemMutation,
+  useDeleteInvoiceItemMutation,
   useGetEventQuery,
   useRemoveEventManagerMutation,
   useSwitchTeamEventMutation,
   useUnregisterTeamFromEventMutation,
-  useUpdateEventInvoiceItemMutation,
+  useUpdateInvoiceItemMutation,
   useUpdateEventMutation,
 } from '../../generated/graphql';
 import { BasicDialog } from '../../components/dialogs/basic-dialog';
@@ -34,6 +34,7 @@ import { useParams } from 'react-router-dom';
 import { fullAddress } from '../../utils/format-address';
 import { Group } from 'grommet-icons';
 import { LabelValueGroup } from '../../components/label-value-group';
+import { formatTeamSize } from '../../utils/format-teamsize';
 
 export function EventPage() {
   const { id } = useParams();
@@ -58,9 +59,9 @@ export function EventPage() {
   const [unregisterTeam] = useUnregisterTeamFromEventMutation();
   const [switchTeamEvent] = useSwitchTeamEventMutation();
 
-  const [createInvoiceItem] = useCreateEventInvoiceItemMutation({ onCompleted: () => refetch() });
-  const [updateInvoiceItem] = useUpdateEventInvoiceItemMutation({ onCompleted: () => refetch() });
-  const [deleteInvoiceItem] = useDeleteEventInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [createInvoiceItem] = useCreateInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({ onCompleted: () => refetch() });
 
   if (!id || eventError) {
     return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
@@ -69,8 +70,12 @@ export function EventPage() {
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const invoiceItems = event?.invoiceItems ?? [];
-  const eventTeams = [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
-    a.team.name < b.team.name ? -1 : 1
+  const eventRegs = useMemo(
+    () =>
+      [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
+        a.team.name < b.team.name ? -1 : 1
+      ),
+    [eventData]
   );
 
   return (
@@ -120,9 +125,7 @@ export function EventPage() {
           {invoiceItems.length > 0 && (
             <InvoiceItemList
               items={invoiceItems}
-              onRemove={(i) =>
-                deleteInvoiceItem({ variables: { eventId: id ?? '0', itemId: i.id } })
-              }
+              onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
               onClick={(item) => setInvoiceItemEdit(item)}
               editable={canEdit}
             />
@@ -138,24 +141,24 @@ export function EventPage() {
 
         <Panel title="Tímy">
           <Box direction="row" wrap>
-            {eventTeams.map((t, idx) => (
-              <ListRow2 key={t.id} columns="50px 1fr 80px auto" pad="small" align="center">
+            {eventRegs.map((reg, idx) => (
+              <ListRow2 key={reg.id} columns="50px 1fr 80px auto" pad="small" align="center">
                 <Text>{idx + 1}</Text>
                 <Box>
-                  <Text>{t.team.name}</Text>
-                  <Text size="small">{fullAddress(t.team.address)}</Text>
+                  <Text>{reg.team.name}</Text>
+                  <Text size="small">{fullAddress(reg.team.address)}</Text>
                 </Box>
                 <Box direction="row" gap="small">
                   <Group />
                   <Text>
-                    {t.teamSize}
-                    {!t.sizeConfirmedOn && ' ?'}
+                    {formatTeamSize(reg)}
+                    {!reg.sizeConfirmedOn && ' ?'}
                   </Text>
                 </Box>
 
                 <Box width="50px" justify="end">
                   <TeamMenu
-                    team={t.team}
+                    team={reg.team}
                     onUnregister={(tt) => setTeamToUnregister(tt)}
                     onChangeEvent={(tt) => setTeamToSwitch(tt)}
                     canEdit={canEdit}
@@ -196,10 +199,12 @@ export function EventPage() {
         }}
         onSubmit={(values) => {
           if (invoiceItemAdd) {
-            createInvoiceItem({ variables: { eventId: id ?? '0', item: omit(values, 'id') } });
+            createInvoiceItem({
+              variables: { type: 'event', refId: id ?? '0', item: omit(values, 'id') },
+            });
           } else {
             updateInvoiceItem({
-              variables: { eventId: id ?? '0', itemId: values.id ?? '0', item: values },
+              variables: { id: values.id ?? '0', item: values },
             });
           }
         }}

@@ -36,10 +36,11 @@ export class InvoicingAPI {
   }
 
   constructInvoice(
-    teamName: string,
+    name: string,
     billTo: Address,
     shipTo: Address | undefined,
-    items: Omit<InvoiceItem, 'id'>[]
+    items: Omit<InvoiceItem, 'id'>[],
+    note: string
   ) {
     return 'invoice';
   }

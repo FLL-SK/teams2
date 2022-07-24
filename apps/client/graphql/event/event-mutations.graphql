@@ -73,21 +73,3 @@ mutation switchTeamEvent($teamId: ID!, $oldEventId: ID!, $newEventId: ID!) {
     }
   }
 }
-
-mutation createEventInvoiceItem($eventId: ID!, $item: InvoiceItemInput!) {
-  createEventInvoiceItem(eventId: $eventId, item: $item) {
-    ...InvoiceItemFragment
-  }
-}
-
-mutation updateEventInvoiceItem($eventId: ID!, $itemId: ID!, $item: InvoiceItemInput!) {
-  updateEventInvoiceItem(eventId: $eventId, itemId: $itemId, item: $item) {
-    ...InvoiceItemFragment
-  }
-}
-
-mutation deleteEventInvoiceItem($eventId: ID!, $itemId: ID!) {
-  deleteEventInvoiceItem(eventId: $eventId, itemId: $itemId) {
-    ...InvoiceItemFragment
-  }
-}

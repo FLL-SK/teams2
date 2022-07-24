@@ -18,30 +18,30 @@ export const seedTestTeamsData: TestSeedData[] = [
   {
     name: 'Team1',
     coachesIds: [],
-    coaches: ['coach1@test'],
+    coaches: ['devtest+coach1@fll.sk'],
     notes: [
       {
-        user: 'admin@test',
+        user: 'devtest+admin@fll.sk',
         createdOffset: 0,
         text: 'Note 1 hwe oh wefoi weoioe oi o weoif',
       },
       {
-        user: 'progmgr1@test',
+        user: 'devtest+progmgr1@fll.sk',
         createdOffset: -2,
         text: 'Note 2 opw úo w po wepfo powe fpo powe ej w e ',
       },
       {
-        user: 'coach1@test',
+        user: 'devtest+coach1@fll.sk',
         createdOffset: -3,
         text: 'Note 3 rwefewfgwwwf  werf',
       },
       {
-        user: 'progmgr1@test',
+        user: 'devtest+progmgr1@fll.sk',
         createdOffset: -4,
         text: 'Note 4 eregww wwerf qo  izoiez orzoi wqezo ioi qiwz qw šr u',
       },
       {
-        user: 'admin@test',
+        user: 'devtest+admin@fll.sk',
         createdOffset: -5,
         text: 'Note 5 ergeg weu pouiew  ep euepu',
       },
@@ -53,7 +53,7 @@ export const seedTestTeamsData: TestSeedData[] = [
       zip: 'Adr Zip',
       countryCode: 'Adr Country',
       contactName: 'Adr Contact Name',
-      email: 'adr@test',
+      email: 'devtest+team1adr@fll.sk',
       phone: 'Adr Phone',
     },
 
@@ -67,7 +67,7 @@ export const seedTestTeamsData: TestSeedData[] = [
       vatNumber: 'Bill To VAT Number',
       taxNumber: 'Bill To Tax Number',
       contactName: 'Bill To Contact Name',
-      email: 'billTo@test',
+      email: 'devtest+team1billTo@fll.sk',
       phone: 'Bill To Phone',
     },
     shipTo: {
@@ -80,14 +80,14 @@ export const seedTestTeamsData: TestSeedData[] = [
       vatNumber: 'Ship To VAT Number',
       taxNumber: 'Ship To Tax Number',
       contactName: 'Ship To Contact Name',
-      email: 'shipTo@test',
+      email: 'devtest+team1shipTo@fll.sk',
       phone: 'Ship To Phone',
     },
   },
   {
     name: 'Team2',
     coachesIds: [],
-    coaches: ['coach2@test', 'coach3@test'],
+    coaches: ['devtest+coach2@fll.sk', 'devtest+coach3@fll.sk'],
     address: {
       name: '2 Adr name',
       street: '2 Adre street',
@@ -95,7 +95,7 @@ export const seedTestTeamsData: TestSeedData[] = [
       zip: '2 Adr Zip',
       countryCode: '2 Adr Country',
       contactName: '2 Adr Contact Name',
-      email: '2adr@test',
+      email: 'devtest+team2adr@fll.sk',
       phone: '2 Adr Phone',
     },
     billTo: {
@@ -108,13 +108,15 @@ export const seedTestTeamsData: TestSeedData[] = [
       vatNumber: '2 Bill To VAT Number',
       taxNumber: '2 Bill To Tax Number',
       contactName: '2 Bill To Contact Name',
-      email: '2 billTo@test',
+      email: 'devtest+team2billto@fll.sk',
       phone: '2 Bill To Phone',
     },
   },
   {
     name: 'Team3',
     coachesIds: [],
+    coaches: ['devtest+coach3@fll.sk'],
+
     address: {
       name: '3 Adr name',
       street: '3 Adre street',
@@ -122,10 +124,9 @@ export const seedTestTeamsData: TestSeedData[] = [
       zip: '3 Adr Zip',
       countryCode: '3 Adr Country',
       contactName: '3 Adr Contact Name',
-      email: '3adr@test',
+      email: 'devtest+team3adr@fll.sk',
       phone: '3 Adr Phone',
     },
-    coaches: ['coach3@test'],
   },
 ];
 

@@ -3,7 +3,7 @@ export * from './team.datasource';
 export * from './event.datasource';
 export * from './registration.datasource';
 export * from './program.datasource';
-export * from './invoice.datasource';
+export * from './invoice-item.datasource';
 export * from './file.datasource';
 export * from './tag.datasource';
 export * from './note.datasource';

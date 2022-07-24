@@ -4,9 +4,10 @@ import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { Registration, useRegistrationSetTeamSizeMutation } from '../../../generated/graphql';
+import { formatTeamSize } from '../../../utils/format-teamsize';
 
 export const FieldTeamSize = (props: {
-  registration: Pick<Registration, 'id' | 'teamSize' | 'teamId'>;
+  registration: Pick<Registration, 'id' | 'boyCount' | 'girlCount' | 'coachCount' | 'teamId'>;
 }) => {
   const { registration } = props;
   const { isAdmin, isTeamCoach } = useAppUser();
@@ -16,7 +17,7 @@ export const FieldTeamSize = (props: {
   return (
     <LabelValue label="Veľkosť tímu">
       <Box direction="row" width="100%" justify="between">
-        <Text>{registration.teamSize ?? '-'}</Text>
+        <Text>{formatTeamSize(registration)}</Text>
 
         {(isAdmin() || isTeamCoach(registration.teamId)) && (
           <Anchor size="small" label="Nastav" onClick={() => setShowDialog(true)} />
@@ -25,9 +26,9 @@ export const FieldTeamSize = (props: {
 
       <EditTeamSizeDialog
         show={showDialog}
-        size={registration.teamSize}
+        size={registration}
         onClose={() => setShowDialog(false)}
-        onSubmit={(size) => setTeamSize({ variables: { id: registration.id, size: Number(size) } })}
+        onSubmit={(size) => setTeamSize({ variables: { id: registration.id, input: size } })}
       />
     </LabelValue>
   );

@@ -8,6 +8,7 @@ export interface InvoiceItemData {
   invoiceId?: ObjectId;
   programId?: ObjectId;
   eventId?: ObjectId;
+  registrationId?: ObjectId;
 
   lineNo?: number;
   text: string;
@@ -26,8 +27,9 @@ export interface InvoiceItemModel extends Model<InvoiceItemData> {
 
 const schema = new Schema<InvoiceItemData>({
   invoiceId: { type: Types.ObjectId },
-  programId: { type: Types.ObjectId },
-  eventId: { type: Types.ObjectId },
+  programId: { type: Types.ObjectId, ref: 'Program' },
+  eventId: { type: Types.ObjectId, ref: 'Event' },
+  registrationId: { type: Types.ObjectId, ref: 'Registration' },
   lineNo: { type: Types.Number },
   text: { type: Types.String, required: true },
   note: { type: Types.String },
@@ -38,6 +40,7 @@ const schema = new Schema<InvoiceItemData>({
 schema.index({ invoiceId: 1 });
 schema.index({ programId: 1 });
 schema.index({ eventId: 1 });
+schema.index({ registrationId: 1 });
 
 schema.static('clean', function () {
   return this.deleteMany().exec();

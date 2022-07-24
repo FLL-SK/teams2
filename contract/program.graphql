@@ -4,7 +4,7 @@
 # import * from "./team.graphql"
 # import * from "./user.graphql"
 # import * from "./event.graphql"
-# import * from "./invoice.graphql"
+# import * from "./invoice-item.graphql"
 # import * from "./registration.graphql"
 
 type Program implements INode {
@@ -70,8 +70,4 @@ extend type Mutation {
 
   addProgramManager(programId: ID!, userId: ID!): Program!
   removeProgramManager(programId: ID!, userId: ID!): Program!
-
-  createProgramInvoiceItem(programId: ID!, item: InvoiceItemInput!): InvoiceItem!
-  deleteProgramInvoiceItem(programId: ID!, itemId: ID!): InvoiceItem!
-  updateProgramInvoiceItem(programId: ID!, itemId: ID!, item: InvoiceItemInput!): InvoiceItem!
 }
