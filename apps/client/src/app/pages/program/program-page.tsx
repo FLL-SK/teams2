@@ -16,15 +16,15 @@ import {
   useAddProgramFileMutation,
   useAddProgramManagerMutation,
   useCreateEventMutation,
-  useCreateProgramInvoiceItemMutation,
+  useCreateInvoiceItemMutation,
   useDeleteEventMutation,
-  useDeleteProgramInvoiceItemMutation,
+  useDeleteInvoiceItemMutation,
   useGetProgramFilesQuery,
   useGetProgramFileUploadUrlLazyQuery,
   useGetProgramQuery,
   useRemoveFileMutation,
   useRemoveProgramManagerMutation,
-  useUpdateProgramInvoiceItemMutation,
+  useUpdateInvoiceItemMutation,
   useUpdateProgramMutation,
 } from '../../generated/graphql';
 import { EventList } from '../../components/event-list';
@@ -72,13 +72,13 @@ export function ProgramPage() {
   const [createEvent] = useCreateEventMutation({ onCompleted: () => programRefetch() });
   const [deleteEvent] = useDeleteEventMutation({ onCompleted: () => programRefetch() });
 
-  const [createInvoiceItem] = useCreateProgramInvoiceItemMutation({
+  const [createInvoiceItem] = useCreateInvoiceItemMutation({
     onCompleted: () => programRefetch(),
   });
-  const [updateInvoiceItem] = useUpdateProgramInvoiceItemMutation({
+  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({
     onCompleted: () => programRefetch(),
   });
-  const [deleteInvoiceItem] = useDeleteProgramInvoiceItemMutation({
+  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({
     onCompleted: () => programRefetch(),
   });
 
@@ -196,9 +196,7 @@ export function ProgramPage() {
           {invoiceItems.length > 0 && (
             <InvoiceItemList
               items={invoiceItems}
-              onRemove={(i) =>
-                deleteInvoiceItem({ variables: { programId: id ?? '0', itemId: i.id } })
-              }
+              onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
               onClick={(item) => setInvoiceItemEdit(item)}
               editable={canEdit}
             />
@@ -266,10 +264,12 @@ export function ProgramPage() {
         }}
         onSubmit={(values) => {
           if (invoiceItemAdd) {
-            createInvoiceItem({ variables: { programId: id ?? '0', item: omit(values, 'id') } });
+            createInvoiceItem({
+              variables: { type: 'program', refId: id ?? '0', item: omit(values, 'id') },
+            });
           } else {
             updateInvoiceItem({
-              variables: { programId: id ?? '0', itemId: values.id ?? '0', item: values },
+              variables: { id: values.id ?? '0', item: values },
             });
           }
         }}

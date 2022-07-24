@@ -70,8 +70,4 @@ extend type Mutation {
 
   addProgramManager(programId: ID!, userId: ID!): Program!
   removeProgramManager(programId: ID!, userId: ID!): Program!
-
-  createProgramInvoiceItem(programId: ID!, item: InvoiceItemInput!): InvoiceItem!
-  deleteProgramInvoiceItem(programId: ID!, itemId: ID!): InvoiceItem!
-  updateProgramInvoiceItem(programId: ID!, itemId: ID!, item: InvoiceItemInput!): InvoiceItem!
 }

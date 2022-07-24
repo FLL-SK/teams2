@@ -90,8 +90,4 @@ extend type Mutation {
 
   addEventManager(eventId: ID!, userId: ID!): Event
   removeEventManager(eventId: ID!, userId: ID!): Event
-
-  createEventInvoiceItem(eventId: ID!, item: InvoiceItemInput!): InvoiceItem!
-  deleteEventInvoiceItem(eventId: ID!, itemId: ID!): InvoiceItem!
-  updateEventInvoiceItem(eventId: ID!, itemId: ID!, item: InvoiceItemInput!): InvoiceItem!
 }

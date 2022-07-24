@@ -59,4 +59,8 @@ fragment RegistrationFragment on Registration {
   team {
     ...TeamFragment
   }
+
+  invoiceItems {
+    ...InvoiceItemFragment
+  }
 }

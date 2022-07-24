@@ -15,13 +15,13 @@ import {
   InvoiceItemFragmentFragment,
   TeamBasicFragmentFragment,
   useAddEventManagerMutation,
-  useCreateEventInvoiceItemMutation,
-  useDeleteEventInvoiceItemMutation,
+  useCreateInvoiceItemMutation,
+  useDeleteInvoiceItemMutation,
   useGetEventQuery,
   useRemoveEventManagerMutation,
   useSwitchTeamEventMutation,
   useUnregisterTeamFromEventMutation,
-  useUpdateEventInvoiceItemMutation,
+  useUpdateInvoiceItemMutation,
   useUpdateEventMutation,
 } from '../../generated/graphql';
 import { BasicDialog } from '../../components/dialogs/basic-dialog';
@@ -59,9 +59,9 @@ export function EventPage() {
   const [unregisterTeam] = useUnregisterTeamFromEventMutation();
   const [switchTeamEvent] = useSwitchTeamEventMutation();
 
-  const [createInvoiceItem] = useCreateEventInvoiceItemMutation({ onCompleted: () => refetch() });
-  const [updateInvoiceItem] = useUpdateEventInvoiceItemMutation({ onCompleted: () => refetch() });
-  const [deleteInvoiceItem] = useDeleteEventInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [createInvoiceItem] = useCreateInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({ onCompleted: () => refetch() });
+  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({ onCompleted: () => refetch() });
 
   if (!id || eventError) {
     return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
@@ -70,7 +70,7 @@ export function EventPage() {
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const invoiceItems = event?.invoiceItems ?? [];
-  const eventRegs = React.useMemo(
+  const eventRegs = useMemo(
     () =>
       [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
         a.team.name < b.team.name ? -1 : 1
@@ -125,9 +125,7 @@ export function EventPage() {
           {invoiceItems.length > 0 && (
             <InvoiceItemList
               items={invoiceItems}
-              onRemove={(i) =>
-                deleteInvoiceItem({ variables: { eventId: id ?? '0', itemId: i.id } })
-              }
+              onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
               onClick={(item) => setInvoiceItemEdit(item)}
               editable={canEdit}
             />
@@ -201,10 +199,12 @@ export function EventPage() {
         }}
         onSubmit={(values) => {
           if (invoiceItemAdd) {
-            createInvoiceItem({ variables: { eventId: id ?? '0', item: omit(values, 'id') } });
+            createInvoiceItem({
+              variables: { type: 'event', refId: id ?? '0', item: omit(values, 'id') },
+            });
           } else {
             updateInvoiceItem({
-              variables: { eventId: id ?? '0', itemId: values.id ?? '0', item: values },
+              variables: { id: values.id ?? '0', item: values },
             });
           }
         }}

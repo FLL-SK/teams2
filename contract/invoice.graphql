@@ -6,6 +6,12 @@
 # import * from "./program.graphql"
 # import * from "./event.graphql"
 
+enum InvoiceItemType {
+  program
+  event
+  registration
+}
+
 type InvoiceItem {
   id: ID!
   lineNo: Int
@@ -17,11 +23,11 @@ type InvoiceItem {
 
 input InvoiceItemInput {
   id: ID
-  lineNo: Int
+  lineNo: Int!
   text: String!
   note: String
-  unitPrice: Float
-  quantity: Float
+  unitPrice: Float!
+  quantity: Float!
 }
 
 type Invoice {
@@ -41,4 +47,8 @@ type Invoice {
 extend type Mutation {
   createRegistrationInvoice(eventId: ID!, teamId: ID!): Invoice
   emailInvoice(id: ID!): Invoice
+
+  createInvoiceItem(type: InvoiceItemType!, refId: ID!, item: InvoiceItemInput!): InvoiceItem!
+  deleteInvoiceItem(id: ID!): InvoiceItem!
+  updateInvoiceItem(id: ID!, item: InvoiceItemInput!): InvoiceItem!
 }

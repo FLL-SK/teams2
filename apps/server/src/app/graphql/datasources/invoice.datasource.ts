@@ -2,11 +2,12 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { InvoiceItemData, invoiceItemRepository, invoiceRepository } from '../../models';
-import { Invoice, InvoiceItem, InvoiceItemInput } from '../../generated/graphql';
+import { Invoice, InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../generated/graphql';
 import { InvoiceItemMapper, InvoiceMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
+import { UpdateQuery } from 'mongoose';
 
 export class InvoiceDataSource extends BaseDataSource {
   constructor() {
@@ -33,7 +34,11 @@ export class InvoiceDataSource extends BaseDataSource {
   }
 
   async getEventInvoiceItems(eventId: ObjectId): Promise<InvoiceItem[]> {
-    const items = await invoiceItemRepository.find({ eventId }).lean().exec();
+    const items = await invoiceItemRepository
+      .find({ eventId })
+      .sort({ lineNo: 1, text: 1 })
+      .lean()
+      .exec();
     return items.map(InvoiceItemMapper.toInvoiceItem);
   }
 
@@ -46,12 +51,42 @@ export class InvoiceDataSource extends BaseDataSource {
     return items.map(InvoiceItemMapper.toInvoiceItem);
   }
 
-  async createInvoiceItem(item: InvoiceItemData): Promise<InvoiceItem> {
-    const newItem = await invoiceItemRepository.create(item);
+  async getRegistrationInvoiceItems(registrationId: ObjectId): Promise<InvoiceItem[]> {
+    const items = await invoiceItemRepository
+      .find({ registrationId })
+      .sort({ lineNo: 1, text: 1 })
+      .lean()
+      .exec();
+    return items.map(InvoiceItemMapper.toInvoiceItem);
+  }
+
+  async createInvoiceItem(
+    type: InvoiceItemType,
+    refId: ObjectId,
+    item: InvoiceItemData
+  ): Promise<InvoiceItem> {
+    this.userGuard.isAdmin() || this.userGuard.failed();
+    const ii: InvoiceItemData = { ...item };
+    switch (type) {
+      case 'event':
+        ii.eventId = refId;
+        break;
+      case 'program':
+        ii.programId = refId;
+        break;
+      case 'registration':
+        ii.registrationId = refId;
+        break;
+      default:
+        throw new Error('Unknown invoice item type');
+    }
+
+    const newItem = await invoiceItemRepository.create(ii);
     return InvoiceItemMapper.toInvoiceItem(newItem);
   }
 
   async updateInvoiceItem(itemId: ObjectId, item: InvoiceItemInput): Promise<InvoiceItem> {
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const newItem = await invoiceItemRepository
       .findOneAndUpdate({ _id: itemId }, { $set: { ...item } }, { new: true })
       .exec();
@@ -59,56 +94,13 @@ export class InvoiceDataSource extends BaseDataSource {
   }
 
   async deleteInvoiceItem(itemId: ObjectId): Promise<InvoiceItem> {
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const deletedItem = await invoiceItemRepository.findOneAndDelete({ _id: itemId }).exec();
     return InvoiceItemMapper.toInvoiceItem(deletedItem);
   }
 
-  async createProgramInvoiceItem(
-    programId: ObjectId,
-    item: InvoiceItemInput
-  ): Promise<InvoiceItem> {
-    //TODO admin and program manager only
-    return await this.createInvoiceItem({ quantity: 0, unitPrice: 0, ...item, programId });
-  }
-
-  async updateProgramInvoiceItem(
-    programId: ObjectId,
-    itemId: ObjectId,
-    item: InvoiceItemInput
-  ): Promise<InvoiceItem> {
-    //TODO admin and program manager only
-    const newItem = await this.updateInvoiceItem(itemId, item);
-    return newItem;
-  }
-
-  async deleteProgramInvoiceItem(programId: ObjectId, itemId: ObjectId): Promise<InvoiceItem> {
-    //TODO admin and program manager only
-
-    return this.deleteInvoiceItem(itemId);
-  }
-
-  async createEventInvoiceItem(eventId: ObjectId, item: InvoiceItemInput): Promise<InvoiceItem> {
-    //TODO admin and program manager only
-    return await this.createInvoiceItem({ quantity: 0, unitPrice: 0, ...item, eventId });
-  }
-
-  async updateEventInvoiceItem(
-    eventId: ObjectId,
-    itemId: ObjectId,
-    item: InvoiceItemInput
-  ): Promise<InvoiceItem> {
-    //TODO admin and program manager only
-    const newItem = await this.updateInvoiceItem(itemId, item);
-    return newItem;
-  }
-
-  async deleteEventInvoiceItem(programId: ObjectId, itemId: ObjectId): Promise<InvoiceItem> {
-    //TODO admin and program manager only
-
-    return this.deleteInvoiceItem(itemId);
-  }
-
   async setInvoiceSentOn(invoiceId: ObjectId, date: Date): Promise<Invoice> {
+    this.userGuard.isAdmin() || this.userGuard.failed();
     const invoice = await invoiceRepository
       .findOneAndUpdate({ _id: invoiceId }, { sentOn: date }, { new: true })
       .exec();

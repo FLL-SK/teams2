@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Anchor, Box, Paragraph, Spinner, Text } from 'grommet';
+import { Anchor, Box, Button, Paragraph, Spinner, Text } from 'grommet';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -14,6 +14,10 @@ import {
   useDeleteTagMutation,
   useAddTagToTeamMutation,
   useUpdateRegistrationMutation,
+  useCreateInvoiceItemMutation,
+  useUpdateInvoiceItemMutation,
+  useDeleteInvoiceItemMutation,
+  InvoiceItemFragmentFragment,
 } from '../../generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { LabelValueGroup } from '../../components/label-value-group';
@@ -30,6 +34,9 @@ import { appPath } from '@teams2/common';
 import { EditAddressDialog } from '../../components/dialogs/edit-address-dialog';
 import { EditContactDialog } from '../../components/dialogs/edit-contact-dialog';
 import { EditCompanyRegDialog } from '../../components/dialogs/edit-company-reg-dialog';
+import { InvoiceItemList } from '../../components/invoice-item-list';
+import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-item-dialog';
+import { omit } from 'lodash';
 
 const columnWidth = '460px';
 
@@ -44,6 +51,9 @@ export function RegistrationPage() {
   const [editShipToContact, setEditShipToContact] = useState(false);
   const [editBillToDetails, setEditBillToDetails] = useState(false);
 
+  const [invoiceItemAdd, setInvoiceItemAdd] = useState(false);
+  const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
+
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
   const [updateRegistration] = useUpdateRegistrationMutation();
@@ -52,6 +62,7 @@ export function RegistrationPage() {
     data: regData,
     loading: regLoading,
     error: regDataError,
+    refetch: regRefetch,
   } = useGetRegistrationQuery({ variables: { id: id ?? '0' } });
 
   const {
@@ -64,7 +75,12 @@ export function RegistrationPage() {
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
+  const [createInvoiceItem] = useCreateInvoiceItemMutation({ onCompleted: () => regRefetch() });
+  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({ onCompleted: () => regRefetch() });
+  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({ onCompleted: () => regRefetch() });
+
   const reg = regData?.getRegistration;
+  const invoiceItems = reg?.invoiceItems ?? [];
 
   const canEdit = isAdmin() || isTeamCoach(reg?.team.id);
 
@@ -114,6 +130,30 @@ export function RegistrationPage() {
                     <FieldTeamSize registration={reg} />
                     <FieldTeamSizeConfirmedOn registration={reg} />
                   </LabelValueGroup>
+                </Box>
+              </Panel>
+
+              <Panel title="Poplatky" gap="medium">
+                {invoiceItems.length === 0 && (
+                  <Text>
+                    Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný.
+                    Pridaním poplatku je možné definovať poplatky špecifické pre tento turnaj.
+                  </Text>
+                )}
+                {invoiceItems.length > 0 && (
+                  <InvoiceItemList
+                    items={invoiceItems}
+                    onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
+                    onClick={(item) => setInvoiceItemEdit(item)}
+                    editable={canEdit}
+                  />
+                )}
+                <Box direction="row">
+                  <Button
+                    label="Pridať poplatok"
+                    onClick={() => setInvoiceItemAdd(true)}
+                    disabled={!canEdit}
+                  />
                 </Box>
               </Panel>
 
@@ -247,61 +287,79 @@ export function RegistrationPage() {
               )}
             </PanelGroup>
           </Box>
-          {editBillToAddress && (
-            <EditAddressDialog
-              address={reg?.billTo}
-              onClose={() => setEditBillToAddress(false)}
-              onSubmit={(data) =>
-                updateRegistration({
-                  variables: { id: reg.id, input: { billTo: { ...reg.billTo, ...data } } },
-                })
+          <EditAddressDialog
+            show={editBillToAddress}
+            address={reg?.billTo}
+            onClose={() => setEditBillToAddress(false)}
+            onSubmit={(data) =>
+              updateRegistration({
+                variables: { id: reg.id, input: { billTo: { ...reg.billTo, ...data } } },
+              })
+            }
+          />
+          <EditAddressDialog
+            show={editShipToAddress}
+            address={reg?.shipTo}
+            onClose={() => setEditShipToAddress(false)}
+            onSubmit={(data) =>
+              updateRegistration({
+                variables: { id: reg.id, input: { shipTo: { ...reg.shipTo, ...data } } },
+              })
+            }
+          />
+
+          <EditContactDialog
+            show={editBillToContact}
+            contact={reg.billTo}
+            onClose={() => setEditBillToContact(false)}
+            onSubmit={(data) =>
+              updateRegistration({
+                variables: { id: reg.id, input: { billTo: { ...reg.billTo, ...data } } },
+              })
+            }
+          />
+
+          <EditContactDialog
+            show={editShipToContact}
+            contact={reg.shipTo}
+            onClose={() => setEditShipToContact(false)}
+            onSubmit={(data) =>
+              updateRegistration({
+                variables: { id: reg.id, input: { shipTo: { ...reg.shipTo, ...data } } },
+              })
+            }
+          />
+
+          <EditCompanyRegDialog
+            show={editBillToDetails}
+            companyReg={reg.shipTo}
+            onClose={() => setEditBillToDetails(false)}
+            onSubmit={(data) =>
+              updateRegistration({
+                variables: { id: reg.id, input: { billTo: { ...reg.billTo, ...data } } },
+              })
+            }
+          />
+
+          <EditInvoiceItemDialog
+            show={!!invoiceItemEdit || invoiceItemAdd}
+            item={invoiceItemEdit}
+            onClose={() => {
+              setInvoiceItemAdd(false);
+              setInvoiceItemEdit(undefined);
+            }}
+            onSubmit={(values) => {
+              if (invoiceItemAdd) {
+                createInvoiceItem({
+                  variables: { type: 'registration', refId: id ?? '0', item: omit(values, 'id') },
+                });
+              } else {
+                updateInvoiceItem({
+                  variables: { id: values.id ?? '0', item: values },
+                });
               }
-            />
-          )}
-          {editShipToAddress && (
-            <EditAddressDialog
-              address={reg?.shipTo}
-              onClose={() => setEditShipToAddress(false)}
-              onSubmit={(data) =>
-                updateRegistration({
-                  variables: { id: reg.id, input: { shipTo: { ...reg.shipTo, ...data } } },
-                })
-              }
-            />
-          )}
-          {editBillToContact && (
-            <EditContactDialog
-              contact={reg.billTo}
-              onClose={() => setEditBillToContact(false)}
-              onSubmit={(data) =>
-                updateRegistration({
-                  variables: { id: reg.id, input: { billTo: { ...reg.billTo, ...data } } },
-                })
-              }
-            />
-          )}
-          {editShipToContact && (
-            <EditContactDialog
-              contact={reg.shipTo}
-              onClose={() => setEditShipToContact(false)}
-              onSubmit={(data) =>
-                updateRegistration({
-                  variables: { id: reg.id, input: { shipTo: { ...reg.shipTo, ...data } } },
-                })
-              }
-            />
-          )}
-          {editBillToDetails && (
-            <EditCompanyRegDialog
-              companyReg={reg.shipTo}
-              onClose={() => setEditBillToDetails(false)}
-              onSubmit={(data) =>
-                updateRegistration({
-                  variables: { id: reg.id, input: { billTo: { ...reg.billTo, ...data } } },
-                })
-              }
-            />
-          )}
+            }}
+          />
         </>
       )}
     </BasePage>

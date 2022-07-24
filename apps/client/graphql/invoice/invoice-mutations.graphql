@@ -9,3 +9,21 @@ mutation emailInvoice($id: ID!) {
     ...InvoiceFragment
   }
 }
+
+mutation createInvoiceItem($type: InvoiceItemType!, $refId: ID!, $item: InvoiceItemInput!) {
+  createInvoiceItem(type: $type, refId: $refId, item: $item) {
+    ...InvoiceItemFragment
+  }
+}
+
+mutation updateInvoiceItem($id: ID!, $item: InvoiceItemInput!) {
+  updateInvoiceItem(id: $id, item: $item) {
+    ...InvoiceItemFragment
+  }
+}
+
+mutation deleteInvoiceItem($id: ID!) {
+  deleteInvoiceItem(id: $id) {
+    ...InvoiceItemFragment
+  }
+}
