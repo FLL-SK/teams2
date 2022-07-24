@@ -30,24 +30,7 @@ input InvoiceItemInput {
   quantity: Float!
 }
 
-type Invoice {
-  id: ID!
-  number: String!
-  total: Float!
-  teamId: ID
-  eventId: ID
-  issuedOn: DateTime!
-  sentOn: DateTime
-  paidOn: DateTime
-
-  team: Team
-  event: Event
-}
-
 extend type Mutation {
-  createRegistrationInvoice(eventId: ID!, teamId: ID!): Invoice
-  emailInvoice(id: ID!): Invoice
-
   createInvoiceItem(type: InvoiceItemType!, refId: ID!, item: InvoiceItemInput!): InvoiceItem!
   deleteInvoiceItem(id: ID!): InvoiceItem!
   updateInvoiceItem(id: ID!, item: InvoiceItemInput!): InvoiceItem!

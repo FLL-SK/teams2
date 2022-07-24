@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
-import { EventList } from '../../components/event-list';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
@@ -76,16 +75,7 @@ export function TeamPage() {
             !showActiveEventsOnly ||
             (reg.event.date ?? '').substring(0, 10) >= today)
       ),
-    [team, showActiveEventsOnly, today]
-  );
-
-  const activeRegistrations = useMemo(
-    () =>
-      (team?.registrations ?? []).filter(
-        (et) =>
-          !et.event.deletedOn && (!et.event.date || (et.event.date ?? '').substring(0, 10) >= today)
-      ),
-    [team, today]
+    [showActiveEventsOnly, team?.registrations, today]
   );
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
@@ -123,7 +113,7 @@ export function TeamPage() {
             <Button
               label="Registrovať tím"
               onClick={() => navigate(appPath.register(id))}
-              disabled={activeRegistrations.length > 0}
+              disabled={registrations.length > 0}
             />
             <CheckBox
               toggle
@@ -132,7 +122,7 @@ export function TeamPage() {
               onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
             />
           </Box>
-          <TeamRegistrationsList registrations={activeRegistrations} />
+          <TeamRegistrationsList registrations={registrations} />
         </Panel>
 
         {canEdit && (

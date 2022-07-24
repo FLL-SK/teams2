@@ -5,7 +5,7 @@
 # import * from "./user.graphql"
 # import * from "./event.graphql"
 # import * from "./program.graphql"
-# import * from "./invoice.graphql"
+# import * from "./invoice-item.graphql"
 
 type Registration implements INode {
   id: ID!
@@ -23,6 +23,9 @@ type Registration implements INode {
 
   invoiceIssuedOn: DateTime
   invoiceIssuedBy: ID!
+  invoiceSentOn: DateTime
+  invoiceNote: String
+  invoiceRef: String
 
   paidOn: DateTime
 
@@ -44,6 +47,7 @@ type Registration implements INode {
 input RegistrationInput {
   billTo: AddressInput
   shipTo: AddressInput
+  invoiceNote: String
 }
 
 input TeamSizeInput {
@@ -59,7 +63,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  registrationSetInvoiced(id: ID!, date: DateTime): Registration
+  registrationSetInvoiced(id: ID!, date: DateTime, ref: String): Registration
   registrationClearInvoiced(id: ID!): Registration
 
   registrationSetPaid(id: ID!, date: DateTime): Registration
@@ -76,4 +80,7 @@ extend type Mutation {
   registrationClearTeamSizeConfirmed(id: ID!): Registration
 
   updateRegistration(id: ID!, input: RegistrationInput!): Registration
+
+  createRegistrationInvoice(id: ID!, send: Boolean): Registration
+  emailRegistrationInvoice(id: ID!): Registration
 }

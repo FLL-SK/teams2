@@ -29,10 +29,11 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
   }
 
   constructInvoice(
-    teamName: string,
+    name: string,
     billTo: Address,
     shipTo: Address | undefined,
-    items: Omit<InvoiceItem, 'id'>[]
+    items: Omit<InvoiceItem, 'id'>[],
+    note: string
   ): SFInvoice {
     const sfi: SFInvoice = {};
     sfi.Client = {
@@ -58,8 +59,9 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     }
 
     sfi.Invoice = {
-      name: `Registrácia tímu ${teamName}`,
+      name: name,
       payment_type: 'transfer',
+      header_comment: note,
     };
 
     sfi.InvoiceItem = items.map((itm) => ({

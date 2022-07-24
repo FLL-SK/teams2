@@ -63,3 +63,15 @@ mutation updateRegistration($id: ID!, $input: RegistrationInput!) {
     ...RegistrationBasicFragment
   }
 }
+
+mutation createRegistrationInvoice($id: ID!, $send: Boolean) {
+  createRegistrationInvoice(id: $id, send: $send) {
+    ...RegistrationBasicFragment
+  }
+}
+
+mutation emailRegistrationInvoice($id: ID!) {
+  emailRegistrationInvoice(id: $id) {
+    ...RegistrationBasicFragment
+  }
+}

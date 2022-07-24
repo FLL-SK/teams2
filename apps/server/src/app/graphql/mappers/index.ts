@@ -5,7 +5,6 @@ export * from './registration.mapper';
 export * from './program.mapper';
 export * from './address.mapper';
 export * from './invoice-item.mapper';
-export * from './invoice.mapper';
 export * from './file.mapper';
 export * from './tag.mapper';
 export * from './note.mapper';

@@ -1,15 +1,3 @@
-mutation createRegistrationInvoice($eventId: ID!, $teamId: ID!) {
-  createRegistrationInvoice(eventId: $eventId, teamId: $teamId) {
-    ...InvoiceFragment
-  }
-}
-
-mutation emailInvoice($id: ID!) {
-  emailInvoice(id: $id) {
-    ...InvoiceFragment
-  }
-}
-
 mutation createInvoiceItem($type: InvoiceItemType!, $refId: ID!, $item: InvoiceItemInput!) {
   createInvoiceItem(type: $type, refId: $refId, item: $item) {
     ...InvoiceItemFragment

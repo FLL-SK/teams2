@@ -19,9 +19,12 @@ export const RegistrationMapper = {
       registeredOn: registration.registeredOn,
       registeredBy: registration.registeredBy,
 
-      invoiceItems: [],
       invoiceIssuedOn: registration.invoiceIssuedOn,
       invoiceIssuedBy: registration.invoiceIssuedBy,
+      invoiceSentOn: registration.invoiceSentOn,
+      invoiceRef: registration.invoiceRef,
+      invoiceNote: registration.invoiceNote,
+
       paidOn: registration.paidOn,
 
       shipmentGroup: registration.shipmentGroup,
@@ -33,6 +36,7 @@ export const RegistrationMapper = {
 
       sizeConfirmedOn: registration.sizeConfirmedOn,
 
+      invoiceItems: [],
       team: null,
       event: null,
       program: null,

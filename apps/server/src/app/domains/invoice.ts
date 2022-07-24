@@ -1,40 +1,27 @@
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { Invoice } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
-import { InvoiceMapper } from '../graphql/mappers';
-import { InvoiceData, invoiceItemRepository, invoiceRepository } from '../models';
 import { InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
+import { Registration } from '../generated/graphql';
+import { RegistrationMapper } from '../graphql/mappers';
+import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
 
 const logLib = logger('domain:Invoice');
 
 export async function createRegistrationInvoice(
-  eventId: ObjectId,
-  teamId: ObjectId,
+  registrationId: ObjectId,
   ctx: ApolloContext
-): Promise<Invoice> {
+): Promise<Registration> {
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
-  log.debug(`eventId: ${eventId}, teamId: ${teamId}`);
-  const event = await dataSources.event.getEvent(eventId);
-  // load team
-  const team = await dataSources.team.getTeam(teamId);
-  // load eventInvoiceItems
-  const eventInvoiceItems = await invoiceItemRepository
-    .find({ eventId })
-    .sort({ lineNo: 1, text: 1 })
-    .lean()
-    .exec();
-  // load program invoice items
-  const programInvoiceItems = await invoiceItemRepository
-    .find({ programId: event.programId })
-    .sort({ lineNo: 1, text: 1 })
-    .lean()
-    .exec();
+  log.debug(`registrationId: ${registrationId}`);
+  const reg = await registrationRepository.findById(registrationId).lean().exec();
+  const team = await teamRepository.findById(reg.teamId).lean().exec();
+  const items = await invoiceItemRepository.find({ registrationId }).lean().exec();
 
   // create invoice
   let api: InvoicingAPI;
@@ -43,10 +30,11 @@ export async function createRegistrationInvoice(
     api = new InvoicingAPISuperfaktura();
   }
   const invoicePost = api.constructInvoice(
-    team.name,
-    team.billTo,
-    team.shipTo,
-    eventInvoiceItems.length > 0 ? eventInvoiceItems : programInvoiceItems
+    `Registrácia tímu ${team.name}`,
+    reg.billTo,
+    reg.shipTo,
+    items,
+    reg.invoiceNote
   );
 
   // post invoice
@@ -58,26 +46,27 @@ export async function createRegistrationInvoice(
     return null;
   }
 
-  const inv: InvoiceData = {
-    eventId,
-    teamId,
-    number: result.id,
-    issuedOn: new Date(result.createdOn),
-    total: result.total,
-  };
-  const invoice = await invoiceRepository.create(inv);
-  return InvoiceMapper.toInvoice(invoice);
+  // update registration
+  const r = await dataSources.registration.setInvoicedOn(
+    reg._id,
+    new Date(result.createdOn),
+    result.id
+  );
+  return RegistrationMapper.toRegistration(r);
 }
 
-export async function emailInvoice(id: ObjectId, ctx: ApolloContext): Promise<Invoice> {
+export async function emailRegistrationInvoice(
+  id: ObjectId,
+  ctx: ApolloContext
+): Promise<Registration> {
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('emailInv');
   log.debug(`id: ${id}`);
 
-  const invoice = await dataSources.invoice.getInvoice(id);
-  const team = await dataSources.team.getTeam(invoice.teamId);
-  const coachEmails = (await dataSources.team.getTeamCoaches(invoice.teamId)).map(
+  const registration = await registrationRepository.findById(id).lean().exec();
+  const team = await teamRepository.findById(registration.teamId).lean().exec();
+  const coachEmails = (await dataSources.team.getTeamCoaches(registration.teamId)).map(
     (c) => c.username
   );
 
@@ -90,7 +79,7 @@ export async function emailInvoice(id: ObjectId, ctx: ApolloContext): Promise<In
   //TODO add internal email to bcc
 
   const result = await api.emailInvoice({
-    id: invoice.number,
+    id: registration.invoiceRef,
     to: team.billTo.email,
     cc: coachEmails,
     subject: `Faktura ${team.name}`,
@@ -102,7 +91,11 @@ export async function emailInvoice(id: ObjectId, ctx: ApolloContext): Promise<In
     return null;
   }
 
-  const ni = await dataSources.invoice.setInvoiceSentOn(invoice.id, new Date());
+  const ni = await registrationRepository.findOneAndUpdate(
+    { id },
+    { invoiceSentOn: new Date() },
+    { new: true }
+  );
 
-  return ni;
+  return RegistrationMapper.toRegistration(ni);
 }

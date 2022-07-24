@@ -1,15 +1,14 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import { InvoiceItemData, invoiceItemRepository, invoiceRepository } from '../../models';
-import { Invoice, InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../generated/graphql';
-import { InvoiceItemMapper, InvoiceMapper } from '../mappers';
+import { InvoiceItemData, invoiceItemRepository } from '../../models';
+import { InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../generated/graphql';
+import { InvoiceItemMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
-import { UpdateQuery } from 'mongoose';
 
-export class InvoiceDataSource extends BaseDataSource {
+export class InvoiceItemDataSource extends BaseDataSource {
   constructor() {
     super();
     this.logBase = logger('DS:Invoice');
@@ -17,15 +16,6 @@ export class InvoiceDataSource extends BaseDataSource {
 
   initialize(config: DataSourceConfig<ApolloContext>) {
     super.initialize(config);
-  }
-
-  async getInvoice(id: ObjectId): Promise<Invoice> {
-    return InvoiceMapper.toInvoice(await invoiceRepository.findById(id).exec());
-  }
-
-  async getInvoices(): Promise<Invoice[]> {
-    const invoices = await invoiceRepository.find().exec();
-    return invoices.map((i) => InvoiceMapper.toInvoice(i));
   }
 
   async getInvoiceItems(invoiceId: ObjectId): Promise<InvoiceItem[]> {
@@ -97,13 +87,5 @@ export class InvoiceDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.failed();
     const deletedItem = await invoiceItemRepository.findOneAndDelete({ _id: itemId }).exec();
     return InvoiceItemMapper.toInvoiceItem(deletedItem);
-  }
-
-  async setInvoiceSentOn(invoiceId: ObjectId, date: Date): Promise<Invoice> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
-    const invoice = await invoiceRepository
-      .findOneAndUpdate({ _id: invoiceId }, { sentOn: date }, { new: true })
-      .exec();
-    return InvoiceMapper.toInvoice(invoice);
   }
 }

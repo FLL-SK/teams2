@@ -1,6 +1,7 @@
 import { QueryResolvers, MutationResolvers, Registration } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
+import { emailRegistrationInvoice, createRegistrationInvoice } from '../../domains/invoice';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
@@ -27,8 +28,8 @@ export const typeResolver: Resolver<Registration> = {
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
   updateRegistration: async (_parent, { id, input }, { dataSources }) =>
     dataSources.registration.updateRegistration(id, input),
-  registrationSetInvoiced: async (_parent, { id, date }, { dataSources }) =>
-    dataSources.registration.setInvoicedOn(id, date),
+  registrationSetInvoiced: async (_parent, { id, date, ref }, { dataSources }) =>
+    dataSources.registration.setInvoicedOn(id, date, ref),
   registrationClearInvoiced: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearInvoicedOn(id),
   registrationSetPaid: async (_parent, { id, date }, { dataSources }) =>
@@ -47,4 +48,14 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.registration.setTeamSizeConfirmedOn(id, date),
   registrationClearTeamSizeConfirmed: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.clearTeamSizeConfirmedOn(id),
+
+  createRegistrationInvoice: async (_parent, { id, send }, context) => {
+    const r = await createRegistrationInvoice(id, context);
+    if (send) {
+      return emailRegistrationInvoice(id, context);
+    }
+    return r;
+  },
+  emailRegistrationInvoice: async (_parent, { id }, context) =>
+    emailRegistrationInvoice(id, context),
 };

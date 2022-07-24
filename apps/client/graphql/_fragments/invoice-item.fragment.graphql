@@ -1,0 +1,8 @@
+fragment InvoiceItemFragment on InvoiceItem {
+  id
+  lineNo
+  text
+  note
+  unitPrice
+  quantity
+}

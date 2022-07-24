@@ -91,10 +91,14 @@ export class RegistrationDataSource extends BaseDataSource {
     return regs.map(RegistrationMapper.toRegistration);
   }
 
-  async setInvoicedOn(id: ObjectId, invoiceIssuedOn: Date): Promise<Registration> {
+  async setInvoicedOn(
+    id: ObjectId,
+    invoiceIssuedOn?: Date,
+    invoiceRef?: string
+  ): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.failed();
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { invoiceIssuedOn }, { new: true })
+      .findByIdAndUpdate(id, { invoiceIssuedOn, invoiceRef }, { new: true })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }

@@ -3,7 +3,6 @@ import {
   eventRepository,
   fileRepository,
   invoiceItemRepository,
-  invoiceRepository,
   noteRepository,
   programRepository,
   registrationRepository,
@@ -30,7 +29,6 @@ export async function testDbSeed() {
     await teamRepository.clean();
     await userRepository.clean();
     await invoiceItemRepository.clean();
-    await invoiceRepository.clean();
     await registrationRepository.clean();
     await fileRepository.clean();
 

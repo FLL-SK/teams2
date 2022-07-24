@@ -18,6 +18,9 @@ export interface RegistrationData {
 
   invoiceIssuedOn?: Date;
   invoiceIssuedBy?: ObjectId;
+  invoiceSentOn?: Date;
+  invoiceRef?: string;
+  invoiceNote?: string;
 
   paidOn?: Date;
 
@@ -48,9 +51,15 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
 
   registeredOn: { type: Types.Date, required: true },
   registeredBy: { type: Types.ObjectId, ref: 'User', required: true },
+
   invoiceIssuedOn: { type: Types.Date },
   invoiceIssuedBy: { type: Types.ObjectId, ref: 'User' },
+  invoiceSentOn: { type: Types.Date },
+  invoiceRef: { type: Types.String },
+  invoiceNote: { type: Types.String },
+
   paidOn: { type: Types.Date },
+
   shipmentGroup: { type: Types.String },
   shippedOn: { type: Types.Date },
 

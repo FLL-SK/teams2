@@ -15,7 +15,12 @@ fragment RegistrationBasicFragment on Registration {
   registeredOn
 
   invoiceIssuedOn
+  invoiceSentOn
+  invoiceNote
+  invoiceRef
+
   paidOn
+
   shipmentGroup
   shippedOn
 

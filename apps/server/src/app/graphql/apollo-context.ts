@@ -2,7 +2,7 @@ import {
   EventDataSource,
   RegistrationDataSource,
   FileDataSource,
-  InvoiceDataSource,
+  InvoiceItemDataSource,
   NoteDataSource,
   ProgramDataSource,
   TagDataSource,
@@ -28,7 +28,7 @@ export type ApolloContextDataSources = {
   registration: RegistrationDataSource;
   team: TeamDataSource;
   program: ProgramDataSource;
-  invoice: InvoiceDataSource;
+  invoice: InvoiceItemDataSource;
   file: FileDataSource;
   tag: TagDataSource;
   note: NoteDataSource;
