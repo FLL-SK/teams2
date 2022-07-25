@@ -2,11 +2,13 @@ import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
 import { useGetUsersQuery } from '../generated/graphql';
+import { formatFullName } from '../utils/format-fullname';
 
 interface UserOption {
   id: string;
   username: string;
-  name: string;
+  firstName: string;
+  lastName: string;
 }
 
 interface SelectUserProps {
@@ -31,7 +33,7 @@ export function SelectUser(props: SelectUserProps) {
   ) : (
     <Select
       options={options}
-      labelKey={(u) => `(${u.username}) ${u.name}`}
+      labelKey={(u) => `(${u.username}) ${formatFullName(u.firstName, u.lastName)}`}
       onChange={({ option }) => {
         onSelect && onSelect(option);
         onClose();

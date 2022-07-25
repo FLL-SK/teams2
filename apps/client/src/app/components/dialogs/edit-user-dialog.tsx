@@ -10,7 +10,8 @@ interface EditUserDialogProps {
 }
 
 export interface EditUserDialogFields {
-  name?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   phone?: string | null;
 }
 
@@ -20,7 +21,8 @@ export function EditUserDialog(props: EditUserDialogProps) {
 
   useEffect(() => {
     setFormValues({
-      name: user?.name ?? '',
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
       phone: user?.phone ?? '',
     });
   }, [user]);
@@ -42,7 +44,8 @@ export function EditUserDialog(props: EditUserDialogProps) {
         value={formValues}
         onChange={setFormValues}
       >
-        <FormField label="Meno" name="name" required />
+        <FormField label="Meno" name="firstName" required />
+        <FormField label="Priezvisko" name="lastName" required />
         <FormField label="Telefón" name="phone" required />
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />

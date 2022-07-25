@@ -7,6 +7,7 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import { RegistrationFragmentFragment } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
+import { formatFullName } from '../../../utils/format-fullname';
 
 interface PanelDetailsProps {
   registration: RegistrationFragmentFragment;
@@ -38,7 +39,7 @@ export function PanelDetails(props: PanelDetailsProps) {
           {reg.team.coaches
             .filter((coach) => !coach.deletedOn)
             .map((coach) => (
-              <LabelValue label={coach.name} key={coach.id}>
+              <LabelValue label={formatFullName(coach.firstName, coach.lastName)} key={coach.id}>
                 <Text>{coach.username}</Text>
                 <Text>{coach.phone}</Text>
               </LabelValue>

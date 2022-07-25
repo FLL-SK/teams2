@@ -7,6 +7,7 @@ import { UserList } from './components/user-list';
 import { Close, Filter } from 'grommet-icons';
 import UserSidebar from './components/user-sidebar';
 import { BasePage } from '../../components/base-page';
+import { formatFullName } from '../../utils/format-fullname';
 
 export function UserListPage() {
   const { isAdmin } = useAppUser();
@@ -21,7 +22,10 @@ export function UserListPage() {
   const searchList = useMemo(
     () =>
       (usersData?.getUsers ?? []).map((t) => ({
-        text: `${t.name.toLocaleLowerCase()} ${t.username.toLocaleLowerCase()}`,
+        text: `${formatFullName(
+          t.firstName,
+          t.lastName
+        ).toLocaleLowerCase()} ${t.username.toLocaleLowerCase()}`,
         value: t,
       })),
     [usersData]

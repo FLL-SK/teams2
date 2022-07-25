@@ -6,8 +6,10 @@ const Types = Schema.Types;
 
 export interface UserData {
   _id?: ObjectId;
+  name?: string; // deprecated
   username: string;
-  name?: string;
+  firstName: string;
+  lastName: string;
   phone?: string;
   deletedOn?: Date;
   deletedBy?: ObjectId;
@@ -28,7 +30,9 @@ export interface UserModel extends Model<UserData> {
 
 const schema = new Schema<UserData, UserModel>({
   username: { type: Types.String, required: true },
-  name: { type: Types.String },
+  name: { type: Types.String }, // deprecated
+  firstName: { type: Types.String },
+  lastName: { type: Types.String },
   password: { type: Types.String, required: true }, // hashed password
   phone: { type: Types.String },
   deletedOn: { type: Types.Date },

@@ -6,6 +6,7 @@ import { UserListFragmentFragment } from '../../../generated/graphql';
 import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
+import { formatFullName } from '../../../utils/format-fullname';
 
 type UserListProps = {
   rowCount: number;
@@ -27,7 +28,7 @@ function UserListRow(props: UserListRowProps) {
         <TextStriked striked={!!data.deletedOn}>{data.username}</TextStriked>
       </ListCol>
       <ListCol>
-        <Text>{data.name ?? '-'}</Text>
+        <Text>{formatFullName(data.firstName, data.lastName) ?? '-'}</Text>
       </ListCol>
       <ListCol>
         <Text>{data.phone ?? '-'}</Text>

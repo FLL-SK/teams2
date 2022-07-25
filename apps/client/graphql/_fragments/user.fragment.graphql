@@ -1,8 +1,14 @@
-fragment UserListFragment on User {
+fragment UserBasicFragment on User {
   id
-  name
   username
+  firstName
+  lastName
   phone
+}
+
+fragment UserListFragment on User {
+  ...UserBasicFragment
+
   deletedOn
 
   isAdmin

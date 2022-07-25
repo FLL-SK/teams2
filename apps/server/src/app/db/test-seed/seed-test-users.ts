@@ -8,51 +8,59 @@ export const seedTestUsersData: UserData[] = [
     username: admin_username,
     password: 'admin',
     isAdmin: true,
-    name: 'Admin Fullname',
+    firstName: 'AdminFirst',
+    lastName: 'AdminLast',
     phone: '01/123456789',
   },
   {
     username: 'devtest+coach1@fll.sk',
     password: 'coach1',
-    name: 'Coach1 Fullname',
+    firstName: 'CoachFirst1',
+    lastName: 'CoachLast1',
     phone: '02/123456789',
   },
   {
     username: 'devtest+coach2@fll.sk',
     password: 'coach2',
-    name: 'Coach2 Fullname',
+    firstName: 'CoachFirst2',
+    lastName: 'CoachLast2',
     phone: '03/123456789',
   },
   {
     username: 'devtest+coach3@fll.sk',
     password: 'coach3',
-    name: 'Coach3 Fullname',
+    firstName: 'CoachFirst3',
+    lastName: 'CoachLast3',
     phone: '04/123456789',
   },
   {
     username: 'devtest+eventmgr1@fll.sk',
     password: 'eventmgr1',
-    name: 'Eventmgr1 Fullname',
+    firstName: 'EventMgrFirst1',
+    lastName: 'EventMgrLast1',
     phone: '05/123456789',
   },
 
   {
     username: 'devtest+eventmgr2@fll.sk',
     password: 'eventmgr2',
-    name: 'Eventmgr2 Fullname',
+    firstName: 'EventMgrFirst2',
+    lastName: 'EventMgrLast2',
     phone: '06/123456789',
   },
 
   {
     username: 'devtest+progmgr1@fll.sk',
     password: 'progmgr1',
-    name: 'Progmgr1 Fullname',
+    firstName: 'ProgMgrFirst1',
+    lastName: 'ProgMgrLast1',
     phone: '07/123456789',
   },
   {
     username: 'devtest+progmgr2@fll.sk',
     password: 'progmgr2',
-    name: 'Progmgr2 Fullname',
+    firstName: 'ProgMgrFirst2',
+    lastName: 'ProgMgrLast2',
     phone: '08/123456789',
   },
 ];
@@ -65,7 +73,8 @@ export async function seedTestUsers() {
       username: d.username,
       password: d.password, // hashed in pre-save hook
       isAdmin: d.isAdmin,
-      name: d.name,
+      firstName: d.firstName,
+      lastName: d.lastName,
       phone: d.phone,
     };
 

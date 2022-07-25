@@ -25,8 +25,8 @@ export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
 
   return (
     <Box gap="medium">
-      <Text>Zadajte fakturačnú adresu a kontaktnú osobu pre fakturáciu.</Text>
-      <AddressForm formId={formId} value={details.billTo} onSubmit={onSubmit} />
+      <Text>Zadajte fakturačnú adresu a kontaktnú osobu pre zaslanie a úhradu faktúry.</Text>
+      <AddressForm formId={formId} value={details.billTo ?? team.address} onSubmit={onSubmit} />
 
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />
