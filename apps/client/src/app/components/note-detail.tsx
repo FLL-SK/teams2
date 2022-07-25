@@ -5,6 +5,7 @@ import { Note } from '../generated/graphql';
 import { useAppUser } from './app-user/use-app-user';
 import { formatDate, toZonedDateTime } from '@teams2/dateutils';
 import { Edit, Trash } from 'grommet-icons';
+import { formatFullName } from '../utils/format-fullname';
 
 const NoteWrapper = styled(Box)`
   margin: 5px 0;
@@ -95,7 +96,7 @@ export function NoteDetail(props: NoteDetailProps) {
       <NoteHeader
         createdOn={toZonedDateTime(note.createdOn)}
         updatedOn={note.updatedOn ? toZonedDateTime(note.updatedOn) : undefined}
-        name={note.creator?.name ?? ''}
+        name={formatFullName(note.creator?.firstName ?? '-', note.creator?.lastName ?? '-')}
         username={note.creator?.username ?? ''}
       />
 

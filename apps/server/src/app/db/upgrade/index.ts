@@ -1,10 +1,36 @@
 import debugLib from 'debug';
 import mongoose from 'mongoose';
-import { eventRepository, registrationRepository, teamRepository } from '../../models';
+import {
+  eventRepository,
+  registrationRepository,
+  teamRepository,
+  userRepository,
+} from '../../models';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
+  await nameToFullName();
+}
+
+async function nameToFullName() {
+  const debug = debugLib('upgrade:nameToFullName');
+  debug('nameToFullName');
+  const users = await userRepository.find({ firstName: null }).exec();
+  for (const user of users) {
+    const n = (user.name ?? '').split(' ');
+    if (n.length > 0) {
+      user.firstName = n[0] ?? '';
+    } else {
+      user.firstName = 'x';
+      user.lastName = user.username;
+    }
+    if (n.length > 1) {
+      user.lastName = n[1] ?? '';
+    }
+    await user.save();
+  }
+  debug('updated %d registrations', users.length);
 }
 
 async function billToShipRegistraion() {

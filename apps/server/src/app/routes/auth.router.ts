@@ -2,7 +2,7 @@ import { logger } from '@teams2/logger';
 import express = require('express');
 import passport = require('passport');
 import { AuthUser, createToken, verifyToken } from '../auth';
-import { userRepository } from '../models';
+import { UserData, userRepository } from '../models';
 import { emailUserSignupToAdmin, emailUserSignupToUser } from '../utils/emails';
 import { requestPassworReset as requestPassworReset } from '../utils/password-reset';
 
@@ -68,7 +68,7 @@ router.post('/reset', async function (req, res, next) {
 });
 
 router.post('/signup', async function (req, res, next) {
-  const { username, password } = req.body;
+  const { username, password, firstName, lastName, phone } = req.body;
   const log = logLib.extend('post/signup');
   log.debug('user signup=%o', username);
 
@@ -77,7 +77,14 @@ router.post('/signup', async function (req, res, next) {
     return res.status(400).send({ error: { message: 'User already exists' } });
   } else {
     log.info('New signup', username);
-    await userRepository.create({ username, password });
+    const nu: UserData = {
+      username,
+      password,
+      firstName,
+      lastName,
+      phone,
+    };
+    await userRepository.create(nu);
     emailUserSignupToAdmin(username);
     emailUserSignupToUser(username);
   }

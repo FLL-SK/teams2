@@ -25,6 +25,7 @@ import { FieldShippedOn } from './field-shippedOn';
 import { FieldTeamSize } from './field-teamSize';
 import { FieldTeamSizeConfirmedOn } from './field-teamSizeConfirmedOn';
 import { appPath } from '@teams2/common';
+import { formatFullName } from '../../../utils/format-fullname';
 
 interface RegistrationSidebarProps {
   registrationId?: string;
@@ -90,7 +91,10 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
               {registration.team.coaches
                 .filter((coach) => !coach.deletedOn)
                 .map((coach) => (
-                  <LabelValue label={coach.name} key={coach.id}>
+                  <LabelValue
+                    label={formatFullName(coach.firstName, coach.lastName)}
+                    key={coach.id}
+                  >
                     <Text>{coach.username}</Text>
                     <Text>{coach.phone}</Text>
                   </LabelValue>

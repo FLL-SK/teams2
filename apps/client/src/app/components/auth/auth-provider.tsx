@@ -25,7 +25,7 @@ export interface AuthContextData extends AuthState {
   silentCheck: () => Promise<AuthResponse>;
   forgotPassword: (username: string) => Promise<boolean>;
   resetPassword: (token: string, password: string) => Promise<boolean>;
-  signup: (username: string, password: string) => Promise<boolean>;
+  signup: (data: SignupDataType) => Promise<boolean>;
 }
 
 const emptyContext: AuthContextData = {
@@ -47,6 +47,14 @@ export const AuthContext = createContext<AuthContextData>(emptyContext);
 interface AuthContextProviderProps {
   children?: React.ReactNode;
   authApiUrl: string;
+}
+
+export interface SignupDataType {
+  firstName?: string;
+  lastName?: string;
+  username: string;
+  password: string;
+  phone?: string;
 }
 
 const getToken = () => localStorage.getItem('token');
@@ -185,11 +193,11 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
 
   //----------------------------------------------------------------------------
   const signup = useCallback(
-    async (username: string, password: string) => {
+    async (signupData: SignupDataType) => {
       const url = new URL(authApiUrl);
       url.pathname += '/signup';
       try {
-        const response = await postAuth(url.toString(), { username, password });
+        const response = await postAuth(url.toString(), { ...signupData });
         return response.ok;
       } catch (error) {
         return false;

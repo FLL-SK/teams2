@@ -8,9 +8,10 @@ export const UserMapper = {
     }
     const u: Omit<Required<User>, '__typename'> = {
       id: user._id,
-      name: user.name ?? '',
       username: user.username,
       phone: user.phone ?? '',
+      firstName: user.firstName,
+      lastName: user.lastName,
 
       deletedOn: user.deletedOn,
       deletedBy: user.deletedBy,
