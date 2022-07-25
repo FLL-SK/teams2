@@ -16,7 +16,6 @@ export const typeResolver: Resolver<User> = {
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
-  createUser: async (_parent, { input }, { dataSources }) => dataSources.user.createUser(input),
   updateUser: async (_parent, { id, input }, { dataSources }) =>
     dataSources.user.updateUser(id, input),
   deleteUser: async (_parent, { id }, { dataSources }) => dataSources.user.deleteUser(id),
