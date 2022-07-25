@@ -25,7 +25,7 @@ export function SignupPage() {
   const [error, setError] = useState<string>();
   const [message, setMessage] = useState<string>();
 
-  const handleRequestPasswordReset = async ({ value }: { value: SignupDataType }) => {
+  const handleSignup = async ({ value }: { value: SignupDataType }) => {
     const resp = await signup(value);
     if (resp) {
       setMessage('Účet vytvorený. Môžete sa prihlásiť.');
@@ -48,10 +48,13 @@ export function SignupPage() {
             {!message && (
               <>
                 <Form
-                  onSubmit={handleRequestPasswordReset}
+                  onSubmit={handleSignup}
                   messages={{ required: 'Povinný údaj' }}
                   onChange={() => setError(undefined)}
                 >
+                  <FormField label="Meno" name="firstName" required />
+                  <FormField label="Priezvisko" name="lastName" required />
+                  <FormField label="Telefón" name="phone" required />
                   <FormField label="E-mail" name="username" required />
                   <FormField label="Heslo" name="password" type="password" required />
                   <Button primary type="submit" label="Vytvoriť účet" />
