@@ -23,12 +23,14 @@ import { RegistrationMapper, TagMapper, TeamMapper, UserMapper } from '../mapper
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
 import { FilterQuery } from 'mongoose';
+import { logger } from '@teams2/logger';
 
 export class TeamDataSource extends BaseDataSource {
   private loader: Dataloader<string, Team, string>;
 
   constructor() {
     super();
+    this.logBase = logger('DS:team');
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
@@ -42,6 +44,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeam(id: ObjectId): Promise<Team> {
+    const log = this.logBase.extend('getTeam');
+    log.debug('getTeam %s', id.toString());
     const team = this.loader.load(id.toString());
     return team;
   }
@@ -60,6 +64,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async createTeam(input: CreateTeamInput): Promise<CreateTeamPayload> {
+    const log = this.logBase.extend('create');
     const currentUserId = this.context.user._id;
 
     const t: TeamData = {
@@ -77,7 +82,9 @@ export class TeamDataSource extends BaseDataSource {
       },
       coachesIds: [currentUserId],
     };
+    log.debug('creating team %o', t);
     const nu = await teamRepository.create(t);
+    log.info('Created team %s %s', nu.name, nu._id.toString());
     return { team: TeamMapper.toTeam(nu) };
   }
 
@@ -95,7 +102,9 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamsCoachedBy(coachId: ObjectId): Promise<Team[]> {
+    const log = this.logBase.extend('getCoachedBy');
     const teams = await teamRepository.findTeamsCoachedByUser(coachId);
+    log.debug('getCoachedBy %s %d', coachId.toString(), teams.length);
     return teams.filter((t) => !!t).map((t) => TeamMapper.toTeam(t));
   }
 
@@ -163,7 +172,9 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamTags(teamId: ObjectId): Promise<Tag[]> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
+    if (!this.userGuard.isAdmin()) {
+      return [];
+    }
 
     const t = await teamRepository.findById(teamId).lean().exec();
     if (!t) {

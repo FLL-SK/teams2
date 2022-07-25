@@ -7,12 +7,14 @@ import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
+import { logger } from '@teams2/logger';
 
 export class UserDataSource extends BaseDataSource {
   private loader: Dataloader<string, User, string>;
 
   constructor() {
     super();
+    this.logBase = logger('DS:user');
   }
 
   initialize(config: DataSourceConfig<ApolloContext>) {
@@ -26,6 +28,8 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUser(id: ObjectId): Promise<User> {
+    const log = this.logBase.extend('getUser');
+    log.debug('id: %s', id);
     return this.loader.load(id.toString());
   }
 

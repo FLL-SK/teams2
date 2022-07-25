@@ -19,12 +19,12 @@ fragment UserFragment on User {
   ...UserListFragment
 
   coachingTeams {
-    ...TeamListFragment
+    ...TeamBasicFragment
   }
   managingEvents {
-    ...EventListFragment
+    ...EventBasicFragment
   }
   managingPrograms {
-    ...ProgramListFragment
+    ...ProgramBasicFragment
   }
 }
