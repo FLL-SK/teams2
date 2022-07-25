@@ -12,8 +12,6 @@ fragment NoteFragment on Note {
   deletedBy
 
   creator {
-    id
-    name
-    username
+    ...UserBasicFragment
   }
 }

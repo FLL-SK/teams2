@@ -45,7 +45,8 @@ export function ProfilePage() {
       <PanelGroup>
         <Panel title="Detaily" gap="small">
           <LabelValueGroup direction="row" labelWidth="200px" gap="medium">
-            <LabelValue label="Meno" value={profile?.name ?? '-'} />
+            <LabelValue label="Meno" value={profile?.firstName ?? '-'} />
+            <LabelValue label="Priezvisko" value={profile?.lastName ?? '-'} />
             <LabelValue label="Email" value={canEdit ? profile?.username : xOut()} />
             <LabelValue label="Telefón" value={canEdit ? profile?.phone ?? '-' : xOut()} />
             {data?.getUser?.isAdmin && (
@@ -56,7 +57,7 @@ export function ProfilePage() {
             )}
           </LabelValueGroup>
 
-          <Box direction="row" gap="small">
+          <Box direction="row" gap="small" margin={{ top: 'small' }}>
             {isSuperAdmin() && !profile?.isAdmin && (
               <Button
                 label="Pridaj práva admin"

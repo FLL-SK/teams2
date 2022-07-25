@@ -7,8 +7,9 @@
 
 type User implements INode {
   id: ID!
-  name: String!
   username: Email!
+  firstName: String!
+  lastName: String!
   phone: String
 
   isAdmin: Boolean
@@ -22,20 +23,9 @@ type User implements INode {
   managingPrograms: [Program!]!
 }
 
-input CreateUserInput {
-  name: String!
-  username: Email!
-  phone: String
-  password: String!
-}
-
-type CreateUserPayload implements IMutationPayload {
-  user: User
-  errors: [ValidationError!]
-}
-
 input UpdateUserInput {
-  name: String
+  firstName: String
+  lastName: String
   phone: String
 }
 
@@ -54,7 +44,6 @@ extend type Query {
 }
 
 extend type Mutation {
-  createUser(input: CreateUserInput!): CreateUserPayload!
   updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
   deleteUser(id: ID!): User
 

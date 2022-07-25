@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '../../components/auth/useAuthenticate';
+import { SignupDataType } from '../../components/auth/auth-provider';
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -24,12 +25,8 @@ export function SignupPage() {
   const [error, setError] = useState<string>();
   const [message, setMessage] = useState<string>();
 
-  const handleRequestPasswordReset = async ({
-    value,
-  }: {
-    value: { username: string; password: string };
-  }) => {
-    const resp = await signup(value.username, value.password);
+  const handleRequestPasswordReset = async ({ value }: { value: SignupDataType }) => {
+    const resp = await signup(value);
     if (resp) {
       setMessage('Účet vytvorený. Môžete sa prihlásiť.');
       return;

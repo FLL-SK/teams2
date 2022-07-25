@@ -20,7 +20,8 @@ export function UserSidebar(props: UserSidebarProps) {
       <SidebarPanelGroup title="Používateľ">
         <SidebarPanel>
           <LabelValueGroup direction="row" gap="medium">
-            <LabelValue label="Meno" value={user.name} />
+            <LabelValue label="Meno" value={user.firstName} />
+            <LabelValue label="Priezvisko" value={user.lastName} />
             <LabelValue label="email" value={user.username} />
             <LabelValue label="Telefón" value={user.phone} />
           </LabelValueGroup>
