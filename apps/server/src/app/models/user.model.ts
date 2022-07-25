@@ -16,6 +16,7 @@ export interface UserData {
   password: string;
   isAdmin?: boolean;
   isSuperAdmin?: boolean;
+  lastLogin?: Date;
 }
 
 export type UserDataNoPassword = Omit<UserData, 'password'>;
@@ -39,6 +40,7 @@ const schema = new Schema<UserData, UserModel>({
   deletedBy: { type: Types.ObjectId, ref: 'User' },
   isAdmin: { type: Types.Boolean },
   isSuperAdmin: { type: Types.Boolean },
+  lastLogin: { type: Types.Date },
 });
 
 schema.index({ username: 1 }, { unique: true });

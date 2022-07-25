@@ -1,4 +1,4 @@
-fragment EventListFragment on Event {
+fragment EventBasicFragment on Event {
   id
   name
   programId
@@ -6,16 +6,20 @@ fragment EventListFragment on Event {
   date
   registrationEnd
 
+  managersIds
+
+  deletedOn
+  deletedBy
+}
+
+fragment EventListFragment on Event {
+  ...EventBasicFragment
+
   conditions
 
   registrations {
     id
   }
-
-  managersIds
-
-  deletedOn
-  deletedBy
 
   program {
     ...ProgramBasicFragment

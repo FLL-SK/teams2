@@ -17,7 +17,10 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
     logLib.debug('error=%o', err);
     return res.json(err);
   }
-
+  const u: Pick<UserData, 'username'> = {
+    username: user.username,
+  };
+  userRepository.findOneAndUpdate(u, { lastLogin: new Date() });
   const token = createToken(user);
 
   res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days
