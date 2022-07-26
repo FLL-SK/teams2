@@ -21,8 +21,6 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getProgramFiles(programId: ObjectId): Promise<File[]> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-
     const files = await fileRepository
       .find({ type: 'programDoc', ref: programId.toString() })
       .sort({ name: 1 })
@@ -31,10 +29,6 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getEventFiles(eventId: ObjectId): Promise<File[]> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      this.userGuard.notAuthorized();
-
     const files = await fileRepository
       .find({ type: 'eventDoc', ref: eventId.toString() })
       .sort({ name: 1 })
@@ -43,9 +37,6 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isProgramManager(programId)) ||
-      this.userGuard.notAuthorized();
     const log = this.logBase.extend('addPFile');
     const nf: FileData = {
       type: 'programDoc',
@@ -62,9 +53,6 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addEventFile(eventId: ObjectId, input: FileUploadInput): Promise<File> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      this.userGuard.notAuthorized();
     const log = this.logBase.extend('addFFile');
     const nf: FileData = {
       type: 'eventDoc',
@@ -82,7 +70,6 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async removeFile(fileId: ObjectId): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const log = this.logBase.extend('removeFile');
 
     const f = await fileRepository.findByIdAndDelete(fileId).lean().exec();

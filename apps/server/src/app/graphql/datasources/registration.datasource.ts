@@ -32,13 +32,11 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistration(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const reg = this.loader.load(id.toString());
     return reg;
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.isCoach(teamId) || this.userGuard.notAuthorized();
     const event = await eventRepository.findById(eventId).exec();
     const team = await teamRepository.findById(teamId).exec();
     if (!team || !event) {
@@ -60,7 +58,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async updateRegistration(id: ObjectId, input: RegistrationInput): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, input, { new: true })
       .exec();
@@ -68,19 +65,16 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async deleteRegistration(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository.findByIdAndDelete({ _id: id }).exec();
     return RegistrationMapper.toRegistration(registration);
   }
 
   async deleteRegistrationET(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository.findOneAndDelete({ eventId, teamId }).exec();
     return RegistrationMapper.toRegistration(registration);
   }
 
   async getEventRegistrations(eventId: ObjectId): Promise<Registration[]> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const regs = await registrationRepository.find({ eventId }).sort({ registeredOn: 1 }).exec();
     return regs.map(RegistrationMapper.toRegistration);
   }
@@ -91,7 +85,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getProgramRegistrations(programId: ObjectId): Promise<Registration[]> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const regs = await registrationRepository.find({ programId }).sort({ registeredOn: 1 }).exec();
     return regs.map(RegistrationMapper.toRegistration);
   }
@@ -106,7 +99,6 @@ export class RegistrationDataSource extends BaseDataSource {
     invoiceIssuedOn?: Date,
     invoiceRef?: string
   ): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { invoiceIssuedOn, invoiceRef }, { new: true })
       .exec();
@@ -114,7 +106,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearInvoicedOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { invoiceIssuedOn: null }, { new: true })
       .exec();
@@ -122,7 +113,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setPaidOn(id: ObjectId, paidOn: Date): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { paidOn }, { new: true })
       .exec();
@@ -130,7 +120,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearPaidOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { paidOn: null }, { new: true })
       .exec();
@@ -138,7 +127,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setShippedOn(id: ObjectId, shippedOn: Date): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { shippedOn }, { new: true })
       .exec();
@@ -146,7 +134,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearShippedOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { shippedOn: null }, { new: true })
       .exec();
@@ -154,7 +141,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setShipmentGroup(id: ObjectId, shipmentGroup: string): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { shipmentGroup }, { new: true })
       .exec();
@@ -163,9 +149,6 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async setTeamSize(id: ObjectId, input: TeamSizeInput): Promise<Registration> {
     const registration = await registrationRepository.findById(id).exec();
-    this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
-      this.userGuard.notAuthorized();
     registration.girlCount = input.girlCount;
     registration.boyCount = input.boyCount;
     registration.coachCount = input.coachCount;
@@ -174,20 +157,14 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setTeamSizeConfirmedOn(id: ObjectId, date: Date): Promise<Registration> {
-    const registration = await registrationRepository.findById(id).exec();
-    this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
-      this.userGuard.notAuthorized();
-    registration.sizeConfirmedOn = date;
-    await registration.save();
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, { sizeConfirmedOn: date }, { new: true })
+      .exec();
     return RegistrationMapper.toRegistration(registration);
   }
 
   async clearTeamSizeConfirmedOn(id: ObjectId): Promise<Registration> {
     const registration = await registrationRepository.findById(id).exec();
-    this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
-      this.userGuard.notAuthorized();
     registration.sizeConfirmedOn = null;
     await registration.save();
     return RegistrationMapper.toRegistration(registration);
