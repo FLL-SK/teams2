@@ -166,13 +166,15 @@ export function ProgramPage() {
               </Box>
             </LabelValue>
           </LabelValueGroup>
-          <Box direction="row">
-            <Button
-              label="Zmeniť"
-              onClick={() => setShowProgramEditDialog(true)}
-              disabled={!canEdit}
-            />
-          </Box>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Zmeniť"
+                onClick={() => setShowProgramEditDialog(true)}
+                disabled={!canEdit}
+              />
+            </Box>
+          )}
         </Panel>
 
         <Panel title="Súbory" gap="small">
@@ -201,13 +203,15 @@ export function ProgramPage() {
               editable={canEdit}
             />
           )}
-          <Box direction="row">
-            <Button
-              label="Pridať poplatok"
-              onClick={() => setInvoiceItemAdd(true)}
-              disabled={!canEdit}
-            />
-          </Box>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Pridať poplatok"
+                onClick={() => setInvoiceItemAdd(true)}
+                disabled={!canEdit}
+              />
+            </Box>
+          )}
         </Panel>
 
         {canEdit && (
@@ -229,13 +233,15 @@ export function ProgramPage() {
 
         <Panel title="Turnaje" gap="medium">
           <Box direction="row" justify="between">
-            <Box>
-              <Button
-                label="Pridať turnaj"
-                onClick={() => setShowAddEventDialog(true)}
-                disabled={!canEdit}
-              />
-            </Box>
+            {canEdit && (
+              <Box>
+                <Button
+                  label="Pridať turnaj"
+                  onClick={() => setShowAddEventDialog(true)}
+                  disabled={!canEdit}
+                />
+              </Box>
+            )}
           </Box>
           <EventList events={events} onRemove={canEdit ? handleDeleteEvent : undefined} />
         </Panel>

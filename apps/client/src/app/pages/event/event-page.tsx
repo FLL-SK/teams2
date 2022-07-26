@@ -155,13 +155,15 @@ export function EventPage() {
               />
             </LabelValueGroup>
 
-            <Box direction="row">
-              <Button
-                label="Zmeniť"
-                onClick={() => setShowEventEditDialog(true)}
-                disabled={!canEdit}
-              />
-            </Box>
+            {canEdit && (
+              <Box direction="row">
+                <Button
+                  label="Zmeniť"
+                  onClick={() => setShowEventEditDialog(true)}
+                  disabled={!canEdit}
+                />
+              </Box>
+            )}
           </Box>
         </Panel>
 
@@ -180,16 +182,18 @@ export function EventPage() {
               editable={canEdit}
             />
           )}
-          <Box direction="row">
-            <Button
-              label="Pridať poplatok"
-              onClick={() => setInvoiceItemAdd(true)}
-              disabled={!canEdit}
-            />
-          </Box>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Pridať poplatok"
+                onClick={() => setInvoiceItemAdd(true)}
+                disabled={!canEdit}
+              />
+            </Box>
+          )}
         </Panel>
 
-        <Panel title="Tímy">
+        <Panel title="Tímy" gap="small">
           <Box direction="row" wrap>
             {eventRegs.map((reg, idx) => (
               <ListRow2 key={reg.id} columns="50px 1fr 80px auto" pad="small" align="center">
@@ -207,22 +211,26 @@ export function EventPage() {
                 </Box>
 
                 <Box width="50px" justify="end">
-                  <TeamMenu
-                    team={reg.team}
-                    onUnregister={(tt) => setTeamToUnregister(tt)}
-                    onChangeEvent={(tt) => setTeamToSwitch(tt)}
-                    canEdit={canEdit}
-                  />
+                  {canEdit && (
+                    <TeamMenu
+                      team={reg.team}
+                      onUnregister={(tt) => setTeamToUnregister(tt)}
+                      onChangeEvent={(tt) => setTeamToSwitch(tt)}
+                      canEdit={canEdit}
+                    />
+                  )}
                 </Box>
               </ListRow2>
             ))}
           </Box>
-          <Box direction="row">
-            <Button
-              label="Export tímov"
-              onClick={() => handleExportRegistrations(event?.program.name ?? '', eventRegs)}
-            />
-          </Box>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Export tímov"
+                onClick={() => handleExportRegistrations(event?.program.name ?? '', eventRegs)}
+              />
+            </Box>
+          )}
         </Panel>
 
         {canEdit && (
