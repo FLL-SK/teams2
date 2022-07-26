@@ -89,7 +89,10 @@ export function ProgramPage() {
 
   const program = programData?.getProgram;
   const files = filesData?.getProgramFiles ?? [];
-  const canEdit: boolean = (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn;
+  const canEdit: boolean = useMemo(
+    () => (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn,
+    [isAdmin, isProgramManager, program?.deletedOn, program?.id]
+  );
   const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
 
   const events = useMemo(
@@ -166,13 +169,15 @@ export function ProgramPage() {
               </Box>
             </LabelValue>
           </LabelValueGroup>
-          <Box direction="row">
-            <Button
-              label="Zmeniť"
-              onClick={() => setShowProgramEditDialog(true)}
-              disabled={!canEdit}
-            />
-          </Box>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Zmeniť"
+                onClick={() => setShowProgramEditDialog(true)}
+                disabled={!canEdit}
+              />
+            </Box>
+          )}
         </Panel>
 
         <Panel title="Súbory" gap="small">
@@ -201,13 +206,15 @@ export function ProgramPage() {
               editable={canEdit}
             />
           )}
-          <Box direction="row">
-            <Button
-              label="Pridať poplatok"
-              onClick={() => setInvoiceItemAdd(true)}
-              disabled={!canEdit}
-            />
-          </Box>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Pridať poplatok"
+                onClick={() => setInvoiceItemAdd(true)}
+                disabled={!canEdit}
+              />
+            </Box>
+          )}
         </Panel>
 
         {canEdit && (
@@ -229,13 +236,15 @@ export function ProgramPage() {
 
         <Panel title="Turnaje" gap="medium">
           <Box direction="row" justify="between">
-            <Box>
-              <Button
-                label="Pridať turnaj"
-                onClick={() => setShowAddEventDialog(true)}
-                disabled={!canEdit}
-              />
-            </Box>
+            {canEdit && (
+              <Box>
+                <Button
+                  label="Pridať turnaj"
+                  onClick={() => setShowAddEventDialog(true)}
+                  disabled={!canEdit}
+                />
+              </Box>
+            )}
           </Box>
           <EventList events={events} onRemove={canEdit ? handleDeleteEvent : undefined} />
         </Panel>
