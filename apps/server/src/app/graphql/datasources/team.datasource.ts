@@ -89,14 +89,11 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
-    this.userGuard.isAdmin() || (await this.userGuard.isCoach(id)) || this.userGuard.failed();
-
     const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return { team: TeamMapper.toTeam(u) };
   }
 
   async deleteTeam(id: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
     const u = await teamRepository.findByIdAndDelete(id).exec();
     return TeamMapper.toTeam(u);
   }
@@ -108,20 +105,20 @@ export class TeamDataSource extends BaseDataSource {
     return teams.filter((t) => !!t).map((t) => TeamMapper.toTeam(t));
   }
 
-  async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || (await this.userGuard.isCoach(teamId)) || this.userGuard.failed();
-
+  async addCoachToTeam(teamId: ObjectId, username: string): Promise<Team> {
+    const u = await userRepository.findActiveByUsername(username);
+    if (!u) {
+      throw new Error('User not found');
+    }
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
-      { $addToSet: { coachesIds: coachId } },
+      { $addToSet: { coachesIds: u._id } },
       { new: true }
     );
     return TeamMapper.toTeam(t);
   }
 
   async removeCoachFromTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || (await this.userGuard.isCoach(teamId)) || this.userGuard.failed();
-
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { coachesIds: coachId } },
@@ -150,8 +147,6 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
-
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { tagIds: tagId } },
@@ -161,8 +156,6 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
-
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { tagIds: tagId } },
@@ -172,10 +165,6 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamTags(teamId: ObjectId): Promise<Tag[]> {
-    if (!this.userGuard.isAdmin()) {
-      return [];
-    }
-
     const t = await teamRepository.findById(teamId).lean().exec();
     if (!t) {
       throw new Error('Team not found');

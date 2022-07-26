@@ -11,6 +11,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 export const typeResolver: Resolver<Event> = {
   registrations: async ({ id }, _args, { dataSources }) =>
     dataSources.registration.getEventRegistrations(id),
+  registrationsCount: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getEventRegistrationsCount(id),
   managers: async ({ id }, _args, { dataSources }) => dataSources.event.getEventManagers(id),
   program: async ({ programId }, _args, { dataSources }) =>
     dataSources.program.getProgram(programId),

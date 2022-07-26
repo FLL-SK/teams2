@@ -1,8 +1,27 @@
-import { RegistrationListFragmentFragment } from '../generated/graphql';
 import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
 import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
 
-export const fields: Json2AoaInputType[] = [
+interface ExportSourceType {
+  registeredOn: string;
+  invoiceIssuedOn?: string | null;
+  paidOn?: string | null;
+  shipmentGroup?: string | null;
+
+  team: {
+    name: string;
+    shipTo?: {
+      name: string;
+      street: string;
+      city: string;
+      zip: string;
+      contactName?: string | null;
+      phone?: string | null;
+      email?: string | null;
+    } | null;
+  };
+}
+
+export const fields: Json2AoaInputType<ExportSourceType>[] = [
   {
     label: 'Tím',
     id: 'team.name',
@@ -15,19 +34,17 @@ export const fields: Json2AoaInputType[] = [
   {
     label: 'Registrovaný',
     id: 'registeredOn',
-    value: (x: Record<string, unknown>) =>
-      x.registeredOn ? new Date(x.registeredOn as string) : '',
+    value: (x) => (x.registeredOn ? new Date(x.registeredOn) : ''),
   },
   {
     label: 'Fakturované',
     id: 'invoiceIssuedOn',
-    value: (x: Record<string, unknown>) =>
-      x.invoiceIssuedOn ? new Date(x.invoiceIssuedOn as string) : '',
+    value: (x) => (x.invoiceIssuedOn ? new Date(x.invoiceIssuedOn) : ''),
   },
   {
     label: 'Zaplatené',
     id: 'paidOn',
-    value: (x: Record<string, unknown>) => (x.paidOn ? new Date(x.paidOn as string) : ''),
+    value: (x) => (x.paidOn ? new Date(x.paidOn) : ''),
   },
   {
     label: 'Dodacia skupina',
@@ -43,7 +60,7 @@ export const fields: Json2AoaInputType[] = [
   },
   {
     label: 'Adresa-ulica',
-    id: 'shipTo.city',
+    id: 'shipTo.street',
   },
   {
     label: 'Adresa-PSČ',
@@ -65,9 +82,9 @@ export const fields: Json2AoaInputType[] = [
 
 export function exportRegistrationsForShipping(
   programName: string,
-  registrations: RegistrationListFragmentFragment[]
+  registrations: ExportSourceType[]
 ) {
-  const aoa: ArrayOfArraysOfAny = json2Aoa(registrations, fields);
+  const aoa: ArrayOfArraysOfAny = json2Aoa<ExportSourceType>(registrations, fields);
   const today = new Date().toISOString().substring(0, 10);
   saveXlsx(aoa, `registracie-pre-zasielanie (${programName}) ${today}.xlsx`);
 }

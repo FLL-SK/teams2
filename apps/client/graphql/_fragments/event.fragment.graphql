@@ -16,10 +16,7 @@ fragment EventListFragment on Event {
   ...EventBasicFragment
 
   conditions
-
-  registrations {
-    id
-  }
+  registrationsCount
 
   program {
     ...ProgramBasicFragment

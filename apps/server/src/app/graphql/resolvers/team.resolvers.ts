@@ -20,8 +20,8 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.team.updateTeam(id, input),
   deleteTeam: async (_parent, { id }, { dataSources }) => dataSources.team.deleteTeam(id),
 
-  addCoachToTeam: (_parent, { teamId, userId }, { dataSources }) =>
-    dataSources.team.addCoachToTeam(teamId, userId),
+  addCoachToTeam: (_parent, { teamId, username }, { dataSources }) =>
+    dataSources.team.addCoachToTeam(teamId, username),
   removeCoachFromTeam: async (_parent, { teamId, userId }, { dataSources }) =>
     dataSources.team.removeCoachFromTeam(teamId, userId),
 

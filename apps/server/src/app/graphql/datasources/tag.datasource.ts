@@ -43,20 +43,17 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async createTag(input: TagInput): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
     const t: TagData = { color: 'TC1', ...input };
     const tag = await tagRepository.create(t);
     return TagMapper.toTag(tag);
   }
 
   async updateTag(id: ObjectId, input: TagInput): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
     const tag = await tagRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return TagMapper.toTag(tag);
   }
 
   async deleteTag(id: ObjectId): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
     const tag = await tagRepository
       .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })
       .exec();
