@@ -89,7 +89,10 @@ export function ProgramPage() {
 
   const program = programData?.getProgram;
   const files = filesData?.getProgramFiles ?? [];
-  const canEdit: boolean = (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn;
+  const canEdit: boolean = useMemo(
+    () => (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn,
+    [isAdmin, isProgramManager, program?.deletedOn, program?.id]
+  );
   const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
 
   const events = useMemo(
