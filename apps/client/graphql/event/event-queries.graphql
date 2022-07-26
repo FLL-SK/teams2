@@ -6,6 +6,6 @@ query getEvent($id: ID!) {
 
 query getEvents($filter: EventFilterInput) {
   getEvents(filter: $filter) {
-    ...EventFragment
+    ...EventListFragment
   }
 }

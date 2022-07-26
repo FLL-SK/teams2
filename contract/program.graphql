@@ -26,6 +26,7 @@ type Program implements INode {
   events: [Event!]!
   managers: [User!]!
   registrations: [Registration!]!
+  registrationsCount: Int!
 }
 
 input CreateProgramInput {

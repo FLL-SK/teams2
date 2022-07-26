@@ -118,7 +118,7 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
               <FieldShipmentGroup registration={registration} />
               <FieldShippedOn registration={registration} />
               <FieldTeamSize registration={registration} />
-              <FieldTeamSizeConfirmedOn registration={registration} />
+              <FieldTeamSizeConfirmedOn registration={registration} teamId={registration.team.id} />
             </LabelValueGroup>
           </SidebarPanel>
           <SidebarPanel label="Poznámky k registrácii">

@@ -41,10 +41,10 @@ mutation removeEventManager($eventId: ID!, $userId: ID!) {
 mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
   registerTeamForEvent(eventId: $eventId, teamId: $teamId) {
     event {
-      ...EventFragment
+      ...EventListFragment
     }
     team {
-      ...TeamFragment
+      ...TeamListFragment
     }
   }
 }
@@ -52,10 +52,10 @@ mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
 mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
   unregisterTeamFromEvent(eventId: $eventId, teamId: $teamId) {
     event {
-      ...EventFragment
+      ...EventListFragment
     }
     team {
-      ...TeamFragment
+      ...TeamListFragment
     }
   }
 }
@@ -63,13 +63,13 @@ mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
 mutation switchTeamEvent($teamId: ID!, $oldEventId: ID!, $newEventId: ID!) {
   switchTeamEvent(teamId: $teamId, oldEventId: $oldEventId, newEventId: $newEventId) {
     team {
-      ...TeamFragment
+      ...TeamListFragment
     }
     oldEvent {
-      ...EventFragment
+      ...EventListFragment
     }
     newEvent {
-      ...EventFragment
+      ...EventListFragment
     }
   }
 }

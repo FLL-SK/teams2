@@ -12,6 +12,6 @@ query getProgramRegistrations($programId: ID!) {
 
 query getEventRegistrations($eventId: ID!) {
   getEventRegistrations(eventId: $eventId) {
-    ...RegistrationListFragment
+    ...RegistrationBasicFragment
   }
 }

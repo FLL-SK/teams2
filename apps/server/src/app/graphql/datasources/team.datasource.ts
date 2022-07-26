@@ -89,14 +89,16 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
-    this.userGuard.isAdmin() || (await this.userGuard.isCoach(id)) || this.userGuard.failed();
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(id)) ||
+      this.userGuard.notAuthorized();
 
     const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return { team: TeamMapper.toTeam(u) };
   }
 
   async deleteTeam(id: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const u = await teamRepository.findByIdAndDelete(id).exec();
     return TeamMapper.toTeam(u);
   }
@@ -109,7 +111,9 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || (await this.userGuard.isCoach(teamId)) || this.userGuard.failed();
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(teamId)) ||
+      this.userGuard.notAuthorized();
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
@@ -120,7 +124,9 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeCoachFromTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || (await this.userGuard.isCoach(teamId)) || this.userGuard.failed();
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(teamId)) ||
+      this.userGuard.notAuthorized();
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
@@ -150,7 +156,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
@@ -161,7 +167,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },

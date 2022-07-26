@@ -19,7 +19,7 @@ export function SetClearDate(props: SetClearDateProps) {
 
       {canEdit &&
         (date ? (
-          <Anchor size="small" label="Zruš potvrdenie" onClick={() => onClear()} />
+          <Anchor size="small" label="Zruš" onClick={() => onClear()} />
         ) : (
           <Anchor size="small" label="Potvrď" onClick={() => onSet()} />
         ))}

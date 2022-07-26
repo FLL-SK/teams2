@@ -63,10 +63,6 @@ export function EventPage() {
   const [updateInvoiceItem] = useUpdateInvoiceItemMutation({ onCompleted: () => refetch() });
   const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({ onCompleted: () => refetch() });
 
-  if (!id || eventError) {
-    return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
-  }
-
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const invoiceItems = event?.invoiceItems ?? [];
@@ -77,6 +73,10 @@ export function EventPage() {
       ),
     [eventData]
   );
+
+  if (!id || (eventError && !eventLoading)) {
+    return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
+  }
 
   return (
     <BasePage title="Turnaj" loading={eventLoading}>

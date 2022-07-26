@@ -34,7 +34,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
 
     const q: FilterQuery<UserData> = {};
     if (filter) {
@@ -53,7 +53,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
-    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
 
     const u: Partial<UserData> = input;
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
@@ -61,14 +61,14 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async deleteUser(id: ObjectId): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
 
     const u = await userRepository.findByIdAndDelete(id).lean().exec();
     return UserMapper.toUser(u);
   }
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.failed();
+    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
 
     const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
     return UserMapper.toUser(u);
@@ -80,7 +80,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
-    this.userGuard.isSuperAdmin() || this.userGuard.failed();
+    this.userGuard.isSuperAdmin() || this.userGuard.notAuthorized();
 
     //TODO: authorized?
     const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();

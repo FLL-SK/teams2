@@ -16,11 +16,7 @@ export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
   return (
     <Box gap="small">
       {registrations.map((reg) => (
-        <TeamRegistrationTile
-          key={reg.id}
-          registration={reg}
-          onClick={() => navigate(appPath.registration(reg.id))}
-        />
+        <TeamRegistrationTile key={reg.id} registration={reg} />
       ))}
     </Box>
   );

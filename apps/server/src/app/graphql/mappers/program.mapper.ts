@@ -24,6 +24,7 @@ export const ProgramMapper = {
       managers: [],
       events: [],
       registrations: [],
+      registrationsCount: 0,
     };
     return u;
   },
