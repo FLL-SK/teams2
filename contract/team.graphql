@@ -71,7 +71,7 @@ extend type Mutation {
   updateTeam(id: ID!, input: UpdateTeamInput!): UpdateTeamPayload!
   deleteTeam(id: ID!): Team
 
-  addCoachToTeam(teamId: ID!, userId: ID!): Team!
+  addCoachToTeam(teamId: ID!, username: String!): Team!
   removeCoachFromTeam(teamId: ID!, userId: ID!): Team!
 
   addTagToTeam(teamId: ID!, tagId: ID!): Team

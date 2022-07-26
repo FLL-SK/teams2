@@ -68,7 +68,7 @@ export class UserGuard {
     return this.programManagerOfPrograms.includes(programId.toString());
   }
 
-  failed() {
+  notAuthorized() {
     throw new Error(this.message);
   }
 }

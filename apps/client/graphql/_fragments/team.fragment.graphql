@@ -8,6 +8,7 @@ fragment TeamBasicFragment on Team {
   shipTo {
     ...AddressFragment
   }
+  useBillTo
   billTo {
     ...AddressFragment
   }
@@ -23,22 +24,16 @@ fragment TeamListFragment on Team {
   tags {
     ...TagFragment
   }
+
+  coaches {
+    ...UserListFragment
+  }
 }
 
 fragment TeamFragment on Team {
   ...TeamListFragment
 
-  coaches {
-    ...UserListFragment
-  }
   registrations {
-    ...RegistrationListFragment
-  }
-  billTo {
-    ...AddressFragment
-  }
-  useBillTo
-  shipTo {
-    ...AddressFragment
+    ...TeamRegistrationFragment
   }
 }

@@ -24,6 +24,7 @@ export const EventMapper = {
       registrations: [],
       managers: [],
       program: null,
+      registrationsCount: 0,
     };
     return u;
   },

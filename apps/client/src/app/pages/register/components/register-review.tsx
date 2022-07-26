@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, CheckBox, Markdown, Spinner, Text } from 'grommet';
+import { Box, Button, CheckBox, Markdown, Paragraph, Spinner, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import {
@@ -56,6 +56,12 @@ export function RegisterReview(props: RegisterReviewProps) {
 
       <Panel title="Poplatky" gap="small">
         {programLoading || eventLoading ? <Spinner /> : <InvoiceItemList items={items} />}
+        <Box>
+          <Text>
+            Toto sú štandardné poplatky turnaja. Prípadné zľavy, napr. z dôvodu že vám bol
+            poskytnutý grant budú zhľadnené vo faktúre.
+          </Text>
+        </Box>
       </Panel>
 
       <Panel title="Fakturačná adresa" gap="small">
@@ -130,12 +136,14 @@ export function RegisterReview(props: RegisterReviewProps) {
           checked={acceptedProgramTC}
           onChange={({ target }) => setAcceptedProgramTC(target.checked)}
         />
-        <CheckBox
-          toggle
-          label="Akceptujem podmienky turnaja"
-          checked={acceptedEventTC}
-          onChange={({ target }) => setAcceptedEventTC(target.checked)}
-        />
+        {event?.conditions && (
+          <CheckBox
+            toggle
+            label="Akceptujem podmienky turnaja"
+            checked={acceptedEventTC}
+            onChange={({ target }) => setAcceptedEventTC(target.checked)}
+          />
+        )}
       </Box>
 
       <Box justify="between" direction="row">

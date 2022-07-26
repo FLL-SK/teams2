@@ -2,11 +2,11 @@ import React from 'react';
 import { Box, Markdown, Text } from 'grommet';
 import { BorderType } from 'grommet/utils';
 import styled from 'styled-components';
-import { ProgramFragmentFragment } from '../generated/graphql';
+import { ProgramListFragmentFragment } from '../generated/graphql';
 import { getColor } from '../theme';
 
 interface ProgramTileProps {
-  program: ProgramFragmentFragment;
+  program: ProgramListFragmentFragment;
   onClick?: () => void;
   selected?: boolean;
 }

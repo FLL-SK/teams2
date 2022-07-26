@@ -8,7 +8,6 @@ import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
-import { UserTags } from '../../components/user-tags';
 import {
   CreateTeamInput,
   UpdateTeamInput,
@@ -27,13 +26,19 @@ import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
 import { TeamRegistrationsList } from './components/team-registrations';
+import { CoachList } from './components/coach-list';
+import { Add } from 'grommet-icons';
+import { EditEmailDialog } from '../../components/dialogs/edit-email-dialog';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function TeamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { notify } = useNotification();
 
   const [showActiveEventsOnly, setShowActiveEventsOnly] = useState(true);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAddCoachDialog, setShowAddCoachDialog] = useState(false);
 
   const { isAdmin, isTeamCoach } = useAppUser();
 
@@ -51,7 +56,9 @@ export function TeamPage() {
     variables: { type: 'team', ref: id ?? '0' },
   });
 
-  const [addCoach] = useAddCoachToTeamMutation();
+  const [addCoach] = useAddCoachToTeamMutation({
+    onError: (error) => notify.error('Nepodarilo sa pridať trénera', error.message),
+  });
   const [removeCoach] = useRemoveCoachFromTeamMutation();
 
   const [removeTag] = useDeleteTagMutation();
@@ -127,14 +134,28 @@ export function TeamPage() {
 
         {canEdit && (
           <Panel title="Tréneri">
-            <Box direction="row" wrap>
-              <UserTags
+            <Box gap="small">
+              <Box direction="row">
+                <Button
+                  plain
+                  icon={<Add />}
+                  label="Pridať trénera"
+                  onClick={() => setShowAddCoachDialog(true)}
+                />
+              </Box>
+              <CoachList
                 canEdit={canEdit}
-                users={team?.coaches ?? []}
-                onAdd={(userId) => addCoach({ variables: { teamId: id ?? '0', userId } })}
+                coaches={team?.coaches ?? []}
                 onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
               />
             </Box>
+            <EditEmailDialog
+              show={showAddCoachDialog}
+              onClose={() => setShowAddCoachDialog(false)}
+              onSubmit={({ email }) =>
+                addCoach({ variables: { teamId: id ?? '0', username: email ?? '0' } })
+              }
+            />
           </Panel>
         )}
 

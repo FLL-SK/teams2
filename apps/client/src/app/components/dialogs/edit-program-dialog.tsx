@@ -72,10 +72,10 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
           </FormField>
         </Grid>
         <FormField label="Popis" name="description">
-          <TextArea rows={10} name="description" />
+          <TextArea rows={5} name="description" />
         </FormField>
         <FormField label="Podmienky" name="conditions">
-          <TextArea rows={10} name="conditions" />
+          <TextArea rows={5} name="conditions" />
         </FormField>
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />

@@ -43,18 +43,7 @@ fragment RegistrationListFragment on Registration {
   }
 
   team {
-    id
-    name
-    deletedOn
-    address {
-      ...AddressFragment
-    }
-    shipTo {
-      ...AddressFragment
-    }
-    tags {
-      ...TagFragment
-    }
+    ...TeamListFragment
   }
 }
 
@@ -63,6 +52,23 @@ fragment RegistrationFragment on Registration {
 
   team {
     ...TeamFragment
+  }
+
+  invoiceItems {
+    ...InvoiceItemFragment
+  }
+}
+
+fragment TeamRegistrationFragment on Registration {
+  ...RegistrationBasicFragment
+
+  event {
+    ...EventBasicFragment
+  }
+
+  program {
+    id
+    name
   }
 
   invoiceItems {
