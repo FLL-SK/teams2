@@ -26,8 +26,8 @@ mutation updateTeam($id: ID!, $input: UpdateTeamInput!) {
   }
 }
 
-mutation addCoachToTeam($teamId: ID!, $userId: ID!) {
-  addCoachToTeam(teamId: $teamId, userId: $userId) {
+mutation addCoachToTeam($teamId: ID!, $username: String!) {
+  addCoachToTeam(teamId: $teamId, username: $username) {
     ...TeamFragment
   }
 }

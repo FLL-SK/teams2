@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Text } from 'grommet';
-import { RegistrationListFragmentFragment } from '../../../generated/graphql';
+import { TeamRegistrationFragmentFragment } from '../../../generated/graphql';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { LabelValue } from '../../../components/label-value';
 import { FieldTeamSize } from '../../registrations/components/field-teamSize';
@@ -9,7 +9,7 @@ import { FieldTeamSizeConfirmedOn } from '../../registrations/components/field-t
 import { appPath } from '@teams2/common';
 
 interface TeamRegistrationTileProps {
-  registration: RegistrationListFragmentFragment;
+  registration: TeamRegistrationFragmentFragment;
 }
 
 export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
@@ -39,7 +39,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
       <Box width="35%">
         <LabelValueGroup labelWidth="150px" gap="small" direction="row">
           <FieldTeamSize registration={registration} />
-          <FieldTeamSizeConfirmedOn registration={registration} teamId={registration.team.id} />
+          <FieldTeamSizeConfirmedOn registration={registration} teamId={registration.teamId} />
         </LabelValueGroup>
       </Box>
     </Box>

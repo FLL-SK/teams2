@@ -10,9 +10,9 @@ export function Panel(props: PanelProps) {
 
   return (
     <Box background="light-1" gap="small">
-      <Box pad="medium" background="#85C1E9">
+      <Box pad="medium" background="brandLighter">
         <Text weight="bold" size="medium">
-          {title}{' '}
+          {title}
         </Text>
       </Box>
       <Box pad={{ vertical: 'small', horizontal: 'medium' }} {...boxProps}>

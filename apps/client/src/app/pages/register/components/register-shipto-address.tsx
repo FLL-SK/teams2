@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Button, CheckBox, Text } from 'grommet';
+import React, { useState } from 'react';
+import { Box, Button, CheckBox, Form, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../generated/graphql';
 import { Address, RegisterDetails } from './types';
 
@@ -14,14 +14,28 @@ interface RegisterShipToAddressProps {
   cancel: () => void;
 }
 
+type FormDataType = Address;
+
+const emptyForm: FormDataType = {
+  name: '',
+  street: '',
+  city: '',
+  zip: '',
+  countryCode: '',
+  contactName: '',
+  email: '',
+  phone: '',
+};
+
 export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
   const { team, details, onSubmit, nextStep, prevStep, cancel } = props;
+
+  const [formData, setFormData] = useState<Address>(details.shipTo ?? emptyForm);
+  const [useBillTo, setUseBillTo] = useState(false);
 
   if (!team) {
     return null;
   }
-
-  const formId = 'register-shipto-address';
 
   return (
     <Box gap="medium">
@@ -30,29 +44,31 @@ export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
         toggle
         label="Použiť fakturačné údaje"
         checked={details.useBillTo}
-        onChange={({ target }) => onSubmit(details.shipTo, target.checked)}
+        onChange={({ target }) => setUseBillTo(target.checked)}
       />
-      {!details.useBillTo && (
-        <AddressForm
-          formId={formId}
-          value={details.shipTo}
-          onSubmit={(a) => onSubmit(a, false)}
-          hideOrgRegistration
-        />
-      )}
+      <Form
+        onChange={setFormData}
+        onReset={() => setFormData(emptyForm)}
+        onSubmit={({ value }) => {
+          onSubmit(value, useBillTo);
+          nextStep();
+        }}
+        value={formData}
+        messages={{ required: 'Povinný údaj' }}
+      >
+        {!useBillTo && <AddressForm hideOrgRegistration />}
 
-      <Box justify="between" direction="row">
-        <Button label="Späť" onClick={prevStep} />
-        <Button plain label="Zrušiť" hoverIndicator onClick={cancel} />
-        <Button
-          primary
-          label="Pokračovať"
-          onClick={nextStep}
-          form={formId}
-          type="submit"
-          disabled={!details.shipTo && !details.useBillTo}
-        />
-      </Box>
+        <Box justify="between" direction="row">
+          <Button label="Späť" onClick={prevStep} />
+          <Button plain label="Zrušiť" hoverIndicator onClick={cancel} />
+          <Button
+            primary
+            label="Pokračovať"
+            type="submit"
+            disabled={!details.shipTo && !useBillTo}
+          />
+        </Box>
+      </Form>
     </Box>
   );
 }

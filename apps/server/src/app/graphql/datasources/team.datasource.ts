@@ -105,10 +105,14 @@ export class TeamDataSource extends BaseDataSource {
     return teams.filter((t) => !!t).map((t) => TeamMapper.toTeam(t));
   }
 
-  async addCoachToTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
+  async addCoachToTeam(teamId: ObjectId, username: string): Promise<Team> {
+    const u = await userRepository.findActiveByUsername(username);
+    if (!u) {
+      throw new Error('User not found');
+    }
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
-      { $addToSet: { coachesIds: coachId } },
+      { $addToSet: { coachesIds: u._id } },
       { new: true }
     );
     return TeamMapper.toTeam(t);

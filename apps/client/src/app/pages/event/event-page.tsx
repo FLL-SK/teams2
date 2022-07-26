@@ -23,6 +23,7 @@ import {
   useUnregisterTeamFromEventMutation,
   useUpdateInvoiceItemMutation,
   useUpdateEventMutation,
+  RegistrationListFragmentFragment,
 } from '../../generated/graphql';
 import { BasicDialog } from '../../components/dialogs/basic-dialog';
 import { InvoiceItemList } from '../../components/invoice-item-list';
@@ -35,6 +36,48 @@ import { fullAddress } from '../../utils/format-address';
 import { Group } from 'grommet-icons';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { formatTeamSize } from '../../utils/format-teamsize';
+import { exportRegistrations } from '../../utils/export-registrations';
+import { formatFullName } from '../../utils/format-fullname';
+
+interface CoachType {
+  name: string;
+  email: string;
+  phone?: string | null;
+}
+
+const handleExportRegistrations = (
+  programName: string,
+  regs: RegistrationListFragmentFragment[]
+) => {
+  const r = regs.map((r) => {
+    const cc: { coach1?: CoachType; coach2?: CoachType; coach3?: CoachType } = {};
+    if (r.team.coaches.length > 0) {
+      cc.coach1 = {
+        name: formatFullName(r.team.coaches[0].firstName, r.team.coaches[0].lastName),
+        email: r.team.coaches[0].username,
+        phone: r.team.coaches[0].phone,
+      };
+    }
+    if (r.team.coaches.length > 1) {
+      cc.coach2 = {
+        name: formatFullName(r.team.coaches[1].firstName, r.team.coaches[1].lastName),
+        email: r.team.coaches[1].username,
+        phone: r.team.coaches[1].phone,
+      };
+    }
+
+    if (r.team.coaches.length > 2) {
+      cc.coach3 = {
+        name: formatFullName(r.team.coaches[2].firstName, r.team.coaches[2].lastName),
+        email: r.team.coaches[2].username,
+        phone: r.team.coaches[2].phone,
+      };
+    }
+
+    return { ...r, childrenCount: r.boyCount + r.girlCount, ...cc };
+  });
+  exportRegistrations(programName, r);
+};
 
 export function EventPage() {
   const { id } = useParams();
@@ -66,6 +109,7 @@ export function EventPage() {
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const invoiceItems = event?.invoiceItems ?? [];
+
   const eventRegs = useMemo(
     () =>
       [...(eventData?.getEvent.registrations ?? [])].sort((a, b) =>
@@ -96,7 +140,13 @@ export function EventPage() {
               />
               <LabelValue label="Podmienky">
                 <Box background="light-2" flex pad="small">
-                  <Markdown>{event?.conditions ?? ''}</Markdown>
+                  {(event?.conditions ?? '').length > 0 ? (
+                    <Markdown>{event?.conditions ?? ''}</Markdown>
+                  ) : (
+                    <Text color="dark-5">
+                      Turnaj nemá určené špeciálne podmienky pre účasť tímov.
+                    </Text>
+                  )}
                 </Box>
               </LabelValue>
               <LabelValue
@@ -166,6 +216,12 @@ export function EventPage() {
                 </Box>
               </ListRow2>
             ))}
+          </Box>
+          <Box direction="row">
+            <Button
+              label="Export tímov"
+              onClick={() => handleExportRegistrations(event?.program.name ?? '', eventRegs)}
+            />
           </Box>
         </Panel>
 

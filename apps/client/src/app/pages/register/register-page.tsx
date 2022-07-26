@@ -148,7 +148,7 @@ export function RegisterPage() {
               setRegisterDetails({ ...registerDetails, shipTo: a, useBillTo: ub });
             }}
             nextStep={() => setStep('review')}
-            prevStep={() => setStep('shipto')}
+            prevStep={() => setStep('billto')}
             cancel={cancel}
           />
         )}
