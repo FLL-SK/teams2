@@ -24,18 +24,15 @@ export class TagDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<Tag[]> {
-    const log = this.logBase.extend('loader');
-    log.debug('start', this.userGuard.isAdmin());
-    if (!this.userGuard.isAdmin()) {
-      return [];
-    }
-    const data = await tagRepository.find({ _id: { $in: ids } }).exec();
+    const data = await tagRepository
+      .find({ _id: { $in: ids } })
+      .sort({ _id: 1 })
+      .exec();
     return data.map(TagMapper.toTag.bind(this));
   }
 
   async getTag(id: ObjectId): Promise<Tag> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-
     const tag = this.loader.load(id.toString());
     return tag;
   }
