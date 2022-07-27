@@ -32,10 +32,9 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<Program[]> {
-    const data = await programRepository
-      .find({ _id: { $in: ids } })
-      .sort({ _id: 1 })
-      .exec();
+    const oids = ids.map((id) => new ObjectId(id));
+    const rec = await programRepository.find({ _id: { $in: ids } }).exec();
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
     return data.map(ProgramMapper.toProgram.bind(this));
   }
 
