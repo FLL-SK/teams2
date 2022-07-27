@@ -22,6 +22,7 @@ import { PanelRegistrationShipping } from './components/panel-shipping';
 import { PanelRegistrationBilling } from './components/panel-billing';
 import { PanelRegistrationInvoiceItems } from './components/panel-invoice-items';
 import { PanelRegistrationDetails } from './components/panel-details';
+import { CoachList } from '../team/components/coach-list';
 
 const columnWidth = '460px';
 
@@ -61,20 +62,24 @@ export function RegistrationPage() {
   return (
     <BasePage title="Registrácia" loading={regLoading}>
       {reg?.canceledOn && (
-        <Box direction="row" gap="medium">
+        <Box direction="row" gap="medium" pad="medium">
           <Text color="red">Táto registrácia bola zrušená.</Text>
         </Box>
       )}
       {reg && (
         <Box direction="row" gap="small" wrap>
           <PanelGroup width="1000px">
-            <PanelRegistrationDetails registration={reg} columnWidth={columnWidth} />
+            <PanelRegistrationDetails
+              registration={reg}
+              columnWidth={columnWidth}
+              readOnly={!!reg.canceledOn}
+            />
 
             <Panel title="Účasť" wrap direction="row" gap="small">
               <Box width={columnWidth}>
                 <LabelValueGroup labelWidth="250px" gap="small" direction="row">
-                  <FieldTeamSize registration={reg} />
-                  <FieldTeamSizeConfirmedOn registration={reg} />
+                  <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
+                  <FieldTeamSizeConfirmedOn registration={reg} readOnly={!!reg.canceledOn} />
                 </LabelValueGroup>
               </Box>
             </Panel>
@@ -85,18 +90,25 @@ export function RegistrationPage() {
               columnWidth={columnWidth}
               canEdit={canEdit}
               onRefetch={regRefetch}
+              readOnly={!!reg.canceledOn}
             />
 
-            <PanelRegistrationBilling registration={reg} columnWidth={columnWidth} />
-            <PanelRegistrationShipping registration={reg} columnWidth={columnWidth} />
+            <PanelRegistrationBilling
+              registration={reg}
+              columnWidth={columnWidth}
+              readOnly={!!reg.canceledOn}
+            />
+            <PanelRegistrationShipping
+              registration={reg}
+              columnWidth={columnWidth}
+              readOnly={!!reg.canceledOn}
+            />
           </PanelGroup>
 
-          <PanelGroup width={{ min: '350px', width: 'auto' }}>
+          <PanelGroup width={{ min: '350px', width: 'auto', max: '400px' }}>
             {canEdit && (
               <Panel title="Tréneri">
-                <Box direction="row" wrap>
-                  <UserTags canEdit={canEdit} users={reg?.team?.coaches ?? []} />
-                </Box>
+                <CoachList coaches={reg?.team?.coaches ?? []} canEdit={false} />
               </Panel>
             )}
 
@@ -119,6 +131,7 @@ export function RegistrationPage() {
                   <Spinner />
                 ) : (
                   <NoteList
+                    disabled={!!reg.canceledOn}
                     notes={notesData?.getNotes ?? []}
                     limit={20}
                     onCreate={(text) =>

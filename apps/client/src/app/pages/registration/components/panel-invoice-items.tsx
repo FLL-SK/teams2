@@ -18,10 +18,11 @@ interface PanelRegistrationInvoiceItemsProps {
   columnWidth: string;
   canEdit?: boolean;
   onRefetch?: () => void;
+  readOnly: boolean;
 }
 
 export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceItemsProps) {
-  const { invoiceItems, canEdit, onRefetch, registration } = props;
+  const { invoiceItems, canEdit, onRefetch, registration, readOnly: readonly } = props;
 
   const [invoiceItemAdd, setInvoiceItemAdd] = useState(false);
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
@@ -49,14 +50,14 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
           items={invoiceItems}
           onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
           onClick={(item) => setInvoiceItemEdit(item)}
-          editable={canEdit}
+          editable={canEdit && !readonly}
         />
       )}
       <Box direction="row">
         <Button
           label="Pridať poplatok"
           onClick={() => setInvoiceItemAdd(true)}
-          disabled={!canEdit}
+          disabled={!canEdit || readonly}
         />
       </Box>
       <EditInvoiceItemDialog

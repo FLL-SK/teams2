@@ -11,8 +11,9 @@ import { SetClearDate } from './set-clear-date';
 
 export const FieldInvoiceIssuedOn = (props: {
   registration: Pick<Registration, 'id' | 'invoiceIssuedOn'>;
+  readOnly: boolean;
 }) => {
-  const { registration } = props;
+  const { registration, readOnly } = props;
   const { isAdmin } = useAppUser();
 
   const [setInvoiced] = useRegistrationSetInvoicedMutation();
@@ -20,7 +21,7 @@ export const FieldInvoiceIssuedOn = (props: {
   return (
     <LabelValue label="Faktúra vystavená">
       <SetClearDate
-        canEdit={isAdmin()}
+        canEdit={isAdmin() && !readOnly}
         date={registration.invoiceIssuedOn}
         onClear={() => clearInvoiced({ variables: { id: registration.id } })}
         onSet={() =>

@@ -16,10 +16,11 @@ import { Panel } from '../../../components/panel';
 interface PanelRegistrationShippingProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
+  readOnly: boolean;
 }
 
 export function PanelRegistrationShipping(props: PanelRegistrationShippingProps) {
-  const { registration: reg, columnWidth } = props;
+  const { registration: reg, columnWidth, readOnly } = props;
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);
   const [updateRegistration] = useUpdateRegistrationMutation();
@@ -33,7 +34,7 @@ export function PanelRegistrationShipping(props: PanelRegistrationShippingProps)
               <Box>
                 <Text>{fullAddress(reg.shipTo)}</Text>
                 <Anchor
-                  disabled={!!reg.shippedOn}
+                  disabled={!!reg.shippedOn || readOnly}
                   size="small"
                   label="Upraviť"
                   onClick={() => setEditShipToAddress(true)}
@@ -54,15 +55,15 @@ export function PanelRegistrationShipping(props: PanelRegistrationShippingProps)
                   {reg.shipTo.phone}
                 </Paragraph>
                 <Anchor
-                  disabled={!!reg.shippedOn}
+                  disabled={!!reg.shippedOn || readOnly}
                   size="small"
                   label="Upraviť"
                   onClick={() => setEditShipToContact(true)}
                 />
               </Box>
             </LabelValue>
-            <FieldShipmentGroup registration={reg} />
-            <FieldShippedOn registration={reg} />
+            <FieldShipmentGroup registration={reg} readOnly={readOnly} />
+            <FieldShippedOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
         </Box>
       </Panel>

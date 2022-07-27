@@ -19,10 +19,11 @@ import { FieldPaidOn } from '../../registrations/components/field-paidOn';
 interface PanelRegistrationBillingProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
+  readOnly: boolean;
 }
 
 export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
-  const { registration: reg, columnWidth } = props;
+  const { registration: reg, columnWidth, readOnly } = props;
 
   const [editBillToAddress, setEditBillToAddress] = useState(false);
   const [editBillToContact, setEditBillToContact] = useState(false);
@@ -40,7 +41,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
               <Box>
                 <Text>{fullAddress(reg.billTo)}</Text>
                 <Anchor
-                  disabled={!!reg.invoiceIssuedOn}
+                  disabled={!!reg.invoiceIssuedOn || readOnly}
                   size="small"
                   label="Upraviť"
                   onClick={() => setEditBillToAddress(true)}
@@ -53,7 +54,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
             <LabelValue label="IČ-DPH" value={reg.billTo.vatNumber} />
             <LabelValue label="">
               <Anchor
-                disabled={!!reg.invoiceIssuedOn}
+                disabled={!!reg.invoiceIssuedOn || readOnly}
                 size="small"
                 label="Upraviť"
                 onClick={() => setEditBillToDetails(true)}
@@ -74,29 +75,29 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                   {reg.billTo.phone}
                 </Paragraph>
                 <Anchor
-                  disabled={!!reg.invoiceIssuedOn}
+                  disabled={!!reg.invoiceIssuedOn || readOnly}
                   size="small"
                   label="Upraviť"
                   onClick={() => setEditBillToContact(true)}
                 />
               </Box>
             </LabelValue>
-            <FieldInvoiceIssuedOn registration={reg} />
+            <FieldInvoiceIssuedOn registration={reg} readOnly={readOnly} />
             {reg.invoiceRef && (
               <LabelValue label="">
                 <Anchor
-                  disabled={!reg.invoiceRef}
+                  disabled={!reg.invoiceRef || readOnly}
                   size="small"
                   label="Otvoriť"
                   href={appPath.sfShowInvoice(reg.invoiceRef)}
                 />
               </LabelValue>
             )}
-            <FieldPaidOn registration={reg} />
+            <FieldPaidOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
           <Box direction="row" width="100%" justify="end">
             <Button
-              disabled={!!reg.invoiceIssuedOn}
+              disabled={!!reg.invoiceIssuedOn || readOnly}
               label="Vytvoriť faktúru"
               onClick={() => createInvoice({ variables: { id: reg.id } })}
             />

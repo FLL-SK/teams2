@@ -15,18 +15,18 @@ export function ConfirmTeamUnregisterDialog(props: ConfirmTeamUnregisterDialogPr
     <Modal width="medium" onClose={onClose}>
       <Box pad="medium">
         <Text>
-          Chcete naozaj odhlásit tím <strong>{teamName}</strong> z turnaja?
+          Naozaj chcete zrušiť registrciu tímu <strong>{teamName}</strong> na turnaji?
         </Text>
         <Box pad="small" direction="row" justify="evenly">
           <Button
             plain
-            label="Odhlásit"
+            label="Zrušiť registráciu"
             onClick={async () => {
               await onUnregister();
               onClose();
             }}
           />
-          <Button label="Zrušit" onClick={onClose} />
+          <Button label="Ponechať" onClick={onClose} />
         </Box>
       </Box>
     </Modal>
