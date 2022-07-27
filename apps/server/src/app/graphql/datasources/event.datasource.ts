@@ -37,7 +37,10 @@ export class EventDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<Event[]> {
-    const data = await eventRepository.find({ _id: { $in: ids } }).exec();
+    const data = await eventRepository
+      .find({ _id: { $in: ids } })
+      .sort({ _id: 1 })
+      .exec();
     return data.map(EventMapper.toEvent.bind(this));
   }
 

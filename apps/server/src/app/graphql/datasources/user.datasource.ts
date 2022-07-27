@@ -23,7 +23,10 @@ export class UserDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<User[]> {
-    const data = await userRepository.find({ _id: { $in: ids } }).exec();
+    const data = await userRepository
+      .find({ _id: { $in: ids } })
+      .sort({ _id: 1 })
+      .exec();
     return data.map(UserMapper.toUser.bind(this));
   }
 

@@ -27,7 +27,10 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<Registration[]> {
-    const data = await registrationRepository.find({ _id: { $in: ids } }).exec();
+    const data = await registrationRepository
+      .find({ _id: { $in: ids } })
+      .sort({ _id: 1 })
+      .exec();
     return data.map(RegistrationMapper.toRegistration.bind(this));
   }
 
