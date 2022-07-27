@@ -6,6 +6,7 @@ import { EditEventDialog } from '../../../components/dialogs/edit-event-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { Modal } from '../../../components/modal';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
 import { EventFragmentFragment, useUpdateEventMutation } from '../../../generated/graphql';
 
@@ -16,11 +17,13 @@ interface PanelEventDetailsProps {
 
 export function PanelEventDetails(props: PanelEventDetailsProps) {
   const { event, canEdit } = props;
-
+  const { notify } = useNotification();
   const [showEventTerms, setShowEventTerms] = useState<boolean>(false);
   const [showEventEditDialog, setShowEventEditDialog] = useState(false);
 
-  const [updateEvent] = useUpdateEventMutation();
+  const [updateEvent] = useUpdateEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa aktualizovať turnaj', e.message),
+  });
 
   if (!event) {
     return null;

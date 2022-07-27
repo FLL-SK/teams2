@@ -1,8 +1,9 @@
 import { Anchor, Box, Text } from 'grommet';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
 import { LabelValue } from '../../../components/label-value';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import { Registration, useRegistrationSetTeamSizeMutation } from '../../../generated/graphql';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 
@@ -12,8 +13,14 @@ export const FieldTeamSize = (props: {
 }) => {
   const { registration, readOnly } = props;
   const { isAdmin, isTeamCoach } = useAppUser();
+  const { notify } = useNotification();
+  const onError = useCallback(
+    () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
+    [notify]
+  );
+
   const [showDialog, setShowDialog] = React.useState(false);
-  const [setTeamSize] = useRegistrationSetTeamSizeMutation();
+  const [setTeamSize] = useRegistrationSetTeamSizeMutation({ onError });
 
   return (
     <LabelValue label="Veľkosť tímu">

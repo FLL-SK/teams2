@@ -1,45 +1,19 @@
 import React from 'react';
-import { Anchor, Box, Button, Markdown, Spinner, Text } from 'grommet';
-import { useCallback, useMemo, useState } from 'react';
+import { Box, Text } from 'grommet';
+import { useMemo } from 'react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
-import { EditEventDialog } from '../../components/dialogs/edit-event-dialog';
-import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
-import { LabelValue } from '../../components/label-value';
-import { Panel, PanelGroup } from '../../components/panel';
+import { PanelGroup } from '../../components/panel';
 
-import { UserTags } from '../../components/user-tags';
-import {
-  EventListFragmentFragment,
-  FileUploadInput,
-  InvoiceItemFragmentFragment,
-  useAddProgramFileMutation,
-  useAddProgramManagerMutation,
-  useCreateEventMutation,
-  useCreateInvoiceItemMutation,
-  useDeleteEventMutation,
-  useDeleteInvoiceItemMutation,
-  useGetProgramFilesQuery,
-  useGetProgramFileUploadUrlLazyQuery,
-  useGetProgramQuery,
-  useRemoveFileMutation,
-  useRemoveProgramManagerMutation,
-  useUpdateInvoiceItemMutation,
-  useUpdateProgramMutation,
-} from '../../generated/graphql';
-import { EventList } from '../../components/event-list';
+import { useGetProgramQuery } from '../../generated/graphql';
 import { ErrorPage } from '../../components/error-page';
-import { InvoiceItemList } from '../../components/invoice-item-list';
 import { useParams } from 'react-router-dom';
-import { EditInvoiceItemDialog } from '../../components/dialogs/edit-invoice-item-dialog';
-import { omit } from 'lodash';
-import { FileTile } from '../../components/file-tile';
-import { FileUploadControl } from '../../components/file-upload-control';
-import { uploadS3XHR } from '../../utils/upload-s3-xhr';
-import { formatDate } from '@teams2/dateutils';
-import { LabelValueGroup } from '../../components/label-value-group';
-import { BasicDialog } from '../../components/dialogs/basic-dialog';
-import { Modal } from '../../components/modal';
+
+import { PanelProgramDetails } from './components/panel-program-details';
+import { PanelProgramFees } from './components/panel-program-fees';
+import { PanelProgramEvents } from './components/panel-program-events';
+import { PanelProgramFiles } from './components/panel-program-files';
+import { PanelProgramManagers } from './components/panel-program-managers';
 
 export function ProgramPage() {
   const { id } = useParams();
@@ -51,94 +25,18 @@ export function ProgramPage() {
     refetch: programRefetch,
   } = useGetProgramQuery({ variables: { id: id ?? '0' } });
 
-  const {
-    data: filesData,
-    loading: filesLoading,
-    refetch: filesRefetch,
-  } = useGetProgramFilesQuery({
-    variables: { programId: id ?? '0' },
-    pollInterval: 600000, // get updated urls before they expire
-  });
-
-  const [getUploadUrl] = useGetProgramFileUploadUrlLazyQuery();
-
-  const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
-  const [showAddEventDialog, setShowAddEventDialog] = useState(false);
-  const [showProgramTerms, setShowProgramTerms] = useState(false);
-  const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
-  const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
-
-  const [updateProgram] = useUpdateProgramMutation();
-  const [addManager] = useAddProgramManagerMutation();
-  const [removeManager] = useRemoveProgramManagerMutation();
-
-  const [createEvent] = useCreateEventMutation({ onCompleted: () => programRefetch() });
-  const [deleteEvent] = useDeleteEventMutation({ onCompleted: () => programRefetch() });
-
-  const [createInvoiceItem] = useCreateInvoiceItemMutation({
-    onCompleted: () => programRefetch(),
-  });
-  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({
-    onCompleted: () => programRefetch(),
-  });
-  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({
-    onCompleted: () => programRefetch(),
-  });
-
-  const [addProgramFile] = useAddProgramFileMutation({ onCompleted: () => filesRefetch() });
-  const [removeFile] = useRemoveFileMutation({ onCompleted: () => filesRefetch() });
-
   const { isProgramManager, isAdmin } = useAppUser();
 
   const program = programData?.getProgram;
-  const files = filesData?.getProgramFiles ?? [];
   const canEdit: boolean = useMemo(
     () => (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn,
     [isAdmin, isProgramManager, program?.deletedOn, program?.id]
   );
   const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
 
-  const events = useMemo(
-    () => (program?.events ?? []).filter((event) => !event.deletedOn),
-    [program]
-  );
-
-  const handleDeleteEvent = useCallback(
-    async (e: EventListFragmentFragment) => {
-      if (e.registrationsCount === 0) {
-        deleteEvent({ variables: { id: e.id } });
-      }
-      //FIXME - nicer alerting
-      alert('Nie je možné vymazať turnaj, na ktorý je prihlásený jeden alebo viac tímov.');
-    },
-    [deleteEvent]
-  );
-
-  const handleFileUpload = useCallback(
-    async (files: FileList) => {
-      for (let i = 0; i < files.length; i++) {
-        const f = files[i];
-        const ff: FileUploadInput = { name: f.name, size: f.size, contentType: f.type };
-        getUploadUrl({
-          variables: { programId: id ?? '0', input: ff },
-          onCompleted: async (data) => {
-            if (await uploadS3XHR(f, data.getProgramFileUploadUrl)) {
-              addProgramFile({ variables: { programId: id ?? '0', input: ff } });
-            }
-
-            //TODO status/result notification
-          },
-        });
-      }
-    },
-    [addProgramFile, getUploadUrl, id]
-  );
-
-  if (!id || error) {
-    return <ErrorPage title="Program nenájdený" />;
+  if (!id || (error && !programLoading)) {
+    return <ErrorPage title="Chyba pri získavaní údajov o programe" />;
   }
-
-  const invoiceItems = program?.invoiceItems ?? [];
 
   return (
     <BasePage title="Program" loading={programLoading}>
@@ -150,165 +48,17 @@ export function ProgramPage() {
         </Box>
       )}
       <PanelGroup>
-        <Panel title="Detaily programu" gap="medium">
-          <LabelValueGroup labelWidth="150px" direction="row" gap="small">
-            <LabelValue label="Názov" value={program?.name} />
-            <LabelValue
-              label="Začiatok"
-              value={program?.startDate ? formatDate(program?.startDate) : 'neurčený'}
-            />
-            <LabelValue
-              label="Koniec"
-              value={program?.endDate ? formatDate(program?.endDate) : 'neurčený'}
-            />
-            <LabelValue label="Popis">
-              <Box
-                background="light-2"
-                flex
-                pad="small"
-                height={{ max: '200px' }}
-                overflow={{ vertical: 'auto' }}
-              >
-                <Markdown>{program?.description ?? ''}</Markdown>
-              </Box>
-            </LabelValue>
-            <LabelValue label="Podmienky">
-              <Box background="light-2" flex pad="small">
-                <Box flex height={{ max: '200px' }} overflow={{ vertical: 'auto' }}>
-                  <Markdown>{program?.conditions ?? ''}</Markdown>
-                </Box>
-                <Anchor label="Zobraz" onClick={() => setShowProgramTerms(true)} />
-              </Box>
-            </LabelValue>
-          </LabelValueGroup>
-          {canEdit && (
-            <Box direction="row">
-              <Button
-                label="Zmeniť"
-                onClick={() => setShowProgramEditDialog(true)}
-                disabled={!canEdit}
-              />
-            </Box>
-          )}
-        </Panel>
-
-        <Panel title="Súbory" gap="small">
-          {filesLoading ? (
-            <Spinner />
-          ) : (
-            files.map((f) => (
-              <FileTile
-                key={f.id}
-                file={f}
-                readOnly={!canEdit}
-                onDelete={(f) => removeFile({ variables: { fileId: f.id } })}
-              />
-            ))
-          )}
-          {canEdit && <FileUploadControl onUpload={handleFileUpload} />}
-        </Panel>
+        <PanelProgramDetails program={program} canEdit={canEdit} />
+        <PanelProgramFiles program={program} canEdit={canEdit} />
 
         {canEdit && (
-          <Panel title="Poplatky" gap="medium">
-            {invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
-            {invoiceItems.length > 0 && (
-              <InvoiceItemList
-                items={invoiceItems}
-                onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
-                onClick={(item) => setInvoiceItemEdit(item)}
-                editable={canEdit}
-              />
-            )}
-
-            <Box direction="row">
-              <Button
-                label="Pridať poplatok"
-                onClick={() => setInvoiceItemAdd(true)}
-                disabled={!canEdit}
-              />
-            </Box>
-          </Panel>
+          <PanelProgramFees program={program} canEdit={canEdit} onUpdate={() => programRefetch()} />
         )}
 
-        {canEdit && (
-          <Panel title="Manažéri">
-            <Box direction="row" wrap>
-              <UserTags
-                users={program?.managers ?? []}
-                onAdd={(userId) =>
-                  addManager({ variables: { programId: program?.id ?? '0', userId } })
-                }
-                onRemove={(userId) =>
-                  removeManager({ variables: { programId: program?.id ?? '0', userId } })
-                }
-                canEdit={canAddManagers}
-              />
-            </Box>
-          </Panel>
-        )}
+        {canEdit && <PanelProgramManagers program={program} canAddManagers={canAddManagers} />}
 
-        <Panel title="Turnaje" gap="medium">
-          <Box direction="row" justify="between">
-            {canEdit && (
-              <Box>
-                <Button
-                  label="Pridať turnaj"
-                  onClick={() => setShowAddEventDialog(true)}
-                  disabled={!canEdit}
-                />
-              </Box>
-            )}
-          </Box>
-          <EventList events={events} onRemove={canEdit ? handleDeleteEvent : undefined} />
-        </Panel>
+        <PanelProgramEvents program={program} canEdit={canEdit} onUpdate={() => programRefetch()} />
       </PanelGroup>
-
-      <EditProgramDialog
-        show={showProgramEditDialog}
-        program={programData?.getProgram}
-        onClose={() => setShowProgramEditDialog(false)}
-        onSubmit={(values) => updateProgram({ variables: { id: id ?? '0', input: values } })}
-      />
-
-      <EditEventDialog
-        show={showAddEventDialog}
-        onClose={() => setShowAddEventDialog(false)}
-        onSubmit={(values) =>
-          createEvent({ variables: { input: { ...values, programId: id ?? '0' } } })
-        }
-      />
-      <EditInvoiceItemDialog
-        show={!!invoiceItemEdit || invoiceItemAdd}
-        item={invoiceItemEdit}
-        onClose={() => {
-          setInvoiceItemAdd(false);
-          setInvoiceItemEdit(undefined);
-        }}
-        onSubmit={(values) => {
-          if (invoiceItemAdd) {
-            createInvoiceItem({
-              variables: { type: 'program', refId: id ?? '0', item: omit(values, 'id') },
-            });
-          } else {
-            updateInvoiceItem({
-              variables: { id: values.id ?? '0', item: values },
-            });
-          }
-        }}
-      />
-
-      <Modal
-        show={showProgramTerms}
-        title="Podmienky programu"
-        onClose={() => setShowProgramTerms(false)}
-        width="100vw"
-        height="100vh"
-        showButton
-      >
-        <Box flex pad="medium" height={{ max: '100%' }} overflow={'auto'}>
-          <Markdown>{program?.conditions ?? ''}</Markdown>
-        </Box>
-      </Modal>
     </BasePage>
   );
 }

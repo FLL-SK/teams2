@@ -16,10 +16,12 @@ import { useParams } from 'react-router-dom';
 import { PanelEventDetails } from './components/panel-details';
 import { PanelEventFees } from './components/panel-event-fees';
 import { PanelEventTeams } from './components/panel-event-teams';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function EventPage() {
   const { id } = useParams();
   const { isAdmin, isEventManager } = useAppUser();
+  const { notify } = useNotification();
 
   const {
     data: eventData,
@@ -28,8 +30,12 @@ export function EventPage() {
     refetch,
   } = useGetEventQuery({ variables: { id: id ?? '0' } });
 
-  const [addManager] = useAddEventManagerMutation();
-  const [removeManager] = useRemoveEventManagerMutation();
+  const [addManager] = useAddEventManagerMutation({
+    onError: (e) => notify.error('Nepodarilo sa pridať manažéra turnaja.', e.message),
+  });
+  const [removeManager] = useRemoveEventManagerMutation({
+    onError: (e) => notify.error('Nepodarilo sa odstrániť manažéra turnaja.', e.message),
+  });
 
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);

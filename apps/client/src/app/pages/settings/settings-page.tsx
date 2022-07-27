@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Button, CheckBox, Spinner } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/g
 import { ProgramsList } from './components/programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function SettingsPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
@@ -17,13 +18,19 @@ export function SettingsPage() {
   const [showInactivePrograms, setShowInactivePrograms] = useState(false);
   const [today] = useState(new Date().toISOString());
 
+  const { notify } = useNotification();
+  const onError = useCallback(() => notify.error('Nepodarilo sa vytvoriť program.'), [notify]);
+
   const {
     data: programsData,
     loading: programsLoading,
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
 
-  const [createProgram] = useCreateProgramMutation({ onCompleted: () => refetchPrograms() });
+  const [createProgram] = useCreateProgramMutation({
+    onCompleted: () => refetchPrograms(),
+    onError,
+  });
 
   if (!loading && !user?.isAdmin) {
     return <ErrorPage title="Nemáte oprávnenie." />;

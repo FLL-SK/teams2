@@ -2,6 +2,7 @@ import { toUtcDateString } from '@teams2/dateutils';
 import React from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { LabelValue } from '../../../components/label-value';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
   useRegistrationClearPaidMutation,
@@ -15,8 +16,11 @@ export const FieldPaidOn = (props: {
 }) => {
   const { registration, readOnly } = props;
   const { isAdmin } = useAppUser();
-  const [setPaid] = useRegistrationSetPaidMutation();
-  const [clearPaid] = useRegistrationClearPaidMutation();
+  const { notify } = useNotification();
+  const onError = () => notify.error('Nepodarilo sa aktualizovať dátum zaplatenia faktúry.');
+  const [setPaid] = useRegistrationSetPaidMutation({ onError });
+  const [clearPaid] = useRegistrationClearPaidMutation({ onError });
+
   return (
     <LabelValue label="Zaplatená">
       <SetClearDate
