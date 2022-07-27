@@ -38,6 +38,7 @@ import { LabelValueGroup } from '../../components/label-value-group';
 import { formatTeamSize } from '../../utils/format-teamsize';
 import { exportRegistrations } from '../../utils/export-registrations';
 import { formatFullName } from '../../utils/format-fullname';
+import { Modal } from '../../components/modal';
 
 interface CoachType {
   name: string;
@@ -86,6 +87,7 @@ export function EventPage() {
   const [teamToSwitch, setTeamToSwitch] = useState<TeamBasicFragmentFragment>();
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
+  const [showEventTerms, setShowEventTerms] = useState<boolean>(false);
 
   const {
     data: eventData,
@@ -141,7 +143,12 @@ export function EventPage() {
               <LabelValue label="Podmienky">
                 <Box background="light-2" flex pad="small">
                   {(event?.conditions ?? '').length > 0 ? (
-                    <Markdown>{event?.conditions ?? ''}</Markdown>
+                    <>
+                      <Box flex height={{ max: '200px' }} overflow={'auto'}>
+                        <Markdown>{event?.conditions ?? ''}</Markdown>
+                      </Box>
+                      <Anchor label="Zobraz" onClick={() => setShowEventTerms(true)} />
+                    </>
                   ) : (
                     <Text color="dark-5">
                       Turnaj nemá určené špeciálne podmienky pre účasť tímov.
@@ -167,22 +174,22 @@ export function EventPage() {
           </Box>
         </Panel>
 
-        <Panel title="Poplatky" gap="medium">
-          {invoiceItems.length === 0 && (
-            <Text>
-              Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný. Pridaním
-              poplatku je možné definovať poplatky špecifické pre tento turnaj.
-            </Text>
-          )}
-          {invoiceItems.length > 0 && (
-            <InvoiceItemList
-              items={invoiceItems}
-              onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
-              onClick={(item) => setInvoiceItemEdit(item)}
-              editable={canEdit}
-            />
-          )}
-          {canEdit && (
+        {canEdit && (
+          <Panel title="Poplatky" gap="medium">
+            {invoiceItems.length === 0 && (
+              <Text>
+                Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný. Pridaním
+                poplatku je možné definovať poplatky špecifické pre tento turnaj.
+              </Text>
+            )}
+            {invoiceItems.length > 0 && (
+              <InvoiceItemList
+                items={invoiceItems}
+                onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
+                onClick={(item) => setInvoiceItemEdit(item)}
+                editable={canEdit}
+              />
+            )}
             <Box direction="row">
               <Button
                 label="Pridať poplatok"
@@ -190,8 +197,8 @@ export function EventPage() {
                 disabled={!canEdit}
               />
             </Box>
-          )}
-        </Panel>
+          </Panel>
+        )}
 
         <Panel title="Tímy" gap="small">
           <Box direction="row" wrap>
@@ -312,6 +319,18 @@ export function EventPage() {
           </Box>
         </Box>
       </BasicDialog>
+      <Modal
+        show={showEventTerms}
+        title="Podmienky turnaja"
+        onClose={() => setShowEventTerms(false)}
+        width="100vw"
+        height="100vh"
+        showButton
+      >
+        <Box flex pad="medium" height={{ max: '100%' }} overflow="auto">
+          <Markdown>{event?.conditions ?? ''}</Markdown>
+        </Box>
+      </Modal>
     </BasePage>
   );
 }
