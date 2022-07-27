@@ -1,7 +1,8 @@
 import { toUtcDateString } from '@teams2/dateutils';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { LabelValue } from '../../../components/label-value';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
   useRegistrationClearShippedMutation,
@@ -15,8 +16,15 @@ export const FieldShippedOn = (props: {
 }) => {
   const { registration, readOnly } = props;
   const { isAdmin } = useAppUser();
-  const [setShipped] = useRegistrationSetShippedMutation();
-  const [clearShipped] = useRegistrationClearShippedMutation();
+  const { notify } = useNotification();
+  const onError = useCallback(
+    () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
+    [notify]
+  );
+
+  const [setShipped] = useRegistrationSetShippedMutation({ onError });
+  const [clearShipped] = useRegistrationClearShippedMutation({ onError });
+
   return (
     <LabelValue label="Odoslaná">
       <SetClearDate

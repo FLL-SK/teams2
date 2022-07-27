@@ -1,7 +1,8 @@
 import { toUtcDateString } from '@teams2/dateutils';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { LabelValue } from '../../../components/label-value';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
   useRegistrationClearTeamSizeConfirmedMutation,
@@ -16,8 +17,15 @@ export const FieldTeamSizeConfirmedOn = (props: {
 }) => {
   const { registration, teamId, readOnly } = props;
   const { isAdmin, isTeamCoach } = useAppUser();
-  const [setSizeConfirmed] = useRegistrationSetTeamSizeConfirmedMutation();
-  const [clearSizeConfirmed] = useRegistrationClearTeamSizeConfirmedMutation();
+  const { notify } = useNotification();
+  const onError = useCallback(
+    () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
+    [notify]
+  );
+
+  const [setSizeConfirmed] = useRegistrationSetTeamSizeConfirmedMutation({ onError });
+  const [clearSizeConfirmed] = useRegistrationClearTeamSizeConfirmedMutation({ onError });
+
   return (
     <LabelValue label="Veľkosť tímu potvrdená">
       <SetClearDate

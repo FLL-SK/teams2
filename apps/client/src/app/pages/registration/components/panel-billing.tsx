@@ -1,5 +1,5 @@
 import { appPath } from '@teams2/common';
-import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
+import { Anchor, Box, Button, Paragraph, Spinner, Text } from 'grommet';
 import React, { useState } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
@@ -7,6 +7,7 @@ import { EditCompanyRegDialog } from '../../../components/dialogs/edit-company-r
 import { EditContactDialog } from '../../../components/dialogs/edit-contact-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
 import {
   RegistrationFragmentFragment,
@@ -25,14 +26,21 @@ interface PanelRegistrationBillingProps {
 
 export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const { registration: reg, columnWidth, readOnly } = props;
-  const { isAdmin, isTeamCoach } = useAppUser();
+  const { isAdmin } = useAppUser();
+  const { notify } = useNotification();
 
   const [editBillToAddress, setEditBillToAddress] = useState(false);
   const [editBillToContact, setEditBillToContact] = useState(false);
   const [editBillToDetails, setEditBillToDetails] = useState(false);
 
-  const [updateRegistration] = useUpdateRegistrationMutation();
-  const [createInvoice] = useCreateRegistrationInvoiceMutation();
+  const [invoiceProcessing, setInvoiceProcessing] = useState<NodeJS.Timeout>();
+
+  const [updateRegistration] = useUpdateRegistrationMutation({
+    onError: () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
+  });
+  const [createInvoice] = useCreateRegistrationInvoiceMutation({
+    onError: () => notify.error('Nepodarilo sa vytvoriť faktúru.'),
+  });
 
   return (
     <>
@@ -85,6 +93,11 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
               </Box>
             </LabelValue>
             <FieldInvoiceIssuedOn registration={reg} readOnly={readOnly} />
+            {invoiceProcessing && (
+              <LabelValue label="">
+                <Spinner />
+              </LabelValue>
+            )}
             {reg.invoiceRef && (
               <LabelValue label="">
                 <Anchor
@@ -100,9 +113,19 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
           {isAdmin() && (
             <Box direction="row" width="100%" justify="end">
               <Button
-                disabled={!!reg.invoiceIssuedOn}
+                disabled={!!reg.invoiceIssuedOn || !!invoiceProcessing}
                 label="Vytvoriť faktúru"
-                onClick={() => createInvoice({ variables: { id: reg.id } })}
+                onClick={() => {
+                  const t = setTimeout(() => setInvoiceProcessing(undefined), 15000);
+                  setInvoiceProcessing(t);
+                  createInvoice({
+                    variables: { id: reg.id },
+                    onCompleted: () => {
+                      clearTimeout(t);
+                      setInvoiceProcessing(undefined);
+                    },
+                  });
+                }}
               />
             </Box>
           )}

@@ -3,6 +3,7 @@ import { omit } from 'lodash';
 import React, { useState } from 'react';
 import { EditInvoiceItemDialog } from '../../../components/dialogs/edit-invoice-item-dialog';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
+import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
 import {
   InvoiceItemFragmentFragment,
@@ -27,14 +28,19 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
   const [invoiceItemAdd, setInvoiceItemAdd] = useState(false);
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
 
+  const { notify } = useNotification();
+
   const [createInvoiceItem] = useCreateInvoiceItemMutation({
     onCompleted: () => onRefetch && onRefetch(),
+    onError: () => notify.error('Nepodarilo sa vytvoriť položku faktúry.'),
   });
   const [updateInvoiceItem] = useUpdateInvoiceItemMutation({
     onCompleted: () => onRefetch && onRefetch(),
+    onError: () => notify.error('Nepodarilo sa aktualizovať položku faktúry.'),
   });
   const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({
     onCompleted: () => onRefetch && onRefetch(),
+    onError: () => notify.error('Nepodarilo sa vymazať položku faktúry.'),
   });
 
   return (
