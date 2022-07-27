@@ -16,12 +16,12 @@ import { fullAddress } from '../../../utils/format-address';
 import { FieldInvoiceIssuedOn } from '../../registrations/components/field-invoiceIssuedOn';
 import { FieldPaidOn } from '../../registrations/components/field-paidOn';
 
-interface PanelInvoicingProps {
+interface PanelRegistrationBillingProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
 }
 
-export function InvoicingPanel(props: PanelInvoicingProps) {
+export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const { registration: reg, columnWidth } = props;
 
   const [editBillToAddress, setEditBillToAddress] = useState(false);

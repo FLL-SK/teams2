@@ -18,10 +18,10 @@ import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
 import { FieldTeamSize } from '../registrations/components/field-teamSize';
 import { FieldTeamSizeConfirmedOn } from '../registrations/components/field-teamSizeConfirmedOn';
-import { ShipmentPanel as PanelShipment } from './components/panel-shipment';
-import { InvoicingPanel as PanelInvoicing } from './components/panel-invoicing';
-import { PanelInvoiceItems } from './components/panel-invoice-items';
-import { PanelDetails } from './components/panel-details';
+import { PanelRegistrationShipping } from './components/panel-shipping';
+import { PanelRegistrationBilling } from './components/panel-billing';
+import { PanelRegistrationInvoiceItems } from './components/panel-invoice-items';
+import { PanelRegistrationDetails } from './components/panel-details';
 
 const columnWidth = '460px';
 
@@ -63,7 +63,7 @@ export function RegistrationPage() {
       {reg && (
         <Box direction="row" gap="small" wrap>
           <PanelGroup width="1000px">
-            <PanelDetails registration={reg} columnWidth={columnWidth} />
+            <PanelRegistrationDetails registration={reg} columnWidth={columnWidth} />
 
             <Panel title="Účasť" wrap direction="row" gap="small">
               <Box width={columnWidth}>
@@ -74,7 +74,7 @@ export function RegistrationPage() {
               </Box>
             </Panel>
 
-            <PanelInvoiceItems
+            <PanelRegistrationInvoiceItems
               registration={reg}
               invoiceItems={invoiceItems}
               columnWidth={columnWidth}
@@ -82,8 +82,8 @@ export function RegistrationPage() {
               onRefetch={regRefetch}
             />
 
-            <PanelInvoicing registration={reg} columnWidth={columnWidth} />
-            <PanelShipment registration={reg} columnWidth={columnWidth} />
+            <PanelRegistrationBilling registration={reg} columnWidth={columnWidth} />
+            <PanelRegistrationShipping registration={reg} columnWidth={columnWidth} />
           </PanelGroup>
 
           <PanelGroup width={{ min: '350px', width: 'auto' }}>

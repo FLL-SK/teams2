@@ -13,12 +13,12 @@ import { EditAddressDialog } from '../../../components/dialogs/edit-address-dial
 import { EditContactDialog } from '../../../components/dialogs/edit-contact-dialog';
 import { Panel } from '../../../components/panel';
 
-interface PanelShipmentProps {
+interface PanelRegistrationShippingProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
 }
 
-export function ShipmentPanel(props: PanelShipmentProps) {
+export function PanelRegistrationShipping(props: PanelRegistrationShippingProps) {
   const { registration: reg, columnWidth } = props;
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);

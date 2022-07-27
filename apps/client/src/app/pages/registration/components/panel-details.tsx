@@ -9,12 +9,12 @@ import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
 import { formatFullName } from '../../../utils/format-fullname';
 
-interface PanelDetailsProps {
+interface PanelRegistrationDetailsProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
 }
 
-export function PanelDetails(props: PanelDetailsProps) {
+export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const { registration: reg, columnWidth } = props;
 
   return (

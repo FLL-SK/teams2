@@ -12,7 +12,7 @@ import {
   useUpdateInvoiceItemMutation,
 } from '../../../generated/graphql';
 
-interface PanelInvoiceItemsProps {
+interface PanelRegistrationInvoiceItemsProps {
   registration: RegistrationFragmentFragment;
   invoiceItems: InvoiceItemFragmentFragment[];
   columnWidth: string;
@@ -20,7 +20,7 @@ interface PanelInvoiceItemsProps {
   onRefetch?: () => void;
 }
 
-export function PanelInvoiceItems(props: PanelInvoiceItemsProps) {
+export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceItemsProps) {
   const { invoiceItems, canEdit, onRefetch, registration } = props;
 
   const [invoiceItemAdd, setInvoiceItemAdd] = useState(false);
