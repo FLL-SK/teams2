@@ -28,7 +28,7 @@ const columnWidth = '460px';
 
 export function RegistrationPage() {
   const { id } = useParams();
-  const { isAdmin, isTeamCoach, userLoading } = useAppUser();
+  const { isAdmin, isTeamCoach, userLoading, user } = useAppUser();
 
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
@@ -57,7 +57,7 @@ export function RegistrationPage() {
     return <ErrorPage title="Chyba pri získavaní dát o registrácii." />;
   }
 
-  console.log('regPage', isTeamCoach(reg?.teamId), regLoading, userLoading, reg);
+  console.log('regPage', isTeamCoach(reg?.teamId), regLoading, userLoading, user, reg);
 
   if (!userLoading && !regLoading && !isAdmin() && !isTeamCoach(reg?.teamId)) {
     return <ErrorPage title="Nemáte oprávnenie k tejto stránke." />;
