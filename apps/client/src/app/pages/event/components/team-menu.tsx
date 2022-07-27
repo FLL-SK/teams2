@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, MenuProps } from 'grommet';
 import { Menu as MenuIcon } from 'grommet-icons';
-import { TeamBasicFragmentFragment } from '../../generated/graphql';
+import { TeamBasicFragmentFragment } from '../../../generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 
