@@ -39,7 +39,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<Team[]> {
-    const data = await teamRepository.find({ _id: { $in: ids } }).exec();
+    const objIds = ids.map((id) => new ObjectId(id));
+    const data = await teamRepository.find({ _id: { $in: objIds } }).exec();
     return data.map(TeamMapper.toTeam.bind(this));
   }
 
