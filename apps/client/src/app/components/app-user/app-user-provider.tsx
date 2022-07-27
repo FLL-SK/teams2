@@ -6,9 +6,9 @@ import { useAuthenticate } from '../auth/useAuthenticate';
 type AppUser = UserFragmentFragment;
 
 export interface AppUserContextData {
-  loading: boolean;
+  userLoading: boolean;
   user?: AppUser;
-  error?: ApolloError;
+  userError?: ApolloError;
   refresh: () => Promise<void>;
   isTeamCoach: (teamId?: string) => boolean;
   isEventManager: (eventId?: string) => boolean;
@@ -20,7 +20,7 @@ export interface AppUserContextData {
 }
 
 const emptyContext: AppUserContextData = {
-  loading: false,
+  userLoading: false,
   refresh: () => Promise.reject(new Error('Not initialized')),
   isTeamCoach: () => false,
   isEventManager: () => false,
@@ -40,14 +40,19 @@ interface AppUserContextProviderProps {
 export function AppUserContextProvider(props: AppUserContextProviderProps) {
   const { children } = props;
   const { user } = useAuthenticate();
-  const { data, loading, error, refetch } = useGetUserQuery({ variables: { id: user?.id ?? '0' } });
+  const {
+    data,
+    loading: userLoading,
+    error: userError,
+    refetch,
+  } = useGetUserQuery({ variables: { id: user?.id ?? '0' } });
 
   const refresh = useCallback(async (): Promise<void> => {
-    if (loading) {
+    if (userLoading) {
       return;
     }
     refetch();
-  }, [loading, refetch]);
+  }, [userLoading, refetch]);
 
   const isUser = useCallback((userId: string): boolean => (user?.id ?? '0') === userId, [user]);
 
@@ -89,8 +94,8 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
     <AppUserContext.Provider
       value={{
         user: data?.getUser ?? undefined,
-        loading,
-        error,
+        userLoading,
+        userError,
         refresh,
         isTeamCoach,
         isEventManager,

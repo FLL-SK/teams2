@@ -13,7 +13,7 @@ import { ErrorPage } from '../../components/error-page';
 
 export function SettingsPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
-  const { user, loading } = useAppUser();
+  const { user, userLoading: loading } = useAppUser();
   const [showInactivePrograms, setShowInactivePrograms] = useState(false);
   const [today] = useState(new Date().toISOString());
 
