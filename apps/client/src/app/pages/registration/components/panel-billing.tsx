@@ -1,6 +1,7 @@
 import { appPath } from '@teams2/common';
 import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import React, { useState } from 'react';
+import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
 import { EditCompanyRegDialog } from '../../../components/dialogs/edit-company-reg-dialog';
 import { EditContactDialog } from '../../../components/dialogs/edit-contact-dialog';
@@ -24,6 +25,7 @@ interface PanelRegistrationBillingProps {
 
 export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const { registration: reg, columnWidth, readOnly } = props;
+  const { isAdmin, isTeamCoach } = useAppUser();
 
   const [editBillToAddress, setEditBillToAddress] = useState(false);
   const [editBillToContact, setEditBillToContact] = useState(false);
@@ -95,13 +97,15 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
             )}
             <FieldPaidOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
-          <Box direction="row" width="100%" justify="end">
-            <Button
-              disabled={!!reg.invoiceIssuedOn || readOnly}
-              label="Vytvoriť faktúru"
-              onClick={() => createInvoice({ variables: { id: reg.id } })}
-            />
-          </Box>
+          {isAdmin() && (
+            <Box direction="row" width="100%" justify="end">
+              <Button
+                disabled={!!reg.invoiceIssuedOn}
+                label="Vytvoriť faktúru"
+                onClick={() => createInvoice({ variables: { id: reg.id } })}
+              />
+            </Box>
+          )}
         </Box>
       </Panel>
 

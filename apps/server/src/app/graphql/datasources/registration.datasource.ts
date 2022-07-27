@@ -64,12 +64,9 @@ export class RegistrationDataSource extends BaseDataSource {
     return RegistrationMapper.toRegistration(registration);
   }
 
-  async cancelRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+  async cancelRegistration(id: ObjectId): Promise<Registration> {
     const registration = await registrationRepository
-      .findOneAndUpdate(
-        { eventId, teamId },
-        { canceledOn: new Date(), canceledBy: this.context.user._id }
-      )
+      .findOneAndUpdate({ _id: id }, { canceledOn: new Date(), canceledBy: this.context.user._id })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }

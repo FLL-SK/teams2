@@ -89,16 +89,26 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(id)) ||
+      this.userGuard.notAuthorized();
+
     const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return { team: TeamMapper.toTeam(u) };
   }
 
   async deleteTeam(id: ObjectId): Promise<Team> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(id)) ||
+      this.userGuard.notAuthorized();
+
     const u = await teamRepository.findByIdAndDelete(id).exec();
     return TeamMapper.toTeam(u);
   }
 
   async getTeamsCoachedBy(coachId: ObjectId): Promise<Team[]> {
+    this.userGuard.isAdmin() || this.userGuard.isSelf(coachId) || this.userGuard.notAuthorized();
+
     const log = this.logBase.extend('getCoachedBy');
     const teams = await teamRepository.findTeamsCoachedByUser(coachId);
     log.debug('getCoachedBy %s %d', coachId.toString(), teams.length);
@@ -106,6 +116,10 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addCoachToTeam(teamId: ObjectId, username: string): Promise<Team> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(teamId)) ||
+      this.userGuard.notAuthorized();
+
     const u = await userRepository.findActiveByUsername(username);
     if (!u) {
       throw new Error('User not found');
@@ -119,6 +133,10 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeCoachFromTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(teamId)) ||
+      this.userGuard.notAuthorized();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { coachesIds: coachId } },
@@ -128,6 +146,17 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamCoaches(teamId: ObjectId): Promise<User[]> {
+    const log = this.logBase.extend('getTeamCoaches');
+    log.debug(
+      'team %s isAdmin=%s isCoach=%s',
+      teamId.toString(),
+      this.userGuard.isAdmin(),
+      await this.userGuard.isCoach(teamId)
+    );
+    if (!this.userGuard.isAdmin() && !(await this.userGuard.isCoach(teamId))) {
+      return [];
+    }
+
     const t = await teamRepository.findById(teamId).lean().exec();
     if (!t) {
       throw new Error('Team not found');
@@ -142,11 +171,17 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamRegistrations(teamId: ObjectId): Promise<Registration[]> {
+    if (!this.userGuard.isAdmin() && !(await this.userGuard.isCoach(teamId))) {
+      return [];
+    }
+
     const events = await registrationRepository.find({ teamId }).exec();
     return events.map((c) => RegistrationMapper.toRegistration(c));
   }
 
   async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { tagIds: tagId } },
@@ -156,6 +191,8 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { tagIds: tagId } },
@@ -165,6 +202,11 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamTags(teamId: ObjectId): Promise<Tag[]> {
+    const log = this.logBase.extend('getTeamTags');
+    log.debug('start', this.userGuard.isAdmin());
+    if (!this.userGuard.isAdmin()) {
+      return [];
+    }
     const t = await teamRepository.findById(teamId).lean().exec();
     if (!t) {
       throw new Error('Team not found');

@@ -20,11 +20,17 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async getNote(id: ObjectId): Promise<Note> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const note = await noteRepository.findById(id).exec();
     return NoteMapper.toNote(note);
   }
 
   async getNotes(type: NoteType, ref: ObjectId, includeDeleted = false): Promise<Note[]> {
+    if (!this.userGuard.isAdmin()) {
+      return [];
+    }
+
     const q: FilterQuery<NoteData> = { type, ref };
     if (!includeDeleted) {
       q.deletedOn = null;
@@ -34,6 +40,8 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async createNote(input: NoteCreateInput): Promise<Note> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const createdBy = this.context.user._id;
     const n: NoteData = { ...input, createdOn: new Date(), createdBy };
     const note = await noteRepository.create(n);
@@ -41,11 +49,15 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async updateNote(id: ObjectId, input: NoteUpdateInput): Promise<Note> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const note = await noteRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return NoteMapper.toNote(note);
   }
 
   async deleteNote(id: ObjectId): Promise<Note> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const note = await noteRepository
       .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })
       .exec();

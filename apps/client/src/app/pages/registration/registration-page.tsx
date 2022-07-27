@@ -53,10 +53,12 @@ export function RegistrationPage() {
   const reg = regData?.getRegistration;
   const invoiceItems = reg?.invoiceItems ?? [];
 
-  const canEdit = isAdmin() || isTeamCoach(reg?.team.id);
-
-  if (!id || regDataError) {
+  if (!id || (regDataError && !regLoading)) {
     return <ErrorPage title="Chyba pri získavaní dát o registrácii." />;
+  }
+
+  if (!regLoading && !isAdmin() && !isTeamCoach(reg?.teamId)) {
+    return <ErrorPage title="Nemáte oprávnenie k tejto stránke." />;
   }
 
   return (
@@ -84,14 +86,16 @@ export function RegistrationPage() {
               </Box>
             </Panel>
 
-            <PanelRegistrationInvoiceItems
-              registration={reg}
-              invoiceItems={invoiceItems}
-              columnWidth={columnWidth}
-              canEdit={canEdit}
-              onRefetch={regRefetch}
-              readOnly={!!reg.canceledOn}
-            />
+            {isAdmin() && (
+              <PanelRegistrationInvoiceItems
+                registration={reg}
+                invoiceItems={invoiceItems}
+                columnWidth={columnWidth}
+                canEdit={isAdmin()}
+                onRefetch={regRefetch}
+                readOnly={!!reg.canceledOn}
+              />
+            )}
 
             <PanelRegistrationBilling
               registration={reg}
@@ -106,7 +110,7 @@ export function RegistrationPage() {
           </PanelGroup>
 
           <PanelGroup width={{ min: '350px', width: 'auto', max: '400px' }}>
-            {canEdit && (
+            {(isAdmin() || isTeamCoach(reg.teamId)) && (
               <Panel title="Tréneri">
                 <CoachList coaches={reg?.team?.coaches ?? []} canEdit={false} />
               </Panel>

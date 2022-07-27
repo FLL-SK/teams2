@@ -6,12 +6,15 @@ import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {
   RegistrationFragmentFragment,
-  useUnregisterTeamFromEventMutation,
+  useCancelEventRegistrationMutation,
+  useSwitchTeamEventMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
-import { formatFullName } from '../../../utils/format-fullname';
 import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm-team-unregister';
+import { ChangeTeamEventDialog } from '../../../components/dialogs/change-team-event-dialog';
+import { useNotification } from '../../../components/notifications/notification-provider';
+import { useAppUser } from '../../../components/app-user/use-app-user';
 
 interface PanelRegistrationDetailsProps {
   registration: RegistrationFragmentFragment;
@@ -21,9 +24,18 @@ interface PanelRegistrationDetailsProps {
 
 export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const { registration: reg, columnWidth, readOnly } = props;
-  const [askUnregisterTeam, setAskUnregisterTeam] = useState(false);
+  const { notify } = useNotification();
+  const { isAdmin, isTeamCoach } = useAppUser();
 
-  const [unregisterTeam] = useUnregisterTeamFromEventMutation();
+  const [askUnregisterTeam, setAskUnregisterTeam] = useState(false);
+  const [changeEvent, setChangeEvent] = useState(false);
+
+  const [unregisterTeam] = useCancelEventRegistrationMutation({
+    onError: () => notify.error('Nepodarilo sa zrušiť registráciu.'),
+  });
+  const [switchTeamEvent] = useSwitchTeamEventMutation({
+    onError: () => notify.error('Nepodarilo sa presunúť tím na iný turnaj'),
+  });
 
   return (
     <Panel title="Detaily registrácie" gap="small">
@@ -48,9 +60,20 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
           </LabelValueGroup>
         </Box>
       </Box>
-      {!reg.canceledOn && (
-        <Box direction="row">
-          <Button label="Zrušiť registráciu" onClick={() => setAskUnregisterTeam(true)} />
+      {!reg.canceledOn && !readOnly && (
+        <Box direction="row" gap="small">
+          <Button
+            label="Zrušiť registráciu"
+            onClick={() => setAskUnregisterTeam(true)}
+            disabled={
+              !isAdmin() && !(isTeamCoach(reg.teamId) && !reg.invoiceIssuedOn && !reg.shippedOn)
+            }
+          />
+          <Button
+            label="Zmeniť turnaj"
+            onClick={() => setChangeEvent(true)}
+            disabled={!isAdmin()}
+          />
         </Box>
       )}
 
@@ -58,11 +81,24 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
         <ConfirmTeamUnregisterDialog
           teamName={reg.team.name}
           onClose={() => setAskUnregisterTeam(false)}
-          onUnregister={() =>
-            unregisterTeam({ variables: { eventId: reg.eventId, teamId: reg.teamId } })
-          }
+          onUnregister={() => unregisterTeam({ variables: { id: reg.id } })}
         />
       )}
+
+      <ChangeTeamEventDialog
+        show={changeEvent}
+        team={reg.team}
+        event={reg.event}
+        onClose={() => setChangeEvent(false)}
+        onSubmit={(e) =>
+          switchTeamEvent({
+            variables: {
+              registrationId: reg.id,
+              newEventId: e.id,
+            },
+          })
+        }
+      />
     </Panel>
   );
 }

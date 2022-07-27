@@ -68,32 +68,33 @@ export async function registerTeamToEvent(
   return { event, team };
 }
 
-export async function unregisterTeamFromEvent(
-  teamId: ObjectId,
-  eventId: ObjectId,
-  ctx: ApolloContext
-) {
+export async function cancelRegistration(id: ObjectId, ctx: ApolloContext) {
   const { dataSources, userGuard } = ctx;
+  const log = logLib.extend('registerTeam');
+  const reg = await dataSources.registration.getRegistration(id);
 
-  if (!userGuard.isAdmin() && !(await userGuard.isEventManager(eventId))) {
+  if (
+    !userGuard.isAdmin() &&
+    !((await userGuard.isCoach(reg.teamId)) && !reg.invoiceIssuedOn && !reg.shippedOn)
+  ) {
     //TODO nicer error handling
-    console.log('Not authorized to unregister');
+    log.debug('Not authorized to cancel registration %s', id);
     return null;
   }
 
-  const registration = await dataSources.registration.cancelRegistration(eventId, teamId);
-  const team = await dataSources.team.getTeam(teamId);
+  const registration = await dataSources.registration.cancelRegistration(id);
 
-  if (!registration || !team) {
+  if (!registration) {
     return null;
   }
 
-  const [event, program, eventMgrs, programMgrs, coaches] = await Promise.all([
-    dataSources.event.getEvent(eventId),
+  const [event, program, eventMgrs, programMgrs, coaches, team] = await Promise.all([
+    dataSources.event.getEvent(registration.eventId),
     dataSources.program.getProgram(registration.programId),
-    dataSources.event.getEventManagers(eventId),
+    dataSources.event.getEventManagers(registration.eventId),
     dataSources.program.getProgramManagers(registration.programId),
-    dataSources.team.getTeamCoaches(teamId),
+    dataSources.team.getTeamCoaches(registration.teamId),
+    dataSources.team.getTeam(registration.teamId),
   ]);
 
   const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
@@ -139,14 +140,24 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
 }
 
 export async function switchTeamEvent(
-  teamId: ObjectId,
-  oldEventId: ObjectId,
+  registrationId: ObjectId,
   newEventId: ObjectId,
   ctx: ApolloContext
 ): Promise<SwitchTeamEventPayload> {
   const log = logLib.extend('switch');
-  log.info('Switching team %s from ev1 %s to ev2 %s', teamId, oldEventId, newEventId);
-  const { event: oldEvent } = await unregisterTeamFromEvent(teamId, oldEventId, ctx);
-  const { team, event: newEvent } = await registerTeamToEvent(teamId, newEventId, ctx);
-  return { team, oldEvent, newEvent };
+  log.info('Switching team registration=%s', registrationId);
+  try {
+    const u = await cancelRegistration(registrationId, ctx);
+    const r = await registerTeamToEvent(u.team.id, newEventId, ctx);
+    return { team: r.team, oldEvent: u.event, newEvent: r.event };
+  } catch (e) {
+    log.debug(
+      'Error switching registration=%s to new event=%s error=%s',
+      registrationId,
+      newEventId,
+      e.message
+    );
+    throw new Error('Error switching team');
+    return null;
+  }
 }
