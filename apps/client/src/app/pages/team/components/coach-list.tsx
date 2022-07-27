@@ -1,7 +1,6 @@
 import { Box, Button, Text } from 'grommet';
 import { Close } from 'grommet-icons';
 import React from 'react';
-import { ListRow2 } from '../../../components/list-row';
 import { UserBasicFragmentFragment } from '../../../generated/graphql';
 import { formatFullName } from '../../../utils/format-fullname';
 
@@ -17,7 +16,15 @@ export function CoachList(props: CoachListProps) {
   return (
     <Box gap="small">
       {coaches.map((m) => (
-        <Box direction="row" wrap width="100%" align="center" key={m.id} hoverIndicator>
+        <Box
+          direction="row"
+          wrap
+          width="100%"
+          align="center"
+          key={m.id}
+          hoverIndicator
+          border={{ side: 'bottom', color: 'light-5' }}
+        >
           <Box width="90%" direction="row" wrap gap="medium" align="center">
             <Box width={{ min: '350px' }}>
               <Text>{formatFullName(m.firstName, m.lastName)}</Text>

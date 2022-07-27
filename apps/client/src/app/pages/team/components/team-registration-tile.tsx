@@ -38,7 +38,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
 
       <Box width="35%">
         <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-          <FieldTeamSize registration={registration} readOnly={!registration.canceledOn} />
+          <FieldTeamSize registration={registration} readOnly={!!registration.canceledOn} />
           <FieldTeamSizeConfirmedOn
             registration={registration}
             teamId={registration.teamId}
