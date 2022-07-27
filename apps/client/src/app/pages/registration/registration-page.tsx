@@ -57,6 +57,8 @@ export function RegistrationPage() {
     return <ErrorPage title="Chyba pri získavaní dát o registrácii." />;
   }
 
+  console.log('regPage', isTeamCoach(reg?.teamId), regLoading, reg);
+
   if (!regLoading && !isAdmin() && !isTeamCoach(reg?.teamId)) {
     return <ErrorPage title="Nemáte oprávnenie k tejto stránke." />;
   }
