@@ -43,7 +43,6 @@ export function RegisterPage() {
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
 
   const [timeoutError, setTimeoutError] = useState<boolean>(false);
-  const { notify } = useNotification();
 
   const {
     data: teamData,
@@ -58,8 +57,15 @@ export function RegisterPage() {
         shipTo: data.getTeam.shipTo ? (omitBy(data.getTeam.shipTo, isNil) as Address) : undefined, // remove null/undefined values
       }),
   });
-  const [updateTeam] = useUpdateTeamMutation();
-  const [registerTeam] = useRegisterTeamForEventMutation();
+
+  const { notify } = useNotification();
+
+  const [updateTeam] = useUpdateTeamMutation({
+    onError: () => notify.error('Nepodarilo sa aktualizovať tím.'),
+  });
+  const [registerTeam] = useRegisterTeamForEventMutation({
+    onError: () => notify.error('Nepodarilo sa registrovať tím.'),
+  });
 
   const canRegister = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;

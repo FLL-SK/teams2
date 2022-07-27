@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox, Spinner } from 'grommet';
 import { useMemo, useState } from 'react';
@@ -11,12 +11,10 @@ import { Panel, PanelGroup } from '../../components/panel';
 import {
   CreateTeamInput,
   UpdateTeamInput,
-  useAddCoachToTeamMutation,
   useAddTagToTeamMutation,
   useDeleteTagMutation,
   useGetNotesQuery,
   useGetTeamQuery,
-  useRemoveCoachFromTeamMutation,
   useUpdateTeamMutation,
   useCreateNoteMutation,
 } from '../../generated/graphql';
@@ -26,21 +24,20 @@ import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
 import { TeamRegistrationsList } from './components/team-registrations';
-import { CoachList } from './components/coach-list';
-import { Add } from 'grommet-icons';
-import { EditEmailDialog } from '../../components/dialogs/edit-email-dialog';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { PanelTeamCoaches } from './components/panel-team-coaches';
 
 export function TeamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { notify } = useNotification();
 
   const [showInactiveEvents, setShowInactiveEvents] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showAddCoachDialog, setShowAddCoachDialog] = useState(false);
 
   const { isAdmin, isTeamCoach } = useAppUser();
+
+  const { notify } = useNotification();
+  const onError = useCallback(() => notify.error('Nepodarilo sa aktualizovať tím.'), [notify]);
 
   const {
     data: teamData,
@@ -56,17 +53,10 @@ export function TeamPage() {
     variables: { type: 'team', ref: id ?? '0' },
   });
 
-  const [addCoach] = useAddCoachToTeamMutation({
-    onError: (error) => notify.error('Nepodarilo sa pridať trénera', error.message),
-  });
-  const [removeCoach] = useRemoveCoachFromTeamMutation();
-
-  const [removeTag] = useDeleteTagMutation();
-  const [addTag] = useAddTagToTeamMutation();
-
-  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
-
-  const [updateTeam] = useUpdateTeamMutation();
+  const [removeTag] = useDeleteTagMutation({ onError });
+  const [addTag] = useAddTagToTeamMutation({ onError });
+  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch(), onError });
+  const [updateTeam] = useUpdateTeamMutation({ onError });
 
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
@@ -132,32 +122,7 @@ export function TeamPage() {
           <TeamRegistrationsList registrations={registrations} />
         </Panel>
 
-        {canEdit && (
-          <Panel title="Tréneri">
-            <Box gap="small">
-              <Box direction="row">
-                <Button
-                  plain
-                  icon={<Add />}
-                  label="Pridať trénera"
-                  onClick={() => setShowAddCoachDialog(true)}
-                />
-              </Box>
-              <CoachList
-                canEdit={canEdit}
-                coaches={team?.coaches ?? []}
-                onRemove={(userId) => removeCoach({ variables: { teamId: id ?? '0', userId } })}
-              />
-            </Box>
-            <EditEmailDialog
-              show={showAddCoachDialog}
-              onClose={() => setShowAddCoachDialog(false)}
-              onSubmit={({ email }) =>
-                addCoach({ variables: { teamId: id ?? '0', username: email ?? '0' } })
-              }
-            />
-          </Panel>
-        )}
+        {canEdit && <PanelTeamCoaches team={team} canEdit={canEdit} />}
 
         {isAdmin() && (
           <Panel title="Štítky">

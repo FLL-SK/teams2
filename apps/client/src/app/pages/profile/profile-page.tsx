@@ -19,22 +19,32 @@ import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { EditUserDialog } from '../../components/dialogs/edit-user-dialog';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { notify } = useNotification();
   const { isAdmin, isUser, xOut, isSuperAdmin } = useAppUser();
   const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
 
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
 
-  const [createTeam] = useCreateTeamMutation({ onCompleted: () => refetch() });
-  const [setAdmin] = useSetAdminMutation({ onCompleted: () => refetch() });
-  const [updateUser] = useUpdateUserMutation();
+  const [createTeam] = useCreateTeamMutation({
+    onCompleted: () => refetch(),
+    onError: (e) => notify.error('Nepodarilo sa vytvoriť tím.', e.message),
+  });
+  const [setAdmin] = useSetAdminMutation({
+    onCompleted: () => refetch(),
+    onError: (e) => notify.error('Nepodarilo sa nastaviť admina.', e.message),
+  });
+  const [updateUser] = useUpdateUserMutation({
+    onError: (e) => notify.error('Nepodarilo sa aktualizovať profil.', e.message),
+  });
 
   if (!id || (error && !loading)) {
-    return <ErrorPage title="Profil nenájdený." />;
+    return <ErrorPage title="Chyba pr získavaní údajov profilu." />;
   }
 
   const canEdit = isAdmin() || isUser(id);

@@ -6,61 +6,55 @@ import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
 import {
-  EventFragmentFragment,
   InvoiceItemFragmentFragment,
+  ProgramFragmentFragment,
   useCreateInvoiceItemMutation,
   useDeleteInvoiceItemMutation,
   useUpdateInvoiceItemMutation,
 } from '../../../generated/graphql';
 
-interface PanelEventFeesProps {
-  event?: EventFragmentFragment | null;
-  onChange?: () => void;
-  canEdit?: boolean;
+interface PanelProgramFeesProps {
+  program?: ProgramFragmentFragment;
+  canEdit: boolean;
+  onUpdate: () => void;
 }
 
-export function PanelEventFees(props: PanelEventFeesProps) {
-  const { event, canEdit, onChange } = props;
+export function PanelProgramFees(props: PanelProgramFeesProps) {
+  const { program, canEdit, onUpdate } = props;
   const { notify } = useNotification();
 
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
   const [createInvoiceItem] = useCreateInvoiceItemMutation({
-    onCompleted: onChange,
+    onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa vytvoriť položku faktúry.', e.message),
   });
   const [updateInvoiceItem] = useUpdateInvoiceItemMutation({
-    onCompleted: onChange,
+    onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa aktualizovať položku faktúry.', e.message),
   });
   const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({
-    onCompleted: onChange,
+    onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa vymazať položku faktúry.', e.message),
   });
 
-  if (!event) {
+  if (!program) {
     return null;
   }
 
-  const invoiceItems = event?.invoiceItems ?? [];
-
   return (
     <Panel title="Poplatky" gap="medium">
-      {invoiceItems.length === 0 && (
-        <Text>
-          Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný. Pridaním
-          poplatku je možné definovať poplatky špecifické pre tento turnaj.
-        </Text>
-      )}
-      {invoiceItems.length > 0 && (
+      {program.invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
+      {program.invoiceItems.length > 0 && (
         <InvoiceItemList
-          items={invoiceItems}
+          items={program.invoiceItems}
           onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
           onClick={(item) => setInvoiceItemEdit(item)}
           editable={canEdit}
         />
       )}
+
       <Box direction="row">
         <Button
           label="Pridať poplatok"
@@ -68,6 +62,7 @@ export function PanelEventFees(props: PanelEventFeesProps) {
           disabled={!canEdit}
         />
       </Box>
+
       <EditInvoiceItemDialog
         show={!!invoiceItemEdit || invoiceItemAdd}
         item={invoiceItemEdit}
@@ -78,7 +73,7 @@ export function PanelEventFees(props: PanelEventFeesProps) {
         onSubmit={(values) => {
           if (invoiceItemAdd) {
             createInvoiceItem({
-              variables: { type: 'event', refId: event.id ?? '0', item: omit(values, 'id') },
+              variables: { type: 'program', refId: program.id, item: omit(values, 'id') },
             });
           } else {
             updateInvoiceItem({

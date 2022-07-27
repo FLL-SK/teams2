@@ -12,6 +12,7 @@ import { fullAddress } from '../../../utils/format-address';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
 import { EditContactDialog } from '../../../components/dialogs/edit-contact-dialog';
 import { Panel } from '../../../components/panel';
+import { useNotification } from '../../../components/notifications/notification-provider';
 
 interface PanelRegistrationShippingProps {
   registration: RegistrationFragmentFragment;
@@ -21,9 +22,13 @@ interface PanelRegistrationShippingProps {
 
 export function PanelRegistrationShipping(props: PanelRegistrationShippingProps) {
   const { registration: reg, columnWidth, readOnly } = props;
+  const { notify } = useNotification();
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);
-  const [updateRegistration] = useUpdateRegistrationMutation();
+
+  const [updateRegistration] = useUpdateRegistrationMutation({
+    onError: () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
+  });
 
   return (
     <>

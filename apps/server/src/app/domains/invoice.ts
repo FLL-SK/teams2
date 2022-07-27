@@ -78,9 +78,11 @@ export async function emailRegistrationInvoice(
 
   //TODO add internal email to bcc
 
+  log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
+
   const result = await api.emailInvoice({
     id: registration.invoiceRef,
-    to: team.billTo.email,
+    to: registration.billTo.email ?? '',
     cc: coachEmails,
     subject: `Faktura ${team.name}`,
   });
