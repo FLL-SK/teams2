@@ -47,7 +47,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
       dic: billTo.taxNumber,
       ic_dph: billTo.vatNumber,
 
-      email: encodeURIComponent(billTo.email),
+      email: encodeURIComponent(billTo.email ?? ''),
       phone: billTo.phone,
       update_addressbook: 1,
     };
@@ -130,10 +130,10 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     };
 
     if (options.cc) {
-      request.Email.cc = options.cc.map(encodeURIComponent);
+      request.Email.cc = (options.cc ?? []).map(encodeURIComponent);
     }
     if (options.bcc) {
-      request.Email.bcc = options.bcc.map(encodeURIComponent);
+      request.Email.bcc = (options.bcc ?? []).map(encodeURIComponent);
     }
 
     log.debug('request=%o', request);
