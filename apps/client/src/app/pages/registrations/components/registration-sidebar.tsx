@@ -112,7 +112,7 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
           </SidebarPanel>
           <SidebarPanel label="Registrácia">
             <LabelValueGroup direction="column" gap="small" labelWidth="250px">
-              <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
+              <LabelValue label="Registrácia" value={formatDate(registration.createdOn)} />
               <FieldInvoiceIssuedOn registration={registration} />
               <FieldPaidOn registration={registration} />
               <FieldShipmentGroup registration={registration} />

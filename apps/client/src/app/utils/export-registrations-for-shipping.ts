@@ -2,7 +2,7 @@ import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
 import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
 
 interface ExportSourceType {
-  registeredOn: string;
+  createdOn: string;
   invoiceIssuedOn?: string | null;
   paidOn?: string | null;
   shipmentGroup?: string | null;
@@ -33,8 +33,8 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
 
   {
     label: 'Registrovaný',
-    id: 'registeredOn',
-    value: (x) => (x.registeredOn ? new Date(x.registeredOn) : ''),
+    id: 'createdOn',
+    value: (x) => (x.createdOn ? new Date(x.createdOn) : ''),
   },
   {
     label: 'Fakturované',

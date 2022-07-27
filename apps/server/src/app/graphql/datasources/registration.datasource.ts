@@ -46,8 +46,8 @@ export class RegistrationDataSource extends BaseDataSource {
       programId: event.programId,
       eventId,
       teamId,
-      registeredOn: new Date(),
-      registeredBy: this.context.user._id,
+      createdOn: new Date(),
+      createdBy: this.context.user._id,
       shipTo: team.shipTo,
       billTo: team.billTo,
     };
@@ -64,33 +64,39 @@ export class RegistrationDataSource extends BaseDataSource {
     return RegistrationMapper.toRegistration(registration);
   }
 
-  async deleteRegistration(id: ObjectId): Promise<Registration> {
-    const registration = await registrationRepository.findByIdAndDelete({ _id: id }).exec();
-    return RegistrationMapper.toRegistration(registration);
-  }
-
-  async deleteRegistrationET(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
-    const registration = await registrationRepository.findOneAndDelete({ eventId, teamId }).exec();
+  async cancelRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+    const registration = await registrationRepository
+      .findOneAndUpdate(
+        { eventId, teamId },
+        { canceledOn: new Date(), canceledBy: this.context.user._id }
+      )
+      .exec();
     return RegistrationMapper.toRegistration(registration);
   }
 
   async getEventRegistrations(eventId: ObjectId): Promise<Registration[]> {
-    const regs = await registrationRepository.find({ eventId }).sort({ registeredOn: 1 }).exec();
+    const regs = await registrationRepository
+      .find({ eventId, canceledOn: null })
+      .sort({ createdOn: 1 })
+      .exec();
     return regs.map(RegistrationMapper.toRegistration);
   }
 
   async getEventRegistrationsCount(eventId: ObjectId): Promise<number> {
-    const count = await registrationRepository.count({ eventId }).exec();
+    const count = await registrationRepository.count({ eventId, canceledOn: null }).exec();
     return count;
   }
 
   async getProgramRegistrations(programId: ObjectId): Promise<Registration[]> {
-    const regs = await registrationRepository.find({ programId }).sort({ registeredOn: 1 }).exec();
+    const regs = await registrationRepository
+      .find({ programId, canceledOn: null })
+      .sort({ createdOn: 1 })
+      .exec();
     return regs.map(RegistrationMapper.toRegistration);
   }
 
   async getProgramRegistrationsCount(programId: ObjectId): Promise<number> {
-    const count = await registrationRepository.count({ programId }).exec();
+    const count = await registrationRepository.count({ programId, canceledOn: null }).exec();
     return count;
   }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Spinner } from 'grommet';
+import { Box, Spinner, Text } from 'grommet';
 import { useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -60,6 +60,11 @@ export function RegistrationPage() {
 
   return (
     <BasePage title="Registrácia" loading={regLoading}>
+      {reg?.canceledOn && (
+        <Box direction="row" gap="medium">
+          <Text color="red">Táto registrácia bola zrušená.</Text>
+        </Box>
+      )}
       {reg && (
         <Box direction="row" gap="small" wrap>
           <PanelGroup width="1000px">

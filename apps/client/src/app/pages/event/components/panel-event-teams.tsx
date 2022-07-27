@@ -14,7 +14,7 @@ import { fullAddress } from '../../../utils/format-address';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 import { handleExportRegistrations } from './handle-export';
 import { ChangeTeamEventDialog } from '../../../components/dialogs/change-team-event-dialog';
-import { BasicDialog } from '../../../components/dialogs/basic-dialog';
+import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm-team-unregister';
 
 interface PanelEventTeamsProps {
   event?: EventFragmentFragment;
@@ -94,28 +94,15 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
         }
       />
 
-      <BasicDialog
-        show={!!teamToUnregister}
-        onClose={() => setTeamToUnregister(undefined)}
-        title="Odhlásiť tím z turnaja?"
-      >
-        <Box gap="medium">
-          <Text alignSelf="center">{`Naozaj chcete odhlásiť tím ${teamToUnregister?.name} z turnaja?`}</Text>
-          <Box direction="row" justify="evenly">
-            <Button label="Nie" primary onClick={() => setTeamToUnregister(undefined)} />
-            <Button
-              label="Áno"
-              onClick={async (e) => {
-                e.stopPropagation();
-                await unregisterTeam({
-                  variables: { teamId: teamToUnregister?.id ?? '0', eventId: event.id },
-                });
-                setTeamToUnregister(undefined);
-              }}
-            />
-          </Box>
-        </Box>
-      </BasicDialog>
+      {teamToUnregister && (
+        <ConfirmTeamUnregisterDialog
+          teamName={teamToUnregister.name}
+          onClose={() => setTeamToUnregister(undefined)}
+          onUnregister={() =>
+            unregisterTeam({ variables: { eventId: event.id, teamId: teamToUnregister.id } })
+          }
+        />
+      )}
     </Panel>
   );
 }

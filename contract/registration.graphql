@@ -13,8 +13,11 @@ type Registration implements INode {
   eventId: ID!
   teamId: ID!
 
-  registeredOn: DateTime!
-  registeredBy: ID!
+  createdOn: DateTime!
+  createdBy: ID!
+
+  canceledOn: DateTime
+  canceledBy: ID
 
   billTo: Address!
   shipTo: Address!
@@ -40,7 +43,7 @@ type Registration implements INode {
   event: Event!
   team: Team!
   program: Program!
-  registeredByUser: User!
+  createdByUser: User!
   invoiceIssuedByUser: User!
 }
 

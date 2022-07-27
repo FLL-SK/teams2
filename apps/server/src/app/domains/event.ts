@@ -81,7 +81,7 @@ export async function unregisterTeamFromEvent(
     return null;
   }
 
-  const registration = await dataSources.registration.deleteRegistrationET(eventId, teamId);
+  const registration = await dataSources.registration.cancelRegistration(eventId, teamId);
   const team = await dataSources.team.getTeam(teamId);
 
   if (!registration || !team) {
