@@ -1,16 +1,11 @@
 import debugLib from 'debug';
-import mongoose from 'mongoose';
-import {
-  eventRepository,
-  registrationRepository,
-  teamRepository,
-  userRepository,
-} from '../../models';
+import { registrationRepository, teamRepository, userRepository } from '../../models';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
   await nameToFullName();
+  await registeredToCreadted();
 }
 
 async function nameToFullName() {
@@ -31,6 +26,20 @@ async function nameToFullName() {
     await user.save();
   }
   debug('updated %d registrations', users.length);
+}
+
+async function registeredToCreadted() {
+  const debug = debugLib('upgrade:registeredToCreated');
+  debug('registeredToCreated');
+  const registrations = await registrationRepository.find({ createdOn: null }).exec();
+  for (const registration of registrations) {
+    if (!registration.createdOn) {
+      registration.createdOn = registration.registeredOn;
+      registration.createdBy = registration.registeredBy;
+    }
+    await registration.save();
+  }
+  debug('updated %d registrations', registrations.length);
 }
 
 async function billToShipRegistraion() {

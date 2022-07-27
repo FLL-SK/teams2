@@ -5,7 +5,6 @@ const Types = Schema.Types;
 
 export interface InvoiceItemData {
   _id?: ObjectId;
-  invoiceId?: ObjectId;
   programId?: ObjectId;
   eventId?: ObjectId;
   registrationId?: ObjectId;
@@ -26,7 +25,6 @@ export interface InvoiceItemModel extends Model<InvoiceItemData> {
 }
 
 const schema = new Schema<InvoiceItemData>({
-  invoiceId: { type: Types.ObjectId },
   programId: { type: Types.ObjectId, ref: 'Program' },
   eventId: { type: Types.ObjectId, ref: 'Event' },
   registrationId: { type: Types.ObjectId, ref: 'Registration' },
@@ -37,7 +35,6 @@ const schema = new Schema<InvoiceItemData>({
   unitPrice: { type: Types.Number, required: true },
 });
 
-schema.index({ invoiceId: 1 });
 schema.index({ programId: 1 });
 schema.index({ eventId: 1 });
 schema.index({ registrationId: 1 });

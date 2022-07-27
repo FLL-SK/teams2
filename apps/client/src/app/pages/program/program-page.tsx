@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Markdown, Spinner, Text } from 'grommet';
+import { Anchor, Box, Button, Markdown, Spinner, Text } from 'grommet';
 import { useCallback, useMemo, useState } from 'react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -38,6 +38,8 @@ import { FileUploadControl } from '../../components/file-upload-control';
 import { uploadS3XHR } from '../../utils/upload-s3-xhr';
 import { formatDate } from '@teams2/dateutils';
 import { LabelValueGroup } from '../../components/label-value-group';
+import { BasicDialog } from '../../components/dialogs/basic-dialog';
+import { Modal } from '../../components/modal';
 
 export function ProgramPage() {
   const { id } = useParams();
@@ -62,6 +64,7 @@ export function ProgramPage() {
 
   const [showProgramEditDialog, setShowProgramEditDialog] = useState(false);
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
+  const [showProgramTerms, setShowProgramTerms] = useState(false);
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
@@ -159,13 +162,22 @@ export function ProgramPage() {
               value={program?.endDate ? formatDate(program?.endDate) : 'neurčený'}
             />
             <LabelValue label="Popis">
-              <Box background="light-2" flex pad="small">
+              <Box
+                background="light-2"
+                flex
+                pad="small"
+                height={{ max: '200px' }}
+                overflow={{ vertical: 'auto' }}
+              >
                 <Markdown>{program?.description ?? ''}</Markdown>
               </Box>
             </LabelValue>
             <LabelValue label="Podmienky">
               <Box background="light-2" flex pad="small">
-                <Markdown>{program?.conditions ?? ''}</Markdown>
+                <Box flex height={{ max: '200px' }} overflow={{ vertical: 'auto' }}>
+                  <Markdown>{program?.conditions ?? ''}</Markdown>
+                </Box>
+                <Anchor label="Zobraz" onClick={() => setShowProgramTerms(true)} />
               </Box>
             </LabelValue>
           </LabelValueGroup>
@@ -196,17 +208,18 @@ export function ProgramPage() {
           {canEdit && <FileUploadControl onUpload={handleFileUpload} />}
         </Panel>
 
-        <Panel title="Poplatky" gap="medium">
-          {invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
-          {invoiceItems.length > 0 && (
-            <InvoiceItemList
-              items={invoiceItems}
-              onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
-              onClick={(item) => setInvoiceItemEdit(item)}
-              editable={canEdit}
-            />
-          )}
-          {canEdit && (
+        {canEdit && (
+          <Panel title="Poplatky" gap="medium">
+            {invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
+            {invoiceItems.length > 0 && (
+              <InvoiceItemList
+                items={invoiceItems}
+                onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
+                onClick={(item) => setInvoiceItemEdit(item)}
+                editable={canEdit}
+              />
+            )}
+
             <Box direction="row">
               <Button
                 label="Pridať poplatok"
@@ -214,8 +227,8 @@ export function ProgramPage() {
                 disabled={!canEdit}
               />
             </Box>
-          )}
-        </Panel>
+          </Panel>
+        )}
 
         {canEdit && (
           <Panel title="Manažéri">
@@ -283,6 +296,19 @@ export function ProgramPage() {
           }
         }}
       />
+
+      <Modal
+        show={showProgramTerms}
+        title="Podmienky programu"
+        onClose={() => setShowProgramTerms(false)}
+        width="100vw"
+        height="100vh"
+        showButton
+      >
+        <Box flex pad="medium" height={{ max: '100%' }} overflow={'auto'}>
+          <Markdown>{program?.conditions ?? ''}</Markdown>
+        </Box>
+      </Modal>
     </BasePage>
   );
 }

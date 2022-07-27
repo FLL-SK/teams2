@@ -9,15 +9,18 @@ import {
 } from '../../../generated/graphql';
 import { SetClearDate } from './set-clear-date';
 
-export const FieldPaidOn = (props: { registration: Pick<Registration, 'id' | 'paidOn'> }) => {
-  const { registration } = props;
+export const FieldPaidOn = (props: {
+  registration: Pick<Registration, 'id' | 'paidOn'>;
+  readOnly: boolean;
+}) => {
+  const { registration, readOnly } = props;
   const { isAdmin } = useAppUser();
   const [setPaid] = useRegistrationSetPaidMutation();
   const [clearPaid] = useRegistrationClearPaidMutation();
   return (
     <LabelValue label="Zaplatená">
       <SetClearDate
-        canEdit={isAdmin()}
+        canEdit={isAdmin() && !readOnly}
         date={registration.paidOn}
         onClear={() => clearPaid({ variables: { id: registration.id } })}
         onSet={() =>

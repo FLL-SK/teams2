@@ -1,8 +1,8 @@
 import { Box, Button, Text } from 'grommet';
 import { Close } from 'grommet-icons';
 import React from 'react';
-import { ListRow2 } from '../../../components/list-row';
 import { UserBasicFragmentFragment } from '../../../generated/graphql';
+import { formatFullName } from '../../../utils/format-fullname';
 
 interface CoachListProps {
   coaches: UserBasicFragmentFragment[];
@@ -16,12 +16,26 @@ export function CoachList(props: CoachListProps) {
   return (
     <Box gap="small">
       {coaches.map((m) => (
-        <ListRow2 columns="1fr 1fr 1fr 1fr auto" key={m.id} align="center">
-          <Text>{m.username}</Text>
-          <Text>{m.firstName}</Text>
-          <Text>{m.lastName}</Text>
-          <Text>{m.phone}</Text>
-          <Box justify="end">
+        <Box
+          direction="row"
+          wrap
+          width="100%"
+          align="center"
+          key={m.id}
+          hoverIndicator
+          border={{ side: 'bottom', color: 'light-5' }}
+        >
+          <Box width="90%" direction="row" wrap gap="medium" align="center">
+            <Box width={{ min: '350px' }}>
+              <Text>{formatFullName(m.firstName, m.lastName)}</Text>
+            </Box>
+            <Box width={{ min: '350px' }}>
+              <Text size="small">
+                {m.username}, {m.phone}
+              </Text>
+            </Box>
+          </Box>
+          <Box pad="small">
             {onRemove && (
               <Button
                 plain
@@ -31,7 +45,7 @@ export function CoachList(props: CoachListProps) {
               />
             )}
           </Box>
-        </ListRow2>
+        </Box>
       ))}
     </Box>
   );

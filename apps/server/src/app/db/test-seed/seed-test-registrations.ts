@@ -1,5 +1,4 @@
 import {
-  EventData,
   eventRepository,
   RegistrationData,
   registrationRepository,
@@ -15,7 +14,7 @@ import { admin_username } from './seed-test-users';
 
 type TestSeedData = Omit<
   RegistrationData,
-  'teamId' | 'eventId' | 'programId' | 'registeredOn' | 'registeredBy' | 'billTo' | 'shipTo'
+  'teamId' | 'eventId' | 'programId' | 'createdOn' | 'createdBy' | 'billTo' | 'shipTo'
 > & {
   event: string;
   team: string;
@@ -82,8 +81,8 @@ export async function seedTestRegistrations() {
       teamId: t._id,
       billTo: t.billTo ?? t.address,
       shipTo: t.shipTo ?? t.billTo ?? t.address,
-      registeredOn: regOn,
-      registeredBy: t.coachesIds.length > 0 ? t.coachesIds[0] : adminUser._id,
+      createdOn: regOn,
+      createdBy: t.coachesIds.length > 0 ? t.coachesIds[0] : adminUser._id,
       invoiceIssuedOn: invoicedOn,
       invoiceIssuedBy: invoicedOn ? adminUser._id : undefined,
       girlCount: d.girlCount ?? 0,

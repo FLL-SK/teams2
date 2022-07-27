@@ -13,13 +13,14 @@ import { EditAddressDialog } from '../../../components/dialogs/edit-address-dial
 import { EditContactDialog } from '../../../components/dialogs/edit-contact-dialog';
 import { Panel } from '../../../components/panel';
 
-interface PanelShipmentProps {
+interface PanelRegistrationShippingProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
+  readOnly: boolean;
 }
 
-export function ShipmentPanel(props: PanelShipmentProps) {
-  const { registration: reg, columnWidth } = props;
+export function PanelRegistrationShipping(props: PanelRegistrationShippingProps) {
+  const { registration: reg, columnWidth, readOnly } = props;
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);
   const [updateRegistration] = useUpdateRegistrationMutation();
@@ -33,7 +34,7 @@ export function ShipmentPanel(props: PanelShipmentProps) {
               <Box>
                 <Text>{fullAddress(reg.shipTo)}</Text>
                 <Anchor
-                  disabled={!!reg.shippedOn}
+                  disabled={!!reg.shippedOn || readOnly}
                   size="small"
                   label="Upraviť"
                   onClick={() => setEditShipToAddress(true)}
@@ -54,15 +55,15 @@ export function ShipmentPanel(props: PanelShipmentProps) {
                   {reg.shipTo.phone}
                 </Paragraph>
                 <Anchor
-                  disabled={!!reg.shippedOn}
+                  disabled={!!reg.shippedOn || readOnly}
                   size="small"
                   label="Upraviť"
                   onClick={() => setEditShipToContact(true)}
                 />
               </Box>
             </LabelValue>
-            <FieldShipmentGroup registration={reg} />
-            <FieldShippedOn registration={reg} />
+            <FieldShipmentGroup registration={reg} readOnly={readOnly} />
+            <FieldShippedOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
         </Box>
       </Panel>

@@ -49,8 +49,8 @@ mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
   }
 }
 
-mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
-  unregisterTeamFromEvent(eventId: $eventId, teamId: $teamId) {
+mutation cancelEventRegistration($id: ID!) {
+  cancelEventRegistration(id: $id) {
     event {
       ...EventFragment
     }
@@ -60,8 +60,8 @@ mutation unregisterTeamFromEvent($eventId: ID!, $teamId: ID!) {
   }
 }
 
-mutation switchTeamEvent($teamId: ID!, $oldEventId: ID!, $newEventId: ID!) {
-  switchTeamEvent(teamId: $teamId, oldEventId: $oldEventId, newEventId: $newEventId) {
+mutation switchTeamEvent($registrationId: ID!, $newEventId: ID!) {
+  switchTeamEvent(registrationId: $registrationId, newEventId: $newEventId) {
     team {
       ...TeamFragment
     }
