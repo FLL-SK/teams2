@@ -18,12 +18,11 @@ export class InvoiceItemDataSource extends BaseDataSource {
     super.initialize(config);
   }
 
-  async getInvoiceItems(invoiceId: ObjectId): Promise<InvoiceItem[]> {
-    const items = await invoiceItemRepository.find({ invoiceId }).lean().exec();
-    return items.map(InvoiceItemMapper.toInvoiceItem);
-  }
-
   async getEventInvoiceItems(eventId: ObjectId): Promise<InvoiceItem[]> {
+    if (!this.userGuard.isLoggedIn()) {
+      return [];
+    }
+
     const items = await invoiceItemRepository
       .find({ eventId })
       .sort({ lineNo: 1, text: 1 })
@@ -33,6 +32,10 @@ export class InvoiceItemDataSource extends BaseDataSource {
   }
 
   async getProgramInvoiceItems(programId: ObjectId): Promise<InvoiceItem[]> {
+    if (!this.userGuard.isLoggedIn()) {
+      return [];
+    }
+
     const items = await invoiceItemRepository
       .find({ programId })
       .sort({ lineNo: 1, text: 1 })
@@ -42,6 +45,10 @@ export class InvoiceItemDataSource extends BaseDataSource {
   }
 
   async getRegistrationInvoiceItems(registrationId: ObjectId): Promise<InvoiceItem[]> {
+    if (!this.userGuard.isLoggedIn() && !this.userGuard.isAdmin()) {
+      return [];
+    }
+
     const items = await invoiceItemRepository
       .find({ registrationId })
       .sort({ lineNo: 1, text: 1 })
@@ -55,6 +62,8 @@ export class InvoiceItemDataSource extends BaseDataSource {
     refId: ObjectId,
     item: InvoiceItemData
   ): Promise<InvoiceItem> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const ii: InvoiceItemData = { ...item };
     switch (type) {
       case 'event':
@@ -75,6 +84,8 @@ export class InvoiceItemDataSource extends BaseDataSource {
   }
 
   async updateInvoiceItem(itemId: ObjectId, item: InvoiceItemInput): Promise<InvoiceItem> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const newItem = await invoiceItemRepository
       .findOneAndUpdate({ _id: itemId }, { $set: { ...item } }, { new: true })
       .exec();
@@ -82,6 +93,8 @@ export class InvoiceItemDataSource extends BaseDataSource {
   }
 
   async deleteInvoiceItem(itemId: ObjectId): Promise<InvoiceItem> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const deletedItem = await invoiceItemRepository.findOneAndDelete({ _id: itemId }).exec();
     return InvoiceItemMapper.toInvoiceItem(deletedItem);
   }

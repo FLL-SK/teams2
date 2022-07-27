@@ -53,28 +53,38 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async createProgram(input: CreateProgramInput): Promise<CreateProgramPayload> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const u: ProgramData = { ...input, managersIds: [] };
     const nu = await programRepository.create(u);
     return { program: ProgramMapper.toProgram(nu) };
   }
 
   async updateProgram(id: ObjectId, input: UpdateProgramInput): Promise<UpdateProgramPayload> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const u: Partial<ProgramData> = input;
     const nu = await programRepository.findByIdAndUpdate(id, u, { new: true }).exec();
     return { program: ProgramMapper.toProgram(nu) };
   }
 
   async deleteProgram(id: ObjectId): Promise<Program> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const u = await programRepository.findByIdAndDelete(id).exec();
     return ProgramMapper.toProgram(u);
   }
 
   async getProgramsManagedBy(managerId: ObjectId): Promise<Program[]> {
+    this.userGuard.isAdmin() || this.userGuard.isSelf(managerId) || this.userGuard.notAuthorized();
+
     const programs = await programRepository.findProgramsManagedByUser(managerId);
     return programs.map((t) => ProgramMapper.toProgram(t));
   }
 
   async addProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const u: UpdateQuery<ProgramData> = { $addToSet: { managersIds: userId } };
     const program = await programRepository
       .findOneAndUpdate({ _id: programId }, u, { new: true })
@@ -83,6 +93,8 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async removeProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const program = await programRepository
       .findOneAndUpdate({ _id: programId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();
@@ -90,6 +102,9 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async getProgramManagers(programId: ObjectId): Promise<User[]> {
+    if (!this.userGuard.isAdmin()) {
+      return [];
+    }
     const program = await programRepository.findById(programId).exec();
     if (!program) {
       throw new Error('Program not found');

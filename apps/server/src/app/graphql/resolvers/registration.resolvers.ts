@@ -17,8 +17,8 @@ export const typeResolver: Resolver<Registration> = {
     dataSources.program.getProgram(programId),
   team: async ({ teamId }, _args, { dataSources }) => dataSources.team.getTeam(teamId),
   event: async ({ eventId }, _args, { dataSources }) => dataSources.event.getEvent(eventId),
-  registeredByUser: async ({ registeredBy }, _args, { dataSources }) =>
-    dataSources.user.getUser(registeredBy),
+  createdByUser: async ({ createdBy }, _args, { dataSources }) =>
+    dataSources.user.getUser(createdBy),
   invoiceIssuedByUser: async ({ invoiceIssuedBy }, _args, { dataSources }) =>
     dataSources.user.getUser(invoiceIssuedBy),
   invoiceItems: async ({ id }, _args, { dataSources }) =>

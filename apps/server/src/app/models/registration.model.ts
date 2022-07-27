@@ -13,8 +13,10 @@ export interface RegistrationData {
   billTo: AddressData;
   shipTo: AddressData;
 
-  registeredOn: Date;
-  registeredBy: ObjectId;
+  createdOn: Date;
+  createdBy: ObjectId;
+  registeredOn?: Date; // deprecated
+  registeredBy?: ObjectId; // deprecated
 
   invoiceIssuedOn?: Date;
   invoiceIssuedBy?: ObjectId;
@@ -31,6 +33,9 @@ export interface RegistrationData {
   boyCount?: number;
   coachCount?: number;
   sizeConfirmedOn?: Date;
+
+  canceledOn?: Date;
+  canceledBy?: ObjectId;
 }
 
 export type RegistrationDocument =
@@ -49,8 +54,14 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   billTo: { type: addressSchema, required: true },
   shipTo: { type: addressSchema, required: true },
 
-  registeredOn: { type: Types.Date, required: true },
-  registeredBy: { type: Types.ObjectId, ref: 'User', required: true },
+  createdOn: { type: Types.Date, required: true },
+  createdBy: { type: Types.ObjectId, ref: 'User', required: true },
+
+  registeredOn: { type: Types.Date },
+  registeredBy: { type: Types.ObjectId, ref: 'User' },
+
+  canceledOn: { type: Types.Date },
+  canceledBy: { type: Types.ObjectId, ref: 'User' },
 
   invoiceIssuedOn: { type: Types.Date },
   invoiceIssuedBy: { type: Types.ObjectId, ref: 'User' },

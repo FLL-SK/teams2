@@ -7,8 +7,9 @@ import { Registration, useRegistrationSetShipmentGroupMutation } from '../../../
 
 export const FieldShipmentGroup = (props: {
   registration: Pick<Registration, 'id' | 'shipmentGroup' | 'shippedOn'>;
+  readOnly: boolean;
 }) => {
-  const { registration } = props;
+  const { registration, readOnly } = props;
   const { isAdmin } = useAppUser();
   const [showDialog, setShowDialog] = React.useState(false);
   const [setShipmentGroup] = useRegistrationSetShipmentGroupMutation();
@@ -18,7 +19,12 @@ export const FieldShipmentGroup = (props: {
       <Box direction="row" width="100%" justify="between">
         <Text>{registration.shipmentGroup ?? '-'}</Text>
         {isAdmin() && !registration.shippedOn && (
-          <Anchor size="small" label="Nastav" onClick={() => setShowDialog(true)} />
+          <Anchor
+            size="small"
+            label="Nastav"
+            onClick={() => setShowDialog(true)}
+            disabled={readOnly}
+          />
         )}
       </Box>
       <EditShipmentGroupDialog

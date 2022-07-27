@@ -1,8 +1,18 @@
 import React from 'react';
-import { BoxTypes, Button, Card, CardBody, CardFooter, CardHeader, Layer, Text } from 'grommet';
-import { HeightType, WidthType } from 'grommet/utils';
+import {
+  Box,
+  BoxExtendedProps,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Layer,
+  Text,
+} from 'grommet';
+import { Close } from 'grommet-icons';
 
-interface ModalProps extends BoxTypes {
+interface ModalProps extends BoxExtendedProps {
   title?: string;
   onClose: () => void;
   children: React.ReactNode;
@@ -10,8 +20,6 @@ interface ModalProps extends BoxTypes {
   showButton?: boolean;
   buttonLabel?: string;
   show?: boolean;
-  width?: WidthType;
-  height?: HeightType;
 }
 
 export function Modal(props: ModalProps) {
@@ -35,9 +43,12 @@ export function Modal(props: ModalProps) {
     <Layer onEsc={onClose}>
       <Card width={width} height={height}>
         <CardHeader background={'light-3'} pad="small">
-          <Text size="medium" weight="bold">
-            {title}
-          </Text>
+          <Box width="100%" justify="between" direction="row">
+            <Text size="medium" weight="bold">
+              {title}
+            </Text>
+            <Button plain icon={<Close />} onClick={onClose} />
+          </Box>
         </CardHeader>
         <CardBody pad="small">{children}</CardBody>
         {(footer || showButton) && (

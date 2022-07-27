@@ -36,7 +36,7 @@ export function TeamPage() {
   const navigate = useNavigate();
   const { notify } = useNotification();
 
-  const [showActiveEventsOnly, setShowActiveEventsOnly] = useState(true);
+  const [showInactiveEvents, setShowInactiveEvents] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showAddCoachDialog, setShowAddCoachDialog] = useState(false);
 
@@ -79,10 +79,10 @@ export function TeamPage() {
         (reg) =>
           !reg.event.deletedOn &&
           (!reg.event.date ||
-            !showActiveEventsOnly ||
+            showInactiveEvents ||
             (reg.event.date ?? '').substring(0, 10) >= today)
       ),
-    [showActiveEventsOnly, team?.registrations, today]
+    [showInactiveEvents, team?.registrations, today]
   );
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
@@ -124,9 +124,9 @@ export function TeamPage() {
             />
             <CheckBox
               toggle
-              label="Zobraziť iba aktívne"
-              defaultChecked={showActiveEventsOnly}
-              onChange={({ target }) => setShowActiveEventsOnly(target.checked)}
+              label="Zobraziť aj neaktívne"
+              defaultChecked={showInactiveEvents}
+              onChange={({ target }) => setShowInactiveEvents(target.checked)}
             />
           </Box>
           <TeamRegistrationsList registrations={registrations} />

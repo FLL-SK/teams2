@@ -8,8 +8,9 @@ import { formatTeamSize } from '../../../utils/format-teamsize';
 
 export const FieldTeamSize = (props: {
   registration: Pick<Registration, 'id' | 'boyCount' | 'girlCount' | 'coachCount' | 'teamId'>;
+  readOnly: boolean;
 }) => {
-  const { registration } = props;
+  const { registration, readOnly } = props;
   const { isAdmin, isTeamCoach } = useAppUser();
   const [showDialog, setShowDialog] = React.useState(false);
   const [setTeamSize] = useRegistrationSetTeamSizeMutation();
@@ -20,7 +21,12 @@ export const FieldTeamSize = (props: {
         <Text>{formatTeamSize(registration)}</Text>
 
         {(isAdmin() || isTeamCoach(registration.teamId)) && (
-          <Anchor size="small" label="Nastav" onClick={() => setShowDialog(true)} />
+          <Anchor
+            size="small"
+            label="Nastav"
+            onClick={() => setShowDialog(true)}
+            disabled={readOnly}
+          />
         )}
       </Box>
 

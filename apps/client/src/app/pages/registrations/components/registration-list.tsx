@@ -43,7 +43,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
 
       <ListCol>
         <Text alignSelf="center">
-          <Tip content={`Registrovaný ${formatDate(data.registeredOn)}`}>
+          <Tip content={`Registrovaný ${formatDate(data.createdOn)}`}>
             <Halt />
           </Tip>
         </Text>

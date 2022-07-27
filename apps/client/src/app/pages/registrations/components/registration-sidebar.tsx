@@ -112,13 +112,20 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
           </SidebarPanel>
           <SidebarPanel label="Registrácia">
             <LabelValueGroup direction="column" gap="small" labelWidth="250px">
-              <LabelValue label="Registrácia" value={formatDate(registration.registeredOn)} />
-              <FieldInvoiceIssuedOn registration={registration} />
-              <FieldPaidOn registration={registration} />
-              <FieldShipmentGroup registration={registration} />
-              <FieldShippedOn registration={registration} />
-              <FieldTeamSize registration={registration} />
-              <FieldTeamSizeConfirmedOn registration={registration} teamId={registration.team.id} />
+              <LabelValue label="Registrácia" value={formatDate(registration.createdOn)} />
+              <FieldInvoiceIssuedOn
+                registration={registration}
+                readOnly={!registration.canceledOn}
+              />
+              <FieldPaidOn registration={registration} readOnly={!registration.canceledOn} />
+              <FieldShipmentGroup registration={registration} readOnly={!registration.canceledOn} />
+              <FieldShippedOn registration={registration} readOnly={!registration.canceledOn} />
+              <FieldTeamSize registration={registration} readOnly={!registration.canceledOn} />
+              <FieldTeamSizeConfirmedOn
+                registration={registration}
+                teamId={registration.team.id}
+                readOnly={!registration.canceledOn}
+              />
             </LabelValueGroup>
           </SidebarPanel>
           <SidebarPanel label="Poznámky k registrácii">

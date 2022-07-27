@@ -16,8 +16,10 @@ export const RegistrationMapper = {
       billTo: AddressMapper.toAddress(registration.billTo),
       shipTo: AddressMapper.toAddress(registration.shipTo),
 
-      registeredOn: registration.registeredOn,
-      registeredBy: registration.registeredBy,
+      createdOn: registration.createdOn,
+      createdBy: registration.createdBy,
+      canceledOn: registration.canceledOn,
+      canceledBy: registration.canceledBy,
 
       invoiceIssuedOn: registration.invoiceIssuedOn,
       invoiceIssuedBy: registration.invoiceIssuedBy,
@@ -40,7 +42,7 @@ export const RegistrationMapper = {
       team: null,
       event: null,
       program: null,
-      registeredByUser: null,
+      createdByUser: null,
       invoiceIssuedByUser: null,
     };
     return u;

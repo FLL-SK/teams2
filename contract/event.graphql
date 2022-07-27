@@ -86,8 +86,8 @@ extend type Mutation {
   deleteEvent(id: ID!): Event
 
   registerTeamForEvent(eventId: ID!, teamId: ID!): RegisterTeamPayload!
-  unregisterTeamFromEvent(eventId: ID!, teamId: ID!): UnregisterTeamPayload!
-  switchTeamEvent(teamId: ID!, oldEventId: ID!, newEventId: ID!): SwitchTeamEventPayload!
+  cancelEventRegistration(id: ID!): UnregisterTeamPayload!
+  switchTeamEvent(registrationId: ID!, newEventId: ID!): SwitchTeamEventPayload!
 
   addEventManager(eventId: ID!, userId: ID!): Event
   removeEventManager(eventId: ID!, userId: ID!): Event

@@ -5,37 +5,34 @@ import { EditInvoiceItemDialog } from '../../../components/dialogs/edit-invoice-
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { Panel } from '../../../components/panel';
 import {
+  EventFragmentFragment,
   InvoiceItemFragmentFragment,
-  RegistrationFragmentFragment,
   useCreateInvoiceItemMutation,
   useDeleteInvoiceItemMutation,
   useUpdateInvoiceItemMutation,
 } from '../../../generated/graphql';
 
-interface PanelRegistrationInvoiceItemsProps {
-  registration: RegistrationFragmentFragment;
-  invoiceItems: InvoiceItemFragmentFragment[];
-  columnWidth: string;
+interface PanelEventFeesProps {
+  event?: EventFragmentFragment | null;
+  onChange?: () => void;
   canEdit?: boolean;
-  onRefetch?: () => void;
-  readOnly: boolean;
 }
 
-export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceItemsProps) {
-  const { invoiceItems, canEdit, onRefetch, registration, readOnly: readonly } = props;
+export function PanelEventFees(props: PanelEventFeesProps) {
+  const { event, canEdit, onChange } = props;
 
-  const [invoiceItemAdd, setInvoiceItemAdd] = useState(false);
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
+  const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
-  const [createInvoiceItem] = useCreateInvoiceItemMutation({
-    onCompleted: () => onRefetch && onRefetch(),
-  });
-  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({
-    onCompleted: () => onRefetch && onRefetch(),
-  });
-  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({
-    onCompleted: () => onRefetch && onRefetch(),
-  });
+  const [createInvoiceItem] = useCreateInvoiceItemMutation({ onCompleted: onChange });
+  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({ onCompleted: onChange });
+  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({ onCompleted: onChange });
+
+  if (!event) {
+    return null;
+  }
+
+  const invoiceItems = event?.invoiceItems ?? [];
 
   return (
     <Panel title="Poplatky" gap="medium">
@@ -50,14 +47,14 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
           items={invoiceItems}
           onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
           onClick={(item) => setInvoiceItemEdit(item)}
-          editable={canEdit && !readonly}
+          editable={canEdit}
         />
       )}
       <Box direction="row">
         <Button
           label="Pridať poplatok"
           onClick={() => setInvoiceItemAdd(true)}
-          disabled={!canEdit || readonly}
+          disabled={!canEdit}
         />
       </Box>
       <EditInvoiceItemDialog
@@ -70,11 +67,7 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
         onSubmit={(values) => {
           if (invoiceItemAdd) {
             createInvoiceItem({
-              variables: {
-                type: 'registration',
-                refId: registration.id ?? '0',
-                item: omit(values, 'id'),
-              },
+              variables: { type: 'event', refId: event.id ?? '0', item: omit(values, 'id') },
             });
           } else {
             updateInvoiceItem({

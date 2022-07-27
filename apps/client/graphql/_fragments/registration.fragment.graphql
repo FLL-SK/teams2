@@ -12,7 +12,10 @@ fragment RegistrationBasicFragment on Registration {
     ...AddressFragment
   }
 
-  registeredOn
+  createdOn
+  createdBy
+  canceledOn
+  canceledBy
 
   invoiceIssuedOn
   invoiceSentOn

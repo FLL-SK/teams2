@@ -1,51 +1,104 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Text } from 'grommet';
+import { Anchor, Box, Button, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
-import { RegistrationFragmentFragment } from '../../../generated/graphql';
+import {
+  RegistrationFragmentFragment,
+  useCancelEventRegistrationMutation,
+  useSwitchTeamEventMutation,
+} from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
-import { formatFullName } from '../../../utils/format-fullname';
+import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm-team-unregister';
+import { ChangeTeamEventDialog } from '../../../components/dialogs/change-team-event-dialog';
+import { useNotification } from '../../../components/notifications/notification-provider';
+import { useAppUser } from '../../../components/app-user/use-app-user';
 
-interface PanelDetailsProps {
+interface PanelRegistrationDetailsProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
+  readOnly: boolean;
 }
 
-export function PanelDetails(props: PanelDetailsProps) {
-  const { registration: reg, columnWidth } = props;
+export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
+  const { registration: reg, columnWidth, readOnly } = props;
+  const { notify } = useNotification();
+  const { isAdmin, isTeamCoach } = useAppUser();
+
+  const [askUnregisterTeam, setAskUnregisterTeam] = useState(false);
+  const [changeEvent, setChangeEvent] = useState(false);
+
+  const [unregisterTeam] = useCancelEventRegistrationMutation({
+    onError: () => notify.error('Nepodarilo sa zrušiť registráciu.'),
+  });
+  const [switchTeamEvent] = useSwitchTeamEventMutation({
+    onError: () => notify.error('Nepodarilo sa presunúť tím na iný turnaj'),
+  });
 
   return (
-    <Panel title="Detaily registrácie" wrap direction="row" gap="small">
-      <Box width={columnWidth}>
-        <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-          <LabelValue label="Program">
-            <Anchor label={reg.program.name} href={appPath.program(reg.program.id)} />
-          </LabelValue>
-          <LabelValue label="Turnaj">
-            <Anchor label={reg.event.name} href={appPath.event(reg.event.id)} />
-          </LabelValue>
-          <LabelValue label="Tím">
-            <Anchor label={reg.team.name} href={appPath.team(reg.team.id)} />
-          </LabelValue>
-          <LabelValue label="Zriaďovateľ tímu" value={fullAddress(reg.team.address)} />
-          <LabelValue label="Dátum registrácie" value={formatDate(reg.registeredOn)} />
-        </LabelValueGroup>
+    <Panel title="Detaily registrácie" gap="small">
+      <Box wrap direction="row" gap="small">
+        <Box width={columnWidth}>
+          <LabelValueGroup labelWidth="150px" gap="small" direction="row">
+            <LabelValue label="Tím">
+              <Anchor label={reg.team.name} href={appPath.team(reg.team.id)} />
+            </LabelValue>
+            <LabelValue label="Turnaj">
+              <Anchor label={reg.event.name} href={appPath.event(reg.event.id)} />
+            </LabelValue>
+            <LabelValue label="Program">
+              <Anchor label={reg.program.name} href={appPath.program(reg.program.id)} />
+            </LabelValue>
+            <LabelValue label="Zriaďovateľ tímu" value={fullAddress(reg.team.address)} />
+          </LabelValueGroup>
+        </Box>
+        <Box width={columnWidth}>
+          <LabelValueGroup labelWidth="150px" gap="small" direction="row">
+            <LabelValue label="Dátum registrácie" value={formatDate(reg.createdOn)} />
+          </LabelValueGroup>
+        </Box>
       </Box>
-      <Box width={columnWidth}>
-        <LabelValueGroup labelWidth="150px" gap="small">
-          {reg.team.coaches
-            .filter((coach) => !coach.deletedOn)
-            .map((coach) => (
-              <LabelValue label={formatFullName(coach.firstName, coach.lastName)} key={coach.id}>
-                <Text>{coach.username}</Text>
-                <Text>{coach.phone}</Text>
-              </LabelValue>
-            ))}
-        </LabelValueGroup>
-      </Box>
+      {!reg.canceledOn && !readOnly && (
+        <Box direction="row" gap="small">
+          <Button
+            label="Zrušiť registráciu"
+            onClick={() => setAskUnregisterTeam(true)}
+            disabled={
+              !isAdmin() && !(isTeamCoach(reg.teamId) && !reg.invoiceIssuedOn && !reg.shippedOn)
+            }
+          />
+          <Button
+            label="Zmeniť turnaj"
+            onClick={() => setChangeEvent(true)}
+            disabled={!isAdmin()}
+          />
+        </Box>
+      )}
+
+      {askUnregisterTeam && (
+        <ConfirmTeamUnregisterDialog
+          teamName={reg.team.name}
+          onClose={() => setAskUnregisterTeam(false)}
+          onUnregister={() => unregisterTeam({ variables: { id: reg.id } })}
+        />
+      )}
+
+      <ChangeTeamEventDialog
+        show={changeEvent}
+        team={reg.team}
+        event={reg.event}
+        onClose={() => setChangeEvent(false)}
+        onSubmit={(e) =>
+          switchTeamEvent({
+            variables: {
+              registrationId: reg.id,
+              newEventId: e.id,
+            },
+          })
+        }
+      />
     </Panel>
   );
 }
