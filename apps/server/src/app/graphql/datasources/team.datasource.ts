@@ -39,11 +39,10 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   private async loaderFn(ids: string[]): Promise<Team[]> {
+    const oids = ids.map((id) => new ObjectId(id));
     console.log('team loaderFn in', ids);
-    const data = await teamRepository.find({ _id: { $in: ids } }).exec();
-    const dm = ids
-      .map((id) => data.find((e) => e._id.toHexString() === id) || null)
-      .map(TeamMapper.toTeam);
+    const data = await teamRepository.find({ _id: { $in: oids } }).exec();
+    const dm = oids.map((id) => data.find((e) => e._id.equals(id)) || null).map(TeamMapper.toTeam);
     console.log(
       'team loaderFn out',
       dm.map((e) => e.id)
