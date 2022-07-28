@@ -10,6 +10,7 @@
 # import * from "./tag.graphql"
 # import * from "./note.graphql"
 # import * from "./registration.graphql"
+# import * from "./settings.graphql"
 
 schema {
   query: Query

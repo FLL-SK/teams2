@@ -67,7 +67,7 @@ export function TeamPage() {
     () =>
       (team?.registrations ?? []).filter(
         (reg) =>
-          !reg.event.deletedOn &&
+          !reg.canceledOn &&
           (!reg.event.date ||
             showInactiveEvents ||
             (reg.event.date ?? '').substring(0, 10) >= today)

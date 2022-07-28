@@ -11,6 +11,7 @@ import * as Address from './address.resolvers';
 import * as File from './file.resolvers';
 import * as Tag from './tag.resolvers';
 import * as Note from './note.resolvers';
+import * as Settings from './settings.resolvers';
 
 export const resolvers: Resolvers<ApolloContext> = {
   Query: {
@@ -24,6 +25,7 @@ export const resolvers: Resolvers<ApolloContext> = {
     ...File.queryResolvers,
     ...Tag.queryResolvers,
     ...Note.queryResolvers,
+    ...Settings.queryResolvers,
   },
   Mutation: {
     ...User.mutationResolvers,
@@ -36,6 +38,7 @@ export const resolvers: Resolvers<ApolloContext> = {
     ...File.mutationResolvers,
     ...Tag.mutationResolvers,
     ...Note.mutationResolvers,
+    ...Settings.mutationResolvers,
   },
   User: User.typeResolver,
   Event: Event.typeResolver,
@@ -47,4 +50,5 @@ export const resolvers: Resolvers<ApolloContext> = {
   File: File.typeResolver,
   Tag: Tag.typeResolver,
   Note: Note.typeResolver,
+  Settings: Settings.typeResolver,
 };

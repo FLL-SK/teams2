@@ -19,7 +19,7 @@ export const LabelValue = (props: LabelValueProps) => {
         const dir = direction ?? context.direction;
 
         return (
-          <Box direction={dir}>
+          <Box direction={dir} border={{ side: 'bottom', color: 'light-3' }}>
             <Box
               width={{
                 width: labelWidth ?? context.labelWidth,

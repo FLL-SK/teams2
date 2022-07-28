@@ -1,0 +1,31 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./team.graphql"
+# import * from "./user.graphql"
+# import * from "./event.graphql"
+# import * from "./invoice-item.graphql"
+# import * from "./registration.graphql"
+
+type Settings implements INode {
+  id: ID!
+  appLogoUrl: String
+  organization: Address!
+  sysEmail: String
+  billingEmail: String
+}
+
+input UpdateSettingsInput {
+  appLogoUrl: String
+  organization: AddressInput
+  sysEmail: String
+  billingEmail: String
+}
+
+extend type Query {
+  getSettings: Settings
+}
+
+extend type Mutation {
+  updateSettings(input: UpdateSettingsInput!): Settings
+}

@@ -1,7 +1,7 @@
 export function getServerConfig() {
   return {
     // https://stackoverflow.com/questions/58090082/process-env-node-env-always-development-when-building-nestjs-app-with-nrwl-nx
-    nodeEnv: process.env['NODE' + '_ENV'] || 'development',
+    nodeEnv: process.env['NODE_ENV'] || 'development',
     //skipAuthentication: process.env.APP_SKIP_AUTHENTICATION === 'true',
     host: process.env.APP_HOST ?? 'localhost',
     // Heroku is using PORT env to specify the port
@@ -21,7 +21,7 @@ export function getServerConfig() {
     jwt: {
       secret: process.env.APP_JWT_SECRET,
     },
-    logoUrl: process.env.APP_LOGO_URL,
+
     clientAppRootUrl: process.env.APP_CLIENT_ROOT_URL ?? 'http://localhost:4200',
     s3: {
       region: process.env.AWS_REGION,
@@ -37,8 +37,11 @@ export function getServerConfig() {
         apiKey: process.env.SF_AUTH_API_KEY,
         companyId: process.env.SF_AUTH_COMPANY_ID,
         module: process.env.SF_AUTH_MODULE,
+        payment_secret_key: process.env.SF_PAYMENT_KEY,
       },
     },
-    adminEmail: process.env.TEAMS_ADMIN_EMAIL,
+    app: {
+      superadminUsername: process.env.SUPERADMIN_USERNAME,
+    },
   };
 }
