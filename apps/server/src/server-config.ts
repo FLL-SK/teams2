@@ -37,6 +37,7 @@ export function getServerConfig() {
         apiKey: process.env.SF_AUTH_API_KEY,
         companyId: process.env.SF_AUTH_COMPANY_ID,
         module: process.env.SF_AUTH_MODULE,
+        payment_secret_key: process.env.SF_PAYMENT_KEY,
       },
     },
     app: {
