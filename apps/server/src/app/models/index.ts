@@ -8,3 +8,4 @@ export * from './address.model';
 export * from './file.model';
 export * from './tag.model';
 export * from './note.model';
+export * from './settings.model';

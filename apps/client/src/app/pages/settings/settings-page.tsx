@@ -6,11 +6,16 @@ import { useState } from 'react';
 import { BasePage } from '../../components/base-page';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { Panel, PanelGroup } from '../../components/panel';
-import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/graphql';
+import {
+  useCreateProgramMutation,
+  useGetProgramsQuery,
+  useGetSettingsQuery,
+} from '../../generated/graphql';
 import { ProgramsList } from './components/programs-list';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { PanelSettings } from './components/panel-settings';
 
 export function SettingsPage() {
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
@@ -26,6 +31,8 @@ export function SettingsPage() {
     loading: programsLoading,
     refetch: refetchPrograms,
   } = useGetProgramsQuery();
+
+  const { data: settingsData } = useGetSettingsQuery();
 
   const [createProgram] = useCreateProgramMutation({
     onCompleted: () => refetchPrograms(),
@@ -59,6 +66,7 @@ export function SettingsPage() {
           </Box>
           {programsLoading ? <Spinner /> : <ProgramsList programs={programs} />}
         </Panel>
+        <PanelSettings settings={settingsData?.getSettings} />
       </PanelGroup>
 
       <EditProgramDialog

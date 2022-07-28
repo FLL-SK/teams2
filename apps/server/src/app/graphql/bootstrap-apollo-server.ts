@@ -19,6 +19,7 @@ import {
   TagDataSource,
   TeamDataSource,
   UserDataSource,
+  SettingsDataSource,
 } from './datasources';
 import { logger } from '@teams2/logger';
 import { errorFormatter } from './error-formatter';
@@ -50,6 +51,7 @@ export async function bootstrapApolloServer(app: Application): Promise<void> {
       registration: new RegistrationDataSource(),
       tag: new TagDataSource(),
       note: new NoteDataSource(),
+      settings: new SettingsDataSource(),
     }),
     introspection: true,
     debug: true,
