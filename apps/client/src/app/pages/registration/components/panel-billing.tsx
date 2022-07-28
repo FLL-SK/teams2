@@ -12,6 +12,7 @@ import { Panel } from '../../../components/panel';
 import {
   RegistrationFragmentFragment,
   useCreateRegistrationInvoiceMutation,
+  useEmailRegistrationInvoiceMutation,
   useUpdateRegistrationMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
@@ -36,10 +37,13 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const [invoiceProcessing, setInvoiceProcessing] = useState<NodeJS.Timeout>();
 
   const [updateRegistration] = useUpdateRegistrationMutation({
-    onError: () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
+    onError: (e) => notify.error('Nepodarilo sa aktualizovať registráciu.', e.message),
   });
   const [createInvoice] = useCreateRegistrationInvoiceMutation({
-    onError: () => notify.error('Nepodarilo sa vytvoriť faktúru.'),
+    onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
+  });
+  const [emailInvoice] = useEmailRegistrationInvoiceMutation({
+    onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
   });
 
   return (
@@ -123,6 +127,18 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                     onCompleted: () => {
                       clearTimeout(t);
                       setInvoiceProcessing(undefined);
+                    },
+                  });
+                }}
+              />
+              <Button
+                disabled={!reg.invoiceIssuedOn || !!invoiceProcessing}
+                label="Poslať faktúru"
+                onClick={() => {
+                  emailInvoice({
+                    variables: { id: reg.id },
+                    onCompleted: () => {
+                      notify.info('Faktúra bola poslaná.');
                     },
                   });
                 }}
