@@ -1,15 +1,14 @@
-import { getServerConfig } from '../../server-config';
 import { msgFromTemplate, msgPasswordReset } from '../templates';
 import { sendHtmlEmail } from './mailer';
+import { getAppSettings } from './settings';
 
 export function emailMessage(to: string, subject: string, title: string, message: string) {
-  const html = msgFromTemplate(title, message);
-  sendHtmlEmail(to, subject, html);
+  msgFromTemplate(title, message).then((html) => sendHtmlEmail(to, subject, html));
 }
 
 export function emailPasswordReset(email: string, token: string) {
   // send email
-  sendHtmlEmail(email, 'Obnovenie hesla', msgPasswordReset(email, token));
+  msgPasswordReset(email, token).then((html) => sendHtmlEmail(email, 'Password reset', html));
 }
 
 export function emailUserSignupToUser(userEmail: string) {
@@ -23,7 +22,7 @@ export function emailUserSignupToAdmin(userEmail: string) {
   const subject = `Nový účet ${userEmail}`;
   const title = subject;
   const msg = `Účet pre email ${userEmail} bol vytvorený.`;
-  emailMessage(getServerConfig().adminEmail, subject, title, msg);
+  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
 }
 
 export function emailTeamRegisteredToCoach(

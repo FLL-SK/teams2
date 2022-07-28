@@ -1,0 +1,8 @@
+fragment SettingsFragment on Settings {
+  appLogoUrl
+  organization {
+    ...AddressFragment
+  }
+  sysEmail
+  billingEmail
+}

@@ -8,6 +8,7 @@ import {
   TagDataSource,
   TeamDataSource,
   UserDataSource,
+  SettingsDataSource,
 } from './datasources';
 import { UserDataNoPassword } from '../models';
 import { UserGuard } from '../utils/user-guard';
@@ -32,6 +33,7 @@ export type ApolloContextDataSources = {
   file: FileDataSource;
   tag: TagDataSource;
   note: NoteDataSource;
+  settings: SettingsDataSource;
 };
 
 export interface ApolloContext {
