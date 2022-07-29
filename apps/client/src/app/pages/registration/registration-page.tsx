@@ -101,6 +101,7 @@ export function RegistrationPage() {
               registration={reg}
               columnWidth={columnWidth}
               readOnly={!!reg.canceledOn}
+              onUpdate={() => notesRefetch()}
             />
             <PanelRegistrationShipping
               registration={reg}

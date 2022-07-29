@@ -24,10 +24,11 @@ interface PanelRegistrationBillingProps {
   registration: RegistrationFragmentFragment;
   columnWidth: string;
   readOnly: boolean;
+  onUpdate: () => void;
 }
 
 export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
-  const { registration: reg, columnWidth, readOnly } = props;
+  const { registration: reg, columnWidth, readOnly, onUpdate } = props;
   const { isAdmin } = useAppUser();
   const { notify } = useNotification();
 
@@ -154,6 +155,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                       clearTimeout(t);
                       setInvoiceBeingSent(undefined);
                       notify.info('Faktúra bola poslaná.');
+                      onUpdate();
                     },
                   });
                 }}
