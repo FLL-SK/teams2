@@ -20,8 +20,14 @@ async function preSeedAdmin() {
       password: await hashPassword(getServerConfig().app.superadminUsername),
       firstName: 'Super',
       lastName: 'Admin',
+      isAdmin: true,
+      isSuperAdmin: true,
     };
     await userRepository.create(nsa);
+  } else {
+    sa.isSuperAdmin = true;
+    sa.isAdmin = true;
+    await sa.save();
   }
 }
 
