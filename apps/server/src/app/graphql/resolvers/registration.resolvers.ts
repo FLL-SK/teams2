@@ -1,7 +1,7 @@
 import { QueryResolvers, MutationResolvers, Registration } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
-import { emailRegistrationInvoice, createRegistrationInvoice } from '../../domains/invoice';
+import { emailRegistrationInvoice, createRegistrationInvoice } from '../../domains/registration';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>

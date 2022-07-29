@@ -8,8 +8,10 @@ import { logger } from '@teams2/logger';
 import { Registration } from '../generated/graphql';
 import { RegistrationMapper } from '../graphql/mappers';
 import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
+import { getAppSettings } from '../utils/settings';
+import { createNote } from './note';
 
-const logLib = logger('domain:Invoice');
+const logLib = logger('domain:Registration');
 
 export async function createRegistrationInvoice(
   registrationId: ObjectId,
@@ -70,13 +72,14 @@ export async function emailRegistrationInvoice(
     (c) => c.username
   );
 
+  // invoices will be sent bcc to organization's billing email
+  const billingEmail = (await getAppSettings())?.billingEmail ?? '';
+
   let api: InvoicingAPI;
   if (config.invoicing.type === 'superfaktura') {
     log.debug('using superfaktura');
     api = new InvoicingAPISuperfaktura();
   }
-
-  //TODO add internal email to bcc
 
   log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
 
@@ -84,6 +87,7 @@ export async function emailRegistrationInvoice(
     id: registration.invoiceRef,
     to: registration.billTo.email ?? '',
     cc: coachEmails,
+    bcc: [billingEmail],
     subject: `Faktura ${team.name}`,
   });
   log.debug(`invoice email sent: %o`, result);
@@ -93,6 +97,12 @@ export async function emailRegistrationInvoice(
     return null;
   }
 
+  const text = `Faktúra odoslaná.\nplatiteľ:${registration.billTo.email}\ntréner:${coachEmails.join(
+    ';'
+  )}`;
+
+  await createRegistrationNote(id, text, ctx);
+
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
     { invoiceSentOn: new Date() },
@@ -100,4 +110,12 @@ export async function emailRegistrationInvoice(
   );
 
   return RegistrationMapper.toRegistration(ni);
+}
+
+export async function createRegistrationNote(
+  registrationId: ObjectId,
+  text: string,
+  ctx: ApolloContext
+) {
+  return await createNote('registration', registrationId, text, ctx);
 }
