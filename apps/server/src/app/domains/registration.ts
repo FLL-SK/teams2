@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../graphql/apollo-context';
-import { InvoicingAPI } from './invoicingAPI';
+import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
@@ -83,13 +83,17 @@ export async function emailRegistrationInvoice(
 
   log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
 
-  const result = await api.emailInvoice({
+  const o: InvoiceEmailOptions = {
     id: registration.invoiceRef,
     to: registration.billTo.email ?? '',
     cc: coachEmails,
-    bcc: [billingEmail],
     subject: `Faktura ${team.name}`,
-  });
+  };
+  if (billingEmail) {
+    o.bcc = [billingEmail];
+  }
+
+  const result = await api.emailInvoice(o);
   log.debug(`invoice email sent: %o`, result);
 
   if (result.status === 'error') {
@@ -97,9 +101,9 @@ export async function emailRegistrationInvoice(
     return null;
   }
 
-  const text = `Faktúra odoslaná.\nplatiteľ:${registration.billTo.email}\ntréner:${coachEmails.join(
-    ';'
-  )}`;
+  const text = `Faktúra odoslaná.  \n1. platiteľ: ${
+    registration.billTo.email
+  }  \n2. tréner: ${coachEmails.join(', ')}  `;
 
   await createRegistrationNote(id, text, ctx);
 
