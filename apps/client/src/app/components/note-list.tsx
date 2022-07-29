@@ -3,8 +3,7 @@ import { Box, Button, Text } from 'grommet';
 import styled from 'styled-components';
 import { NoteDetail } from './note-detail';
 import { Note, useDeleteNoteMutation, useUpdateNoteMutation } from '../generated/graphql';
-import { InPlaceMarkdown } from './inplace-markdown';
-import { Add } from 'grommet-icons';
+import { InPlaceMarkdown } from './editors/inplace-markdown';
 
 const Wrapper = styled(Box)`
   margin: 5px 0;
