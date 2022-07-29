@@ -18,9 +18,12 @@ export const Logo = (props: LogoProps) => {
       {url.length > 0 ? (
         <img src={url} width={width} height={height} alt="logo" />
       ) : (
-        <Box width={width} height={height} border={{ side: 'all' }} />
+        <Box width={width} height={height} border={{ side: 'all' }}>
+          <Box margin="auto" width={{ max: '90%' }}>
+            Logo nie je nastavené
+          </Box>
+        </Box>
       )}
-      ;
     </Box>
   );
 };
