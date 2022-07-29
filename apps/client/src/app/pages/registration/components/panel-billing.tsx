@@ -119,7 +119,9 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
 
             <LabelValue label="Odoslaná">
               {invoiceBeingSent && <Spinner />}
-              {!invoiceBeingSent && <Text>{formatDate(reg.invoiceSentOn ?? '-')}</Text>}
+              {!invoiceBeingSent && (
+                <Text>{reg.invoiceSentOn ? formatDate(reg.invoiceSentOn) : '-'}</Text>
+              )}
             </LabelValue>
 
             <FieldPaidOn registration={reg} readOnly={readOnly} />
