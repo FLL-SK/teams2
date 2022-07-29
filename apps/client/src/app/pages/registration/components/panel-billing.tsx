@@ -125,7 +125,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
           </LabelValueGroup>
 
           {isAdmin() && (
-            <Box direction="row" width="100%" justify="end">
+            <Box direction="row" width="100%" justify="end" gap="small">
               <Button
                 disabled={!!reg.invoiceIssuedOn || !!invoiceProcessing}
                 label="Vytvoriť faktúru"
