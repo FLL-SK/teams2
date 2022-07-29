@@ -1,4 +1,5 @@
 import { appPath } from '@teams2/common';
+import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Paragraph, Spinner, Text } from 'grommet';
 import React, { useState } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
@@ -35,6 +36,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const [editBillToDetails, setEditBillToDetails] = useState(false);
 
   const [invoiceProcessing, setInvoiceProcessing] = useState<NodeJS.Timeout>();
+  const [invoiceBeingSent, setInvoiceBeingSent] = useState<NodeJS.Timeout>();
 
   const [updateRegistration] = useUpdateRegistrationMutation({
     onError: (e) => notify.error('Nepodarilo sa aktualizovať registráciu.', e.message),
@@ -96,6 +98,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                 />
               </Box>
             </LabelValue>
+
             <FieldInvoiceIssuedOn registration={reg} readOnly={readOnly} />
             {invoiceProcessing && (
               <LabelValue label="">
@@ -112,10 +115,17 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                 />
               </LabelValue>
             )}
+
+            <LabelValue label="Odoslaná">
+              {invoiceBeingSent && <Spinner />}
+              {!invoiceBeingSent && <Text>{formatDate(reg.invoiceSentOn ?? '-')}</Text>}
+            </LabelValue>
+
             <FieldPaidOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
+
           {isAdmin() && (
-            <Box direction="row" width="100%" justify="end">
+            <Box direction="row" width="100%" justify="end" gap="small">
               <Button
                 disabled={!!reg.invoiceIssuedOn || !!invoiceProcessing}
                 label="Vytvoriť faktúru"
@@ -127,17 +137,22 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                     onCompleted: () => {
                       clearTimeout(t);
                       setInvoiceProcessing(undefined);
+                      notify.info('Faktúra bola vytvorená.');
                     },
                   });
                 }}
               />
               <Button
-                disabled={!reg.invoiceIssuedOn || !!invoiceProcessing}
+                disabled={!reg.invoiceIssuedOn || !!invoiceProcessing || !!invoiceBeingSent}
                 label="Poslať faktúru"
                 onClick={() => {
+                  const t = setTimeout(() => setInvoiceBeingSent(undefined), 15000);
+                  setInvoiceBeingSent(t);
                   emailInvoice({
                     variables: { id: reg.id },
                     onCompleted: () => {
+                      clearTimeout(t);
+                      setInvoiceBeingSent(undefined);
                       notify.info('Faktúra bola poslaná.');
                     },
                   });

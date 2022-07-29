@@ -6,7 +6,6 @@ import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';
 import { useAuthenticate } from './auth/useAuthenticate';
 import { useAppUser } from './app-user/use-app-user';
-import { Group } from 'grommet-icons';
 import { getColor } from '../theme';
 import styled from 'styled-components';
 
@@ -41,14 +40,14 @@ const MenuButton = ({ path, title, icon, onClick }: MenuButtonProps) => {
 };
 
 function Menu() {
+  const { isAuthenticated } = useAuthenticate();
   const { user: appUser } = useAppUser();
 
   return (
     <Nav align="center" justify="between" gap="medium">
+      {!isAuthenticated && <MenuButton path={appPath.login} title={'Prihlásiť sa'} />}
       <MenuButton path="/" title="Turnaje" />
-      {appUser?.isAdmin && (
-        <MenuButton path={appPath.teams} title="Tímy" icon={<Group color="brand" />} />
-      )}
+      {appUser?.isAdmin && <MenuButton path={appPath.teams} title="Tímy" />}
       {appUser?.isAdmin && <MenuButton path={appPath.registrations} title="Registrácie" />}
       {appUser?.isAdmin && <MenuButton path={appPath.users} title="Používatelia" />}
       {appUser?.isAdmin && <MenuButton path={appPath.settings} title="Nastavenia" />}
@@ -63,7 +62,6 @@ const Footer = () => {
   return (
     <Nav gap="medium" align="center">
       {isAuthenticated && <MenuButton path={appPath.profile(user?.id)} title={'Môj profil'} />}
-      {!isAuthenticated && <MenuButton path={appPath.login} title={'Prihlásiť sa'} />}
       {isAuthenticated && (
         <MenuButton
           title={'Odhlásiť sa'}
@@ -90,7 +88,7 @@ export function MainMenu(props: MainMenuProps) {
       background="brandLighter"
       pad="medium"
       height="100vh"
-      header={<Logo width="100%" />}
+      header={<Logo width="100%" height="100px" />}
       footer={<Footer />}
       overflow="hidden"
     >
