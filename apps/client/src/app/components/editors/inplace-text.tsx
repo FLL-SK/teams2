@@ -62,6 +62,7 @@ export function InplaceTextEdit(props: InplaceTextEditProps) {
 
         {edit && (
           <TextInput
+            autoFocus
             value={value}
             onChange={onChangeValue}
             onBlur={onBlur}
