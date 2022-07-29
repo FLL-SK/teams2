@@ -14,9 +14,9 @@ export const Logo = (props: LogoProps) => {
   const url = data?.getSettings?.appLogoUrl ?? '';
 
   return (
-    <Box>
+    <Box height={{ max: height }} width={{ max: width }}>
       {url.length > 0 ? (
-        <img src={url} width={width} height={height} alt="logo" />
+        <img src={url} width={width} alt="logo" />
       ) : (
         <Box width={width} height={height} border={{ side: 'all' }}>
           <Box margin="auto" width={{ max: '90%' }}>

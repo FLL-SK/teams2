@@ -1,15 +1,17 @@
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../graphql/apollo-context';
-import { InvoicingAPI } from './invoicingAPI';
+import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
 import { Registration } from '../generated/graphql';
 import { RegistrationMapper } from '../graphql/mappers';
 import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
+import { getAppSettings } from '../utils/settings';
+import { createNote } from './note';
 
-const logLib = logger('domain:Invoice');
+const logLib = logger('domain:Registration');
 
 export async function createRegistrationInvoice(
   registrationId: ObjectId,
@@ -70,28 +72,40 @@ export async function emailRegistrationInvoice(
     (c) => c.username
   );
 
+  // invoices will be sent bcc to organization's billing email
+  const billingEmail = (await getAppSettings())?.billingEmail ?? '';
+
   let api: InvoicingAPI;
   if (config.invoicing.type === 'superfaktura') {
     log.debug('using superfaktura');
     api = new InvoicingAPISuperfaktura();
   }
 
-  //TODO add internal email to bcc
-
   log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
 
-  const result = await api.emailInvoice({
+  const o: InvoiceEmailOptions = {
     id: registration.invoiceRef,
     to: registration.billTo.email ?? '',
     cc: coachEmails,
     subject: `Faktura ${team.name}`,
-  });
+  };
+  if (billingEmail) {
+    o.bcc = [billingEmail];
+  }
+
+  const result = await api.emailInvoice(o);
   log.debug(`invoice email sent: %o`, result);
 
   if (result.status === 'error') {
     log.error(`invoice email error: %s`, result.error);
     return null;
   }
+
+  const text = `Faktúra odoslaná.  \n1. platiteľ: ${
+    registration.billTo.email
+  }  \n2. tréner: ${coachEmails.join(', ')}  `;
+
+  await createRegistrationNote(id, text, ctx);
 
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
@@ -100,4 +114,12 @@ export async function emailRegistrationInvoice(
   );
 
   return RegistrationMapper.toRegistration(ni);
+}
+
+export async function createRegistrationNote(
+  registrationId: ObjectId,
+  text: string,
+  ctx: ApolloContext
+) {
+  return await createNote('registration', registrationId, text, ctx);
 }

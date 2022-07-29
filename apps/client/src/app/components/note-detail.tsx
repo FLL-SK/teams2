@@ -3,7 +3,7 @@ import { Box, Button, Markdown, TextArea, Text } from 'grommet';
 import styled from 'styled-components';
 import { Note } from '../generated/graphql';
 import { useAppUser } from './app-user/use-app-user';
-import { formatDate, toZonedDateTime } from '@teams2/dateutils';
+import { formatDate, formatDateTimeRelative, toZonedDateTime } from '@teams2/dateutils';
 import { Edit, Trash } from 'grommet-icons';
 import { formatFullName } from '../utils/format-fullname';
 
@@ -40,7 +40,7 @@ const NoteHeader = (props: NoteHeaderProps) => {
       {/* <Avatar name={name} username={username} size="small" /> */}
       <Box direction="row" align="center" gap="small">
         <Text size="small" color="dark-5">
-          {formatDate(createdOn)}
+          {formatDateTimeRelative(createdOn)}
           {updatedOn ? ` (zmenená)` : null}
         </Text>
 
