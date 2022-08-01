@@ -18,6 +18,9 @@ export const RegistrationMapper = {
 
       createdOn: registration.createdOn,
       createdBy: registration.createdBy,
+      confirmedOn: registration.confirmedOn,
+      confirmedBy: registration.confirmedBy,
+
       canceledOn: registration.canceledOn,
       canceledBy: registration.canceledBy,
 

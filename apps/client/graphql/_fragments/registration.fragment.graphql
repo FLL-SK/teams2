@@ -14,6 +14,8 @@ fragment RegistrationBasicFragment on Registration {
 
   createdOn
   createdBy
+  confirmedOn
+  confirmedBy
   canceledOn
   canceledBy
 

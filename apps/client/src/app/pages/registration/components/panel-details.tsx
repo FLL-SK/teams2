@@ -15,6 +15,8 @@ import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm
 import { ChangeTeamEventDialog } from '../../../components/dialogs/change-team-event-dialog';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { useAppUser } from '../../../components/app-user/use-app-user';
+import { FieldInvoiceIssuedOn } from '../../registrations/components/field-invoiceIssuedOn';
+import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
 
 interface PanelRegistrationDetailsProps {
   registration: RegistrationFragmentFragment;
@@ -55,8 +57,9 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
           </LabelValueGroup>
         </Box>
         <Box width={columnWidth}>
-          <LabelValueGroup labelWidth="150px" gap="small" direction="row">
+          <LabelValueGroup labelWidth="200px" gap="small" direction="row">
             <LabelValue label="Dátum registrácie" value={formatDate(reg.createdOn)} />
+            <FieldConfirmedOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
         </Box>
       </Box>
