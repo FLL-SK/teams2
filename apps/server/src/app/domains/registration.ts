@@ -5,7 +5,7 @@ import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
-import { Registration } from '../generated/graphql';
+import { Registration, File } from '../generated/graphql';
 import { RegistrationMapper } from '../graphql/mappers';
 import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
 import { getAppSettings } from '../utils/settings';
@@ -122,4 +122,29 @@ export async function createRegistrationNote(
   ctx: ApolloContext
 ) {
   return await createNote('registration', registrationId, text, ctx);
+}
+
+export async function getRegistrationFiles(
+  registrationId: ObjectId,
+  ctx: ApolloContext
+): Promise<File[]> {
+  const log = logLib.extend('getRegFiles');
+  log.debug(`registrationId: ${registrationId}`);
+  const registration = await registrationRepository.findById(registrationId).lean().exec();
+
+  let accessAllowed = ctx.userGuard.isAdmin();
+
+  if (!accessAllowed && registration.confirmedOn) {
+    accessAllowed = await ctx.userGuard.isCoach(registration.teamId);
+  }
+
+  if (!accessAllowed) {
+    throw new Error('Access denied');
+  }
+
+  const pf = await ctx.dataSources.file.getProgramFiles(registration.programId, false);
+  const ef = await ctx.dataSources.file.getEventFiles(registration.eventId, false);
+  const f = pf.concat(ef).sort((a, b) => a.name.localeCompare(b.name));
+
+  return f;
 }
