@@ -15,7 +15,8 @@ type Registration implements INode {
 
   createdOn: DateTime!
   createdBy: ID!
-
+  confirmedOn: DateTime
+  confirmedBy: ID
   canceledOn: DateTime
   canceledBy: ID
 
@@ -71,6 +72,9 @@ extend type Mutation {
 
   registrationSetPaid(id: ID!, date: DateTime): Registration
   registrationClearPaid(id: ID!): Registration
+
+  registrationSetConfirmed(id: ID!, date: DateTime): Registration
+  registrationClearConfirmed(id: ID!): Registration
 
   registrationSetShipmentGroup(id: ID!, group: String): Registration
 

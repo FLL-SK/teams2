@@ -10,6 +10,18 @@ mutation registrationClearInvoiced($id: ID!) {
   }
 }
 
+mutation registrationSetConfirmed($id: ID!, $date: DateTime!) {
+  registrationSetConfirmed(id: $id, date: $date) {
+    ...RegistrationBasicFragment
+  }
+}
+
+mutation registrationClearConfirmed($id: ID!) {
+  registrationClearConfirmed(id: $id) {
+    ...RegistrationBasicFragment
+  }
+}
+
 mutation registrationSetPaid($id: ID!, $date: DateTime!) {
   registrationSetPaid(id: $id, date: $date) {
     ...RegistrationBasicFragment
