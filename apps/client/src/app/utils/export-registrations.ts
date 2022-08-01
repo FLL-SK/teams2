@@ -5,6 +5,7 @@ import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
 interface ExportSourceType {
   createdOn: string;
   paidOn?: string | null;
+  confirmedOn?: string | null;
   coachCount: number;
   childrenCount: number;
   sizeConfirmedOn?: string | null;
@@ -54,6 +55,11 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
     label: 'Registrovaný',
     id: 'createdOn',
     value: (x) => (x.createdOn ? new Date(x.createdOn) : ''),
+  },
+  {
+    label: 'Reg. potvrdená',
+    id: 'confirmedOn',
+    value: (x) => (x.confirmedOn ? new Date(x.confirmedOn) : ''),
   },
   {
     label: 'Zaplatené',

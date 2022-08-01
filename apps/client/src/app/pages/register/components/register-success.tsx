@@ -1,19 +1,19 @@
 import React from 'react';
-import { Box, Button, Paragraph, Text } from 'grommet';
+import { Box, Button, Paragraph } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import { TeamFragmentFragment } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
+import { LabelValueGroup } from '../../../components/label-value-group';
 
 interface RegisterSuccessProps {
   team?: TeamFragmentFragment;
   details: RegisterDetails;
   nextStep: () => void;
-  timeoutError?: boolean;
 }
 
 export function RegisterSuccess(props: RegisterSuccessProps) {
-  const { team, details, nextStep, timeoutError } = props;
+  const { team, details, nextStep } = props;
 
   if (!team) {
     return null;
@@ -21,11 +21,16 @@ export function RegisterSuccess(props: RegisterSuccessProps) {
 
   return (
     <Box gap="medium">
-      <Text>Vaša požiadavka na registráciu na turnaj bola úspešne zaevidovaná.</Text>
+      <Paragraph>
+        Vaša požiadavka na registráciu na turnaj bola úspešne zaevidovaná. <br /> Registrácia bude
+        platná až po tom ako náš tím spracuje a akceptuje vašu požiadavku.
+      </Paragraph>
       <Panel title="Registrácia" gap="small">
-        <LabelValue labelWidth="150px" label="Tím" value={team.name} />
-        <LabelValue labelWidth="150px" label="Program" value={details.program?.name} />
-        <LabelValue labelWidth="150px" label="Turnaj" value={details.event?.name} />
+        <LabelValueGroup labelWidth="150px" gap="small">
+          <LabelValue label="Tím" value={team.name} />
+          <LabelValue label="Program" value={details.program?.name} />
+          <LabelValue label="Turnaj" value={details.event?.name} />
+        </LabelValueGroup>
       </Panel>
       {(details.items ?? []).length > 0 && (
         <Paragraph>

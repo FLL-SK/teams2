@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, Spinner, Text } from 'grommet';
+import { Anchor, Box, Button, Image, Spinner, Text } from 'grommet';
 import React from 'react';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
 import { InplaceTextEdit } from '../../../components/editors/inplace-text';
@@ -38,12 +38,13 @@ export function PanelSettings(props: PanelSettingsProps) {
             />
           </LabelValue>
           <LabelValue label="Logo">
-            <Box width="100%">
+            <Box width="100%" pad={{ bottom: 'small' }} gap="small">
               <InplaceTextEdit
                 value={settings.appLogoUrl}
                 onChange={(v) => updateSettings({ variables: { input: { appLogoUrl: v } } })}
               />
-              <img src={settings.appLogoUrl ?? ''} width="200px" alt="logo" />
+
+              <Image src={settings.appLogoUrl ?? ''} width="200px" alt="logo" />
             </Box>
           </LabelValue>
           <LabelValue label="Adresa">

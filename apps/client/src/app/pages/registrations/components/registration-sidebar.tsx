@@ -26,11 +26,14 @@ import { FieldTeamSize } from './field-teamSize';
 import { FieldTeamSizeConfirmedOn } from './field-teamSizeConfirmedOn';
 import { appPath } from '@teams2/common';
 import { formatFullName } from '../../../utils/format-fullname';
+import { FieldConfirmedOn } from './field-confirmedOn';
 
 interface RegistrationSidebarProps {
   registrationId?: string;
   onClose: () => unknown;
 }
+
+const labelWidth = '250px';
 
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const { registrationId, onClose } = props;
@@ -82,12 +85,12 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
       <SidebarPanelGroup title="Team" gap="medium">
         <Box overflow={{ vertical: 'auto' }} gap="medium">
           <SidebarPanel>
-            <LabelValueGroup direction="column" gap="small">
+            <LabelValueGroup direction="column" gap="small" labelWidth={labelWidth}>
               <LabelValue label="Zriaďovateľ tímu" value={fullAddress(registration.team.address)} />
             </LabelValueGroup>
           </SidebarPanel>
           <SidebarPanel label="Tréneri">
-            <LabelValueGroup direction="column" gap="small" labelWidth="250px">
+            <LabelValueGroup direction="column" gap="small" labelWidth={labelWidth}>
               {registration.team.coaches
                 .filter((coach) => !coach.deletedOn)
                 .map((coach) => (
@@ -111,20 +114,24 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
             />
           </SidebarPanel>
           <SidebarPanel label="Registrácia">
-            <LabelValueGroup direction="column" gap="small" labelWidth="250px">
+            <LabelValueGroup direction="column" gap="small" labelWidth={labelWidth}>
               <LabelValue label="Registrácia" value={formatDate(registration.createdOn)} />
+              <FieldConfirmedOn registration={registration} readOnly={!!registration.canceledOn} />
               <FieldInvoiceIssuedOn
                 registration={registration}
                 readOnly={!registration.canceledOn}
               />
-              <FieldPaidOn registration={registration} readOnly={!registration.canceledOn} />
-              <FieldShipmentGroup registration={registration} readOnly={!registration.canceledOn} />
-              <FieldShippedOn registration={registration} readOnly={!registration.canceledOn} />
-              <FieldTeamSize registration={registration} readOnly={!registration.canceledOn} />
+              <FieldPaidOn registration={registration} readOnly={!!registration.canceledOn} />
+              <FieldShipmentGroup
+                registration={registration}
+                readOnly={!!registration.canceledOn}
+              />
+              <FieldShippedOn registration={registration} readOnly={!!registration.canceledOn} />
+              <FieldTeamSize registration={registration} readOnly={!!registration.canceledOn} />
               <FieldTeamSizeConfirmedOn
                 registration={registration}
                 teamId={registration.team.id}
-                readOnly={!registration.canceledOn}
+                readOnly={!!registration.canceledOn}
               />
             </LabelValueGroup>
           </SidebarPanel>

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Box, Text, Tip } from 'grommet';
-import { Deliver, Document, Group, Halt, Money } from 'grommet-icons';
+import { Checkmark, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
 import { RegistrationListFragmentFragment } from '../../../generated/graphql';
@@ -25,6 +25,28 @@ interface RegistrationListRowProps {
   data: RegistrationListFragmentFragment;
 }
 
+const colorOK = 'limegreen';
+const colorNotOK = 'light-4';
+
+function StatusIcon(props: {
+  date?: string | null;
+  prefix: string;
+  textOK: string;
+  textNotOK: string;
+  SIcon: Icon;
+}) {
+  const { date, prefix, textOK, textNotOK, SIcon } = props;
+  return (
+    <ListCol>
+      <Text alignSelf="center">
+        <Tip content={`${prefix} ${date ? `${textOK} ${formatDate(date)}` : textNotOK}`}>
+          <SIcon color={date ? colorOK : colorNotOK}></SIcon>
+        </Tip>
+      </Text>
+    </ListCol>
+  );
+}
+
 function RegistrationListRow(props: RegistrationListRowProps) {
   const { data } = props;
   return (
@@ -41,69 +63,52 @@ function RegistrationListRow(props: RegistrationListRowProps) {
         </Box>
       </ListCol>
 
-      <ListCol>
-        <Text alignSelf="center">
-          <Tip content={`Registrovaný ${formatDate(data.createdOn)}`}>
-            <Halt />
-          </Tip>
-        </Text>
-      </ListCol>
-
-      <ListCol>
-        <Text alignSelf="center">
-          {data.invoiceIssuedOn ? (
-            <Tip content={`Faktúra vystavená ${formatDate(data.invoiceIssuedOn)}`}>
-              <Document />
-            </Tip>
-          ) : (
-            '-'
-          )}
-        </Text>
-      </ListCol>
-
-      <ListCol>
-        <Text alignSelf="center">
-          {data.paidOn ? (
-            <Tip content={`Faktúra zaplatená ${formatDate(data.paidOn)}`}>
-              <Money />
-            </Tip>
-          ) : (
-            '-'
-          )}
-        </Text>
-      </ListCol>
+      <StatusIcon date={data.createdOn} prefix="Registrovaný" textOK="" textNotOK="" SIcon={Halt} />
+      <StatusIcon
+        date={data.confirmedOn}
+        prefix="Registrácia"
+        textOK="potvrdená"
+        textNotOK="nepotvrdená"
+        SIcon={Checkmark}
+      />
+      <StatusIcon
+        date={data.invoiceIssuedOn}
+        prefix="Faktúra"
+        textOK="vystavená"
+        textNotOK="nevystavená"
+        SIcon={Document}
+      />
+      <StatusIcon
+        date={data.paidOn}
+        prefix="Faktúra"
+        textOK="zaplatená"
+        textNotOK="nezaplatená"
+        SIcon={Money}
+      />
 
       <ListCol>
         <Text alignSelf="center">{data.shipmentGroup ?? '-'}</Text>
       </ListCol>
 
-      <ListCol>
-        <Text alignSelf="center">
-          {data.shippedOn ? (
-            <Tip content={`Zásielka odoslaná ${formatDate(data.shippedOn)}`}>
-              <Deliver />
-            </Tip>
-          ) : (
-            '-'
-          )}
-        </Text>
-      </ListCol>
+      <StatusIcon
+        date={data.shippedOn}
+        prefix="Zásielka"
+        textOK="odoslaná"
+        textNotOK="neodoslaná"
+        SIcon={Deliver}
+      />
 
       <ListCol>
         <Text alignSelf="center">{formatTeamSize(data)}</Text>
       </ListCol>
 
-      <ListCol>
-        <Text alignSelf="center">
-          {data.sizeConfirmedOn ? (
-            <Tip content={`Veľkosť tímu potvrdená ${formatDate(data.sizeConfirmedOn)}`}>
-              <Group />
-            </Tip>
-          ) : (
-            '-'
-          )}
-        </Text>
-      </ListCol>
+      <StatusIcon
+        date={data.sizeConfirmedOn}
+        prefix="Veľkosť tímu"
+        textOK="potvrdená"
+        textNotOK="nepotvrdená"
+        SIcon={Group}
+      />
 
       <ListCol>
         <Text color="dark-5" truncate="tip">
@@ -131,7 +136,7 @@ export function RegistrationList(props: RegistrationListProps) {
       <BaseList
         actionPanel={actionPanel}
         renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="350px 30px 30px 30px 80px 30px 50px 30px auto"
+        cols="350px 30px 30px 30px 30px 80px 30px 50px 30px auto"
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={getHeight}

@@ -18,8 +18,6 @@ export class SettingsDataSource extends BaseDataSource {
   }
 
   async get(): Promise<Settings> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-
     const s = await settingsRepository.get();
     return SettingsMapper.toSettings(s);
   }

@@ -42,8 +42,6 @@ export function RegisterPage() {
   const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
 
-  const [timeoutError, setTimeoutError] = useState<boolean>(false);
-
   const {
     data: teamData,
     loading: teamLoading,
@@ -78,15 +76,12 @@ export function RegisterPage() {
       const _teamId = teamId ?? '0';
       const _eventId = data.event?.id ?? '0';
 
-      const ti = setTimeout(() => setTimeoutError(true), 5000);
-
       const r1 = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
       if (!r1.data?.registerTeamForEvent) {
         notify.fatal('Nepodarilo sa zaregistrovat tím.');
         return;
       }
       setStep('success');
-      clearTimeout(ti);
     },
     [notify, registerTeam, teamId]
   );
@@ -172,7 +167,6 @@ export function RegisterPage() {
             team={team}
             details={registerDetails}
             nextStep={() => navigate(appPath.team(teamId))}
-            timeoutError={timeoutError}
           />
         )}
         {step === 'error' && (

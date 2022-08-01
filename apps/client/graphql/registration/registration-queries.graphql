@@ -15,3 +15,9 @@ query getEventRegistrations($eventId: ID!) {
     ...RegistrationBasicFragment
   }
 }
+
+query getRegistrationFiles($id: ID!) {
+  getRegistrationFiles(id: $id) {
+    ...FileFragment
+  }
+}

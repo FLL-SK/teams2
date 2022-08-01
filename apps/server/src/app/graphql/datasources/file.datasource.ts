@@ -20,8 +20,8 @@ export class FileDataSource extends BaseDataSource {
     super.initialize(config);
   }
 
-  async getProgramFiles(programId: ObjectId): Promise<File[]> {
-    this.userGuard.isLoggedIn() || this.userGuard.notAuthorized();
+  async getProgramFiles(programId: ObjectId, checkAccess = true): Promise<File[]> {
+    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized();
 
     const files = await fileRepository
       .find({ type: 'programDoc', ref: programId.toString() })
@@ -30,8 +30,8 @@ export class FileDataSource extends BaseDataSource {
     return files.map(FileMapper.toFile);
   }
 
-  async getEventFiles(eventId: ObjectId): Promise<File[]> {
-    this.userGuard.isLoggedIn() || this.userGuard.notAuthorized();
+  async getEventFiles(eventId: ObjectId, checkAccess = true): Promise<File[]> {
+    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized();
 
     const files = await fileRepository
       .find({ type: 'eventDoc', ref: eventId.toString() })
