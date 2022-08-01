@@ -23,6 +23,7 @@ import { PanelRegistrationBilling } from './components/panel-billing';
 import { PanelRegistrationInvoiceItems } from './components/panel-invoice-items';
 import { PanelRegistrationDetails } from './components/panel-details';
 import { CoachList } from '../team/components/coach-list';
+import { RegistrationFilesPanel } from './components/registration-files';
 
 const columnWidth = '460px';
 
@@ -86,6 +87,10 @@ export function RegistrationPage() {
               </Box>
             </Panel>
 
+            <Panel title="Súbory" gap="small">
+              <RegistrationFilesPanel registrationId={reg.id} />
+            </Panel>
+
             {isAdmin() && (
               <PanelRegistrationInvoiceItems
                 registration={reg}
@@ -103,6 +108,7 @@ export function RegistrationPage() {
               readOnly={!!reg.canceledOn}
               onUpdate={() => notesRefetch()}
             />
+
             <PanelRegistrationShipping
               registration={reg}
               columnWidth={columnWidth}

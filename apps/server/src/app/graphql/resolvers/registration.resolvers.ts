@@ -1,7 +1,11 @@
 import { QueryResolvers, MutationResolvers, Registration } from '../../generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
-import { emailRegistrationInvoice, createRegistrationInvoice } from '../../domains/registration';
+import {
+  emailRegistrationInvoice,
+  createRegistrationInvoice,
+  getRegistrationFiles,
+} from '../../domains/registration';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
@@ -10,6 +14,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
     dataSources.registration.getEventRegistrations(eventId),
   getProgramRegistrations: async (_parent, { programId }, { dataSources }) =>
     dataSources.registration.getProgramRegistrations(programId),
+
+  getRegistrationFiles: async (_parent, { id }, ctx) => getRegistrationFiles(id, ctx),
 };
 
 export const typeResolver: Resolver<Registration> = {
