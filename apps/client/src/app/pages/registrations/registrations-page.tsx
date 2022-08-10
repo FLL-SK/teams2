@@ -40,10 +40,12 @@ function parseRegistrationsSearchParams(
   if (searchParams.has('ns')) {
     values.notShipped = searchParams.get('ns') === 'true';
   }
-  if (searchParams.has('nc')) {
-    values.notConfirmedSize = searchParams.get('nc') === 'true';
+  if (searchParams.has('ncs')) {
+    values.notConfirmedSize = searchParams.get('ncs') === 'true';
   }
-
+  if (searchParams.has('nc')) {
+    values.notConfirmed = searchParams.get('nc') === 'true';
+  }
   return values;
 }
 
@@ -68,6 +70,9 @@ function constructRegistrationsSearchParams(values: RegistrationListFilterValues
     searchParams.append('ns', 'true');
   }
   if (values.notConfirmedSize) {
+    searchParams.append('ncs', 'true');
+  }
+  if (values.notConfirmed) {
     searchParams.append('nc', 'true');
   }
 
@@ -110,6 +115,9 @@ export function RegistrationsPage() {
       if (filter.tags) {
         ok = ok && filter.tags.every((t) => item.team.tags.findIndex((tt) => tt.id === t) > -1);
       }
+      if (filter.notConfirmed) {
+        ok = ok && !item.confirmedOn;
+      }
       if (filter.notInvoiced) {
         ok = ok && !item.invoiceIssuedOn;
       }
@@ -134,13 +142,16 @@ export function RegistrationsPage() {
       .filter((item) => item.text.includes(searchText.toLocaleLowerCase()))
       .map((item) => item.value)
       .filter(applyFilter);
+    results.sort((a, b) => a.team.name.localeCompare(b.team.name));
     setRegistrations(results);
   };
 
   // if no search text, show all teams
   useEffect(() => {
     if (searchText.length === 0) {
-      setRegistrations(searchOptions.map((l) => l.value).filter(applyFilter));
+      const reg = searchOptions.map((l) => l.value).filter(applyFilter);
+      reg.sort((a, b) => a.team.name.localeCompare(b.team.name));
+      setRegistrations(reg);
     }
   }, [searchText, searchOptions, applyFilter]);
 

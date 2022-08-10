@@ -15,6 +15,7 @@ export interface RegistrationListFilterValues {
   notPaid?: boolean;
   notShipped?: boolean;
   notConfirmedSize?: boolean;
+  notConfirmed?: boolean;
 }
 
 interface RegistrationListFilterProps {
@@ -67,6 +68,12 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
         <SidebarPanel>
           <CheckBox
             toggle={true}
+            label="Nepotvrdené"
+            checked={values.notConfirmed ?? false}
+            onChange={() => onChange({ ...values, notConfirmed: !values.notConfirmed })}
+          />
+          <CheckBox
+            toggle={true}
             label="Nefakturované"
             checked={values.notInvoiced ?? false}
             onChange={() => onChange({ ...values, notInvoiced: !values.notInvoiced })}
@@ -96,7 +103,7 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
             onChange={(e) => onChange({ ...values, shipmentGroup: e.target.value })}
           />
         </SidebarPanel>
-        <SidebarPanel label="Štítky">
+        <SidebarPanel label="Štítky tímu">
           {loadingTags && <Spinner />}
           {!loadingTags && (
             <TagList
