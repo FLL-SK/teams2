@@ -32,19 +32,22 @@ export interface EventModel extends Model<EventData> {
   ): Promise<EventDocument[]>;
 }
 
-const schema = new Schema<EventData, EventModel>({
-  name: { type: Types.String, required: true },
-  programId: { type: Types.ObjectId, ref: 'Program', required: true },
-  conditions: { type: Types.String },
+const schema = new Schema<EventData, EventModel>(
+  {
+    name: { type: Types.String, required: true },
+    programId: { type: Types.ObjectId, ref: 'Program', required: true },
+    conditions: { type: Types.String },
 
-  date: { type: Types.Date },
-  registrationEnd: { type: Types.Date },
+    date: { type: Types.Date },
+    registrationEnd: { type: Types.Date },
 
-  managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
+    managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 
-  deletedOn: { type: Types.Date },
-  deletedBy: { type: Types.ObjectId, ref: 'User' },
-});
+    deletedOn: { type: Types.Date },
+    deletedBy: { type: Types.ObjectId, ref: 'User' },
+  },
+  { collation: { locale: 'sk', strength: 1 } }
+);
 
 schema.index({ programId: 1, name: 1 }, { unique: true });
 schema.index({ managersIds: 1 });

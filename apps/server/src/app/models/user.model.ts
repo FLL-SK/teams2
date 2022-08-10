@@ -29,19 +29,22 @@ export interface UserModel extends Model<UserData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
-const schema = new Schema<UserData, UserModel>({
-  username: { type: Types.String, required: true },
-  name: { type: Types.String }, // deprecated
-  firstName: { type: Types.String },
-  lastName: { type: Types.String },
-  password: { type: Types.String, required: true }, // hashed password
-  phone: { type: Types.String },
-  deletedOn: { type: Types.Date },
-  deletedBy: { type: Types.ObjectId, ref: 'User' },
-  isAdmin: { type: Types.Boolean },
-  isSuperAdmin: { type: Types.Boolean },
-  lastLogin: { type: Types.Date },
-});
+const schema = new Schema<UserData, UserModel>(
+  {
+    username: { type: Types.String, required: true },
+    name: { type: Types.String }, // deprecated
+    firstName: { type: Types.String },
+    lastName: { type: Types.String },
+    password: { type: Types.String, required: true }, // hashed password
+    phone: { type: Types.String },
+    deletedOn: { type: Types.Date },
+    deletedBy: { type: Types.ObjectId, ref: 'User' },
+    isAdmin: { type: Types.Boolean },
+    isSuperAdmin: { type: Types.Boolean },
+    lastLogin: { type: Types.Date },
+  },
+  { collation: { locale: 'sk', strength: 1 } }
+);
 
 schema.index({ username: 1 }, { unique: true });
 

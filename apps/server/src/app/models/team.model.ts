@@ -27,17 +27,20 @@ export interface TeamModel extends Model<TeamData> {
   ): Promise<TeamDocument[]>; // remove all docs from repo
 }
 
-const schema = new Schema<TeamData, TeamModel>({
-  name: { type: Types.String, required: true },
-  deletedOn: { type: Types.Date },
-  deletedBy: { type: Types.ObjectId, ref: 'User' },
-  coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
-  tagIds: [{ type: Types.ObjectId, ref: 'Tag', default: [] }],
-  address: { type: addressSchema },
-  billTo: { type: addressSchema },
-  shipTo: { type: addressSchema },
-  useBillTo: { type: Types.Boolean, default: true },
-});
+const schema = new Schema<TeamData, TeamModel>(
+  {
+    name: { type: Types.String, required: true },
+    deletedOn: { type: Types.Date },
+    deletedBy: { type: Types.ObjectId, ref: 'User' },
+    coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
+    tagIds: [{ type: Types.ObjectId, ref: 'Tag', default: [] }],
+    address: { type: addressSchema },
+    billTo: { type: addressSchema },
+    shipTo: { type: addressSchema },
+    useBillTo: { type: Types.Boolean, default: true },
+  },
+  { collation: { locale: 'sk', strength: 1 } }
+);
 
 schema.index({ name: 1 }, { unique: false });
 
