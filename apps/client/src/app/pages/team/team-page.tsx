@@ -183,7 +183,7 @@ export function TeamPage() {
                 label="Deaktivovať tím"
                 onClick={() => deleteTeam({ variables: { id: team?.id ?? '0' } })}
               />
-            )}{' '}
+            )}
           </Box>
         )}
       </PanelGroup>

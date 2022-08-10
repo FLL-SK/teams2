@@ -59,7 +59,22 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async deleteUser(id: ObjectId): Promise<User> {
-    const u = await userRepository.findByIdAndDelete(id).lean().exec();
+    const u = await userRepository
+      .findByIdAndUpdate(
+        id,
+        { deletedOn: new Date(), deletedBy: this.context.user._id },
+        { new: true }
+      )
+      .lean()
+      .exec();
+    return UserMapper.toUser(u);
+  }
+
+  async undeleteUser(id: ObjectId): Promise<User> {
+    const u = await userRepository
+      .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
+      .lean()
+      .exec();
     return UserMapper.toUser(u);
   }
 
