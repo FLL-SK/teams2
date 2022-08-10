@@ -10,8 +10,8 @@ export const UserMapper = {
       id: user._id,
       username: user.username,
       phone: user.phone ?? '',
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName: user.firstName ?? '',
+      lastName: user.lastName ?? '',
 
       deletedOn: user.deletedOn,
       deletedBy: user.deletedBy,
