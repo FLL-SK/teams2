@@ -22,7 +22,7 @@ export function SelectUser(props: SelectUserProps) {
   const { onSelect, onClose, selected, clearable } = props;
   const [options, setOptions] = useState<UserOption[]>([]);
   const { data, loading } = useGetUsersQuery({
-    variables: { filter: { isActive: true } },
+    variables: { filter: { includeInactive: false } },
     onCompleted: (data) => setOptions(data.getUsers),
   });
 

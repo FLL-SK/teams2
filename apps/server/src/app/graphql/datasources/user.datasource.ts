@@ -38,9 +38,9 @@ export class UserDataSource extends BaseDataSource {
   async getUsers(filter: UserFilterInput): Promise<User[]> {
     const q: FilterQuery<UserData> = {};
     if (filter) {
-      const { isActive } = filter;
+      const { includeInactive } = filter;
 
-      if (isActive) {
+      if (!includeInactive) {
         q.deletedOn = null;
       }
     }

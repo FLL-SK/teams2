@@ -35,7 +35,9 @@ type UpdateUserPayload implements IMutationPayload {
 }
 
 input UserFilterInput {
-  isActive: Boolean
+  includeInactive: Boolean
+  isAdmin: Boolean
+  isSuperAdmin: Boolean
 }
 
 extend type Query {
