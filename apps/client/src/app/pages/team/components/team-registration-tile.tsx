@@ -21,7 +21,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
 
   return (
     <Box>
-      <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'}>
+      <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'} wrap>
         <Box width="60%">
           <LabelValueGroup labelWidth="150px" direction="row" gap="small">
             <LabelValue label="Turnaj">
