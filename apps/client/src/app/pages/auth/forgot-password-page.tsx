@@ -11,6 +11,7 @@ import {
   Form,
   FormField,
   Layer,
+  Paragraph,
   Text,
 } from 'grommet';
 import { useState } from 'react';
@@ -22,17 +23,28 @@ export function ForgotPasswordPage() {
   const navigate = useNavigate();
   const { forgotPassword } = useAuthenticate();
   const [error, setError] = useState<string>();
-  const [message, setMessage] = useState<string>();
+  const [message, setMessage] = useState<JSX.Element>();
 
   const handleRequestPasswordReset = async ({ value }: { value: { username: string } }) => {
     const resp = await forgotPassword(value.username);
     if (resp) {
       setMessage(
-        'Ak je užívateľ v systéme, dostanete email s inštrukciami.\nNezabudnite kontrolovať priečinok s nevyžiadanou poštou ("spam").'
+        <>
+          <Paragraph>
+            Ak pre vami zadaný e-mail existuje v tomto systéme aktívny účet, tak vám naň do 5 minút
+            pošleme inštrukcie na obnovu hesla.
+          </Paragraph>
+          <Paragraph>
+            Ak ich nedostanete,
+            <strong> skontrolujte aj priečinok s nevyžiadanou poštou, tzv. &quot;spam&quot;</strong>
+            .
+          </Paragraph>
+          <Paragraph>Ak ich nenájdete ani tam, tak nás kontaktujte.</Paragraph>
+        </>
       );
       return;
     } else {
-      setMessage('Nepodarilo sa odoslať požiadavku na reset hesla.');
+      setMessage(<Paragraph>Nepodarilo sa odoslať požiadavku na obnovenie hesla.</Paragraph>);
     }
   };
 
@@ -54,7 +66,7 @@ export function ForgotPasswordPage() {
                   onChange={() => setError(undefined)}
                 >
                   <FormField label="E-mail" name="username" required />
-                  <Button primary type="submit" label="Požiadať o reset hesla" />
+                  <Button primary type="submit" label="Požiadať o obnovu hesla" />
                 </Form>
                 <Box pad="small" justify="center">
                   {error && <Text color="status-error">{error}</Text>}
@@ -63,7 +75,7 @@ export function ForgotPasswordPage() {
             )}
             {message && (
               <Box gap="medium">
-                <Text>{message}</Text>
+                {message}
                 <Button primary label="OK" onClick={() => navigate('/login')} />
               </Box>
             )}
