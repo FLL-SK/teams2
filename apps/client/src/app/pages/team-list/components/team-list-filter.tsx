@@ -1,3 +1,4 @@
+import { CheckBox } from 'grommet';
 import React, { useCallback, useState } from 'react';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel } from '../../../components/sidebar-panel';
@@ -6,6 +7,7 @@ import { useGetTagsQuery } from '../../../generated/graphql';
 
 export interface TeamListFilterValues {
   tags?: string[];
+  includeInactive?: boolean;
 }
 
 interface TeamListFilterProps {
@@ -48,6 +50,15 @@ export function TeamListFilter(props: TeamListFilterProps) {
 
   return (
     <ClosableSidebar onClose={onClose} show={show} title="Filter">
+      <SidebarPanel>
+        <CheckBox
+          toggle={true}
+          label="Ukáž neaktívne"
+          checked={values.includeInactive ?? false}
+          onChange={() => onChange({ ...values, includeInactive: !values.includeInactive })}
+        />
+      </SidebarPanel>
+
       <SidebarPanel label="Štítky">
         <TagList
           tags={(tagsData?.getTags ?? []).filter((t) => filterTags.includes(t.id))}

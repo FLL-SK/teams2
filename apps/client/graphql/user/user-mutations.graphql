@@ -4,6 +4,12 @@ mutation deleteUser($id: ID!) {
   }
 }
 
+mutation undeleteUser($id: ID!) {
+  undeleteUser(id: $id) {
+    ...UserFragment
+  }
+}
+
 mutation updateUser($id: ID!, $input: UpdateUserInput!) {
   updateUser(id: $id, input: $input) {
     user {

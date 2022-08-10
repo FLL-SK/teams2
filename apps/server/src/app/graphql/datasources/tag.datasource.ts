@@ -32,7 +32,7 @@ export class TagDataSource extends BaseDataSource {
 
   async getTag(id: ObjectId): Promise<Tag> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-    const tag = this.loader.load(id.toString());
+    const tag = await this.loader.load(id.toString());
     return tag;
   }
 

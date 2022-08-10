@@ -1,6 +1,6 @@
 import React from 'react';
 import { appPath } from '@teams2/common';
-import { Box, Button } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -11,8 +11,10 @@ import { Panel, PanelGroup } from '../../components/panel';
 import { Tag } from '../../components/tag';
 import {
   useCreateTeamMutation,
+  useDeleteUserMutation,
   useGetUserQuery,
   useSetAdminMutation,
+  useUndeleteUserMutation,
   useUpdateUserMutation,
 } from '../../generated/graphql';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
@@ -42,6 +44,12 @@ export function ProfilePage() {
   const [updateUser] = useUpdateUserMutation({
     onError: (e) => notify.error('Nepodarilo sa aktualizovať profil.', e.message),
   });
+  const [deleteUser] = useDeleteUserMutation({
+    onError: (e) => notify.error('Nepodarilo sa deaktivovať účet.', e.message),
+  });
+  const [undeleteUser] = useUndeleteUserMutation({
+    onError: (e) => notify.error('Nepodarilo sa opätovne aktivovať profil.', e.message),
+  });
 
   if (!id || (error && !loading)) {
     return <ErrorPage title="Chyba pr získavaní údajov profilu." />;
@@ -49,10 +57,24 @@ export function ProfilePage() {
 
   const canEdit = isAdmin() || isUser(id);
   const profile = data?.getUser;
+  const isDeleted = !!profile?.deletedOn;
 
   return (
     <BasePage title="Profil používateľa" loading={loading}>
       <PanelGroup>
+        {isDeleted && (
+          <Box direction="row" align="center" gap="medium">
+            <Text color="status-critical">Profil bol deaktivovaný</Text>
+            {isAdmin() && (
+              <Button
+                size="small"
+                primary
+                label="Aktivovať profil"
+                onClick={() => undeleteUser({ variables: { id: profile?.id ?? '0' } })}
+              />
+            )}
+          </Box>
+        )}
         <Panel title="Detaily" gap="small">
           <LabelValueGroup direction="row" labelWidth="200px" gap="medium">
             <LabelValue label="Meno" value={profile?.firstName ?? '-'} />
@@ -71,6 +93,7 @@ export function ProfilePage() {
             {isSuperAdmin() && !profile?.isAdmin && (
               <Button
                 label="Pridaj práva admin"
+                disabled={isDeleted}
                 onClick={() => setAdmin({ variables: { id, isAdmin: true } })}
               />
             )}
@@ -78,10 +101,15 @@ export function ProfilePage() {
               <Button
                 label="Zruš práva admin"
                 onClick={() => setAdmin({ variables: { id, isAdmin: false } })}
+                disabled={!!profile?.isSuperAdmin && !isUser(id) && !isSuperAdmin()}
               />
             )}
             {(isAdmin() || isUser(profile?.id ?? '')) && (
-              <Button label="Upraviť profil" onClick={() => setEditProfile(true)} />
+              <Button
+                label="Upraviť profil"
+                onClick={() => setEditProfile(true)}
+                disabled={isDeleted}
+              />
             )}
           </Box>
         </Panel>
@@ -98,6 +126,7 @@ export function ProfilePage() {
                 hoverIndicator
                 label="Nový"
                 margin={{ horizontal: 'small', vertical: 'xsmall' }}
+                disabled={isDeleted}
               />
             </Box>
           </Panel>
@@ -110,6 +139,18 @@ export function ProfilePage() {
               ))}
             </Box>
           </Panel>
+        )}
+        {isAdmin() && !isUser(id) && (!profile?.isSuperAdmin || isSuperAdmin()) && (
+          <Box direction="row">
+            {!isDeleted && (
+              <Button
+                primary
+                color="status-critical"
+                label="Deaktivovať profil"
+                onClick={() => deleteUser({ variables: { id: profile?.id ?? '0' } })}
+              />
+            )}{' '}
+          </Box>
         )}
       </PanelGroup>
       <EditTeamDialog

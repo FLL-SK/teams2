@@ -48,13 +48,14 @@ export class TeamDataSource extends BaseDataSource {
   async getTeam(id: ObjectId): Promise<Team> {
     const log = this.logBase.extend('getTeam');
     log.debug('getTeam %s', id.toString());
-    const team = this.loader.load(id.toString());
+    const team = await this.loader.load(id.toString());
+    log.debug('getTeam %s', team.id.toString());
     return team;
   }
 
   async getTeams(filter: TeamFilterInput): Promise<Team[]> {
     const q: FilterQuery<TeamData> = {};
-    if (filter.isActive) {
+    if (!filter.includeInactive) {
       q.deletedOn = null;
     }
     if (filter.hasTags) {
@@ -104,7 +105,24 @@ export class TeamDataSource extends BaseDataSource {
       (await this.userGuard.isCoach(id)) ||
       this.userGuard.notAuthorized();
 
-    const u = await teamRepository.findByIdAndDelete(id).exec();
+    const u = await teamRepository
+      .findByIdAndUpdate(
+        id,
+        { deletedOn: new Date(), deletedBy: this.context.user._id },
+        { new: true }
+      )
+      .exec();
+    return TeamMapper.toTeam(u);
+  }
+
+  async undeleteTeam(id: ObjectId): Promise<Team> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isCoach(id)) ||
+      this.userGuard.notAuthorized();
+
+    const u = await teamRepository
+      .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
+      .exec();
     return TeamMapper.toTeam(u);
   }
 

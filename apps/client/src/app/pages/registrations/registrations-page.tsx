@@ -17,62 +17,10 @@ import RegistrationListFilter, {
 } from './components/registration-list-filter';
 import { useSearchParams } from 'react-router-dom';
 import { exportRegistrationsForShipping } from '../../utils/export-registrations-for-shipping';
-
-function parseRegistrationsSearchParams(
-  searchParams: URLSearchParams
-): RegistrationListFilterValues {
-  const values: RegistrationListFilterValues = {};
-  if (searchParams.has('t')) {
-    values.tags = searchParams.getAll('t');
-  }
-  if (searchParams.has('p')) {
-    values.programId = searchParams.get('p');
-  }
-  if (searchParams.has('sg')) {
-    values.shipmentGroup = searchParams.get('sg');
-  }
-  if (searchParams.has('ni')) {
-    values.notInvoiced = searchParams.get('ni') === 'true';
-  }
-  if (searchParams.has('np')) {
-    values.notPaid = searchParams.get('np') === 'true';
-  }
-  if (searchParams.has('ns')) {
-    values.notShipped = searchParams.get('ns') === 'true';
-  }
-  if (searchParams.has('nc')) {
-    values.notConfirmedSize = searchParams.get('nc') === 'true';
-  }
-
-  return values;
-}
-
-function constructRegistrationsSearchParams(values: RegistrationListFilterValues): URLSearchParams {
-  const searchParams = new URLSearchParams();
-  if (values.tags) {
-    values.tags.forEach((tag) => searchParams.append('t', tag));
-  }
-  if (values.programId) {
-    searchParams.append('p', values.programId);
-  }
-  if (values.shipmentGroup) {
-    searchParams.append('sg', values.shipmentGroup);
-  }
-  if (values.notInvoiced) {
-    searchParams.append('ni', 'true');
-  }
-  if (values.notPaid) {
-    searchParams.append('np', 'true');
-  }
-  if (values.notShipped) {
-    searchParams.append('ns', 'true');
-  }
-  if (values.notConfirmedSize) {
-    searchParams.append('nc', 'true');
-  }
-
-  return searchParams;
-}
+import {
+  constructRegistrationsSearchParams,
+  parseRegistrationsSearchParams,
+} from './components/registration-list-params';
 
 const localStoreFilterEntry = 'registrations-filter';
 
@@ -110,6 +58,9 @@ export function RegistrationsPage() {
       if (filter.tags) {
         ok = ok && filter.tags.every((t) => item.team.tags.findIndex((tt) => tt.id === t) > -1);
       }
+      if (filter.notConfirmed) {
+        ok = ok && !item.confirmedOn;
+      }
       if (filter.notInvoiced) {
         ok = ok && !item.invoiceIssuedOn;
       }
@@ -134,13 +85,16 @@ export function RegistrationsPage() {
       .filter((item) => item.text.includes(searchText.toLocaleLowerCase()))
       .map((item) => item.value)
       .filter(applyFilter);
+    results.sort((a, b) => a.team.name.localeCompare(b.team.name));
     setRegistrations(results);
   };
 
   // if no search text, show all teams
   useEffect(() => {
     if (searchText.length === 0) {
-      setRegistrations(searchOptions.map((l) => l.value).filter(applyFilter));
+      const reg = searchOptions.map((l) => l.value).filter(applyFilter);
+      reg.sort((a, b) => a.team.name.localeCompare(b.team.name));
+      setRegistrations(reg);
     }
   }, [searchText, searchOptions, applyFilter]);
 

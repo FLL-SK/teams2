@@ -4,6 +4,12 @@ mutation deleteTeam($id: ID!) {
   }
 }
 
+mutation undeleteTeam($id: ID!) {
+  undeleteTeam(id: $id) {
+    ...TeamFragment
+  }
+}
+
 mutation createTeam($input: CreateTeamInput!) {
   createTeam(input: $input) {
     team {
