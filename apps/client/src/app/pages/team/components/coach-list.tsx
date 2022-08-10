@@ -1,4 +1,5 @@
-import { Box, Button, Text } from 'grommet';
+import { appPath } from '@teams2/common';
+import { Anchor, Box, Button, Text } from 'grommet';
 import { Close } from 'grommet-icons';
 import React from 'react';
 import { UserBasicFragmentFragment } from '../../../generated/graphql';
@@ -27,12 +28,13 @@ export function CoachList(props: CoachListProps) {
         >
           <Box width="90%" direction="row" wrap gap="medium" align="center">
             <Box width={{ min: '350px' }}>
-              <Text>{formatFullName(m.firstName, m.lastName)}</Text>
+              <Anchor href={appPath.profile(m.id)}>
+                {formatFullName(m.firstName, m.lastName)}
+              </Anchor>
             </Box>
-            <Box width={{ min: '350px' }}>
-              <Text size="small">
-                {m.username}, {m.phone}
-              </Text>
+            <Box width={{ min: '350px' }} direction="row" gap="medium">
+              <Text size="small">{m.username}</Text>
+              <Text size="small">{m.phone}</Text>
             </Box>
           </Box>
           <Box pad="small">
