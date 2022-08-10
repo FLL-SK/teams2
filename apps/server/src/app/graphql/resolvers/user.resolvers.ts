@@ -19,6 +19,7 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   updateUser: async (_parent, { id, input }, { dataSources }) =>
     dataSources.user.updateUser(id, input),
   deleteUser: async (_parent, { id }, { dataSources }) => dataSources.user.deleteUser(id),
+  undeleteUser: async (_parent, { id }, { dataSources }) => dataSources.user.undeleteUser(id),
   changeUserPassword: async (_parent, { id, password }, { dataSources }) =>
     dataSources.user.changePassword(id, password),
   setAdmin: async (_parent, { id, isAdmin }, { dataSources }) =>

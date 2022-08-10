@@ -56,7 +56,7 @@ type UpdateTeamPayload implements IMutationPayload {
 }
 
 input TeamFilterInput {
-  isActive: Boolean
+  includeInactive: Boolean
   hasTags: [ID!]
   participatedInProgram: ID
 }
@@ -70,6 +70,7 @@ extend type Mutation {
   createTeam(input: CreateTeamInput!): CreateTeamPayload!
   updateTeam(id: ID!, input: UpdateTeamInput!): UpdateTeamPayload!
   deleteTeam(id: ID!): Team
+  undeleteTeam(id: ID!): Team
 
   addCoachToTeam(teamId: ID!, username: String!): Team!
   removeCoachFromTeam(teamId: ID!, userId: ID!): Team!

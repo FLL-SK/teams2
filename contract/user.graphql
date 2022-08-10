@@ -35,7 +35,9 @@ type UpdateUserPayload implements IMutationPayload {
 }
 
 input UserFilterInput {
-  isActive: Boolean
+  includeInactive: Boolean
+  isAdmin: Boolean
+  isSuperAdmin: Boolean
 }
 
 extend type Query {
@@ -46,6 +48,7 @@ extend type Query {
 extend type Mutation {
   updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
   deleteUser(id: ID!): User
+  undeleteUser(id: ID!): User
 
   changeUserPassword(id: ID!, password: String!): User
   setAdmin(id: ID!, isAdmin: Boolean!): User

@@ -13,22 +13,10 @@ import TeamSidebar from './components/team-sidebar';
 import { BasePage } from '../../components/base-page';
 import TeamListFilter, { TeamListFilterValues } from './components/team-list-filter';
 import { useSearchParams } from 'react-router-dom';
-
-function parseTeamListSearchParams(searchParams: URLSearchParams): TeamListFilterValues {
-  const values: TeamListFilterValues = {};
-  if (searchParams.has('t')) {
-    values.tags = searchParams.getAll('t');
-  }
-  return values;
-}
-
-function constructTeamListSearchParams(values: TeamListFilterValues): URLSearchParams {
-  const searchParams = new URLSearchParams();
-  if (values.tags) {
-    values.tags.forEach((tag) => searchParams.append('t', tag));
-  }
-  return searchParams;
-}
+import {
+  constructTeamListSearchParams,
+  parseTeamListSearchParams,
+} from './components/team-list-params';
 
 export function TeamListPage() {
   const { isAdmin } = useAppUser();
@@ -49,6 +37,9 @@ export function TeamListPage() {
     const f: TeamFilterInput = {};
     if (flt.tags) {
       f.hasTags = flt.tags;
+    }
+    if (flt.includeInactive) {
+      f.includeInactive = flt.includeInactive;
     }
 
     fetchTeams({ variables: { filter: f } });
