@@ -27,7 +27,9 @@ export function ForgotPasswordPage() {
   const handleRequestPasswordReset = async ({ value }: { value: { username: string } }) => {
     const resp = await forgotPassword(value.username);
     if (resp) {
-      setMessage('Ak je užívateľ v systéme, dostanete email s inštrukciami.');
+      setMessage(
+        'Ak je užívateľ v systéme, dostanete email s inštrukciami.\nNezabudnite kontrolovať priečinok s nevyžiadanou poštou ("spam").'
+      );
       return;
     } else {
       setMessage('Nepodarilo sa odoslať požiadavku na reset hesla.');
