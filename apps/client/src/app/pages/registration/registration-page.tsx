@@ -88,7 +88,7 @@ export function RegistrationPage() {
             </Panel>
 
             <Panel title="Súbory" gap="small">
-              <RegistrationFilesPanel registrationId={reg.id} />
+              <RegistrationFilesPanel registrationId={reg.id} regConfirmed={!!reg.confirmedOn} />
             </Panel>
 
             {isAdmin() && (
