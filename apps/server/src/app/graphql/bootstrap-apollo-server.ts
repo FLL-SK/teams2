@@ -39,6 +39,7 @@ export async function bootstrapApolloServer(app: Application): Promise<void> {
 
   const apolloServerConfig: Config<ExpressContext> = {
     schema: schema,
+    cache: 'bounded',
     context: initApolloContext,
     formatError: errorFormatter,
     dataSources: (): ApolloContextDataSources => ({
