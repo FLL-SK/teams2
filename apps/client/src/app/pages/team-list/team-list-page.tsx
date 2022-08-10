@@ -19,14 +19,23 @@ function parseTeamListSearchParams(searchParams: URLSearchParams): TeamListFilte
   if (searchParams.has('t')) {
     values.tags = searchParams.getAll('t');
   }
+  if (searchParams.get('ii') === 'true') {
+    values.includeInactive = true;
+  }
   return values;
 }
 
 function constructTeamListSearchParams(values: TeamListFilterValues): URLSearchParams {
   const searchParams = new URLSearchParams();
+
   if (values.tags) {
     values.tags.forEach((tag) => searchParams.append('t', tag));
   }
+
+  if (values.includeInactive) {
+    searchParams.append('ii', 'true');
+  }
+
   return searchParams;
 }
 
@@ -49,6 +58,9 @@ export function TeamListPage() {
     const f: TeamFilterInput = {};
     if (flt.tags) {
       f.hasTags = flt.tags;
+    }
+    if (flt.includeInactive) {
+      f.includeInactive = flt.includeInactive;
     }
 
     fetchTeams({ variables: { filter: f } });

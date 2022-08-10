@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { appPath } from '@teams2/common';
-import { Box, Button, CheckBox, Spinner } from 'grommet';
+import { Box, Button, CheckBox, Spinner, Text } from 'grommet';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
@@ -17,6 +17,8 @@ import {
   useGetTeamQuery,
   useUpdateTeamMutation,
   useCreateNoteMutation,
+  useDeleteTeamMutation,
+  useUndeleteTeamMutation,
 } from '../../generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
@@ -57,6 +59,8 @@ export function TeamPage() {
   const [addTag] = useAddTagToTeamMutation({ onError });
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch(), onError });
   const [updateTeam] = useUpdateTeamMutation({ onError });
+  const [deleteTeam] = useDeleteTeamMutation({ onError });
+  const [undeleteTeam] = useUndeleteTeamMutation({ onError });
 
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
@@ -92,16 +96,36 @@ export function TeamPage() {
     return <ErrorPage title="Chyba pri získavaní dát tímu." />;
   }
 
+  const isDeleted = !!team?.deletedOn;
+
   return (
     <BasePage title="Tím" loading={teamLoading}>
       <PanelGroup>
+        {isDeleted && (
+          <Box direction="row" gap="medium" align="center">
+            <Text color="status-error">Tím bol deaktivovaný.</Text>
+            {isAdmin() && (
+              <Button
+                size="small"
+                primary
+                label="Aktivovať tím"
+                onClick={() => undeleteTeam({ variables: { id: team?.id ?? '0' } })}
+              />
+            )}
+          </Box>
+        )}
+
         <Panel title="Detaily tímu" gap="small">
           <LabelValueGroup labelWidth="150px" gap="small" direction="row">
             <LabelValue label="Názov tímu" value={team?.name} />
             <LabelValue label="Zriaďovateľ" value={fullAddress(team?.address)} />
           </LabelValueGroup>
           <Box direction="row">
-            <Button label="Zmeniť" onClick={() => setShowEditDialog(true)} disabled={!canEdit} />
+            <Button
+              label="Zmeniť"
+              onClick={() => setShowEditDialog(true)}
+              disabled={!canEdit || isDeleted}
+            />
           </Box>
         </Panel>
 
@@ -110,7 +134,7 @@ export function TeamPage() {
             <Button
               label="Registrovať tím"
               onClick={() => navigate(appPath.register(id))}
-              disabled={registrations.length > 0}
+              disabled={registrations.length > 0 || isDeleted}
             />
             <CheckBox
               toggle
@@ -122,7 +146,7 @@ export function TeamPage() {
           <TeamRegistrationsList registrations={registrations} />
         </Panel>
 
-        {canEdit && <PanelTeamCoaches team={team} canEdit={canEdit} />}
+        {canEdit && <PanelTeamCoaches team={team} canEdit={canEdit && !isDeleted} />}
 
         {isAdmin() && (
           <Panel title="Štítky">
@@ -149,6 +173,18 @@ export function TeamPage() {
               />
             )}
           </Panel>
+        )}
+        {isAdmin() && (
+          <Box direction="row">
+            {!isDeleted && (
+              <Button
+                primary
+                color="status-critical"
+                label="Deaktivovať tím"
+                onClick={() => deleteTeam({ variables: { id: team?.id ?? '0' } })}
+              />
+            )}{' '}
+          </Box>
         )}
       </PanelGroup>
       <EditTeamDialog

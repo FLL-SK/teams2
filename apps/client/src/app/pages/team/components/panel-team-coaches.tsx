@@ -38,6 +38,7 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
         <Box direction="row">
           <Button
             plain
+            disabled={!canEdit}
             icon={<Add />}
             label="Pridať trénera"
             onClick={() => setShowAddCoachDialog(true)}
