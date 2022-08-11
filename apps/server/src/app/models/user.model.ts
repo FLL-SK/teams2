@@ -32,7 +32,6 @@ export interface UserModel extends Model<UserData> {
 const schema = new Schema<UserData, UserModel>(
   {
     username: { type: Types.String, required: true },
-    name: { type: Types.String }, // deprecated
     firstName: { type: Types.String },
     lastName: { type: Types.String },
     password: { type: Types.String, required: true }, // hashed password

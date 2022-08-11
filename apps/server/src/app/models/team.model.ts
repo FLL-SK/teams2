@@ -43,6 +43,8 @@ const schema = new Schema<TeamData, TeamModel>(
 );
 
 schema.index({ name: 1 }, { unique: false });
+schema.index({ coachesIds: 1 });
+schema.index({ tagIds: 1 });
 
 schema.static('clean', function () {
   return this.deleteMany().exec();

@@ -120,12 +120,20 @@ export function TeamPage() {
             <LabelValue label="Názov tímu" value={team?.name} />
             <LabelValue label="Zriaďovateľ" value={fullAddress(team?.address)} />
           </LabelValueGroup>
-          <Box direction="row">
+          <Box direction="row" gap="small">
             <Button
               label="Zmeniť"
               onClick={() => setShowEditDialog(true)}
               disabled={!canEdit || isDeleted}
             />
+            {(isAdmin() || isTeamCoach(id)) && !isDeleted && (
+              <Button
+                label="Deaktivovať tím"
+                color="status-critical"
+                onClick={() => deleteTeam({ variables: { id: team?.id ?? '0' } })}
+                disabled={registrations.length > 0}
+              />
+            )}
           </Box>
         </Panel>
 
@@ -173,18 +181,6 @@ export function TeamPage() {
               />
             )}
           </Panel>
-        )}
-        {isAdmin() && (
-          <Box direction="row">
-            {!isDeleted && (
-              <Button
-                primary
-                color="status-critical"
-                label="Deaktivovať tím"
-                onClick={() => deleteTeam({ variables: { id: team?.id ?? '0' } })}
-              />
-            )}
-          </Box>
         )}
       </PanelGroup>
       <EditTeamDialog
