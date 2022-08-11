@@ -48,10 +48,6 @@ export class UserDataSource extends BaseDataSource {
     return users.map(UserMapper.toUser);
   }
 
-  async getUserByUsername(username?: string): Promise<User> {
-    return UserMapper.toUser(await userRepository.findOne({ username }).lean().exec());
-  }
-
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
     const u: Partial<UserData> = input;
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
@@ -80,11 +76,6 @@ export class UserDataSource extends BaseDataSource {
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
     const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
-    return UserMapper.toUser(u);
-  }
-
-  static async getUserByUsername(username: string): Promise<User> {
-    const u = await userRepository.findByUsername(username);
     return UserMapper.toUser(u);
   }
 
