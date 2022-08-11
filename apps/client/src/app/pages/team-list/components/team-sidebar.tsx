@@ -16,7 +16,6 @@ import {
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { CoachList } from '../../team/components/coach-list';
-import { PanelTeamCoaches } from '../../team/components/panel-team-coaches';
 
 interface TeamSidebarProps {
   team?: TeamListFragmentFragment;
