@@ -68,6 +68,12 @@ export function PanelSettings(props: PanelSettingsProps) {
               onChange={(v) => updateSettings({ variables: { input: { billingEmail: v } } })}
             />
           </LabelValue>
+          <LabelValue label="Link na pravidlá pre ochranu osobných údajov">
+            <InplaceTextEdit
+              value={settings.privacyPolicyUrl}
+              onChange={(v) => updateSettings({ variables: { input: { privacyPolicyUrl: v } } })}
+            />
+          </LabelValue>
         </LabelValueGroup>
       )}
 

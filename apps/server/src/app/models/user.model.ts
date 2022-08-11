@@ -17,7 +17,8 @@ export interface UserData {
   password: string;
   isAdmin?: boolean;
   isSuperAdmin?: boolean;
-  lastLogin?: Date;
+  lastLoginOn?: Date;
+  gdprAcceptedOn?: Date;
 }
 
 export type UserDataNoPassword = Omit<UserData, 'password'>;
@@ -42,7 +43,8 @@ const schema = new Schema<UserData, UserModel>(
     deletedBy: { type: Types.ObjectId, ref: 'User' },
     isAdmin: { type: Types.Boolean },
     isSuperAdmin: { type: Types.Boolean },
-    lastLogin: { type: Types.Date },
+    lastLoginOn: { type: Types.Date },
+    gdprAcceptedOn: { type: Types.Date },
   },
   { collation: { locale: 'sk', strength: 1 } }
 );

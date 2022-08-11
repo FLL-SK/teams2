@@ -10,6 +10,7 @@ import { LabelValue } from '../../components/label-value';
 import { Panel, PanelGroup } from '../../components/panel';
 import { Tag } from '../../components/tag';
 import {
+  UpdateUserInput,
   useCreateTeamMutation,
   useDeleteUserMutation,
   useGetUserQuery,
@@ -22,6 +23,7 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { EditUserDialog } from '../../components/dialogs/edit-user-dialog';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { isNil, omit, omitBy } from 'lodash';
 
 export function ProfilePage() {
   const { id } = useParams();
@@ -174,7 +176,18 @@ export function ProfilePage() {
         user={profile}
         show={editProfile}
         onClose={() => setEditProfile(false)}
-        onSubmit={(data) => updateUser({ variables: { id: profile?.id ?? '0', input: data } })}
+        onSubmit={(data) => {
+          const input: UpdateUserInput = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: data.phone,
+            username: data.username,
+            usernameOverride: data.usernameOverride,
+            gdprAccepted: data.gdprAccepted,
+          };
+          return updateUser({ variables: { id: profile?.id ?? '0', input: omitBy(input, isNil) } });
+        }}
+        requestGdprConsent={!profile?.gdprAcceptedOn}
       />
     </BasePage>
   );

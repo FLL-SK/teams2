@@ -20,7 +20,8 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
   const u: Pick<UserData, 'username'> = {
     username: user.username,
   };
-  userRepository.findOneAndUpdate(u, { lastLogin: new Date() }).exec();
+  const uq: Partial<UserData> = { lastLoginOn: new Date() };
+  userRepository.findOneAndUpdate(u, uq).exec();
   const token = createToken(user);
 
   res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days
@@ -71,9 +72,13 @@ router.post('/reset', async function (req, res, next) {
 });
 
 router.post('/signup', async function (req, res, next) {
-  const { username, password, firstName, lastName, phone } = req.body;
+  const { username, password, firstName, lastName, phone, gdprAccepted } = req.body;
   const log = logLib.extend('post/signup');
   log.debug('user signup=%o', username);
+
+  if (!gdprAccepted) {
+    return res.status(403).send({ error: { message: 'GDPR not accepted' } });
+  }
 
   const u = await userRepository.findActiveByUsername(username);
   if (u) {
@@ -87,6 +92,7 @@ router.post('/signup', async function (req, res, next) {
       lastName,
       phone,
       createdOn: new Date(),
+      gdprAcceptedOn: new Date(),
     };
     await userRepository.create(nu);
     emailUserSignupToAdmin(username);

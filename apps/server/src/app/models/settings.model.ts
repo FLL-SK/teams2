@@ -10,6 +10,7 @@ export interface SettingsData {
   organization: AddressData;
   sysEmail?: string; // email for system messages e.g. new signup
   billingEmail?: string; // email for billing related messages
+  privacyPolicyUrl?: string;
 }
 
 export type SettingsDocument = (Document<unknown, unknown, SettingsData> & SettingsData) | null;
@@ -25,6 +26,7 @@ const schema = new Schema<SettingsData, SettingsModel>({
   organization: { type: addressSchema, required: true },
   sysEmail: { type: Types.String },
   billingEmail: { type: Types.String },
+  privacyPolicyUrl: { type: Types.String },
 });
 
 schema.static('clean', function () {
