@@ -40,7 +40,7 @@ router.get('/', (req, res) => {
   res.send({ error: { message: 'Invalid token' } });
 });
 
-router.post('/forgot', async function (req, res, next) {
+router.post('/forgot', async function (req, res) {
   const { username } = req.body;
   const log = logLib.extend('post/forgot');
   log.debug('user forgot password=%o', username);
@@ -55,7 +55,7 @@ router.post('/forgot', async function (req, res, next) {
   res.send({});
 });
 
-router.post('/reset', async function (req, res, next) {
+router.post('/reset', async function (req, res) {
   const { token, password } = req.body;
   const log = logLib.extend('post/reset');
 
@@ -71,7 +71,7 @@ router.post('/reset', async function (req, res, next) {
   res.status(401).send({ error: { message: 'Invalid token' } });
 });
 
-router.post('/signup', async function (req, res, next) {
+router.post('/signup', async function (req, res) {
   const { username, password, firstName, lastName, phone, gdprAccepted } = req.body;
   const log = logLib.extend('post/signup');
   log.debug('user signup=%o', username);
@@ -102,7 +102,7 @@ router.post('/signup', async function (req, res, next) {
   res.send({});
 });
 
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
   passport.authenticate('login', { session: false }, (err: Error, user?: AuthUser) => {
     const log = logLib.extend('post/');
     log.debug('authenticating user=%o', user);
