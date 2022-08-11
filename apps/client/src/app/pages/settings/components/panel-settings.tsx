@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, Image, Spinner, Text } from 'grommet';
+import { Anchor, Box, Image, Spinner, Text } from 'grommet';
 import React from 'react';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
 import { InplaceTextEdit } from '../../../components/editors/inplace-text';
@@ -66,6 +66,12 @@ export function PanelSettings(props: PanelSettingsProps) {
             <InplaceTextEdit
               value={settings.billingEmail}
               onChange={(v) => updateSettings({ variables: { input: { billingEmail: v } } })}
+            />
+          </LabelValue>
+          <LabelValue label="Link na pravidlá pre ochranu osobných údajov">
+            <InplaceTextEdit
+              value={settings.privacyPolicyUrl}
+              onChange={(v) => updateSettings({ variables: { input: { privacyPolicyUrl: v } } })}
             />
           </LabelValue>
         </LabelValueGroup>

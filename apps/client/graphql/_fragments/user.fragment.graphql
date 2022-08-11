@@ -10,6 +10,8 @@ fragment UserListFragment on User {
   ...UserBasicFragment
 
   deletedOn
+  lastLoginOn
+  gdprAcceptedOn
 
   isAdmin
   isSuperAdmin

@@ -37,6 +37,8 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+
     const q: FilterQuery<UserData> = {};
     if (filter) {
       const { includeInactive } = filter;
@@ -50,12 +52,26 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
-    const u: Partial<UserData> = input;
+    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
+
+    const u: Partial<UserData> = {
+      firstName: input.firstName,
+      lastName: input.lastName,
+      phone: input.phone,
+    };
+    if (input.gdprAccepted) {
+      u.gdprAcceptedOn = new Date();
+    }
+    if (input.username && input.usernameOverride) {
+      u.username = input.username;
+    }
+
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
     return { user: UserMapper.toUser(nu) };
   }
 
   async deleteUser(id: ObjectId): Promise<User> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const u = await userRepository
       .findByIdAndUpdate(
         id,
@@ -68,6 +84,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async undeleteUser(id: ObjectId): Promise<User> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const u = await userRepository
       .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
       .lean()
@@ -76,11 +93,13 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
+    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
     const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
     return UserMapper.toUser(u);
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
+    this.userGuard.isSuperAdmin() || this.userGuard.notAuthorized();
     const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
     return UserMapper.toUser(u);
   }

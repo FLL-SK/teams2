@@ -12,6 +12,7 @@ export const SettingsMapper = {
       organization: data.organization,
       sysEmail: data.sysEmail,
       billingEmail: data.billingEmail,
+      privacyPolicyUrl: data.privacyPolicyUrl,
     };
     return u;
   },

@@ -20,7 +20,8 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
   const u: Pick<UserData, 'username'> = {
     username: user.username,
   };
-  userRepository.findOneAndUpdate(u, { lastLogin: new Date() }).exec();
+  const uq: Partial<UserData> = { lastLoginOn: new Date() };
+  userRepository.findOneAndUpdate(u, uq).exec();
   const token = createToken(user);
 
   res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days
@@ -39,7 +40,7 @@ router.get('/', (req, res) => {
   res.send({ error: { message: 'Invalid token' } });
 });
 
-router.post('/forgot', async function (req, res, next) {
+router.post('/forgot', async function (req, res) {
   const { username } = req.body;
   const log = logLib.extend('post/forgot');
   log.debug('user forgot password=%o', username);
@@ -54,7 +55,7 @@ router.post('/forgot', async function (req, res, next) {
   res.send({});
 });
 
-router.post('/reset', async function (req, res, next) {
+router.post('/reset', async function (req, res) {
   const { token, password } = req.body;
   const log = logLib.extend('post/reset');
 
@@ -70,10 +71,14 @@ router.post('/reset', async function (req, res, next) {
   res.status(401).send({ error: { message: 'Invalid token' } });
 });
 
-router.post('/signup', async function (req, res, next) {
-  const { username, password, firstName, lastName, phone } = req.body;
+router.post('/signup', async function (req, res) {
+  const { username, password, firstName, lastName, phone, gdprAccepted } = req.body;
   const log = logLib.extend('post/signup');
   log.debug('user signup=%o', username);
+
+  if (!gdprAccepted) {
+    return res.status(403).send({ error: { message: 'GDPR not accepted' } });
+  }
 
   const u = await userRepository.findActiveByUsername(username);
   if (u) {
@@ -87,6 +92,7 @@ router.post('/signup', async function (req, res, next) {
       lastName,
       phone,
       createdOn: new Date(),
+      gdprAcceptedOn: new Date(),
     };
     await userRepository.create(nu);
     emailUserSignupToAdmin(username);
@@ -96,7 +102,7 @@ router.post('/signup', async function (req, res, next) {
   res.send({});
 });
 
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
   passport.authenticate('login', { session: false }, (err: Error, user?: AuthUser) => {
     const log = logLib.extend('post/');
     log.debug('authenticating user=%o', user);

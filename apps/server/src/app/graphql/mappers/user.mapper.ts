@@ -16,7 +16,8 @@ export const UserMapper = {
       createdOn: user.createdOn,
       deletedOn: user.deletedOn,
       deletedBy: user.deletedBy,
-      lastLogin: user.lastLogin,
+      lastLoginOn: user.lastLoginOn,
+      gdprAcceptedOn: user.gdprAcceptedOn,
 
       isAdmin: user.isAdmin,
       isSuperAdmin: user.isSuperAdmin,
