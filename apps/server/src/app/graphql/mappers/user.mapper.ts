@@ -2,7 +2,7 @@ import { User } from '../../generated/graphql';
 import { UserData } from '../../models';
 
 export const UserMapper = {
-  toUser(user: UserData | null | undefined): User | null {
+  toUser(user: Omit<UserData, 'password'> | null | undefined): User | null {
     if (!user) {
       return null;
     }
