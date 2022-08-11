@@ -24,4 +24,5 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.user.changePassword(id, password),
   setAdmin: async (_parent, { id, isAdmin }, { dataSources }) =>
     dataSources.user.setAdmin(id, isAdmin),
+  declineGdpr: async (_parent, { id }, { dataSources }) => dataSources.user.declineGdpr(id),
 };

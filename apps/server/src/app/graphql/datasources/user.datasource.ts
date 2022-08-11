@@ -61,6 +61,7 @@ export class UserDataSource extends BaseDataSource {
     };
     if (input.gdprAccepted) {
       u.gdprAcceptedOn = new Date();
+      u.gdprDeclinedOn = null;
     }
     if (input.username && input.usernameOverride) {
       u.username = input.username;
@@ -101,6 +102,19 @@ export class UserDataSource extends BaseDataSource {
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
     this.userGuard.isSuperAdmin() || this.userGuard.notAuthorized();
     const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
+    return UserMapper.toUser(u);
+  }
+
+  async declineGdpr(id: ObjectId): Promise<User> {
+    this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
+    const u = await userRepository
+      .findOneAndUpdate(
+        { _id: id, gdprDeclinedOn: null },
+        { gdprDeclinedOn: new Date() },
+        { new: true }
+      )
+      .lean()
+      .exec();
     return UserMapper.toUser(u);
   }
 }

@@ -33,6 +33,7 @@ export function Modal(props: ModalProps) {
     buttonLabel = 'Ok',
     width,
     height,
+    overflow,
   } = props;
 
   if (!show) {
@@ -41,7 +42,7 @@ export function Modal(props: ModalProps) {
 
   return (
     <Layer onEsc={onClose}>
-      <Card width={width} height={height}>
+      <Card width={width} height={height} overflow={overflow}>
         <CardHeader background={'light-3'} pad="small">
           <Box width="100%" justify="between" direction="row">
             <Text size="medium" weight="bold">

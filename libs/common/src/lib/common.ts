@@ -3,6 +3,7 @@ export function common(): string {
 }
 
 export const appPath = {
+  home: '/',
   settings: '/settings',
   passwordReset: '/password-reset',
   login: '/login',
