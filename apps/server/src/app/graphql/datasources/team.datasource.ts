@@ -48,8 +48,7 @@ export class TeamDataSource extends BaseDataSource {
   async getTeam(id: ObjectId): Promise<Team> {
     const log = this.logBase.extend('getTeam');
     log.debug('getTeam %s', id.toString());
-    const team = await this.loader.load(id.toString());
-    log.debug('getTeam %s', team.id.toString());
+    const team = this.loader.load(id.toString());
     return team;
   }
 
@@ -185,7 +184,7 @@ export class TeamDataSource extends BaseDataSource {
       return [];
     }
     const coaches = await Promise.all(
-      t.coachesIds.map(async (c) => this.context.dataSources.user.getUser(c))
+      t.coachesIds.map((c) => this.context.dataSources.user.getUser(c))
     );
     return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
   }
