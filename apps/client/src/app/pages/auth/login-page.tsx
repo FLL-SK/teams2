@@ -22,12 +22,14 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuthenticate();
+
   const [error, setError] = useState<string>();
 
   const handleLogin = async ({ value }: { value: { username: string; password: string } }) => {
     const resp = await login(value.username, value.password);
     if (resp.user) {
-      navigate((location.state as { from?: string })?.from || '/');
+      const l = (location.state as { from?: string })?.from ?? appPath.home;
+      navigate(l);
       return;
     } else {
       setError('Nesprávne prihlasovacie údaje');

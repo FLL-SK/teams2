@@ -58,4 +58,6 @@ extend type Mutation {
 
   changeUserPassword(id: ID!, password: String!): User
   setAdmin(id: ID!, isAdmin: Boolean!): User
+
+  declineGdpr(id: ID!): User
 }

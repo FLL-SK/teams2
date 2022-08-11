@@ -32,3 +32,9 @@ mutation setAdmin($id: ID!, $isAdmin: Boolean!) {
     ...UserFragment
   }
 }
+
+mutation declineGdpr($id: ID!) {
+  declineGdpr(id: $id) {
+    ...UserFragment
+  }
+}
