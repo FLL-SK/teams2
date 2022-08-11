@@ -29,7 +29,7 @@ export class RegistrationDataSource extends BaseDataSource {
   private async loaderFn(ids: string[]): Promise<Registration[]> {
     const oids = ids.map((id) => new ObjectId(id));
     const rec = await registrationRepository.find({ _id: { $in: ids } }).exec();
-    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) ?? null);
     return data.map(RegistrationMapper.toRegistration.bind(this));
   }
 

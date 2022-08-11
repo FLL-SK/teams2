@@ -25,7 +25,7 @@ export class UserDataSource extends BaseDataSource {
   private async loaderFn(ids: string[]): Promise<User[]> {
     const oids = ids.map((id) => new ObjectId(id));
     const rec = await userRepository.find({ _id: { $in: ids } }).exec();
-    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) ?? null);
     return data.map(UserMapper.toUser.bind(this));
   }
 
@@ -33,9 +33,6 @@ export class UserDataSource extends BaseDataSource {
     const log = this.logBase.extend('getUser');
     log.debug('id: %s', id);
     const u = await this.loader.load(id.toString());
-    if (!u) {
-      log.warn('user not found id=%s', id);
-    }
     return u;
   }
 

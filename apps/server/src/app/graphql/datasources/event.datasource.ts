@@ -1,13 +1,7 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import {
-  EventData,
-  eventRepository,
-  RegistrationData,
-  registrationRepository,
-  userRepository,
-} from '../../models';
+import { EventData, eventRepository, registrationRepository, userRepository } from '../../models';
 import {
   User,
   Event,
@@ -39,7 +33,7 @@ export class EventDataSource extends BaseDataSource {
   private async loaderFn(ids: string[]): Promise<Event[]> {
     const oids = ids.map((id) => new ObjectId(id));
     const rec = await eventRepository.find({ _id: { $in: ids } }).exec();
-    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) ?? null);
     return data.map(EventMapper.toEvent.bind(this));
   }
 
