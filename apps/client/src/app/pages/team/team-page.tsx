@@ -129,6 +129,7 @@ export function TeamPage() {
             {(isAdmin() || isTeamCoach(id)) && !isDeleted && (
               <Button
                 label="Deaktivovať tím"
+                color="status-critical"
                 onClick={() => deleteTeam({ variables: { id: team?.id ?? '0' } })}
                 disabled={registrations.length > 0}
               />

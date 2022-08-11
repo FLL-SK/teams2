@@ -111,14 +111,26 @@ export function ProfilePage() {
                 disabled={isDeleted}
               />
             )}
+            {isAdmin() &&
+              !isUser(id) &&
+              (!profile?.isSuperAdmin || isSuperAdmin()) &&
+              !isDeleted && (
+                <Button
+                  color="status-critical"
+                  label="Deaktivovať profil"
+                  onClick={() => deleteUser({ variables: { id: profile?.id ?? '0' } })}
+                />
+              )}
           </Box>
         </Panel>
         {canEdit && (
           <Panel title="Tímy">
             <Box direction="row" wrap>
-              {profile?.coachingTeams.map((t) => (
-                <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
-              ))}
+              {profile?.coachingTeams
+                .filter((t) => !t.deletedOn)
+                .map((t) => (
+                  <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
+                ))}
               <Button
                 plain
                 icon={<Add />}
@@ -131,6 +143,18 @@ export function ProfilePage() {
             </Box>
           </Panel>
         )}
+        {canEdit && (
+          <Panel title="Deaktivované tímy">
+            <Box direction="row" wrap>
+              {profile?.coachingTeams
+                .filter((t) => !!t.deletedOn)
+                .map((t) => (
+                  <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
+                ))}
+            </Box>
+          </Panel>
+        )}
+
         {!!profile?.managingEvents.length && canEdit && (
           <Panel title="Turnaje">
             <Box direction="row" wrap>
@@ -139,18 +163,6 @@ export function ProfilePage() {
               ))}
             </Box>
           </Panel>
-        )}
-        {isAdmin() && !isUser(id) && (!profile?.isSuperAdmin || isSuperAdmin()) && (
-          <Box direction="row">
-            {!isDeleted && (
-              <Button
-                primary
-                color="status-critical"
-                label="Deaktivovať profil"
-                onClick={() => deleteUser({ variables: { id: profile?.id ?? '0' } })}
-              />
-            )}{' '}
-          </Box>
         )}
       </PanelGroup>
       <EditTeamDialog
