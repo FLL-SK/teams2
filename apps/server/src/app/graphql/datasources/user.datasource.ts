@@ -32,7 +32,11 @@ export class UserDataSource extends BaseDataSource {
   async getUser(id: ObjectId): Promise<User> {
     const log = this.logBase.extend('getUser');
     log.debug('id: %s', id);
-    return this.loader.load(id.toString());
+    const u = await this.loader.load(id.toString());
+    if (!u) {
+      log.warn('user not found id=%s', id);
+    }
+    return u;
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
