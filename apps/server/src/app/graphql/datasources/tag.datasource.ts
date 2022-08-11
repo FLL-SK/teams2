@@ -26,7 +26,7 @@ export class TagDataSource extends BaseDataSource {
   private async loaderFn(ids: string[]): Promise<Tag[]> {
     const oids = ids.map((id) => new ObjectId(id));
     const rec = await tagRepository.find({ _id: { $in: ids } }).exec();
-    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) ?? null);
     return data.map(TagMapper.toTag.bind(this));
   }
 

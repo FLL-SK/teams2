@@ -1,13 +1,7 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import {
-  registrationRepository,
-  tagRepository,
-  TeamData,
-  teamRepository,
-  userRepository,
-} from '../../models';
+import { registrationRepository, TeamData, teamRepository, userRepository } from '../../models';
 import {
   CreateTeamInput,
   CreateTeamPayload,
@@ -19,7 +13,7 @@ import {
   Tag,
   TeamFilterInput,
 } from '../../generated/graphql';
-import { RegistrationMapper, TagMapper, TeamMapper, UserMapper } from '../mappers';
+import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
 import { FilterQuery } from 'mongoose';
@@ -41,7 +35,7 @@ export class TeamDataSource extends BaseDataSource {
   private async loaderFn(ids: string[]): Promise<Team[]> {
     const oids = ids.map((id) => new ObjectId(id));
     const rec = await teamRepository.find({ _id: { $in: oids } }).exec();
-    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) ?? null);
     return data.map(TeamMapper.toTeam.bind(this));
   }
 
@@ -186,7 +180,7 @@ export class TeamDataSource extends BaseDataSource {
     const coaches = await Promise.all(
       t.coachesIds.map((c) => this.context.dataSources.user.getUser(c))
     );
-    return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
+    return coaches.filter((c) => !!c);
   }
 
   async getTeamRegistrations(teamId: ObjectId): Promise<Registration[]> {
@@ -236,6 +230,6 @@ export class TeamDataSource extends BaseDataSource {
 
     const tags = await Promise.all(t.tagIds.map((c) => this.context.dataSources.tag.getTag(c)));
 
-    return tags.filter((c) => !!c).map((c) => TagMapper.toTag(c));
+    return tags.filter((c) => !!c); // this filter should remove nulls caused by data incosistency
   }
 }
