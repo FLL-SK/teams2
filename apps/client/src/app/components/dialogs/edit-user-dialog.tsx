@@ -44,11 +44,10 @@ export function EditUserDialog(props: EditUserDialogProps) {
 
   const handleSubmit = async ({ value }: { value: EditUserDialogFields }) => {
     await onSubmit(value);
-    onClose();
   };
 
   return (
-    <Modal title={'Aktualizovať profil'} onClose={onClose} width="medium">
+    <Modal title={'Aktualizovať profil'} onClose={onClose} width="medium" overflow={'auto'}>
       <Form
         onSubmit={handleSubmit}
         messages={{ required: 'Povinný údaj' }}

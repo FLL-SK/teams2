@@ -5,7 +5,6 @@ import { userRepository } from '../../models';
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
-  await copyPhone();
 }
 
 async function copyPhone() {

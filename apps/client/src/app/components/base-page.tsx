@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Text, ResponsiveContext, Spinner, Grid } from 'grommet';
 import { MainMenu } from './main-menu';
 import styled from 'styled-components';
+import { ForceGdprDialog } from './dialogs/force-gdpr';
 
 interface BasePageProps {
   title?: string;
@@ -40,6 +41,7 @@ export function BasePage(props: BasePageProps) {
             <PageTitle title={title} />
             {loading ? <Spinner /> : <PageContent>{children}</PageContent>}
           </PageWrapper>
+          <ForceGdprDialog />
         </Grid>
       )}
     </ResponsiveContext.Consumer>
