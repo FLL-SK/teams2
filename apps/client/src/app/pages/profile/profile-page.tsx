@@ -24,6 +24,7 @@ import { LabelValueGroup } from '../../components/label-value-group';
 import { EditUserDialog } from '../../components/dialogs/edit-user-dialog';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { isNil, omit, omitBy } from 'lodash';
+import { formatDate } from '@teams2/dateutils';
 
 export function ProfilePage() {
   const { id } = useParams();
@@ -83,6 +84,18 @@ export function ProfilePage() {
             <LabelValue label="Priezvisko" value={profile?.lastName ?? '-'} />
             <LabelValue label="Email" value={canEdit ? profile?.username : xOut()} />
             <LabelValue label="Telefón" value={canEdit ? profile?.phone ?? '-' : xOut()} />
+            {isAdmin() && (
+              <LabelValue
+                label="Súhlas GDPR"
+                value={
+                  canEdit
+                    ? profile?.gdprAcceptedOn
+                      ? formatDate(profile?.gdprAcceptedOn)
+                      : '-'
+                    : xOut()
+                }
+              />
+            )}
             {data?.getUser?.isAdmin && (
               <LabelValue label="Admin" value={profile?.isAdmin ? 'Áno' : 'Nie'} />
             )}
