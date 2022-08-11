@@ -22,6 +22,7 @@ async function preSeedAdmin() {
       lastName: 'Admin',
       isAdmin: true,
       isSuperAdmin: true,
+      createdOn: new Date(),
     };
     await userRepository.create(nsa);
   } else {

@@ -17,6 +17,8 @@ type Team implements INode {
   shipTo: Address
   useBillTo: Boolean
 
+  createdOn: DateTime!
+  lastRegOn: DateTime
   deletedOn: DateTime
   deletedBy: ID
 
@@ -77,4 +79,6 @@ extend type Mutation {
 
   addTagToTeam(teamId: ID!, tagId: ID!): Team
   removeTagFromTeam(teamId: ID!, tagId: ID!): Team
+
+  recalculateTeamFields: Int
 }

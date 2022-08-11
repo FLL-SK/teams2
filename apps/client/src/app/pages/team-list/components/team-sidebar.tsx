@@ -1,3 +1,4 @@
+import { formatDate } from '@teams2/dateutils';
 import { Spinner } from 'grommet';
 import React from 'react';
 import { LabelValue } from '../../../components/label-value';
@@ -14,6 +15,8 @@ import {
   useGetNotesQuery,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
+import { CoachList } from '../../team/components/coach-list';
+import { PanelTeamCoaches } from '../../team/components/panel-team-coaches';
 
 interface TeamSidebarProps {
   team?: TeamListFragmentFragment;
@@ -42,10 +45,18 @@ export function TeamSidebar(props: TeamSidebarProps) {
     <ClosableSidebar onClose={onClose} show={!!team}>
       <SidebarPanelGroup title="Team" gap="medium">
         <SidebarPanel>
-          <LabelValueGroup direction="column" gap="small">
+          <LabelValueGroup direction="column" gap="small" labelWidth="200px">
             <LabelValue label="Názov" value={team.name} />
             <LabelValue label="Zriaďovateľ" value={fullAddress(team.address)} />
+            <LabelValue label="Vytvorený" value={formatDate(team.createdOn)} />
+            <LabelValue
+              label="Posledná registrácia"
+              value={team.lastRegOn ? formatDate(team.lastRegOn) : '-'}
+            />
           </LabelValueGroup>
+        </SidebarPanel>
+        <SidebarPanel label="Tréneri">
+          <CoachList canEdit={false} coaches={team.coaches ?? []} />
         </SidebarPanel>
         <SidebarPanel label="Štítky">
           <TagList

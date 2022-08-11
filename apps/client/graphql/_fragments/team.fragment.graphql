@@ -13,6 +13,8 @@ fragment TeamBasicFragment on Team {
     ...AddressFragment
   }
 
+  createdOn
+  lastRegOn
   deletedOn
   deletedBy
 }

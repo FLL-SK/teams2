@@ -20,7 +20,7 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
   const u: Pick<UserData, 'username'> = {
     username: user.username,
   };
-  userRepository.findOneAndUpdate(u, { lastLogin: new Date() });
+  userRepository.findOneAndUpdate(u, { lastLogin: new Date() }).exec();
   const token = createToken(user);
 
   res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days
@@ -86,6 +86,7 @@ router.post('/signup', async function (req, res, next) {
       firstName,
       lastName,
       phone,
+      createdOn: new Date(),
     };
     await userRepository.create(nu);
     emailUserSignupToAdmin(username);

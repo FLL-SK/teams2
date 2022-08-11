@@ -32,7 +32,7 @@ export function CoachList(props: CoachListProps) {
                 {formatFullName(m.firstName, m.lastName)}
               </Anchor>
             </Box>
-            <Box width={{ min: '350px' }} direction="row" gap="medium">
+            <Box width={{ min: '350px' }} direction="row" gap="medium" wrap>
               <Text size="small">{m.username}</Text>
               <Text size="small">{m.phone}</Text>
             </Box>
