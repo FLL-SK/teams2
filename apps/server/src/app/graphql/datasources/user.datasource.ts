@@ -32,7 +32,11 @@ export class UserDataSource extends BaseDataSource {
   async getUser(id: ObjectId): Promise<User> {
     const log = this.logBase.extend('getUser');
     log.debug('id: %s', id);
-    return this.loader.load(id.toString());
+    const u = await this.loader.load(id.toString());
+    if (!u) {
+      log.warn('user not found id=%s', id);
+    }
+    return u;
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
@@ -46,10 +50,6 @@ export class UserDataSource extends BaseDataSource {
     }
     const users = await userRepository.find(q).sort({ username: 1 }).lean().exec();
     return users.map(UserMapper.toUser);
-  }
-
-  async getUserByUsername(username?: string): Promise<User> {
-    return UserMapper.toUser(await userRepository.findOne({ username }).lean().exec());
   }
 
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
@@ -80,11 +80,6 @@ export class UserDataSource extends BaseDataSource {
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
     const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
-    return UserMapper.toUser(u);
-  }
-
-  static async getUserByUsername(username: string): Promise<User> {
-    const u = await userRepository.findByUsername(username);
     return UserMapper.toUser(u);
   }
 

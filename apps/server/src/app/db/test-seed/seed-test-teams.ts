@@ -1,5 +1,5 @@
 import {
-  eventRepository,
+  AddressData,
   NoteData,
   noteRepository,
   TeamData,
@@ -13,6 +13,20 @@ type TestSeedData = Omit<TeamData, 'tagIds'> & {
   coaches?: string[];
   notes?: { user: string; createdOffset: number; text: string }[];
 };
+
+const createAddres = (prefix: string, team: string, email: string): AddressData => ({
+  name: `${team} ${prefix} name`,
+  street: `${team} ${prefix} street`,
+  city: `${team} ${prefix} city`,
+  zip: `${team} ${prefix} Zip`,
+  countryCode: `${team} ${prefix} Country`,
+  companyNumber: `${team} ${prefix} Company Number`,
+  taxNumber: `${team} ${prefix} Tax Number`,
+  vatNumber: `${team} ${prefix} VAT Number`,
+  contactName: `${team} ${prefix} Contact Name`,
+  email: email,
+  phone: `${team} ${prefix} Phone`,
+});
 
 export const seedTestTeamsData: TestSeedData[] = [
   {
@@ -46,87 +60,22 @@ export const seedTestTeamsData: TestSeedData[] = [
         text: 'Note 5 ergeg weu pouiew  ep euepu',
       },
     ],
-    address: {
-      name: 'Adr name',
-      street: 'Adre street',
-      city: 'Adr city',
-      zip: 'Adr Zip',
-      countryCode: 'Adr Country',
-      contactName: 'Adr Contact Name',
-      email: 'devtest+team1adr@fll.sk',
-      phone: 'Adr Phone',
-    },
-
-    billTo: {
-      name: 'Bill To',
-      street: 'Bill To Street',
-      city: 'Bill To City',
-      zip: 'Bill To Zip',
-      countryCode: 'Bill To Country',
-      companyNumber: 'Bill To Company Number',
-      vatNumber: 'Bill To VAT Number',
-      taxNumber: 'Bill To Tax Number',
-      contactName: 'Bill To Contact Name',
-      email: 'devtest+team1billTo@fll.sk',
-      phone: 'Bill To Phone',
-    },
-    shipTo: {
-      name: 'Ship To',
-      street: 'Ship To Street',
-      city: 'Ship To City',
-      zip: 'Ship To Zip',
-      countryCode: 'Ship To Country',
-      companyNumber: 'Ship To Company Number',
-      vatNumber: 'Ship To VAT Number',
-      taxNumber: 'Ship To Tax Number',
-      contactName: 'Ship To Contact Name',
-      email: 'devtest+team1shipTo@fll.sk',
-      phone: 'Ship To Phone',
-    },
+    address: createAddres('ad', 'Team1', 'devtest+team1adr@fll.sk'),
+    billTo: createAddres('bt', 'Team1', 'devtest+team1bill@fll.sk'),
+    shipTo: createAddres('sh', 'Team1', 'devtest+team1ship@fll.sk'),
   },
   {
     name: 'Team2',
     coachesIds: [],
     coaches: ['devtest+coach2@fll.sk', 'devtest+coach3@fll.sk'],
-    address: {
-      name: '2 Adr name',
-      street: '2 Adre street',
-      city: '2 Adr city',
-      zip: '2 Adr Zip',
-      countryCode: '2 Adr Country',
-      contactName: '2 Adr Contact Name',
-      email: 'devtest+team2adr@fll.sk',
-      phone: '2 Adr Phone',
-    },
-    billTo: {
-      name: '2 Bill To',
-      street: '2 Bill To Street',
-      city: '2 Bill To City',
-      zip: '2 Bill To Zip',
-      countryCode: '2 Bill To Country',
-      companyNumber: '2 Bill To Company Number',
-      vatNumber: '2 Bill To VAT Number',
-      taxNumber: '2 Bill To Tax Number',
-      contactName: '2 Bill To Contact Name',
-      email: 'devtest+team2billto@fll.sk',
-      phone: '2 Bill To Phone',
-    },
+    address: createAddres('ad', 'Team2', 'devtest+team2adr@fll.sk'),
+    billTo: createAddres('bt', 'Team2', 'devtest+team2bill@fll.sk'),
   },
   {
     name: 'Team3',
     coachesIds: [],
     coaches: ['devtest+coach3@fll.sk'],
-
-    address: {
-      name: '3 Adr name',
-      street: '3 Adre street',
-      city: '3 Adr city',
-      zip: '3 Adr Zip',
-      countryCode: '3 Adr Country',
-      contactName: '3 Adr Contact Name',
-      email: 'devtest+team3adr@fll.sk',
-      phone: '3 Adr Phone',
-    },
+    address: createAddres('ad', 'Team3', 'devtest+team3adr@fll.sk'),
   },
 ];
 
@@ -144,7 +93,7 @@ export async function seedTestTeams() {
     };
 
     for (const username of d.coaches) {
-      const u = await userRepository.findOne({ username });
+      const u = await userRepository.findByUsername(username);
       if (u) {
         t.coachesIds.push(u._id);
       }
@@ -176,5 +125,18 @@ export async function seedTestTeams() {
         }
       }
     }
+  }
+
+  // generate teams
+  const u = await userRepository.findByUsername('devtest+coach3@fll.sk');
+  for (let i = 100; i <= 500; i++) {
+    const t: TeamData = {
+      name: `Team${i}`,
+      coachesIds: [u._id],
+      tagIds: [],
+      address: createAddres('ad', `Team${i}`, `devtest-team${i}@fll.sk`),
+    };
+    const nu = await teamRepository.create(t);
+    log.debug(`Team created name=%s id=%s`, nu.name, nu._id);
   }
 }

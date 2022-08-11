@@ -31,8 +31,12 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async getTag(id: ObjectId): Promise<Tag> {
+    const log = this.logBase.extend('getTag');
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-    const tag = await this.loader.load(id.toString());
+    const tag = this.loader.load(id.toString());
+    if (!tag) {
+      log.warn('getTag %s not found', id.toString());
+    }
     return tag;
   }
 
