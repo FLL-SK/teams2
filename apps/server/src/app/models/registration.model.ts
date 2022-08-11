@@ -80,7 +80,7 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
 });
 
 schema.index({ eventId: 1, teamId: 1 });
-schema.index({ teamId: 1 });
+schema.index({ teamId: 1, createdOn: -1 });
 schema.index({ programId: 1 });
 
 schema.static('clean', function () {

@@ -15,8 +15,10 @@ type User implements INode {
   isAdmin: Boolean
   isSuperAdmin: Boolean
 
+  createdOn: DateTime!
   deletedOn: DateTime
   deletedBy: ID!
+  lastLogin: DateTime
 
   coachingTeams: [Team!]!
   managingEvents: [Event!]!

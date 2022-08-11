@@ -30,4 +30,7 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.team.addTagToTeam(teamId, tagId),
   removeTagFromTeam: async (_parent, { teamId, tagId }, { dataSources }) =>
     dataSources.team.removeTagFromTeam(teamId, tagId),
+
+  recalculateTeamFields: async (_parent, _args, { dataSources }) =>
+    dataSources.team.recalculateTeamStats(),
 };

@@ -55,3 +55,7 @@ mutation removeTagFromTeam($teamId: ID!, $tagId: ID!) {
     ...TeamFragment
   }
 }
+
+mutation recalculateTeamFields {
+  recalculateTeamFields
+}

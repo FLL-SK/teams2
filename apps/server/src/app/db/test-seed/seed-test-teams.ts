@@ -9,7 +9,7 @@ import {
 import { logger } from '@teams2/logger';
 import { addDays } from 'date-fns';
 
-type TestSeedData = Omit<TeamData, 'tagIds'> & {
+type TestSeedData = Omit<TeamData, 'tagIds' | 'createdOn'> & {
   coaches?: string[];
   notes?: { user: string; createdOffset: number; text: string }[];
 };
@@ -90,6 +90,7 @@ export async function seedTestTeams() {
       shipTo: d.shipTo,
       address: d.address,
       tagIds: [],
+      createdOn: new Date(),
     };
 
     for (const username of d.coaches) {
@@ -135,6 +136,7 @@ export async function seedTestTeams() {
       coachesIds: [u._id],
       tagIds: [],
       address: createAddres('ad', `Team${i}`, `devtest-team${i}@fll.sk`),
+      createdOn: new Date(),
     };
     const nu = await teamRepository.create(t);
     log.debug(`Team created name=%s id=%s`, nu.name, nu._id);

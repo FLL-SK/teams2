@@ -18,6 +18,8 @@ export const TeamMapper = {
       shipTo: AddressMapper.toAddress(team.shipTo),
       useBillTo: team.useBillTo,
 
+      createdOn: team.createdOn,
+      lastRegOn: team.lastRegOn,
       deletedOn: team.deletedOn,
       deletedBy: team.deletedBy,
 
