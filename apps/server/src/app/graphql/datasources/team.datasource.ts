@@ -41,7 +41,7 @@ export class TeamDataSource extends BaseDataSource {
   private async loaderFn(ids: string[]): Promise<Team[]> {
     const oids = ids.map((id) => new ObjectId(id));
     const rec = await teamRepository.find({ _id: { $in: oids } }).exec();
-    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) || null);
+    const data = oids.map((id) => rec.find((e) => e._id.equals(id)) ?? null);
     return data.map(TeamMapper.toTeam.bind(this));
   }
 
@@ -177,7 +177,7 @@ export class TeamDataSource extends BaseDataSource {
       return [];
     }
 
-    const t = await teamRepository.findById(teamId).lean().exec();
+    const t = await this.getTeam(teamId);
     if (!t) {
       throw new Error('Team not found');
     }
@@ -185,7 +185,7 @@ export class TeamDataSource extends BaseDataSource {
       return [];
     }
     const coaches = await Promise.all(
-      t.coachesIds.map(async (c) => userRepository.findById(c).lean().exec())
+      t.coachesIds.map(async (c) => this.context.dataSources.user.getUser(c))
     );
     return coaches.filter((c) => !!c).map((c) => UserMapper.toUser(c));
   }
@@ -227,7 +227,7 @@ export class TeamDataSource extends BaseDataSource {
     if (!this.userGuard.isAdmin()) {
       return [];
     }
-    const t = await teamRepository.findById(teamId).lean().exec();
+    const t = await this.getTeam(teamId);
     if (!t) {
       throw new Error('Team not found');
     }
@@ -236,7 +236,7 @@ export class TeamDataSource extends BaseDataSource {
     }
 
     const tags = await Promise.all(
-      t.tagIds.map(async (c) => tagRepository.findById(c).lean().exec())
+      t.tagIds.map(async (c) => this.context.dataSources.tag.getTag(c))
     );
 
     return tags.filter((c) => !!c).map((c) => TagMapper.toTag(c));
