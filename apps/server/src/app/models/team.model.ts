@@ -13,6 +13,8 @@ export interface TeamData {
   billTo?: AddressData;
   shipTo?: AddressData;
   useBillTo?: boolean;
+  createdOn: Date;
+  lastRegOn?: Date;
   deletedOn?: Date;
   deletedBy?: ObjectId;
 }
@@ -30,8 +32,10 @@ export interface TeamModel extends Model<TeamData> {
 const schema = new Schema<TeamData, TeamModel>(
   {
     name: { type: Types.String, required: true },
+    createdOn: { type: Types.Date, default: Date.now() },
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
+    lastRegOn: { type: Types.Date },
     coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
     tagIds: [{ type: Types.ObjectId, ref: 'Tag', default: [] }],
     address: { type: addressSchema },

@@ -11,6 +11,7 @@ export interface UserData {
   firstName: string;
   lastName: string;
   phone?: string;
+  createdOn: Date;
   deletedOn?: Date;
   deletedBy?: ObjectId;
   password: string;
@@ -36,6 +37,7 @@ const schema = new Schema<UserData, UserModel>(
     lastName: { type: Types.String },
     password: { type: Types.String, required: true }, // hashed password
     phone: { type: Types.String },
+    createdOn: { type: Types.Date, default: new Date() },
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
     isAdmin: { type: Types.Boolean },

@@ -3,7 +3,7 @@ import { logger } from '@teams2/logger';
 
 export const admin_username = 'devtest+admin@fll.sk';
 
-export const seedTestUsersData: UserData[] = [
+export const seedTestUsersData: Omit<UserData, 'createdOn'>[] = [
   {
     username: admin_username,
     password: 'admin',
@@ -76,6 +76,7 @@ export async function seedTestUsers() {
       firstName: d.firstName,
       lastName: d.lastName,
       phone: d.phone,
+      createdOn: new Date(),
     };
 
     const nu = await userRepository.create(u);

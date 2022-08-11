@@ -16,7 +16,7 @@ import {
 import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import * as Dataloader from 'dataloader';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 
 export class TeamDataSource extends BaseDataSource {
@@ -77,6 +77,7 @@ export class TeamDataSource extends BaseDataSource {
         phone: input.phone,
       },
       coachesIds: [currentUserId],
+      createdOn: new Date(),
     };
     log.debug('creating team %o', t);
     const nu = await teamRepository.create(t);
@@ -231,5 +232,20 @@ export class TeamDataSource extends BaseDataSource {
     const tags = await Promise.all(t.tagIds.map((c) => this.context.dataSources.tag.getTag(c)));
 
     return tags.filter((c) => !!c); // this filter should remove nulls caused by data incosistency
+  }
+
+  async recalculateTeamStats(): Promise<number> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    const teams = await teamRepository.find({ createdOn: null }).exec();
+    for (const t of teams) {
+      const tu: UpdateQuery<TeamData> = {};
+      const r = await registrationRepository.find({ teamId: t._id }).sort({ createdOn: -1 }).exec();
+      if (r.length > 0) {
+        tu.lastRegOn = r[0].createdOn;
+      }
+      await teamRepository.updateOne({ _id: t._id }, tu).exec();
+    }
+
+    return teams.length;
   }
 }

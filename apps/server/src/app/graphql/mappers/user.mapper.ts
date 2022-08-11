@@ -13,8 +13,11 @@ export const UserMapper = {
       firstName: user.firstName ?? '',
       lastName: user.lastName ?? '',
 
+      createdOn: user.createdOn,
       deletedOn: user.deletedOn,
       deletedBy: user.deletedBy,
+      lastLogin: user.lastLogin,
+
       isAdmin: user.isAdmin,
       isSuperAdmin: user.isSuperAdmin,
 
