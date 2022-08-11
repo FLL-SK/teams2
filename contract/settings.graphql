@@ -13,6 +13,7 @@ type Settings implements INode {
   organization: Address!
   sysEmail: String
   billingEmail: String
+  privacyPolicyUrl: String
 }
 
 input UpdateSettingsInput {
@@ -20,6 +21,7 @@ input UpdateSettingsInput {
   organization: AddressInput
   sysEmail: String
   billingEmail: String
+  privacyPolicyUrl: String
 }
 
 extend type Query {

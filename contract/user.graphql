@@ -18,7 +18,8 @@ type User implements INode {
   createdOn: DateTime!
   deletedOn: DateTime
   deletedBy: ID!
-  lastLogin: DateTime
+  lastLoginOn: DateTime
+  gdprAcceptedOn: DateTime
 
   coachingTeams: [Team!]!
   managingEvents: [Event!]!
@@ -29,6 +30,9 @@ input UpdateUserInput {
   firstName: String
   lastName: String
   phone: String
+  username: String
+  usernameOverride: Boolean
+  gdprAccepted: Boolean
 }
 
 type UpdateUserPayload implements IMutationPayload {

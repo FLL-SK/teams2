@@ -50,11 +50,13 @@ interface AuthContextProviderProps {
 }
 
 export interface SignupDataType {
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   username: string;
   password: string;
-  phone?: string;
+  passwordConfirm: string;
+  phone: string;
+  gdprAccepted: boolean;
 }
 
 const getToken = () => localStorage.getItem('token');
@@ -195,6 +197,9 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   const signup = useCallback(
     async (signupData: SignupDataType) => {
       const url = new URL(authApiUrl);
+      if (!signupData.gdprAccepted) {
+        return false;
+      }
       url.pathname += '/signup';
       try {
         const response = await postAuth(url.toString(), { ...signupData });
