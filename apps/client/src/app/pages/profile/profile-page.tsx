@@ -101,7 +101,7 @@ export function ProfilePage() {
               <Button
                 label="Zruš práva admin"
                 onClick={() => setAdmin({ variables: { id, isAdmin: false } })}
-                disabled={!!profile?.isSuperAdmin && !isUser(id) && !isSuperAdmin()}
+                disabled={!!profile?.isSuperAdmin || isUser(id) || !isSuperAdmin()}
               />
             )}
             {(isAdmin() || isUser(profile?.id ?? '')) && (
