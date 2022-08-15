@@ -84,6 +84,7 @@ extend type Mutation {
   createEvent(input: CreateEventInput!): CreateEventPayload!
   updateEvent(id: ID!, input: UpdateEventInput!): UpdateEventPayload!
   deleteEvent(id: ID!): Event
+  undeleteEvent(id: ID!): Event
 
   registerTeamForEvent(eventId: ID!, teamId: ID!): RegisterTeamPayload!
   cancelEventRegistration(id: ID!): UnregisterTeamPayload!

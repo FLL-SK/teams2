@@ -1,14 +1,18 @@
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Markdown, Text } from 'grommet';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { EditEventDialog } from '../../../components/dialogs/edit-event-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { Modal } from '../../../components/modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
-import { EventFragmentFragment, useUpdateEventMutation } from '../../../generated/graphql';
+import {
+  EventFragmentFragment,
+  useDeleteEventMutation,
+  useUpdateEventMutation,
+} from '../../../generated/graphql';
 
 interface PanelEventDetailsProps {
   event?: EventFragmentFragment | null;
@@ -24,6 +28,18 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
   const [updateEvent] = useUpdateEventMutation({
     onError: (e) => notify.error('Nepodarilo sa aktualizovať turnaj', e.message),
   });
+
+  const [deleteEvent] = useDeleteEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa odstrániť turnaj.', e.message),
+  });
+
+  const handleDeleteEvent = useCallback(() => {
+    if (event?.registrationsCount === 0) {
+      deleteEvent({ variables: { id: event?.id } });
+    } else {
+      notify.error('Nie je možné vymazať turnaj, na ktorý je prihlásený jeden alebo viac tímov.');
+    }
+  }, [deleteEvent, event, notify]);
 
   if (!event) {
     return null;
@@ -64,11 +80,17 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
         </LabelValueGroup>
 
         {canEdit && (
-          <Box direction="row">
+          <Box direction="row" gap="small">
             <Button
               label="Zmeniť"
               onClick={() => setShowEventEditDialog(true)}
               disabled={!canEdit}
+            />
+            <Button
+              label="Odstrániť"
+              color="status-critical"
+              onClick={handleDeleteEvent}
+              disabled={!canEdit || !!event.deletedOn}
             />
           </Box>
         )}

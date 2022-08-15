@@ -29,6 +29,7 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   updateEvent: (_parent, { id, input }, { dataSources }) =>
     dataSources.event.updateEvent(id, input),
   deleteEvent: (_parent, { id }, { dataSources }) => dataSources.event.deleteEvent(id),
+  undeleteEvent: (_parent, { id }, { dataSources }) => dataSources.event.undeleteEvent(id),
 
   registerTeamForEvent: (_parent, { eventId, teamId }, context) =>
     registerTeamToEvent(teamId, eventId, context),
