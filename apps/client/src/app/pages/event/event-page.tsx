@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
@@ -9,6 +9,7 @@ import {
   useAddEventManagerMutation,
   useGetEventQuery,
   useRemoveEventManagerMutation,
+  useUndeleteEventMutation,
 } from '../../generated/graphql';
 
 import { useParams } from 'react-router-dom';
@@ -30,6 +31,9 @@ export function EventPage() {
     refetch,
   } = useGetEventQuery({ variables: { id: id ?? '0' } });
 
+  const [undeleteEvent] = useUndeleteEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
+  });
   const [addManager] = useAddEventManagerMutation({
     onError: (e) => notify.error('Nepodarilo sa pridať manažéra turnaja.', e.message),
   });
@@ -39,6 +43,7 @@ export function EventPage() {
 
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
+  const isDeleted = !!event?.deletedOn;
 
   if (!id || (eventError && !eventLoading)) {
     return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
@@ -47,6 +52,18 @@ export function EventPage() {
   return (
     <BasePage title="Turnaj" loading={eventLoading}>
       <Box gap="medium">
+        {isDeleted && (
+          <Box direction="row" gap="medium" align="center">
+            <Text color="status-error">Turnaj bol zrušený.</Text>
+            {isAdmin() && (
+              <Button
+                size="small"
+                label="Obnoviť turnaj"
+                onClick={() => undeleteEvent({ variables: { id: event?.id ?? '0' } })}
+              />
+            )}
+          </Box>
+        )}
         <PanelEventDetails event={event} canEdit={canEdit} />
         {canEdit && <PanelEventFees event={event} canEdit={canEdit} onChange={refetch} />}
         <PanelEventTeams event={event} canEdit={canEdit} />

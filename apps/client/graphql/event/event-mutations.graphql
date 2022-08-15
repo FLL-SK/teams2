@@ -4,6 +4,12 @@ mutation deleteEvent($id: ID!) {
   }
 }
 
+mutation undeleteEvent($id: ID!) {
+  undeleteEvent(id: $id) {
+    ...EventFragment
+  }
+}
+
 mutation createEvent($input: CreateEventInput!) {
   createEvent(input: $input) {
     event {
