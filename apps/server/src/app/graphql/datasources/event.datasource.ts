@@ -1,7 +1,13 @@
 import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
-import { EventData, eventRepository, registrationRepository, userRepository } from '../../models';
+import {
+  EventData,
+  eventRepository,
+  RegistrationData,
+  registrationRepository,
+  userRepository,
+} from '../../models';
 import {
   User,
   Event,
@@ -50,6 +56,7 @@ export class EventDataSource extends BaseDataSource {
     }
     if (filter.isActive) {
       q.date = { $not: { $lt: new Date() } };
+      q.deletedOn = null;
     }
     log.debug('filter=%o', q);
 
@@ -76,12 +83,21 @@ export class EventDataSource extends BaseDataSource {
 
   async deleteEvent(id: ObjectId): Promise<Event> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-    const teams = await registrationRepository.find({ eventId: id }).lean().exec();
+    const tq: Partial<RegistrationData> = { eventId: id, canceledOn: null };
+    const teams = await registrationRepository.find(tq).lean().exec();
     if (teams.length > 0) {
       return null;
     }
-    const u = await eventRepository.findByIdAndDelete(id).exec();
-    return EventMapper.toEvent(u);
+    const u: Partial<EventData> = { deletedOn: new Date(), deletedBy: this.context.user._id };
+    const ne = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+    return EventMapper.toEvent(ne);
+  }
+
+  async undeleteEvent(id: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    const u: Partial<EventData> = { deletedOn: null, deletedBy: this.context.user._id };
+    const ne = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+    return EventMapper.toEvent(ne);
   }
 
   async getEventsManagedBy(managerId: ObjectId): Promise<Event[]> {
