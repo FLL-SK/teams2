@@ -59,10 +59,10 @@ export function RegisterPage() {
   const { notify } = useNotification();
 
   const [updateTeam] = useUpdateTeamMutation({
-    onError: () => notify.error('Nepodarilo sa aktualizovať tím.'),
+    onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
   });
   const [registerTeam] = useRegisterTeamForEventMutation({
-    onError: () => notify.error('Nepodarilo sa registrovať tím.'),
+    onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
   const canRegister = isAdmin() || isTeamCoach(teamId);
@@ -124,9 +124,10 @@ export function RegisterPage() {
           <RegisterBillToAddress
             team={team}
             details={registerDetails}
-            onSubmit={(a) => {
-              updateTeam({ variables: { id: teamId, input: { billTo: a } } });
-              setRegisterDetails({ ...registerDetails, billTo: a });
+            onSubmit={async (a) => {
+              console.log('billto', a);
+              await updateTeam({ variables: { id: teamId, input: { billTo: { ...a } } } });
+              setRegisterDetails({ ...registerDetails, billTo: { ...a } });
             }}
             nextStep={() => setStep('shipto')}
             prevStep={() => setStep('select-event')}
@@ -137,7 +138,7 @@ export function RegisterPage() {
           <RegisterShipToAddress
             team={team}
             details={registerDetails}
-            onSubmit={(a, ub) => {
+            onSubmit={async (a, ub) => {
               const u: UpdateTeamInput = { useBillTo: ub };
               if (a) {
                 u.shipTo = a;
@@ -145,8 +146,12 @@ export function RegisterPage() {
               if (ub) {
                 u.shipTo = registerDetails.billTo;
               }
-              updateTeam({ variables: { id: teamId, input: u } });
-              setRegisterDetails({ ...registerDetails, shipTo: a, useBillTo: ub });
+              await updateTeam({ variables: { id: teamId, input: u } });
+              setRegisterDetails({
+                ...registerDetails,
+                shipTo: a ? { ...a } : undefined,
+                useBillTo: ub,
+              });
             }}
             nextStep={() => setStep('review')}
             prevStep={() => setStep('billto')}
