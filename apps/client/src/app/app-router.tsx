@@ -17,6 +17,7 @@ import { TeamPage } from './pages/team/team-page';
 import { UserListPage } from './pages/user-list/user-list-page';
 import { RegistrationsPage } from './pages/registrations/registrations-page';
 import { RegistrationPage } from './pages/registration/registration-page';
+import { EventsPage } from './pages/events/events-page';
 
 export function AppRouter() {
   return (
@@ -90,6 +91,14 @@ export function AppRouter() {
         element={
           <RequireAuth>
             <RegistrationsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={appPath.events}
+        element={
+          <RequireAuth>
+            <EventsPage />
           </RequireAuth>
         }
       />
