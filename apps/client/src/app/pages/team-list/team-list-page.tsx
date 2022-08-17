@@ -60,7 +60,7 @@ export function TeamListPage() {
         text: `${t.name.toLocaleLowerCase()} ${t.address.city.toLocaleLowerCase()}`,
         value: t,
       })),
-    [teamsData]
+    [teamsData?.getTeams]
   );
 
   useEffect(() => {

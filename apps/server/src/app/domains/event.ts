@@ -49,21 +49,10 @@ export async function registerTeamToEvent(
 
   const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
   const coachEmails = coaches.map((c) => c.username);
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event.id.toString());
 
-  emailTeamRegisteredToCoach(
-    coachEmails,
-    team.name,
-    event.name,
-    program.name,
-    getServerConfig().clientAppRootUrl + appPath.event(event.id.toString())
-  );
-  emailTeamRegisteredToEventManagers(
-    mgrEmails,
-    team.name,
-    event.name,
-    program.name,
-    getServerConfig().clientAppRootUrl + appPath.event(event.id.toString())
-  );
+  emailTeamRegisteredToCoach(coachEmails, team.name, event.name, program.name, eventUrl);
+  emailTeamRegisteredToEventManagers(mgrEmails, team.name, event.name, program.name, eventUrl);
 
   return { event, team };
 }

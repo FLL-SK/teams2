@@ -11,8 +11,8 @@ import {
   TeamListFragmentFragment,
   useAddTagToTeamMutation,
   useCreateNoteMutation,
-  useDeleteTagMutation,
   useGetNotesQuery,
+  useRemoveTagFromTeamMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { CoachList } from '../../team/components/coach-list';
@@ -33,7 +33,7 @@ export function TeamSidebar(props: TeamSidebarProps) {
     variables: { type: 'team', ref: team?.id ?? '0' },
   });
 
-  const [removeTag] = useDeleteTagMutation();
+  const [removeTag] = useRemoveTagFromTeamMutation();
   const [addTag] = useAddTagToTeamMutation();
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
@@ -60,7 +60,7 @@ export function TeamSidebar(props: TeamSidebarProps) {
         <SidebarPanel label="Štítky">
           <TagList
             tags={team.tags}
-            onRemove={(id) => removeTag({ variables: { id } })}
+            onRemove={(tagId) => removeTag({ variables: { teamId: team.id, tagId } })}
             onAdd={(tag) => addTag({ variables: { teamId: team.id, tagId: tag.id } })}
           />
         </SidebarPanel>

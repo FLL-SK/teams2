@@ -9,6 +9,7 @@ import {
 } from '../generated/graphql';
 
 interface SelectTagProps {
+  selected?: string[]; // already selected tags ids
   onSelect: (t: TagFragmentFragment) => void;
   onClose?: () => void;
   disabled?: boolean;
@@ -20,16 +21,16 @@ const createTagIndicator = 'z';
 const defaultColor: TagColorType = 'TC1';
 
 export function SelectTag(props: SelectTagProps) {
-  const { onSelect, onClose, disabled, readonly, defaultValue } = props;
-  const { data, loading } = useGetTagsQuery();
+  const { onSelect, onClose, disabled, readonly, defaultValue, selected } = props;
+  const { data, loading, refetch } = useGetTagsQuery();
   const [options, setOptions] = useState<TagFragmentFragment[]>([]);
-  const [createTag] = useCreateTagMutation();
+  const [createTag] = useCreateTagMutation({ onCompleted: () => refetch() });
 
   useEffect(() => {
     if (!loading) {
-      setOptions([...(data?.getTags ?? [])]);
+      setOptions((data?.getTags ?? []).filter((t) => !selected?.includes(t.id)));
     }
-  }, [loading, data]);
+  }, [loading, data, selected]);
 
   const onSelectPrim = async (t: TagFragmentFragment) => {
     if (t.id === createTagIndicator) {

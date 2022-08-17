@@ -1,14 +1,14 @@
-import { Box, Text } from 'grommet';
+import { Box, Paragraph } from 'grommet';
 import React from 'react';
 import { BasePage } from '../../components/base-page';
 import { EventList } from '../../components/event-list';
 import { useGetEventsQuery } from '../../generated/graphql';
 
-interface HomePageProps {
+interface EventsPageProps {
   responsiveSize?: string;
 }
 
-export function HomePage(props: HomePageProps) {
+export function EventsPage(props: EventsPageProps) {
   const { data: eventsData, loading: eventsLoading } = useGetEventsQuery({
     variables: { filter: { isActive: true } },
   });
@@ -18,7 +18,7 @@ export function HomePage(props: HomePageProps) {
     <BasePage title="Turnaje" loading={eventsLoading}>
       {events.length === 0 && (
         <Box pad="medium">
-          <Text>Momentálne nie sú dostupné žiadne turnaje.</Text>
+          <Paragraph>Aktuálne ešte nie sú aktívne žiadne turnaje.</Paragraph>
         </Box>
       )}
       <EventList events={events} />

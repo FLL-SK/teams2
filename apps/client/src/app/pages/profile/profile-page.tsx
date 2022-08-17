@@ -3,7 +3,7 @@ import { appPath } from '@teams2/common';
 import { Box, Button, Text } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import { LabelValue } from '../../components/label-value';
@@ -23,14 +23,14 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { EditUserDialog } from '../../components/dialogs/edit-user-dialog';
 import { useNotification } from '../../components/notifications/notification-provider';
-import { isNil, omit, omitBy } from 'lodash';
+import { isNil, omitBy } from 'lodash';
 import { formatDate } from '@teams2/dateutils';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { notify } = useNotification();
-  const { isAdmin, isUser, xOut, isSuperAdmin } = useAppUser();
+  const { isAdmin, isUser, xOut, isSuperAdmin, user } = useAppUser();
   const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
 
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
@@ -54,6 +54,9 @@ export function ProfilePage() {
     onError: (e) => notify.error('Nepodarilo sa opätovne aktivovať profil.', e.message),
   });
 
+  if (!id && user?.id) {
+    return <Navigate to={appPath.profile(user?.id)} />;
+  }
   if (!id || (error && !loading)) {
     return <ErrorPage title="Chyba pr získavaní údajov profilu." />;
   }
