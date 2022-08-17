@@ -38,7 +38,7 @@ export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
 
   return (
     <Box gap="medium">
-      <Text>Zadajte fakturačnú adresu a kontaktnú osobu pre zaslanie a úhradu faktúry.</Text>
+      <Text>Zadajte fakturačnú adresu.</Text>
       <Form
         onChange={setFormData}
         onReset={() => setFormData(emptyForm)}
@@ -49,7 +49,7 @@ export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
         value={formData}
         messages={{ required: 'Povinný údaj' }}
       >
-        <AddressForm />
+        <AddressForm hideContact />
 
         <Box justify="between" direction="row">
           <Button label="Späť" onClick={prevStep} />
