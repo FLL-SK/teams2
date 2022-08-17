@@ -49,7 +49,7 @@ export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
         value={formData}
         messages={{ required: 'Povinný údaj' }}
       >
-        <AddressForm />
+        <AddressForm hideContact />
 
         <Box justify="between" direction="row">
           <Button label="Späť" onClick={prevStep} />
