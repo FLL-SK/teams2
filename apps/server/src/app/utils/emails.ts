@@ -102,6 +102,20 @@ export function emailEventChangedToEventManagers(
   emails.forEach((m) => emailMessage(m, subject, title, msg));
 }
 
+export function emailUserAcceptedGdprToAdmin(userEmail: string) {
+  const subject = `Akceptované GDPR ${userEmail}`;
+  const title = subject;
+  const msg = `Používateľ ${userEmail} akceptoval GDPR.`;
+  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+}
+
+export function emailUserRejectedGdprToAdmin(userEmail: string) {
+  const subject = `Odmietnuté GDPR ${userEmail}`;
+  const title = subject;
+  const msg = `Používateľ ${userEmail} odmietol GDPR.`;
+  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+}
+
 //TODO
 // notify new program manager -> admin
 // notify new event manager -> program mgr, admin
