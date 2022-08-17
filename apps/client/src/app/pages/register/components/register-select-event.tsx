@@ -21,6 +21,7 @@ export function RegisterSelectEvent(props: RegisterSelectEventProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const { data, loading } = useGetEventsQuery({
     variables: { filter: { programId: details.program?.id ?? '0', isActive: true } },
+    fetchPolicy: 'network-only',
   });
 
   if (loading) {

@@ -8,6 +8,7 @@ import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
+import { emailUserAcceptedGdprToAdmin, emailUserRejectedGdprToAdmin } from '../../utils/emails';
 
 export class UserDataSource extends BaseDataSource {
   private loader: Dataloader<string, User, string>;
@@ -68,6 +69,9 @@ export class UserDataSource extends BaseDataSource {
     }
 
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
+    if (input.gdprAccepted) {
+      emailUserAcceptedGdprToAdmin(nu.username);
+    }
     return { user: UserMapper.toUser(nu) };
   }
 
@@ -115,6 +119,7 @@ export class UserDataSource extends BaseDataSource {
       )
       .lean()
       .exec();
+    emailUserRejectedGdprToAdmin(u.username);
     return UserMapper.toUser(u);
   }
 }

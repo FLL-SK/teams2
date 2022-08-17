@@ -12,13 +12,13 @@ import {
   CreateTeamInput,
   UpdateTeamInput,
   useAddTagToTeamMutation,
-  useDeleteTagMutation,
   useGetNotesQuery,
   useGetTeamQuery,
   useUpdateTeamMutation,
   useCreateNoteMutation,
   useDeleteTeamMutation,
   useUndeleteTeamMutation,
+  useRemoveTagFromTeamMutation,
 } from '../../generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
@@ -55,9 +55,11 @@ export function TeamPage() {
     variables: { type: 'team', ref: id ?? '0' },
   });
 
-  const [removeTag] = useDeleteTagMutation({ onError });
+  const [removeTag] = useRemoveTagFromTeamMutation({ onError });
   const [addTag] = useAddTagToTeamMutation({ onError });
+
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch(), onError });
+
   const [updateTeam] = useUpdateTeamMutation({ onError });
   const [deleteTeam] = useDeleteTeamMutation({ onError });
   const [undeleteTeam] = useUndeleteTeamMutation({ onError });
@@ -161,7 +163,7 @@ export function TeamPage() {
             <Box direction="row" wrap>
               <TagList
                 tags={team?.tags}
-                onRemove={(id) => removeTag({ variables: { id } })}
+                onRemove={(tagId) => removeTag({ variables: { teamId: team?.id ?? '0', tagId } })}
                 onAdd={(tag) => addTag({ variables: { teamId: team?.id ?? '0', tagId: tag.id } })}
               />
             </Box>

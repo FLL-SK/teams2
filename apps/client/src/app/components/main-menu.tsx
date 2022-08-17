@@ -46,7 +46,7 @@ function Menu() {
   return (
     <Nav align="center" justify="between" gap="medium">
       {!isAuthenticated && <MenuButton path={appPath.login} title={'Prihlásiť sa'} />}
-      <MenuButton path="/" title="Turnaje" />
+      {isAuthenticated && <MenuButton path={appPath.events} title="Turnaje" />}
       {appUser?.isAdmin && <MenuButton path={appPath.teams} title="Tímy" />}
       {appUser?.isAdmin && <MenuButton path={appPath.registrations} title="Registrácie" />}
       {appUser?.isAdmin && <MenuButton path={appPath.users} title="Používatelia" />}

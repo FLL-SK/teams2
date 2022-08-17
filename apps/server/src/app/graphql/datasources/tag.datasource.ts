@@ -71,7 +71,8 @@ export class TagDataSource extends BaseDataSource {
 
   async deleteTag(id: ObjectId): Promise<Tag> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-
+    const log = this.logBase.extend('getTag');
+    log.debug('start', id);
     const tag = await tagRepository
       .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })
       .exec();

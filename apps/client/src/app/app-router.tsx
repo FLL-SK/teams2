@@ -2,7 +2,6 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './components/auth/require-auth';
-import { HomePage } from './pages/home/home-page';
 import { LoginPage } from './pages/auth/login-page';
 import { ForgotPasswordPage } from './pages/auth/forgot-password-page';
 import { ProfilePage } from './pages/profile/profile-page';
@@ -18,11 +17,19 @@ import { TeamPage } from './pages/team/team-page';
 import { UserListPage } from './pages/user-list/user-list-page';
 import { RegistrationsPage } from './pages/registrations/registrations-page';
 import { RegistrationPage } from './pages/registration/registration-page';
+import { EventsPage } from './pages/events/events-page';
 
 export function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <ProfilePage />
+          </RequireAuth>
+        }
+      />
       <Route
         path={appPath.profile(':id')}
         element={
@@ -84,6 +91,14 @@ export function AppRouter() {
         element={
           <RequireAuth>
             <RegistrationsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path={appPath.events}
+        element={
+          <RequireAuth>
+            <EventsPage />
           </RequireAuth>
         }
       />

@@ -27,6 +27,7 @@ export function TagList(props: TagListProps) {
       {isAdding && (
         <Box>
           <SelectTag
+            selected={tags.map((t) => t.id)}
             onSelect={(t) => {
               onAdd && onAdd(t);
               setIsAdding(false);

@@ -31,9 +31,11 @@ function TeamListRow(props: TeamListRowProps) {
           {data.name}
         </TextStriked>
         <Box direction="row">
-          {data.tags.map((tag) => (
-            <Tag key={tag.id} value={tag.label} size="small" />
-          ))}
+          {data.tags
+            .filter((t) => !t.deletedOn)
+            .map((tag) => (
+              <Tag key={tag.id} value={tag.label} size="small" />
+            ))}
         </Box>
       </ListCol>
 
