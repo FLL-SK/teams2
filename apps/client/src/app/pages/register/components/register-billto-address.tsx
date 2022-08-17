@@ -38,7 +38,7 @@ export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
 
   return (
     <Box gap="medium">
-      <Text>Zadajte fakturačnú adresu a kontaktnú osobu pre zaslanie a úhradu faktúry.</Text>
+      <Text>Zadajte fakturačnú adresu.</Text>
       <Form
         onChange={setFormData}
         onReset={() => setFormData(emptyForm)}

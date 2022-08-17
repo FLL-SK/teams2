@@ -24,9 +24,12 @@ import { RegisterDetails } from './components/types';
 import { RegisterSuccess } from './components/register-success';
 import { RegisterError } from './components/register-error';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { RegisterConfirmBillToContact } from './components/register-confirm-billto-contact';
+import { formatFullName } from '../../utils/format-fullname';
 
 type RegistrationStep =
   | 'intro'
+  | 'confirm-billto-contact'
   | 'select-event'
   | 'select-program'
   | 'review'
@@ -38,7 +41,7 @@ type RegistrationStep =
 export function RegisterPage() {
   const { id: teamId } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, isTeamCoach } = useAppUser();
+  const { isAdmin, isTeamCoach, user } = useAppUser();
   const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
 
@@ -48,12 +51,22 @@ export function RegisterPage() {
     error: teamError,
   } = useGetTeamQuery({
     variables: { id: teamId ?? '0' },
-    onCompleted: (data) =>
+    onCompleted: (data) => {
+      const coachData: Pick<Address, 'contactName' | 'email' | 'phone'> = {
+        contactName: formatFullName(user?.firstName ?? '', user?.lastName ?? ''),
+        email: user?.username,
+        phone: user?.phone,
+      };
       setRegisterDetails({
         ...registerDetails,
-        billTo: data.getTeam.billTo ? (omitBy(data.getTeam.billTo, isNil) as Address) : undefined, // remove null/undefined values
-        shipTo: data.getTeam.shipTo ? (omitBy(data.getTeam.shipTo, isNil) as Address) : undefined, // remove null/undefined values
-      }),
+        billTo: data.getTeam.billTo
+          ? { ...(omitBy(data.getTeam.billTo, isNil) as Address), ...(coachData as Address) }
+          : { ...(coachData as Address) }, // remove null/undefined values
+        shipTo: data.getTeam.shipTo
+          ? { ...(omitBy(data.getTeam.shipTo, isNil) as Address), ...(coachData as Address) }
+          : { ...(coachData as Address) }, // remove null/undefined values
+      });
+    },
   });
 
   const { notify } = useNotification();
@@ -98,7 +111,19 @@ export function RegisterPage() {
     <BasePage title={`Registrácia tímu: ${team?.name}`} loading={teamLoading}>
       <Box>
         {step === 'intro' && (
-          <RegisterIntro team={team} nextStep={() => setStep('select-program')} prevStep={cancel} />
+          <RegisterIntro
+            team={team}
+            nextStep={() => setStep('confirm-billto-contact')}
+            prevStep={cancel}
+          />
+        )}
+        {step === 'confirm-billto-contact' && (
+          <RegisterConfirmBillToContact
+            details={registerDetails}
+            nextStep={() => setStep('select-program')}
+            prevStep={() => setStep('intro')}
+            cancel={cancel}
+          />
         )}
         {step === 'select-program' && (
           <RegisterSelectProgram
@@ -106,7 +131,7 @@ export function RegisterPage() {
             details={registerDetails}
             onSubmit={(p) => setRegisterDetails({ ...registerDetails, program: p })}
             nextStep={() => setStep('select-event')}
-            prevStep={() => setStep('intro')}
+            prevStep={() => setStep('confirm-billto-contact')}
             cancel={cancel}
           />
         )}
@@ -125,7 +150,6 @@ export function RegisterPage() {
             team={team}
             details={registerDetails}
             onSubmit={async (a) => {
-              console.log('billto', a);
               await updateTeam({ variables: { id: teamId, input: { billTo: { ...a } } } });
               setRegisterDetails({ ...registerDetails, billTo: { ...a } });
             }}
