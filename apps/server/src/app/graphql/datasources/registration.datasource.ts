@@ -190,7 +190,9 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.notAuthorized();
     registration.sizeConfirmedOn = date;
     await registration.save();
+
     emailTeamSizeConfirmed(registration.eventId, registration.teamId, this.context.user.username);
+
     return RegistrationMapper.toRegistration(registration);
   }
 
