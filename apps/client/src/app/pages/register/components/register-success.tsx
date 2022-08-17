@@ -21,7 +21,7 @@ export function RegisterSuccess(props: RegisterSuccessProps) {
 
   return (
     <Box gap="medium">
-      <Paragraph>
+      <Paragraph style={{ maxWidth: '100%' }}>
         Vaša požiadavka na registráciu na turnaj bola úspešne zaevidovaná. <br /> Registrácia bude
         platná až po tom ako náš tím spracuje a akceptuje vašu požiadavku.
       </Paragraph>

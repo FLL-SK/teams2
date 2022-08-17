@@ -9,6 +9,7 @@ import {
 } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
+import { LabelValueGroup } from '../../../components/label-value-group';
 
 interface RegisterReviewProps {
   team?: TeamFragmentFragment;
@@ -49,9 +50,11 @@ export function RegisterReview(props: RegisterReviewProps) {
     <Box gap="medium">
       <Text>Skontrolujte zadané údaje.</Text>
       <Panel title="Registrácia" gap="small">
-        <LabelValue labelWidth={labelWidth} label="Tím" value={team.name} />
-        <LabelValue labelWidth={labelWidth} label="Program" value={details.program?.name} />
-        <LabelValue labelWidth={labelWidth} label="Turnaj" value={details.event?.name} />
+        <LabelValueGroup labelWidth={labelWidth} direction="row" gap="small">
+          <LabelValue label="Tím" value={team.name} />
+          <LabelValue label="Program" value={details.program?.name} />
+          <LabelValue label="Turnaj" value={details.event?.name} />
+        </LabelValueGroup>
       </Panel>
 
       <Panel title="Poplatky" gap="small">
@@ -67,23 +70,21 @@ export function RegisterReview(props: RegisterReviewProps) {
       <Panel title="Fakturačná adresa" gap="small">
         {billTo && (
           <Box gap="small">
-            <LabelValue labelWidth={labelWidth} label="Názov/meno" value={billTo.name} />
-            <LabelValue labelWidth={labelWidth} label="Adresa" value={billTo.street} />
-            <LabelValue labelWidth={labelWidth} label="Mesto" value={billTo.city} />
-            <LabelValue labelWidth={labelWidth} label="PSČ" value={billTo.zip} />
-            <LabelValue labelWidth={labelWidth} label="Krajina" value={billTo.countryCode} />
+            <LabelValueGroup labelWidth={labelWidth} direction="row" gap="small">
+              <LabelValue label="Názov/meno" value={billTo.name} />
+              <LabelValue label="Adresa" value={billTo.street} />
+              <LabelValue label="Mesto" value={billTo.city} />
+              <LabelValue label="PSČ" value={billTo.zip} />
+              <LabelValue label="Krajina" value={billTo.countryCode} />
 
-            <LabelValue labelWidth={labelWidth} label="IČO" value={billTo.companyNumber} />
-            <LabelValue labelWidth={labelWidth} label="DIČ" value={billTo.taxNumber} />
-            <LabelValue labelWidth={labelWidth} label="IČ-DPH" value={billTo.vatNumber} />
+              <LabelValue label="IČO" value={billTo.companyNumber} />
+              <LabelValue label="DIČ" value={billTo.taxNumber} />
+              <LabelValue label="IČ-DPH" value={billTo.vatNumber} />
 
-            <LabelValue
-              labelWidth={labelWidth}
-              label="Kontaktná osoba"
-              value={billTo.contactName}
-            />
-            <LabelValue labelWidth={labelWidth} label="Telefón" value={billTo.phone} />
-            <LabelValue labelWidth={labelWidth} label="Email" value={billTo.email} />
+              <LabelValue label="Kontaktná osoba" value={billTo.contactName} />
+              <LabelValue label="Telefón" value={billTo.phone} />
+              <LabelValue label="Email" value={billTo.email} />
+            </LabelValueGroup>
           </Box>
         )}
       </Panel>
@@ -93,19 +94,17 @@ export function RegisterReview(props: RegisterReviewProps) {
           <Text>Použijú sa fakturačné údaje</Text>
         ) : shipTo ? (
           <Box gap="small">
-            <LabelValue labelWidth={labelWidth} label="Názov/meno" value={shipTo.name} />
-            <LabelValue labelWidth={labelWidth} label="Adresa" value={shipTo.street} />
-            <LabelValue labelWidth={labelWidth} label="Mesto" value={shipTo.city} />
-            <LabelValue labelWidth={labelWidth} label="PSČ" value={shipTo.zip} />
-            <LabelValue labelWidth={labelWidth} label="Krajina" value={shipTo.countryCode} />
+            <LabelValueGroup labelWidth={labelWidth} direction="row" gap="small">
+              <LabelValue label="Názov/meno" value={shipTo.name} />
+              <LabelValue label="Adresa" value={shipTo.street} />
+              <LabelValue label="Mesto" value={shipTo.city} />
+              <LabelValue label="PSČ" value={shipTo.zip} />
+              <LabelValue label="Krajina" value={shipTo.countryCode} />
 
-            <LabelValue
-              labelWidth={labelWidth}
-              label="Kontaktná osoba"
-              value={shipTo.contactName}
-            />
-            <LabelValue labelWidth={labelWidth} label="Telefón" value={shipTo.phone} />
-            <LabelValue labelWidth={labelWidth} label="Email" value={shipTo.email} />
+              <LabelValue label="Kontaktná osoba" value={shipTo.contactName} />
+              <LabelValue label="Telefón" value={shipTo.phone} />
+              <LabelValue label="Email" value={shipTo.email} />
+            </LabelValueGroup>
           </Box>
         ) : null}
       </Panel>
