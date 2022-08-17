@@ -12,7 +12,7 @@ import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
-import { emailTeamSizeConfirmed } from '../../utils/emails';
+import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
 
 export class RegistrationDataSource extends BaseDataSource {
   private loader: Dataloader<string, Registration, string>;
@@ -190,6 +190,7 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.notAuthorized();
     registration.sizeConfirmedOn = date;
     await registration.save();
+    emailTeamSizeConfirmed(registration.eventId, registration.teamId, this.context.user.username);
     return RegistrationMapper.toRegistration(registration);
   }
 
@@ -210,7 +211,11 @@ export class RegistrationDataSource extends BaseDataSource {
       .findByIdAndUpdate(id, { confirmedOn }, { new: true })
       .exec();
 
-    emailTeamSizeConfirmed(registration.eventId, registration.teamId, this.context.user.username);
+    emailRegistrationConfirmed(
+      registration.eventId,
+      registration.teamId,
+      this.context.user.username
+    );
     return RegistrationMapper.toRegistration(registration);
   }
 

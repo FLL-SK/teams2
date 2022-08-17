@@ -144,6 +144,39 @@ export async function emailTeamSizeConfirmed(
   eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
 }
 
+export async function emailRegistrationConfirmed(
+  eventId: ObjectId,
+  teamId: ObjectId,
+  confirmedBy: string
+) {
+  const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
+  const team = await teamRepository.findById(teamId).lean().exec();
+
+  const subject = `Registrácia tímu potvrdená - ${team.name}`;
+  const title = subject;
+  const msg = `Organizátor súťaže potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+
+  // email to admin
+  getAppSettings().then((s) =>
+    emailMessage(s.sysEmail, subject, title, msg + '\n\n Potvrdené:' + confirmedBy)
+  );
+
+  // email to event managers
+  const event = await eventRepository.findById(eventId).lean().exec();
+  const eventManagers = await userRepository
+    .find({ _id: { $in: event.managersIds } })
+    .lean()
+    .exec();
+  eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
+
+  // email to coaches
+  const coaches = await userRepository
+    .find({ _id: { $in: team.coachesIds } })
+    .lean()
+    .exec();
+  coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
+}
+
 //TODO
 // notify new program manager -> admin
 // notify new event manager -> program mgr, admin
