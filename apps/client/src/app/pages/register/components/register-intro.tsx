@@ -15,7 +15,7 @@ export function RegisterIntro(props: RegisterIntroProps) {
   }
   return (
     <Box gap="medium">
-      <Paragraph>
+      <Paragraph style={{ maxWidth: '100%' }}>
         Začínate registráciu tímu <Text weight="bold">{team.name} </Text>
         na turnaj. <br />
         <br />
