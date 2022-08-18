@@ -23,10 +23,10 @@ export function PanelSettings(props: PanelSettingsProps) {
   });
 
   return (
-    <Panel title="Nastavenia" gap="medium">
+    <>
       {!settings && <Spinner />}
       {settings && (
-        <LabelValueGroup gap="small" labelWidth="250px" direction="row">
+        <LabelValueGroup gap="small" labelWidth="300px" direction="row">
           <LabelValue label="Názov organizácie">
             <InplaceTextEdit
               value={settings.organization.name}
@@ -83,6 +83,6 @@ export function PanelSettings(props: PanelSettingsProps) {
         onSubmit={(s) => updateSettings({ variables: { input: { organization: s } } })}
         onClose={() => setEditAddress(false)}
       />
-    </Panel>
+    </>
   );
 }
