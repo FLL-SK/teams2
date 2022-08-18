@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Text } from 'grommet';
+import { Anchor, Box, Button } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {
@@ -15,7 +15,6 @@ import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm
 import { ChangeTeamEventDialog } from '../../../components/dialogs/change-team-event-dialog';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { useAppUser } from '../../../components/app-user/use-app-user';
-import { FieldInvoiceIssuedOn } from '../../registrations/components/field-invoiceIssuedOn';
 import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
 
 interface PanelRegistrationDetailsProps {
