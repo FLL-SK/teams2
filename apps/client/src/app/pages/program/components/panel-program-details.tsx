@@ -47,7 +47,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
                 width="20px"
                 height="100%"
                 border={{ color: 'dark-5', size: 'xsmall' }}
-                onClick={() => setEditColor(true)}
+                onClick={(e) => setEditColor(true)}
               />
             </Tip>
             <Tip content="Bledšia farba">
