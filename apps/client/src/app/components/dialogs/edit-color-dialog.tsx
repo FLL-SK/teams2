@@ -27,12 +27,12 @@ export function EditColorDialog(props: EditColorDialogProps) {
 
   return (
     <Modal title={title ?? 'Vybrať farbu'} onClose={onClose} width="medium">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} target="_self">
         <SketchPicker color={formColor} onChangeComplete={({ hex }) => setFormColor(hex)} />
 
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
-          <Button primary type="submit" label={'Uložiť'} />
+          <Button primary label={'Uložiť'} onClick={handleSubmit} />
         </Box>
       </form>
     </Modal>
