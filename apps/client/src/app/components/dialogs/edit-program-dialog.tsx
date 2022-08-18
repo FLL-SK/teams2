@@ -15,6 +15,8 @@ interface EditProgramDialogProps {
 interface FormFields {
   name: string;
   description?: string;
+  color?: string;
+  colorLight?: string;
   conditions?: string;
   startDate: string;
   endDate: string;
@@ -22,7 +24,11 @@ interface FormFields {
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
   const { show, program, onClose, onSubmit } = props;
-  const [formValues, setFormValues] = useState<FormFields>();
+  const [formValues, setFormValues] = useState<FormFields>({
+    name: '',
+    startDate: '',
+    endDate: '',
+  });
 
   useEffect(() => {
     setFormValues({
@@ -63,6 +69,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
         <FormField label="Názov" name="name" required autoFocus>
           <TextInput name="name" />
         </FormField>
+
         <Grid columns={['1fr', '1fr']} gap="small">
           <FormField label="Začiatok programu" name="startDate">
             <DateInput name="startDate" format="dd.mm.yyyy" />
@@ -71,12 +78,14 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
             <DateInput name="endDate" format="dd.mm.yyyy" />
           </FormField>
         </Grid>
+
         <FormField label="Popis" name="description">
           <TextArea rows={5} name="description" />
         </FormField>
         <FormField label="Podmienky" name="conditions">
           <TextArea rows={5} name="conditions" />
         </FormField>
+
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
           <Button primary type="submit" label={!program ? 'Vytvoriť' : 'Uložiť'} />

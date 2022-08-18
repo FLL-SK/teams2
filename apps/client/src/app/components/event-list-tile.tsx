@@ -30,9 +30,12 @@ export function EventListTile(props: EventListTileProps) {
       align="center"
       border={border}
     >
-      <Box>
-        <Text>{event.name}</Text>
-        {!hideProgram && <Text size="small">{event.program.name}</Text>}
+      <Box direction="row" align="center" gap="small">
+        <Box height="30px" width="20px" background={event.program.color ?? undefined}></Box>
+        <Box>
+          <Text>{event.name}</Text>
+          {!hideProgram && <Text size="small">{event.program.name}</Text>}
+        </Box>
       </Box>
 
       <Box direction="row" gap="xsmall" align="center">
