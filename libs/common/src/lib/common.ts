@@ -25,6 +25,15 @@ export const appPath = {
   sfShowInvoice: (id = '') => `${process.env.NX_SF_API_URL}/invoices/view/${id}`,
 };
 
+export const validateEmail = (email: string): boolean => {
+  const s = String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  return !!s;
+};
+
 // recurrence depth limiter
 type Prev = [
   never,
