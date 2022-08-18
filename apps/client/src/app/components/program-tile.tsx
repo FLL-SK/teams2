@@ -23,7 +23,13 @@ export function ProgramTile(props: ProgramTileProps) {
   const border: BorderType = selected ? { color: getColor('brand'), size: 'large' } : {};
 
   return (
-    <Container pad="medium" gap="medium" onClick={onClick} background="light-2" border={border}>
+    <Container
+      pad="medium"
+      gap="medium"
+      onClick={onClick}
+      background={program.colorLight ?? 'light-2'}
+      border={border}
+    >
       <Text>{program.name}</Text>
       <Markdown>{program.description ?? ''}</Markdown>
     </Container>

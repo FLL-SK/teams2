@@ -8,6 +8,8 @@ export interface ProgramData {
   name: string;
   description?: string;
   logoUrl?: string;
+  color?: string;
+  colorLight?: string;
   conditions?: string;
   startDate: Date;
   endDate: Date;
@@ -40,6 +42,8 @@ const schema = new Schema<ProgramData, ProgramModel>({
   name: { type: Types.String, required: true },
   description: { type: Types.String },
   logoUrl: { type: Types.String },
+  color: { type: Types.String },
+  colorLight: { type: Types.String },
   conditions: { type: Types.String },
   managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 

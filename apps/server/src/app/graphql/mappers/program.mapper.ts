@@ -8,10 +8,16 @@ export const ProgramMapper = {
     }
     const u: Omit<Required<Program>, '__typename'> = {
       id: program._id,
+
       name: program.name,
       description: program.description,
+
       logoUrl: program.logoUrl,
+      color: program.color,
+      colorLight: program.colorLight,
+
       conditions: program.conditions,
+
       startDate: program.startDate,
       endDate: program.endDate,
 
