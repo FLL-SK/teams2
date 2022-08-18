@@ -26,12 +26,17 @@ export const appPath = {
 };
 
 export const validateEmail = (email: string): boolean => {
-  const s = String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-  return !!s;
+  const s = String(email).toLowerCase();
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(s);
+};
+
+export const validatePhone = (phone: string): boolean => {
+  const s = String(phone).replace(/\s/g, '').toLowerCase();
+  const rIntl = /^[+]?[0-9]{0,3}\(?[0-9]{2,3}\)?[0-9]{5,8}$/;
+  const rLocal = /^0[0-9]{1,3}\/?[0-9]{5,10}$/;
+  return rIntl.test(s) || rLocal.test(s);
 };
 
 // recurrence depth limiter
