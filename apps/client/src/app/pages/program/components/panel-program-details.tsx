@@ -46,6 +46,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
                 round="small"
                 width="20px"
                 height="100%"
+                border={{ color: 'dark-5', size: 'xsmall' }}
                 onClick={() => setEditColor(true)}
               />
             </Tip>
@@ -55,6 +56,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
                 round="small"
                 width="20px"
                 height="100%"
+                border={{ color: 'dark-5', size: 'xsmall' }}
                 onClick={() => setEditColorLight(true)}
               />
             </Tip>
@@ -108,17 +110,15 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         show={editColor}
         color={program.color ?? '#ffffff'}
         onClose={() => setEditColor(false)}
-        onSubmit={(color: string) =>
-          updateProgram({ variables: { id: program.id, input: { color } } })
-        }
+        onSubmit={(color) => updateProgram({ variables: { id: program.id, input: { color } } })}
       />
 
       <EditColorDialog
         show={editColorLight}
         color={program.colorLight ?? '#ffffff'}
         onClose={() => setEditColorLight(false)}
-        onSubmit={(color: string) =>
-          updateProgram({ variables: { id: program.id, input: { color } } })
+        onSubmit={(colorLight) =>
+          updateProgram({ variables: { id: program.id, input: { colorLight } } })
         }
       />
 
