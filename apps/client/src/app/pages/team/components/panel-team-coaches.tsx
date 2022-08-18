@@ -51,6 +51,7 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
         />
       </Box>
       <EditEmailDialog
+        title="Pridať trénera"
         show={showAddCoachDialog}
         onClose={() => setShowAddCoachDialog(false)}
         onSubmit={({ email }) =>
