@@ -7,6 +7,7 @@ import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '../../components/auth/useAuthenticate';
 import { SignupDataType } from '../../components/auth/auth-provider';
 import { useGetSettingsQuery } from '../../generated/graphql';
+import { validateEmail } from '@teams2/common';
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -53,7 +54,14 @@ export function SignupPage() {
             <FormField label="Meno" name="firstName" required />
             <FormField label="Priezvisko" name="lastName" required />
             <FormField label="Telefón" name="phone" required />
-            <FormField label="E-mail" name="username" required />
+            <FormField
+              label="E-mail"
+              name="username"
+              required
+              validate={(f: string) =>
+                validateEmail(f) ? true : { status: 'error', message: 'Nesprávny email.' }
+              }
+            />
             <FormField label="Heslo" name="password" type="password" required />
             <FormField
               label="Heslo znova"

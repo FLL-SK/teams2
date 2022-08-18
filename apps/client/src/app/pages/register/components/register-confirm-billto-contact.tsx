@@ -4,7 +4,6 @@ import { Box, Button, Paragraph } from 'grommet';
 import { RegisterDetails } from './types';
 
 import { appPath } from '@teams2/common';
-import { Panel } from '../../../components/panel';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { useAppUser } from '../../../components/app-user/use-app-user';

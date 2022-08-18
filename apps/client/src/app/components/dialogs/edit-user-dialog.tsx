@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, CheckBox, Form, FormField, Paragraph } from 'grommet';
 import { Modal } from '../modal';
 import { useGetSettingsQuery } from '../../generated/graphql';
+import { validateEmail } from '@teams2/common';
 
 interface EditUserDialogProps {
   user?: EditUserDialogFields | null;
@@ -57,7 +58,15 @@ export function EditUserDialog(props: EditUserDialogProps) {
         <Box gap="small">
           <FormField label="Meno" name="firstName" required autoFocus />
           <FormField label="Priezvisko" name="lastName" required />
-          <FormField label="E-mail" name="username" required disabled />
+          <FormField
+            label="E-mail"
+            name="username"
+            required
+            disabled
+            validate={(f: string) =>
+              validateEmail(f) ? true : { status: 'error', message: 'Nesprávny email.' }
+            }
+          />
           <FormField label="Telefón" name="phone" required />
           {requestGdprConsent && (
             <Box gap="small">

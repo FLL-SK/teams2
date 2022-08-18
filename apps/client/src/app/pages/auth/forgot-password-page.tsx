@@ -1,5 +1,5 @@
 import React from 'react';
-import { appPath } from '@teams2/common';
+import { appPath, validateEmail } from '@teams2/common';
 import {
   Anchor,
   Box,
@@ -65,7 +65,14 @@ export function ForgotPasswordPage() {
                   messages={{ required: 'Povinný údaj' }}
                   onChange={() => setError(undefined)}
                 >
-                  <FormField label="E-mail" name="username" required />
+                  <FormField
+                    label="E-mail"
+                    name="username"
+                    required
+                    validate={(f: string) =>
+                      validateEmail(f) ? true : { status: 'error', message: 'Nesprávny email.' }
+                    }
+                  />
                   <Button primary type="submit" label="Požiadať o obnovu hesla" />
                 </Form>
                 <Box pad="small" justify="center">
