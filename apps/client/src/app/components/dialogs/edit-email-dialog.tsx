@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Form, FormField } from 'grommet';
 import { Modal } from '../modal';
+import { validateEmail } from '@teams2/common';
 
 interface EditEmailDialogProps {
   title?: string;
@@ -41,7 +42,14 @@ export function EditEmailDialog(props: EditEmailDialogProps) {
         value={formValues}
         onChange={setFormValues}
       >
-        <FormField label="E-mail" name="email" required />
+        <FormField
+          label="E-mail"
+          name="email"
+          required
+          validate={(f: string) =>
+            validateEmail(f) ? true : { status: 'error', message: 'Nesprávny email.' }
+          }
+        />
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
           <Button primary type="submit" label={'Uložiť'} />

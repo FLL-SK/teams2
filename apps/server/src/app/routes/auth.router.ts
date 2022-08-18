@@ -1,3 +1,4 @@
+import { validateEmail } from '@teams2/common';
 import { logger } from '@teams2/logger';
 import express = require('express');
 import passport = require('passport');
@@ -85,6 +86,9 @@ router.post('/signup', async function (req, res) {
     return res.status(400).send({ error: { message: 'User already exists' } });
   } else {
     log.info('New signup', username);
+    if (!validateEmail(username)) {
+      return res.status(400).send({ error: { message: 'Username shall be valid email address.' } });
+    }
     const nu: UserData = {
       username,
       password,
