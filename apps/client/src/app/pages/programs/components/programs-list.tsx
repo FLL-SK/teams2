@@ -1,6 +1,7 @@
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Box, Text, Paragraph } from 'grommet';
+import { Group } from 'grommet-icons';
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { ListRow2 } from '../../../components/list-row';
@@ -24,7 +25,7 @@ export function ProgramsList(props: ProgramsListProps) {
       )}
       {programs.map((program) => (
         <ListRow2
-          columns="1fr 120px 120px"
+          columns="1fr 120px 120px 120px"
           key={program.id}
           onClick={() => navigate(appPath.program(program.id))}
           hoverIndicator
@@ -35,6 +36,10 @@ export function ProgramsList(props: ProgramsListProps) {
             <TextStriked striked={!!program.deletedOn}>{program.name}</TextStriked>
           </Box>
 
+          <Box direction="row" gap="small">
+            <Group />
+            <Text size="small">{program.registrationsCount}</Text>
+          </Box>
           <Text>{formatDate(program.startDate)}</Text>
           <Text>{formatDate(program.endDate)}</Text>
         </ListRow2>
