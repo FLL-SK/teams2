@@ -30,7 +30,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
     () =>
       event
         ? event.registrations.reduce((t: string[], reg) => {
-            const c = reg.team.coaches.map((c) => c.username);
+            const c = reg.team.coaches.map((c) => c.username).filter((c) => !t.includes(c));
             return [...t, ...c];
           }, [])
         : [],
