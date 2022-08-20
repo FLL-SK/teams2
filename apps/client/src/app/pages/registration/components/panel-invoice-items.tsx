@@ -46,10 +46,7 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
   return (
     <Panel title="Poplatky" gap="medium">
       {invoiceItems.length === 0 && (
-        <Text>
-          Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný. Pridaním
-          poplatku je možné definovať poplatky špecifické pre tento turnaj.
-        </Text>
+        <Text>Táto registrácie nemá žiadne poplatky. Nebude z nej možné vytvoriť faktúru.</Text>
       )}
       {invoiceItems.length > 0 && (
         <InvoiceItemList

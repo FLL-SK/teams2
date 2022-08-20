@@ -5,7 +5,7 @@ import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
-import { Registration, File } from '../generated/graphql';
+import { File, RegistrationPayload } from '../generated/graphql';
 import { RegistrationMapper } from '../graphql/mappers';
 import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
 import { getAppSettings } from '../utils/settings';
@@ -16,7 +16,7 @@ const logLib = logger('domain:Registration');
 export async function createRegistrationInvoice(
   registrationId: ObjectId,
   ctx: ApolloContext
-): Promise<Registration> {
+): Promise<RegistrationPayload> {
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
@@ -45,7 +45,7 @@ export async function createRegistrationInvoice(
 
   if (result.status === 'error') {
     log.error(`invoice post error: %s`, result.error);
-    return null;
+    return { errors: [{ code: 'registration_invoice_post_error', message: result.error }] };
   }
 
   // update registration
@@ -54,13 +54,13 @@ export async function createRegistrationInvoice(
     new Date(result.createdOn),
     result.id
   );
-  return r;
+  return { registration: r };
 }
 
 export async function emailRegistrationInvoice(
   id: ObjectId,
   ctx: ApolloContext
-): Promise<Registration> {
+): Promise<RegistrationPayload> {
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('emailInv');
@@ -98,7 +98,7 @@ export async function emailRegistrationInvoice(
 
   if (result.status === 'error') {
     log.error(`invoice email error: %s`, result.error);
-    return null;
+    return { errors: [{ code: 'registration_invoice_email_error', message: result.error }] };
   }
 
   const text = `Faktúra odoslaná.  \n1. platiteľ: ${
@@ -113,7 +113,7 @@ export async function emailRegistrationInvoice(
     { new: true }
   );
 
-  return RegistrationMapper.toRegistration(ni);
+  return { registration: RegistrationMapper.toRegistration(ni) };
 }
 
 export async function createRegistrationNote(

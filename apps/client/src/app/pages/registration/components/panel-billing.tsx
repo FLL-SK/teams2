@@ -137,10 +137,21 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                   setInvoiceProcessing(t);
                   createInvoice({
                     variables: { id: reg.id },
-                    onCompleted: () => {
+                    onCompleted: (data) => {
                       clearTimeout(t);
                       setInvoiceProcessing(undefined);
-                      notify.info('Faktúra bola vytvorená.');
+
+                      if (!data.createRegistrationInvoice.registration) {
+                        notify.error(
+                          'Nepodarilo sa vytvoriť faktúru.',
+                          (data.createRegistrationInvoice.errors ?? []).reduce(
+                            (e, t) => e + '\n' + t.message,
+                            ''
+                          )
+                        );
+                      } else {
+                        notify.info('Faktúra bola vytvorená.');
+                      }
                     },
                   });
                 }}

@@ -1,27 +1,32 @@
 import React from 'react';
 
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Text } from 'grommet';
+import { Anchor, Box, Text, Tip } from 'grommet';
 
 interface SetClearDateProps {
   date?: string | null;
   onSet: () => void;
   onClear: () => void;
   canEdit?: boolean;
+  tip?: string;
 }
 
 export function SetClearDate(props: SetClearDateProps) {
-  const { date, onSet, onClear, canEdit } = props;
+  const { date, onSet, onClear, canEdit, tip } = props;
 
   return (
     <Box direction="row" width="100%" justify="between">
-      <Text>{date ? formatDate(date) : '-'}</Text>
+      <Tip content={tip}>
+        <Text>{date ? formatDate(date) : '-'}</Text>
+      </Tip>
 
       {canEdit &&
         (date ? (
           <Anchor size="small" label="Zruš" onClick={() => onClear()} />
         ) : (
-          <Anchor size="small" label="Potvrď" onClick={() => onSet()} />
+          <Tip content={tip}>
+            <Anchor size="small" label="Potvrď" onClick={() => onSet()} />
+          </Tip>
         ))}
     </Box>
   );
