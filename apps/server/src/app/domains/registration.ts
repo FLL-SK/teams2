@@ -86,7 +86,7 @@ export async function emailRegistrationInvoice(
   const o: InvoiceEmailOptions = {
     id: registration.invoiceRef,
     to: registration.billTo.email ?? '',
-    cc: coachEmails,
+    cc: coachEmails.filter((e) => e !== registration.billTo.email),
     subject: `Faktura ${team.name}`,
   };
   if (billingEmail) {
