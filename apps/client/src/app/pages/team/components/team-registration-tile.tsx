@@ -24,8 +24,6 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
     registration.event.date ? differenceInDays(new Date(registration.event.date), Date.now()) : 100
   );
 
-  console.log(eventDateDiff);
-
   return (
     <Box>
       <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'} wrap>
