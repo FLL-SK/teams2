@@ -78,12 +78,22 @@ mutation updateRegistration($id: ID!, $input: RegistrationInput!) {
 
 mutation createRegistrationInvoice($id: ID!) {
   createRegistrationInvoice(id: $id) {
-    ...RegistrationBasicFragment
+    registration {
+      ...RegistrationBasicFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
   }
 }
 
 mutation emailRegistrationInvoice($id: ID!) {
   emailRegistrationInvoice(id: $id) {
-    ...RegistrationBasicFragment
+    registration {
+      ...RegistrationBasicFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Anchor, Box, Text } from 'grommet';
+import { Anchor, Box, Text, Tip } from 'grommet';
 import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
@@ -28,12 +28,14 @@ export const FieldTeamSize = (props: {
         <Text>{formatTeamSize(registration)}</Text>
 
         {(isAdmin() || isTeamCoach(registration.teamId)) && (
-          <Anchor
-            size="small"
-            label="Nastav"
-            onClick={() => setShowDialog(true)}
-            disabled={readOnly}
-          />
+          <Tip content="Počet detí a trénerov, ktorí sa záčastnia na turnaji.">
+            <Anchor
+              size="small"
+              label="Nastav"
+              onClick={() => setShowDialog(true)}
+              disabled={readOnly}
+            />
+          </Tip>
         )}
       </Box>
 

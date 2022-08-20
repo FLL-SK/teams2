@@ -32,6 +32,18 @@ type ValidationError {
   code: ErrorCode!
 }
 
+type MutationError {
+  """
+  An error code for clients to match on.
+  """
+  code: ErrorCode!
+
+  """
+  Indicates which field cause the error
+  """
+  message: String
+}
+
 type Query {
   """
   Placeholder type as graphQL does not allow to define empty types

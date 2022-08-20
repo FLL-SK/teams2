@@ -3,7 +3,13 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { RegisterTeamPayload, SwitchTeamEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
-import { eventRepository } from '../models';
+
+import {
+  eventRepository,
+  InvoiceItemData,
+  invoiceItemRepository,
+  registrationRepository,
+} from '../models';
 import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
@@ -17,6 +23,27 @@ import { logger } from '@teams2/logger';
 
 const logLib = logger('domain:Event');
 
+async function copyInvoiceItemsToRegistration(registrationId: ObjectId) {
+  const reg = await registrationRepository.findById(registrationId).lean().exec();
+
+  let items = await invoiceItemRepository.find({ eventId: reg.eventId }).lean().exec();
+  if (items.length === 0) {
+    items = await invoiceItemRepository.find({ programId: reg.programId }).lean().exec();
+  }
+
+  for (const item of items) {
+    const ri: InvoiceItemData = {
+      registrationId,
+      lineNo: item.lineNo,
+      text: item.text,
+      note: item.note,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    };
+    await invoiceItemRepository.create(ri);
+  }
+}
+
 export async function registerTeamToEvent(
   teamId: ObjectId,
   eventId: ObjectId,
@@ -28,7 +55,7 @@ export async function registerTeamToEvent(
 
   if (!userGuard.isAdmin() && !(await userGuard.isCoach(teamId))) {
     //TODO nicer error handling
-    console.log('Not authorized to register');
+    log.error('Not authorized to register');
     return null;
   }
 
@@ -38,6 +65,8 @@ export async function registerTeamToEvent(
   if (!registration || !team) {
     return null;
   }
+
+  await copyInvoiceItemsToRegistration(registration.id);
 
   const [event, program, eventMgrs, programMgrs, coaches] = await Promise.all([
     dataSources.event.getEvent(eventId),

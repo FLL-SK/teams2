@@ -55,6 +55,11 @@ input RegistrationInput {
   invoiceNote: String
 }
 
+type RegistrationPayload {
+  registration: Registration
+  errors: [MutationError!]
+}
+
 input TeamSizeInput {
   girlCount: Int!
   boyCount: Int!
@@ -90,6 +95,6 @@ extend type Mutation {
 
   updateRegistration(id: ID!, input: RegistrationInput!): Registration
 
-  createRegistrationInvoice(id: ID!): Registration
-  emailRegistrationInvoice(id: ID!): Registration
+  createRegistrationInvoice(id: ID!): RegistrationPayload!
+  emailRegistrationInvoice(id: ID!): RegistrationPayload!
 }
