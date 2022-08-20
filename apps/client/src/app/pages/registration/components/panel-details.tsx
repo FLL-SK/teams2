@@ -42,7 +42,7 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
     <Panel title="Detaily registrácie" gap="small">
       <Box wrap direction="row" gap="small">
         <Box width={columnWidth}>
-          <LabelValueGroup labelWidth="150px" gap="small" direction="row">
+          <LabelValueGroup labelWidth="200px" gap="small" direction="row">
             <LabelValue label="Tím">
               <Anchor label={reg.team.name} href={appPath.team(reg.team.id)} />
             </LabelValue>
