@@ -174,7 +174,7 @@ export function RegistrationsPage() {
               </Box>
               <Button icon={<Close />} onClick={() => setSearchText('')} />
               <Button
-                icon={Object.keys(filter).length > 1 ? <Filter color="red" /> : <Filter />}
+                icon={Object.keys(filter).length > 0 ? <Filter color="red" /> : <Filter />}
                 tip="Filter"
                 onClick={() => {
                   setShowFilter(true);
