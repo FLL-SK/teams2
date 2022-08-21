@@ -32,10 +32,8 @@ export function RegistrationsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
-  const [
-    fetchRegistrations,
-    { data: regsData, error: regsDataError, loading: regsLoading, refetch: regsRefetch },
-  ] = useGetProgramRegistrationsLazyQuery();
+  const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
+    useGetProgramRegistrationsLazyQuery();
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
     useGetProgramLazyQuery();
 
