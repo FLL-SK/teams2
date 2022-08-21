@@ -22,6 +22,7 @@ import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
+import { emailEventManagerAdded } from '../../utils/emails';
 
 export class EventDataSource extends BaseDataSource {
   private loader: Dataloader<string, Event, string>;
@@ -112,6 +113,7 @@ export class EventDataSource extends BaseDataSource {
     const event = await eventRepository
       .findOneAndUpdate({ _id: eventId }, { $addToSet: { managersIds: userId } }, { new: true })
       .exec();
+    emailEventManagerAdded(eventId, userId);
     return EventMapper.toEvent(event);
   }
 
