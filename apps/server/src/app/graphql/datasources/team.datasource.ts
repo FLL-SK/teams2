@@ -161,13 +161,17 @@ export class TeamDataSource extends BaseDataSource {
 
   async getTeamCoaches(teamId: ObjectId): Promise<User[]> {
     const log = this.logBase.extend('getTeamCoaches');
+    const isAdmin = this.userGuard.isAdmin();
+    const isCoach = await this.userGuard.isCoach(teamId);
+    const isEvtMgr = await this.isTeamRegisteredOnEventManagedBy(this.context.user._id, teamId);
     log.debug(
-      'team %s isAdmin=%s isCoach=%s',
+      'team %s isAdmin=%s isCoach=%s isEvtMgr=%s',
       teamId.toString(),
-      this.userGuard.isAdmin(),
-      await this.userGuard.isCoach(teamId)
+      isAdmin,
+      isCoach,
+      isEvtMgr
     );
-    if (!this.userGuard.isAdmin() && !(await this.userGuard.isCoach(teamId))) {
+    if (!(isAdmin || isCoach || isEvtMgr)) {
       return [];
     }
 
@@ -247,5 +251,14 @@ export class TeamDataSource extends BaseDataSource {
     }
 
     return teams.length;
+  }
+
+  async isTeamRegisteredOnEventManagedBy(userId: ObjectId, teamId: ObjectId): Promise<boolean> {
+    const reg = await registrationRepository
+      .findOne({ teamId, eventId: this.context.userGuard.getManagedEvents() })
+      .lean()
+      .exec();
+
+    return reg !== null;
   }
 }

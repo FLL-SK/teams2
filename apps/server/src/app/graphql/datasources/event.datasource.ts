@@ -128,7 +128,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async getEventManagers(eventId: ObjectId): Promise<User[]> {
-    if (!this.userGuard.isAdmin()) {
+    if (!(this.userGuard.isAdmin() || (await this.userGuard.isEventManager(eventId)))) {
       return [];
     }
 
