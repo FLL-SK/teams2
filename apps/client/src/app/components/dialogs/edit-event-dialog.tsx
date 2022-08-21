@@ -1,6 +1,16 @@
 import React from 'react';
 import { toUtcDateString, toZonedDateString } from '@teams2/dateutils';
-import { Box, Button, DateInput, Form, FormField, Grid, TextArea, TextInput } from 'grommet';
+import {
+  Box,
+  Button,
+  CheckBox,
+  DateInput,
+  Form,
+  FormField,
+  Grid,
+  TextArea,
+  TextInput,
+} from 'grommet';
 import { useState } from 'react';
 
 import { EventListFragmentFragment } from '../../generated/graphql';
@@ -18,6 +28,7 @@ interface FormFields {
   date?: string; // UTC ISO date
   registrationEnd?: string; // UTC ISO date
   conditions?: string;
+  ownFeesAllowed?: boolean;
 }
 
 export function EditEventDialog(props: EditEventDialogProps) {
@@ -27,6 +38,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
     date: toZonedDateString(event?.date),
     registrationEnd: toZonedDateString(event?.registrationEnd),
     conditions: event?.conditions ?? '',
+    ownFeesAllowed: event?.ownFeesAllowed ?? false,
   });
 
   if (!show) {
@@ -66,6 +78,9 @@ export function EditEventDialog(props: EditEventDialogProps) {
           <FormField label="Termín registrácie" name="registrationEnd">
             <DateInput name="registrationEnd" format="dd.mm.yyyy" />
           </FormField>
+          {/* <FormField label="Povoliť vlastné poplatky" name="ownFeesAllowed">
+            <CheckBox name="ownFeesAllowed" />
+          </FormField> */}
         </Grid>
         <FormField label="Podmienky" name="conditions">
           <TextArea rows={10} name="conditions" />

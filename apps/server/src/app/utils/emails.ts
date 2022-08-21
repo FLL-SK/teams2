@@ -106,6 +106,26 @@ export function emailEventChangedToEventManagers(
   emails.forEach((m) => emailMessage(m, subject, title, msg));
 }
 
+export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId) {
+  const ev = await eventRepository.findById(eventId).lean().exec();
+  const user = await userRepository.findById(userId).lean().exec();
+
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(eventId.toHexString());
+  const subject = `Pridaný manažér pre turnaj ${ev.name}`;
+  const title = subject;
+  const msg = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér turnaja ${ev.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+
+  // send to admin
+  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+
+  // send to event managers
+  const eventManagers = await userRepository
+    .find({ _id: { $in: ev.managersIds } })
+    .lean()
+    .exec();
+  eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
+}
+
 export function emailUserAcceptedGdprToAdmin(userEmail: string) {
   const subject = `Akceptované GDPR ${userEmail}`;
   const title = subject;

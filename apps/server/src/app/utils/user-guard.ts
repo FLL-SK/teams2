@@ -13,12 +13,16 @@ export class UserGuard {
     this.message = message || 'Not authorized';
   }
 
+  getManagedEvents() {
+    return this.eventManagerOfEvents;
+  }
+
   isSuperAdmin() {
-    return this.user ? this.user.isSuperAdmin : false;
+    return this.user ? !!this.user.isSuperAdmin : false;
   }
 
   isAdmin() {
-    return this.user ? this.user.isAdmin || this.user.isSuperAdmin : false;
+    return this.user ? this.user.isAdmin ?? this.user.isSuperAdmin ?? false : false;
   }
 
   isLoggedIn() {

@@ -17,6 +17,7 @@ fragment EventListFragment on Event {
 
   conditions
   registrationsCount
+  ownFeesAllowed
 
   program {
     ...ProgramBasicFragment
