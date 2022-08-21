@@ -64,13 +64,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       </ListCol>
 
       <StatusIcon date={data.createdOn} prefix="Registrovaný" textOK="" textNotOK="" SIcon={Halt} />
-      <StatusIcon
-        date={data.confirmedOn}
-        prefix="Registrácia"
-        textOK="potvrdená"
-        textNotOK="nepotvrdená"
-        SIcon={Checkmark}
-      />
+
       <StatusIcon
         date={data.invoiceIssuedOn}
         prefix="Faktúra"
@@ -84,6 +78,14 @@ function RegistrationListRow(props: RegistrationListRowProps) {
         textOK="zaplatená"
         textNotOK="nezaplatená"
         SIcon={Money}
+      />
+
+      <StatusIcon
+        date={data.confirmedOn}
+        prefix="Registrácia"
+        textOK="potvrdená"
+        textNotOK="nepotvrdená"
+        SIcon={Checkmark}
       />
 
       <ListCol>
