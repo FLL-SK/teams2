@@ -3,10 +3,10 @@ import { Group } from 'grommet-icons';
 import React, { useMemo, useState } from 'react';
 import { ListRow2 } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
-import { EventFragmentFragment } from '../../../generated/graphql';
+import { EventFragmentFragment, useGetRegisteredTeamsQuery } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { formatTeamSize } from '../../../utils/format-teamsize';
-import { handleExportRegistrations } from './handle-export';
+import { handleExportRegisteredTeams } from './handle-export';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 import { Modal } from '../../../components/modal';
@@ -21,20 +21,21 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
   const navigate = useNavigate();
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);
 
-  const eventRegs = useMemo(
-    () => [...(event?.registrations ?? [])].sort((a, b) => (a.team.name < b.team.name ? -1 : 1)),
-    [event]
-  );
+  const { data } = useGetRegisteredTeamsQuery({
+    variables: { eventId: event?.id ?? '0', includeCoaches: canEdit },
+  });
+
+  const regs = data?.getRegisteredTeams;
 
   const coachesEmails: string[] = useMemo(
     () =>
-      event
-        ? event.registrations.reduce((t: string[], reg) => {
-            const c = reg.team.coaches.map((c) => c.username).filter((c) => !t.includes(c));
+      event && regs
+        ? regs.reduce((t: string[], reg) => {
+            const c = (reg?.coaches ?? []).map((c) => c.username).filter((c) => !t.includes(c));
             return [...t, ...c];
           }, [])
         : [],
-    [event]
+    [event, regs]
   );
 
   if (!event) {
@@ -44,7 +45,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
   return (
     <Panel title="Tímy" gap="small">
       <Box direction="row" wrap>
-        {eventRegs.map((reg, idx) => (
+        {(regs ?? []).map((reg, idx) => (
           <ListRow2
             key={reg.id}
             columns="50px 1fr 80px auto"
@@ -54,8 +55,8 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
           >
             <Text>{idx + 1}</Text>
             <Box>
-              <Text>{reg.team.name}</Text>
-              <Text size="small">{fullAddress(reg.team.address)}</Text>
+              <Text>{reg.name}</Text>
+              <Text size="small">{fullAddress(reg.address)}</Text>
             </Box>
             <Box direction="row" gap="small">
               <Group />
@@ -73,7 +74,9 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
         <Box direction="row" gap="small">
           <Button
             label="Export tímov"
-            onClick={() => handleExportRegistrations(event?.program.name ?? '', eventRegs)}
+            onClick={() =>
+              handleExportRegisteredTeams(event?.program.name ?? '', event.name, regs ?? [])
+            }
           />
           <Button label="Emaily trénerov" onClick={() => setShowCoachesEmails(true)} />
         </Box>

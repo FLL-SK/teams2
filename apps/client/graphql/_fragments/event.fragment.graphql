@@ -34,8 +34,4 @@ fragment EventFragment on Event {
   invoiceItems {
     ...InvoiceItemFragment
   }
-
-  registrations {
-    ...RegistrationListFragment
-  }
 }

@@ -1,4 +1,4 @@
-fragment AddressFragment on Address {
+fragment AddressAddressFragment on Address {
   name
   street
   city
@@ -7,6 +7,10 @@ fragment AddressFragment on Address {
   companyNumber
   vatNumber
   taxNumber
+}
+
+fragment AddressFragment on Address {
+  ...AddressAddressFragment
   contactName
   phone
   email

@@ -3,24 +3,23 @@ import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
 import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
 
 interface ExportSourceType {
-  createdOn: string;
+  registeredOn: string;
   paidOn?: string | null;
   confirmedOn?: string | null;
   coachCount: number;
   childrenCount: number;
   sizeConfirmedOn?: string | null;
-  team: {
+
+  name: string;
+  address: {
     name: string;
-    address: {
-      name: string;
-      city: string;
-      street: string;
-      zip: string;
-    };
+    city: string;
+    street: string;
+    zip: string;
   };
-  event: {
-    name: string;
-  };
+
+  eventName: string;
+
   coach1?: {
     name: string;
     phone?: string | null;
@@ -44,17 +43,17 @@ type ExportFieldKey = NestedObjectLeaves<ExportSourceType>;
 export const fields: Json2AoaInputType<ExportSourceType>[] = [
   {
     label: 'Tím',
-    id: 'team.name',
+    id: 'name',
   },
   {
     label: 'Turnaj',
-    id: 'event.name',
+    id: 'eventName',
   },
 
   {
     label: 'Registrovaný',
-    id: 'createdOn',
-    value: (x) => (x.createdOn ? new Date(x.createdOn) : ''),
+    id: 'registeredOn',
+    value: (x) => (x.registeredOn ? new Date(x.registeredOn) : ''),
   },
   {
     label: 'Reg. potvrdená',
@@ -82,19 +81,19 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
   },
   {
     label: 'Zriaďovateľ-názov',
-    id: 'team.address.name',
+    id: 'address.name',
   },
   {
     label: 'Zriaďovateľ-mesto',
-    id: 'team.address.city',
+    id: 'address.city',
   },
   {
     label: 'Zriadďovateľ-ulica',
-    id: 'team.address.street',
+    id: 'address.street',
   },
   {
     label: 'Adresa-PSČ',
-    id: 'team.address.zip',
+    id: 'address.zip',
   },
   {
     label: 'Tréner1-meno',
@@ -137,5 +136,5 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
 export function exportRegistrations(programName: string, registrations: ExportSourceType[]) {
   const aoa: ArrayOfArraysOfAny = json2Aoa<ExportSourceType>(registrations, fields);
   const today = new Date().toISOString().substring(0, 10);
-  saveXlsx(aoa, `registracie (${programName}) ${today}.xlsx`);
+  saveXlsx(aoa, `registrovane timy (${programName}) ${today}.xlsx`);
 }

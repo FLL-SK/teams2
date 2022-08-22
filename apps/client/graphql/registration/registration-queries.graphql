@@ -21,3 +21,9 @@ query getRegistrationFiles($id: ID!) {
     ...FileFragment
   }
 }
+
+query getRegisteredTeams($eventId: ID!, $includeCoaches: Boolean) {
+  getRegisteredTeams(eventId: $eventId, includeCoaches: $includeCoaches) {
+    ...RegisteredTeamFragment
+  }
+}

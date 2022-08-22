@@ -11,7 +11,7 @@ export const EventMapper = {
       name: event.name,
       programId: event.programId,
       conditions: event.conditions,
-      ownFeesAllowed: event.ownFeesAllowed,
+      ownFeesAllowed: event.eventFeesAllowed,
 
       date: event.date,
       registrationEnd: event.registrationEnd,
@@ -22,7 +22,6 @@ export const EventMapper = {
       deletedBy: event.deletedBy,
 
       invoiceItems: [],
-      registrations: [],
       managers: [],
       program: null,
       registrationsCount: 0,
