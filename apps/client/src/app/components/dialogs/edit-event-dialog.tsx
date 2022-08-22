@@ -15,6 +15,7 @@ import { useState } from 'react';
 
 import { EventListFragmentFragment } from '../../generated/graphql';
 import { Modal } from '../modal';
+import { useAppUser } from '../app-user/use-app-user';
 
 interface EditEventDialogProps {
   show?: boolean;
@@ -40,6 +41,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
     conditions: event?.conditions ?? '',
     ownFeesAllowed: event?.ownFeesAllowed ?? false,
   });
+  const { isAdmin } = useAppUser();
 
   if (!show) {
     return null;
@@ -78,9 +80,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
           <FormField label="Termín registrácie" name="registrationEnd">
             <DateInput name="registrationEnd" format="dd.mm.yyyy" />
           </FormField>
-          {/* <FormField label="Povoliť vlastné poplatky" name="ownFeesAllowed">
-            <CheckBox name="ownFeesAllowed" />
-          </FormField> */}
+          {isAdmin() && <CheckBox name="ownFeesAllowed" label="Povoliť poplatky turnaja" />}
         </Grid>
         <FormField label="Podmienky" name="conditions">
           <TextArea rows={10} name="conditions" />
