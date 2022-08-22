@@ -10,6 +10,7 @@ import { handleExportRegisteredTeams } from './handle-export';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 import { Modal } from '../../../components/modal';
+import { useAppUser } from '../../../components/app-user/use-app-user';
 
 interface PanelEventTeamsProps {
   event?: EventFragmentFragment;
@@ -20,6 +21,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
   const { event, canEdit } = props;
   const navigate = useNavigate();
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);
+  const { isAdmin } = useAppUser();
 
   const { data } = useGetRegisteredTeamsQuery({
     variables: { eventId: event?.id ?? '0', includeCoaches: canEdit },
@@ -51,7 +53,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
             columns="50px 1fr 80px auto"
             pad="small"
             align="center"
-            onClick={() => navigate(appPath.registration(reg.id))}
+            onClick={isAdmin() ? () => navigate(appPath.registration(reg.id)) : undefined}
           >
             <Text>{idx + 1}</Text>
             <Box>

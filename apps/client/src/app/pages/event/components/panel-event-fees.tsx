@@ -39,11 +39,11 @@ export function PanelEventFees(props: PanelEventFeesProps) {
     onError: (e) => notify.error('Nepodarilo sa vymazať položku faktúry.', e.message),
   });
 
-  if (!event) {
+  const invoiceItems = event?.invoiceItems ?? [];
+
+  if (!event || !(invoiceItems.length > 0 || event?.ownFeesAllowed)) {
     return null;
   }
-
-  const invoiceItems = event?.invoiceItems ?? [];
 
   return (
     <Panel title="Poplatky" gap="medium">
