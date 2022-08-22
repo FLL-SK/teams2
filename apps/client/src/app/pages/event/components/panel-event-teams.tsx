@@ -25,17 +25,17 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
     variables: { eventId: event?.id ?? '0', includeCoaches: canEdit },
   });
 
-  const teams = data?.getRegisteredTeams;
+  const regs = data?.getRegisteredTeams;
 
   const coachesEmails: string[] = useMemo(
     () =>
-      event && teams
-        ? teams.reduce((t: string[], reg) => {
+      event && regs
+        ? regs.reduce((t: string[], reg) => {
             const c = (reg?.coaches ?? []).map((c) => c.username).filter((c) => !t.includes(c));
             return [...t, ...c];
           }, [])
         : [],
-    [event, teams]
+    [event, regs]
   );
 
   if (!event) {
@@ -45,24 +45,24 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
   return (
     <Panel title="Tímy" gap="small">
       <Box direction="row" wrap>
-        {(teams ?? []).map((team, idx) => (
+        {(regs ?? []).map((reg, idx) => (
           <ListRow2
-            key={idx}
+            key={reg.id}
             columns="50px 1fr 80px auto"
             pad="small"
             align="center"
-            onClick={() => navigate(appPath.registration(team.registrationId))}
+            onClick={() => navigate(appPath.registration(reg.id))}
           >
             <Text>{idx + 1}</Text>
             <Box>
-              <Text>{team.name}</Text>
-              <Text size="small">{fullAddress(team.address)}</Text>
+              <Text>{reg.name}</Text>
+              <Text size="small">{fullAddress(reg.address)}</Text>
             </Box>
             <Box direction="row" gap="small">
               <Group />
               <Text>
-                {formatTeamSize(team)}
-                {!team.sizeConfirmedOn && ' ?'}
+                {formatTeamSize(reg)}
+                {!reg.sizeConfirmedOn && ' ?'}
               </Text>
             </Box>
             <Box />
@@ -75,7 +75,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
           <Button
             label="Export tímov"
             onClick={() =>
-              handleExportRegisteredTeams(event?.program.name ?? '', event.name, teams ?? [])
+              handleExportRegisteredTeams(event?.program.name ?? '', event.name, regs ?? [])
             }
           />
           <Button label="Emaily trénerov" onClick={() => setShowCoachesEmails(true)} />

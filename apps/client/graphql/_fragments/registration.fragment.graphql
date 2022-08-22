@@ -83,8 +83,8 @@ fragment TeamRegistrationFragment on Registration {
 
 fragment RegisteredTeamFragment on RegisteredTeamPayload {
   id
+  teamId
   name
-  registrationId
   registeredOn
   paidOn
   address {

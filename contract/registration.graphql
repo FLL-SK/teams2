@@ -68,7 +68,7 @@ input TeamSizeInput {
 
 type RegisteredTeamPayload {
   id: ID!
-  registrationId: ID!
+  teamId: ID!
   registeredOn: DateTime!
   confirmedOn: DateTime
   paidOn: DateTime

@@ -248,8 +248,8 @@ export class RegistrationDataSource extends BaseDataSource {
         continue;
       }
       const t: RegisteredTeamPayload = {
-        id: team._id,
-        registrationId: reg._id,
+        id: reg._id,
+        teamId: team._id,
         registeredOn: reg.createdOn,
         confirmedOn: reg.confirmedOn,
         paidOn: reg.paidOn,
