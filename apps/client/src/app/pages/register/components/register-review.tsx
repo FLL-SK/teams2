@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, CheckBox, Markdown, Paragraph, Spinner, Text } from 'grommet';
+import { Box, Button, CheckBox, Markdown, Spinner, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import {
@@ -41,7 +41,9 @@ export function RegisterReview(props: RegisterReviewProps) {
   const event = eventData?.getEvent;
 
   const items =
-    ((event?.invoiceItems?.length ?? 0) > 0 ? event?.invoiceItems : program?.invoiceItems) ?? [];
+    ((event?.ownFeesAllowed ?? false) && (event?.invoiceItems?.length ?? 0) > 0
+      ? event?.invoiceItems
+      : program?.invoiceItems) ?? [];
 
   const shipTo = details.shipTo;
   const billTo = details.billTo;

@@ -2,6 +2,7 @@ import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Markdown, Text } from 'grommet';
 import React, { useState, useCallback } from 'react';
+import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditEventDialog } from '../../../components/dialogs/edit-event-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
@@ -22,6 +23,7 @@ interface PanelEventDetailsProps {
 export function PanelEventDetails(props: PanelEventDetailsProps) {
   const { event, canEdit } = props;
   const { notify } = useNotification();
+  const { isAdmin } = useAppUser();
   const [showEventTerms, setShowEventTerms] = useState<boolean>(false);
   const [showEventEditDialog, setShowEventEditDialog] = useState(false);
 
@@ -59,6 +61,11 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
             label="Dátum turnaja"
             value={event?.date ? formatDate(event?.date) : 'neurčený'}
           />
+          {isAdmin() && (
+            <LabelValue label="Poplatky turnaja">
+              {event?.ownFeesAllowed ? 'áno' : 'nie'}
+            </LabelValue>
+          )}
           <LabelValue label="Podmienky">
             <Box background="light-2" flex pad="small">
               {(event?.conditions ?? '').length > 0 ? (
@@ -69,7 +76,9 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
                   <Anchor label="Zobraz" onClick={() => setShowEventTerms(true)} />
                 </>
               ) : (
-                <Text color="dark-5">Turnaj nemá určené špeciálne podmienky pre účasť tímov.</Text>
+                <Text color="dark-5">
+                  Turnaj nemá určené špeciálne podmienky pre účasť tímov. Platia podmienky programu.
+                </Text>
               )}
             </Box>
           </LabelValue>
