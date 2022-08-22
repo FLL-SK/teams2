@@ -3,14 +3,7 @@ fragment TeamBasicFragment on Team {
   name
 
   address {
-    ...AddressFragment
-  }
-  shipTo {
-    ...AddressFragment
-  }
-  useBillTo
-  billTo {
-    ...AddressFragment
+    ...AddressAddressFragment
   }
 
   createdOn
@@ -23,6 +16,14 @@ fragment TeamListFragment on Team {
   ...TeamBasicFragment
   coachesIds
 
+  shipTo {
+    ...AddressAddressFragment
+  }
+  useBillTo
+  billTo {
+    ...AddressAddressFragment
+  }
+
   tags {
     ...TagFragment
   }
@@ -34,6 +35,18 @@ fragment TeamListFragment on Team {
 
 fragment TeamFragment on Team {
   ...TeamListFragment
+
+  address {
+    ...AddressFragment
+  }
+
+  shipTo {
+    ...AddressFragment
+  }
+
+  billTo {
+    ...AddressFragment
+  }
 
   registrations {
     ...TeamRegistrationFragment

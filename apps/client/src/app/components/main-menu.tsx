@@ -8,6 +8,7 @@ import { useAuthenticate } from './auth/useAuthenticate';
 import { useAppUser } from './app-user/use-app-user';
 import { getColor } from '../theme';
 import styled from 'styled-components';
+import { useApolloClient } from '@apollo/client';
 
 interface MenuButtonProps {
   icon?: JSX.Element;
@@ -59,6 +60,7 @@ function Menu() {
 const Footer = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuthenticate();
+  const apolloClient = useApolloClient();
 
   return (
     <Nav gap="medium" align="center">
@@ -69,6 +71,7 @@ const Footer = () => {
           onClick={() => {
             navigate('/');
             logout();
+            apolloClient.clearStore();
           }}
         />
       )}

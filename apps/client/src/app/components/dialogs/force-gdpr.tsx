@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client';
 import { isNil, omitBy } from 'lodash';
 import React from 'react';
 import {
@@ -16,6 +17,7 @@ interface ForceGdprDialogProps {
 export function ForceGdprDialog(props: ForceGdprDialogProps) {
   const { user } = useAppUser();
   const { logout } = useAuthenticate();
+  const apolloClient = useApolloClient();
 
   const [updateUser] = useUpdateUserMutation();
   const [declineGdpr] = useDeclineGdprMutation();
@@ -27,6 +29,7 @@ export function ForceGdprDialog(props: ForceGdprDialogProps) {
   const handleDecline = async () => {
     await declineGdpr({ variables: { id: user.id } });
     logout();
+    apolloClient.clearStore();
   };
 
   const handleSubmit = async (data: EditUserDialogFields) => {

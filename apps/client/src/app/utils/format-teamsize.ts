@@ -1,8 +1,9 @@
-import { Registration } from '../generated/graphql';
-
 export const formatTeamSize = ({
   boyCount,
   girlCount,
   coachCount,
-}: Pick<Registration, 'boyCount' | 'girlCount' | 'coachCount'>) =>
-  `${girlCount + boyCount}/${coachCount}`;
+}: {
+  boyCount: number;
+  girlCount: number;
+  coachCount: number;
+}) => `${girlCount + boyCount}/${coachCount}`;
