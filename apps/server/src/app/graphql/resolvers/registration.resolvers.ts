@@ -16,6 +16,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
     dataSources.registration.getProgramRegistrations(programId),
 
   getRegistrationFiles: async (_parent, { id }, ctx) => getRegistrationFiles(id, ctx),
+  getRegisteredTeams: async (_parent, { eventId, includeCoaches }, { dataSources }) =>
+    dataSources.registration.getRegisteredTeams(eventId, includeCoaches),
 };
 
 export const typeResolver: Resolver<Registration> = {

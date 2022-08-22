@@ -66,11 +66,27 @@ input TeamSizeInput {
   coachCount: Int!
 }
 
+type RegisteredTeamPayload {
+  id: ID!
+  registrationId: ID!
+  registeredOn: DateTime!
+  confirmedOn: DateTime
+  paidOn: DateTime
+  name: String!
+  address: Address!
+  girlCount: Int!
+  boyCount: Int!
+  coachCount: Int!
+  sizeConfirmedOn: DateTime
+  coaches: [User!]
+}
+
 extend type Query {
   getRegistration(id: ID!): Registration
   getProgramRegistrations(programId: ID!): [Registration!]!
   getEventRegistrations(eventId: ID!): [Registration!]!
   getRegistrationFiles(id: ID!): [File!]!
+  getRegisteredTeams(eventId: ID!, includeCoaches: Boolean): [RegisteredTeamPayload!]!
 }
 
 extend type Mutation {

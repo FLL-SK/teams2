@@ -6,8 +6,14 @@ import {
   RegistrationData,
   registrationRepository,
   teamRepository,
+  userRepository,
 } from '../../models';
-import { Registration, RegistrationInput, TeamSizeInput } from '../../generated/graphql';
+import {
+  RegisteredTeamPayload,
+  Registration,
+  RegistrationInput,
+  TeamSizeInput,
+} from '../../generated/graphql';
 import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
@@ -228,5 +234,56 @@ export class RegistrationDataSource extends BaseDataSource {
       .findByIdAndUpdate(id, { confirmedOn: null }, { new: true })
       .exec();
     return RegistrationMapper.toRegistration(registration);
+  }
+
+  async getRegisteredTeams(
+    eventId: ObjectId,
+    includeCoaches?: boolean
+  ): Promise<RegisteredTeamPayload[]> {
+    const regs = await registrationRepository.find({ eventId, canceledOn: null }).exec();
+    const teams: RegisteredTeamPayload[] = [];
+    for (const reg of regs) {
+      const team = await teamRepository.findById(reg.teamId).exec();
+      if (!team) {
+        continue;
+      }
+      const t: RegisteredTeamPayload = {
+        id: team._id,
+        registrationId: reg._id,
+        registeredOn: reg.createdOn,
+        confirmedOn: reg.confirmedOn,
+        paidOn: reg.paidOn,
+        name: team.name,
+        coachCount: reg.coachCount ?? 0,
+        boyCount: reg.boyCount ?? 0,
+        girlCount: reg.girlCount ?? 0,
+        sizeConfirmedOn: reg.sizeConfirmedOn,
+        address: {
+          name: team.address.name,
+          street: team.address.street,
+          city: team.address.city,
+          zip: team.address.zip,
+          companyNumber: team.address.companyNumber,
+          vatNumber: team.address.vatNumber,
+          taxNumber: team.address.taxNumber,
+        },
+        coaches: [],
+      };
+
+      if (
+        includeCoaches &&
+        (this.context.userGuard.isAdmin() || this.context.userGuard.isEventManager(eventId))
+      ) {
+        const c = await userRepository
+          .find({ _id: { $in: team.coachesIds }, deletedOn: null }, { _id: 1 })
+          .sort({ username: 1 })
+          .exec();
+        const cp = c.map((u) => this.context.dataSources.user.getUser(u._id));
+        t.coaches = await Promise.all(cp);
+      }
+      teams.push(t);
+    }
+    teams.sort((a, b) => a.name.localeCompare(b.name, 'sk', { sensitivity: 'base' }));
+    return teams;
   }
 }

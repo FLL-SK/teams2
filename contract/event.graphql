@@ -24,7 +24,6 @@ type Event implements INode {
   deletedOn: DateTime
   deletedBy: ID
 
-  registrations: [Registration!]!
   registrationsCount: Int!
   managers: [User!]!
   program: Program!

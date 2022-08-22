@@ -80,3 +80,21 @@ fragment TeamRegistrationFragment on Registration {
     ...InvoiceItemFragment
   }
 }
+
+fragment RegisteredTeamFragment on RegisteredTeamPayload {
+  id
+  name
+  registrationId
+  registeredOn
+  paidOn
+  address {
+    ...AddressAddressFragment
+  }
+  girlCount
+  boyCount
+  coachCount
+  sizeConfirmedOn
+  coaches {
+    ...UserBasicFragment
+  }
+}
