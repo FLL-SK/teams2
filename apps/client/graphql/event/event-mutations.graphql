@@ -52,6 +52,9 @@ mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
     team {
       ...TeamFragment
     }
+    error {
+      ...MutationErrorFragment
+    }
   }
 }
 
@@ -62,6 +65,9 @@ mutation cancelEventRegistration($id: ID!) {
     }
     team {
       ...TeamFragment
+    }
+    error {
+      ...MutationErrorFragment
     }
   }
 }
@@ -76,6 +82,9 @@ mutation switchTeamEvent($registrationId: ID!, $newEventId: ID!) {
     }
     newEvent {
       ...EventFragment
+    }
+    error {
+      ...MutationErrorFragment
     }
   }
 }

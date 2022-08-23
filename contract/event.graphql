@@ -62,19 +62,22 @@ input EventFilterInput {
 }
 
 type RegisterTeamPayload {
-  team: Team!
-  event: Event!
+  team: Team
+  event: Event
+  error: MutationError
 }
 
 type UnregisterTeamPayload {
-  team: Team!
-  event: Event!
+  team: Team
+  event: Event
+  error: MutationError
 }
 
 type SwitchTeamEventPayload {
-  team: Team!
-  oldEvent: Event!
-  newEvent: Event!
+  team: Team
+  oldEvent: Event
+  newEvent: Event
+  error: MutationError
 }
 
 extend type Query {

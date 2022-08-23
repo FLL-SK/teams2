@@ -26,6 +26,7 @@ import { RegisterError } from './components/register-error';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { RegisterConfirmBillToContact } from './components/register-confirm-billto-contact';
 import { formatFullName } from '../../utils/format-fullname';
+import { handleMutationErrors } from '../../utils/handle_mutation_error';
 
 type RegistrationStep =
   | 'intro'
@@ -90,8 +91,14 @@ export function RegisterPage() {
       const _eventId = data.event?.id ?? '0';
 
       const r1 = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
-      if (!r1.data?.registerTeamForEvent) {
-        notify.fatal('Nepodarilo sa zaregistrovat tím.');
+
+      if (
+        handleMutationErrors(
+          r1.data?.registerTeamForEvent,
+          'Nepodarilo sa registrovať tím.',
+          notify.error
+        )
+      ) {
         return;
       }
       setStep('success');
