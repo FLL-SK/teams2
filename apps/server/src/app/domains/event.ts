@@ -54,16 +54,15 @@ export async function registerTeamToEvent(
   const { userGuard, dataSources } = ctx;
 
   if (!userGuard.isAdmin() && !(await userGuard.isCoach(teamId))) {
-    //TODO nicer error handling
     log.error('Not authorized to register');
-    return null;
+    return { error: { code: 'not_authorized' } };
   }
 
   const team = await dataSources.team.getTeam(teamId);
   const registration = await dataSources.registration.createRegistration(eventId, teamId);
 
   if (!registration || !team) {
-    return null;
+    return { error: { code: 'wrong_input' } };
   }
 
   await copyInvoiceItemsToRegistration(registration.id);
@@ -95,9 +94,8 @@ export async function cancelRegistration(id: ObjectId, ctx: ApolloContext) {
     !userGuard.isAdmin() &&
     !((await userGuard.isCoach(reg.teamId)) && !reg.invoiceIssuedOn && !reg.shippedOn)
   ) {
-    //TODO nicer error handling
     log.debug('Not authorized to cancel registration %s', id);
-    return null;
+    return { errors: [{ code: 'not_authorized' }] };
   }
 
   const registration = await dataSources.registration.cancelRegistration(id);
@@ -175,7 +173,6 @@ export async function switchTeamEvent(
       newEventId,
       e.message
     );
-    throw new Error('Error switching team');
-    return null;
+    return { error: { code: 'error' } };
   }
 }

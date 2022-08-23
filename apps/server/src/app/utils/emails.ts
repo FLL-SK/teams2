@@ -1,7 +1,7 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { eventRepository, teamRepository, userRepository } from '../models';
+import { eventRepository, programRepository, teamRepository, userRepository } from '../models';
 import { msgFromTemplate, msgPasswordReset } from '../templates';
 import { sendHtmlEmail } from './mailer';
 import { getAppSettings } from './settings';
@@ -126,6 +126,26 @@ export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId
   eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
 }
 
+export async function emailProgramManagerAdded(programId: ObjectId, userId: ObjectId) {
+  const prg = await programRepository.findById(programId).lean().exec();
+  const user = await userRepository.findById(userId).lean().exec();
+
+  const url = getServerConfig().clientAppRootUrl + appPath.program(programId.toHexString());
+  const subject = `Pridaný manažér pre program ${prg.name}`;
+  const title = subject;
+  const msg = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}. Viac informácií o programe nájdete tu ${url}`;
+
+  // send to admin
+  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+
+  // send to program managers
+  const managers = await userRepository
+    .find({ _id: { $in: prg.managersIds } })
+    .lean()
+    .exec();
+  managers.forEach((m) => emailMessage(m.username, subject, title, msg));
+}
+
 export function emailUserAcceptedGdprToAdmin(userEmail: string) {
   const subject = `Akceptované GDPR ${userEmail}`;
   const title = subject;
@@ -196,7 +216,3 @@ export async function emailRegistrationConfirmed(
     .exec();
   coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
 }
-
-//TODO
-// notify new program manager -> admin
-// notify new event manager -> program mgr, admin

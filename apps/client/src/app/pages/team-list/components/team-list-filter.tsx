@@ -20,13 +20,13 @@ interface TeamListFilterProps {
 export function TeamListFilter(props: TeamListFilterProps) {
   const { onClose, show, onChange, values } = props;
   const [filterTags, setFilterTags] = useState<string[]>(values.tags ?? []);
-  const { data: tagsData, loading: loadingTags, error: tagsError } = useGetTagsQuery();
+  const { data: tagsData } = useGetTagsQuery();
 
   const addTagToFilter = useCallback(
     (id: string) => {
       if (!filterTags.includes(id)) {
         const tags = [...filterTags, id];
-        setFilterTags(tags); //FIXME: needed if onchnage will trigger rerender?
+        setFilterTags(tags);
         onChange({ ...values, tags });
       }
     },
@@ -36,7 +36,7 @@ export function TeamListFilter(props: TeamListFilterProps) {
   const removeTagFromFilter = useCallback(
     (id: string) => {
       const tags = filterTags.filter((t) => t !== id);
-      setFilterTags(tags); //FIXME: needed if onchnage will trigger rerender?
+      setFilterTags(tags);
       if (tags.length === 0) {
         const nf = { ...values };
         delete nf.tags;
