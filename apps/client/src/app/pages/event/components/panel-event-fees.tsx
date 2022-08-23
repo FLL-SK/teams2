@@ -41,17 +41,17 @@ export function PanelEventFees(props: PanelEventFeesProps) {
 
   const invoiceItems = event?.invoiceItems ?? [];
 
-  if (!event || !(invoiceItems.length > 0 || event?.ownFeesAllowed)) {
+  if (!event) {
     return null;
   }
 
   return (
     <Panel title="Poplatky" gap="medium">
       {invoiceItems.length === 0 && (
-        <Text>
-          Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný. Pridaním
-          poplatku je možné definovať poplatky špecifické pre tento turnaj.
-        </Text>
+        <>
+          <Text>Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný.</Text>
+          <InvoiceItemList items={event.program.invoiceItems} editable={false} />
+        </>
       )}
       {invoiceItems.length > 0 && (
         <InvoiceItemList
@@ -62,11 +62,7 @@ export function PanelEventFees(props: PanelEventFeesProps) {
         />
       )}
       <Box direction="row">
-        <Button
-          label="Pridať poplatok"
-          onClick={() => setInvoiceItemAdd(true)}
-          disabled={!canEdit}
-        />
+        {canEdit && <Button label="Pridať poplatok" onClick={() => setInvoiceItemAdd(true)} />}
       </Box>
       <EditInvoiceItemDialog
         show={!!invoiceItemEdit || invoiceItemAdd}

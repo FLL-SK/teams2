@@ -18,6 +18,7 @@ import { EventMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
+import { emailProgramManagerAdded } from '../../utils/emails';
 
 export class ProgramDataSource extends BaseDataSource {
   private loader: Dataloader<string, Program, string>;
@@ -91,6 +92,9 @@ export class ProgramDataSource extends BaseDataSource {
     const program = await programRepository
       .findOneAndUpdate({ _id: programId }, u, { new: true })
       .exec();
+
+    emailProgramManagerAdded(programId, userId); // send email notification
+
     return ProgramMapper.toProgram(program);
   }
 

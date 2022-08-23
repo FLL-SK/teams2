@@ -12,13 +12,16 @@ export interface NotificationType {
   variant?: NotificationVariant;
 }
 
+export type NotificationMethod = (msg: string, details?: string) => void;
+export interface NotifyInterface {
+  error: NotificationMethod;
+  fatal: NotificationMethod;
+  info: NotificationMethod;
+}
+
 export type NotificationContextType = {
   notifications: NotificationType[];
-  notify: {
-    error: (msg: string, details?: string) => void;
-    fatal: (msg: string, details?: string) => void;
-    info: (msg: string, details?: string) => void;
-  };
+  notify: NotifyInterface;
   remove: (id: number, details?: string) => void;
   clear: () => void;
 };

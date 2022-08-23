@@ -27,6 +27,10 @@ fragment EventListFragment on Event {
 fragment EventFragment on Event {
   ...EventListFragment
 
+  program {
+    ...ProgramBasicFragmentWithItems
+  }
+
   managers {
     ...UserListFragment
   }
