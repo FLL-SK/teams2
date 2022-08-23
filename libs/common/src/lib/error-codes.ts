@@ -1,4 +1,4 @@
-const errorMessages = {
+const errorMessages: Record<string, string> = {
   error: 'Vyskytla sa chyba',
   not_authorized: 'Nemáte oprávnenie na vykonanie tejto akcie.',
   wrong_input: 'Nesprávne vstupy.',

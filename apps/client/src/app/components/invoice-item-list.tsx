@@ -29,10 +29,14 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
           columns="1fr 75px 100px 150px auto"
           pad="small"
           align="center"
-          onClick={(e) => {
-            e.stopPropagation();
-            editable && onClick && onClick(item);
-          }}
+          onClick={
+            editable
+              ? (e) => {
+                  e.stopPropagation();
+                  onClick && onClick(item);
+                }
+              : undefined
+          }
         >
           <Box>
             <Text>{item.text}</Text>

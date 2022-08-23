@@ -15,6 +15,13 @@ fragment ProgramBasicFragment on Program {
   deletedBy
 }
 
+fragment ProgramBasicFragmentWithItems on Program {
+  ...ProgramBasicFragment
+  invoiceItems {
+    ...InvoiceItemFragment
+  }
+}
+
 fragment ProgramListFragment on Program {
   registrationsCount
   ...ProgramBasicFragment

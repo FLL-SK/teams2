@@ -23,7 +23,7 @@ interface PanelEventDetailsProps {
 export function PanelEventDetails(props: PanelEventDetailsProps) {
   const { event, canEdit } = props;
   const { notify } = useNotification();
-  const { isAdmin } = useAppUser();
+  const { isAdmin, isEventManager } = useAppUser();
   const [showEventTerms, setShowEventTerms] = useState<boolean>(false);
   const [showEventEditDialog, setShowEventEditDialog] = useState(false);
 
@@ -61,7 +61,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
             label="Dátum turnaja"
             value={event?.date ? formatDate(event?.date) : 'neurčený'}
           />
-          {isAdmin() && (
+          {(isAdmin() || isEventManager(event.id)) && (
             <LabelValue label="Poplatky turnaja">
               {event?.ownFeesAllowed ? 'áno' : 'nie'}
             </LabelValue>

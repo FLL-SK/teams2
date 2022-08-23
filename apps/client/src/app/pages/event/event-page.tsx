@@ -65,7 +65,11 @@ export function EventPage() {
           </Box>
         )}
         <PanelEventDetails event={event} canEdit={canEdit} />
-        <PanelEventFees event={event} canEdit={canEdit} onChange={refetch} />
+        <PanelEventFees
+          event={event}
+          canEdit={canEdit && (event?.ownFeesAllowed ?? false)}
+          onChange={refetch}
+        />
         {event && <PanelEventTeams event={event} canEdit={canEdit} />}
         {canEdit && (
           <Panel title="Manažéri">
