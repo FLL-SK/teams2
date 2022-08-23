@@ -13,8 +13,7 @@ import {
 import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
-  emailTeamRegisteredToCoach,
-  emailTeamRegisteredToEventManagers,
+  emailTeamRegistered,
   emailTeamUnRegisteredToCoach,
   emailTeamUnRegisteredToEventManagers,
 } from '../utils/emails';
@@ -59,29 +58,25 @@ export async function registerTeamToEvent(
   }
 
   const team = await dataSources.team.getTeam(teamId);
-  const registration = await dataSources.registration.createRegistration(eventId, teamId);
-
-  if (!registration || !team) {
-    return { error: { code: 'wrong_input' } };
+  if (!team) {
+    log.error('Team not found %s', teamId);
+    return { error: { code: 'wrong_input', message: 'wrong team id' } };
   }
 
+  // register team to event
+  const registration = await dataSources.registration.createRegistration(eventId, teamId);
+
+  if (!registration) {
+    return { error: { code: 'registration_failed' } };
+  }
+
+  // copy invoice items to registration
   await copyInvoiceItemsToRegistration(registration.id);
 
-  const [event, program, eventMgrs, programMgrs, coaches] = await Promise.all([
-    dataSources.event.getEvent(eventId),
-    dataSources.program.getProgram(registration.programId),
-    dataSources.event.getEventManagers(eventId),
-    dataSources.program.getProgramManagers(registration.programId),
-    dataSources.team.getTeamCoaches(teamId),
-  ]);
+  // email notifications
+  emailTeamRegistered(registration.id, ctx.user._id);
 
-  const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
-  const coachEmails = coaches.map((c) => c.username);
-  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event.id.toString());
-
-  emailTeamRegisteredToCoach(coachEmails, team.name, event.name, program.name, eventUrl);
-  emailTeamRegisteredToEventManagers(mgrEmails, team.name, event.name, program.name, eventUrl);
-
+  const event = await dataSources.event.getEvent(eventId);
   return { event, team };
 }
 

@@ -1,10 +1,20 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { eventRepository, programRepository, teamRepository, userRepository } from '../models';
+import {
+  eventRepository,
+  programRepository,
+  registrationRepository,
+  teamRepository,
+  userRepository,
+} from '../models';
 import { msgFromTemplate, msgPasswordReset } from '../templates';
 import { sendHtmlEmail } from './mailer';
 import { getAppSettings } from './settings';
+
+import { logger } from '@teams2/logger';
+
+const logLib = logger('domain:email');
 
 export function emailMessage(to: string, subject: string, title: string, message: string) {
   msgFromTemplate(title, message).then((html) => sendHtmlEmail(to, subject, html));
@@ -189,6 +199,7 @@ export async function emailRegistrationConfirmed(
   teamId: ObjectId,
   confirmedBy: string
 ) {
+  const log = logLib.extend('emailRegistrationConfirmed');
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
 
@@ -197,22 +208,70 @@ export async function emailRegistrationConfirmed(
   const msg = `Organizátor súťaže potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
-  getAppSettings().then((s) =>
-    emailMessage(s.sysEmail, subject, title, msg + '\n\n Potvrdené:' + confirmedBy)
-  );
+
+  getAppSettings().then((s) => {
+    emailMessage(s.sysEmail, subject, title, msg + '\n\n Potvrdené:' + confirmedBy);
+    log.debug('email sent to admin %s', s.sysEmail);
+  });
 
   // email to event managers
   const event = await eventRepository.findById(eventId).lean().exec();
   const eventManagers = await userRepository
-    .find({ _id: { $in: event.managersIds } })
+    .find({ _id: { $in: event.managersIds } }, { username: 1 })
     .lean()
     .exec();
   eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  log.debug(
+    'email sent to event managers %s',
+    eventManagers.map((m) => m.username)
+  );
 
   // email to coaches
   const coaches = await userRepository
-    .find({ _id: { $in: team.coachesIds } })
+    .find({ _id: { $in: team.coachesIds } }, { username: 1 })
     .lean()
     .exec();
   coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
+}
+
+export async function emailTeamRegistered(registrationId: ObjectId, registeredBy: ObjectId) {
+  const log = logLib.extend('emailTeamRegistered');
+  const reg = await registrationRepository.findById(registrationId).lean().exec();
+  const team = await teamRepository.findById(reg.teamId).lean().exec();
+  const event = await eventRepository.findById(reg.eventId).lean().exec();
+  const program = await programRepository.findById(reg.programId).lean().exec();
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
+
+  const coaches = await userRepository
+    .find({ _id: { $in: team.coachesIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const em = await userRepository
+    .find({ _id: { $in: event.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const pm = await userRepository
+    .find({ _id: { $in: program.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const managers = em.concat(pm);
+
+  const subject = `Registrácia tímu ${team.name} na turnaj ${event.name}`;
+  const title = subject;
+  const msg = `Tím ${team.name} bol úspešne zaregistrovaný na turnaj ${event.name} programu ${program.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+
+  coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
+  log.debug(
+    'email sent to coaches %o',
+    coaches.map((m) => m.username)
+  );
+
+  managers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  log.debug(
+    'email sent to managers %o',
+    managers.map((m) => m.username)
+  );
 }
