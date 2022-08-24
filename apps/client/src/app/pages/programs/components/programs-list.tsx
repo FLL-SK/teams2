@@ -19,7 +19,7 @@ export function ProgramsList(props: ProgramsListProps) {
     <Box gap="small">
       {programs.length === 0 && (
         <Box pad="medium">
-          <Paragraph>Aktuálne ešte nie sú aktívne žiadne turnaje.</Paragraph>
+          <Paragraph>Žiadne programy.</Paragraph>
         </Box>
       )}
       {programs.map((program) => (
