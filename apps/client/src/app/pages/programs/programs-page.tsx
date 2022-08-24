@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button, CheckBox } from 'grommet';
-import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { ProgramsList } from './components/programs-list';
 import { Add } from 'grommet-icons';

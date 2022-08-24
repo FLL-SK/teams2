@@ -50,6 +50,7 @@ export class RegistrationDataSource extends BaseDataSource {
   async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const q: FilterQuery<RegistrationData> = { canceledOn: null };
+
     if (filter.programId) {
       q.programId = filter.programId;
     }

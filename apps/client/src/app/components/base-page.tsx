@@ -33,6 +33,7 @@ const PageTitle = ({ title }: { title?: string }) => (
 
 export function BasePage(props: BasePageProps) {
   const { children, title, loading } = props;
+
   const { data: unconfirmedRegs } = useGetRegistrationsCountQuery({
     variables: { filter: { onlyUnconfirmed: true } },
     pollInterval: 300000,
@@ -45,11 +46,16 @@ export function BasePage(props: BasePageProps) {
     variables: { filter: { onlyUnpaid: true } },
     pollInterval: 300000,
   });
+  const { data: unshippedRegs } = useGetRegistrationsCountQuery({
+    variables: { filter: { onlyNotShipped: true } },
+    pollInterval: 300000,
+  });
 
   const regCount = {
     unconfirmed: unconfirmedRegs?.getRegistrationsCount ?? 0,
     uninvoiced: uninvoicedRegs?.getRegistrationsCount ?? 0,
     unpaid: unpaidRegs?.getRegistrationsCount ?? 0,
+    unshipped: unshippedRegs?.getRegistrationsCount ?? 0,
   };
 
   return (

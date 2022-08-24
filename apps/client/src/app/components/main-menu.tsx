@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import { appPath } from '@teams2/common';
 import { Nav, Sidebar, Button, Box, Text } from 'grommet';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
@@ -38,8 +38,8 @@ const MultiBadge = (props: { badges?: Badge[] }) => {
 
   return (
     <Box direction="row" align="center" gap="xxsmall">
-      {props.badges.map((badge) => (
-        <Box key={badge.label} pad="xxsmall" background={badge.color} round="small" align="center">
+      {props.badges.map((badge, idx) => (
+        <Box key={idx} pad="xxsmall" background={badge.color} round="small" align="center">
           <Text size="small" color="white" tip={{ content: badge.tip }}>
             {badge.label}
           </Text>
@@ -70,14 +70,14 @@ const MenuButton = ({ path, title, icon, onClick, badges }: MenuButtonProps) => 
 };
 
 interface MenuProps {
-  regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number };
+  regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number; unshipped: number };
 }
 
-function regsToBadges(regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number }) {
+function regsToBadges(regCount?: MenuProps['regCount']) {
   if (!regCount) {
     return [];
   }
-  const { unconfirmed, unpaid, uninvoiced } = regCount;
+  const { unconfirmed, unpaid, uninvoiced, unshipped } = regCount;
   const badges: Badge[] = [];
   if (unconfirmed > 0) {
     badges.push({
@@ -89,7 +89,7 @@ function regsToBadges(regCount?: { unconfirmed: number; unpaid: number; uninvoic
   if (uninvoiced > 0) {
     badges.push({
       label: uninvoiced < 10 ? `${uninvoiced}` : '9+',
-      color: 'status-ok',
+      color: 'magenta',
       tip: 'nefakturované',
     });
   }
@@ -99,6 +99,13 @@ function regsToBadges(regCount?: { unconfirmed: number; unpaid: number; uninvoic
       label: unpaid < 10 ? `${unpaid}` : '9+',
       color: 'status-warning',
       tip: 'nezaplatené',
+    });
+  }
+  if (unshipped > 0) {
+    badges.push({
+      label: unshipped < 10 ? `${unshipped}` : '9+',
+      color: 'status-ok',
+      tip: 'neodoslané',
     });
   }
   return badges;
@@ -152,7 +159,7 @@ const Footer = () => {
 interface MainMenuProps {
   responsiveSize: string;
   userData?: UserFragmentFragment | null;
-  regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number };
+  regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number; unshipped: number };
 }
 
 export function MainMenu(props: MainMenuProps) {
