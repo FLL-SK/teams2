@@ -236,10 +236,14 @@ export async function emailRegistrationConfirmed(
 
 export async function emailTeamRegistered(registrationId: ObjectId, registeredBy: ObjectId) {
   const log = logLib.extend('emailTeamRegistered');
+
   const reg = await registrationRepository.findById(registrationId).lean().exec();
-  const team = await teamRepository.findById(reg.teamId).lean().exec();
-  const event = await eventRepository.findById(reg.eventId).lean().exec();
-  const program = await programRepository.findById(reg.programId).lean().exec();
+  const [team, event, program] = await Promise.all([
+    teamRepository.findById(reg.teamId).lean().exec(),
+    eventRepository.findById(reg.eventId).lean().exec(),
+    programRepository.findById(reg.programId).lean().exec(),
+  ]);
+
   const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
 
   const coaches = await userRepository

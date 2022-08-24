@@ -1,24 +1,28 @@
 import debugLib from 'debug';
 import mongoose from 'mongoose';
-import { userRepository } from '../../models';
+import { registrationRepository } from '../../models';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
+  enrichRegistrations();
 }
 
-async function copyPhone() {
-  const debug = debugLib('upgrade:copyPhone');
-  debug('copyPhone');
-  const users = await userRepository.find({ phone: null }).exec();
-  let i = 0;
-  for (const u of users) {
-    const et = await mongoose.connection.db.collection('t1_users').findOne({ email: u.username });
-    if (et?.phone) {
-      i++;
-      u.phone = et.phone;
-    }
-    await u.save();
+// accessing the database directly
+// const et = await mongoose.connection.db.collection('t1_users').findOne({ email: u.username });
+
+async function enrichRegistrations() {
+  const debug = debugLib('upgrade:enrichRegistrations');
+  debug('enrichRegistrations');
+
+  const regs = await registrationRepository
+    .find({ createdOn: { $lt: new Date(2022, 0, 1) }, shippedOn: null })
+    .exec();
+  for (const reg of regs) {
+    reg.shippedOn = reg.createdOn;
+    reg.paidOn = reg.createdOn;
+    reg.invoiceIssuedOn = reg.createdOn;
+    await reg.save();
   }
-  debug('updated %d users', i);
+  debug('updated %d registrations', regs.length);
 }

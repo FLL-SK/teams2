@@ -15,8 +15,16 @@ export const typeResolver: Resolver<Program> = {
     dataSources.invoice.getProgramInvoiceItems(id),
   registrations: async ({ id }, _args, { dataSources }) =>
     dataSources.registration.getProgramRegistrations(id),
-  registrationsCount: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getProgramRegistrationsCount(id),
+  regCount: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount({ programId: id }),
+  regUnconfirmed: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount({ programId: id, onlyUnconfirmed: true }),
+  regNotInvoiced: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount({ programId: id, onlyNotInvoiced: true }),
+  regUnpaid: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount({ programId: id, onlyUnpaid: true }),
+  regNotShipped: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount({ programId: id, onlyNotShipped: true }),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
