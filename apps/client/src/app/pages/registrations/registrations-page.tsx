@@ -99,7 +99,7 @@ export function RegistrationsPage() {
   // if no searchParams provided for the page, then get filter from the local store
   useEffect(() => {
     const s = localStorage.getItem(localStoreFilterEntry);
-    if (searchParams.entries.length === 0 && s) {
+    if (searchParams.toString().length === 0 && s) {
       setSearchParams(new URLSearchParams(s));
     }
   }, [searchParams, setSearchParams]);
@@ -132,7 +132,8 @@ export function RegistrationsPage() {
     (filter: RegistrationListFilterValues) => {
       const sp = constructRegistrationsSearchParams(filter);
       localStorage.setItem(localStoreFilterEntry, sp.toString());
-      setSearchParams(new URLSearchParams(sp));
+      const p = new URLSearchParams(sp);
+      setSearchParams(p);
     },
     [setSearchParams]
   );
