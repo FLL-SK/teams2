@@ -49,7 +49,7 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized();
-    const q: FilterQuery<RegistrationData> = {};
+    const q: FilterQuery<RegistrationData> = { canceledOn: null };
     if (filter.programId) {
       q.programId = filter.programId;
     }
@@ -58,9 +58,11 @@ export class RegistrationDataSource extends BaseDataSource {
     }
     if (filter.onlyUnpaid) {
       q.paidOn = null;
+      q.invoiceIssuedOn = { $ne: null };
     }
     if (filter.onlyNotInvoiced) {
       q.invoiceIssuedOn = null;
+      q.confirmedOn = { $ne: null };
     }
 
     const regsCount = await registrationRepository.count(q).exec();
