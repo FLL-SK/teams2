@@ -10,6 +10,10 @@ import {
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
     dataSources.registration.getRegistration(id),
+
+  getRegistrationsCount: async (_parent, { filter }, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount(filter),
+
   getEventRegistrations: async (_parent, { eventId }, { dataSources }) =>
     dataSources.registration.getEventRegistrations(eventId),
   getProgramRegistrations: async (_parent, { programId }, { dataSources }) =>

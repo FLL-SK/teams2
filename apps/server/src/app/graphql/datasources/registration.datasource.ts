@@ -11,6 +11,7 @@ import {
 import {
   RegisteredTeamPayload,
   Registration,
+  RegistrationFilter,
   RegistrationInput,
   TeamSizeInput,
 } from '../../generated/graphql';
@@ -19,6 +20,7 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
+import { FilterQuery } from 'mongoose';
 
 export class RegistrationDataSource extends BaseDataSource {
   private loader: Dataloader<string, Registration, string>;
@@ -45,7 +47,28 @@ export class RegistrationDataSource extends BaseDataSource {
     return reg;
   }
 
+  async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    const q: FilterQuery<RegistrationData> = {};
+    if (filter.programId) {
+      q.programId = filter.programId;
+    }
+    if (filter.onlyUnconfirmed) {
+      q.confirmedOn = null;
+    }
+    if (filter.onlyUnpaid) {
+      q.paidOn = null;
+    }
+    if (filter.onlyNotInvoiced) {
+      q.invoiceIssuedOn = null;
+    }
+
+    const regsCount = await registrationRepository.count(q).exec();
+    return regsCount;
+  }
+
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+    //FIXME: this.userGuard.isAdmin() || this.userGuard.isCoach(teamId) || this.userGuard.notAuthorized();
     const event = await eventRepository.findById(eventId).exec();
     const team = await teamRepository.findById(teamId).exec();
     if (!team || !event) {
@@ -67,6 +90,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async updateRegistration(id: ObjectId, input: RegistrationInput): Promise<Registration> {
+    // FIXME: this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, input, { new: true })
       .exec();

@@ -4,6 +4,10 @@ query getRegistration($id: ID!) {
   }
 }
 
+query getRegistrationsCount($filter: RegistrationFilter) {
+  getRegistrationsCount(filter: $filter)
+}
+
 query getProgramRegistrations($programId: ID!) {
   getProgramRegistrations(programId: $programId) {
     ...RegistrationListFragment

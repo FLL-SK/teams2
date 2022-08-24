@@ -81,8 +81,17 @@ type RegisteredTeamPayload {
   coaches: [User!]
 }
 
+input RegistrationFilter {
+  programId: ID
+  onlyUnconfirmed: Boolean
+  onlyUnpaid: Boolean
+  onlyNotInvoiced: Boolean
+  onlyNotShipped: Boolean
+}
+
 extend type Query {
   getRegistration(id: ID!): Registration
+  getRegistrationsCount(filter: RegistrationFilter): Int!
   getProgramRegistrations(programId: ID!): [Registration!]!
   getEventRegistrations(eventId: ID!): [Registration!]!
   getRegistrationFiles(id: ID!): [File!]!

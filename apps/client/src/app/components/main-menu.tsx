@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { appPath } from '@teams2/common';
-import { Nav, Sidebar, Button } from 'grommet';
+import { Nav, Sidebar, Button, Box, Text } from 'grommet';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';
@@ -16,6 +16,7 @@ interface MenuButtonProps {
   title: string;
   from?: Location;
   onClick?: () => void;
+  badges?: Badge[];
 }
 
 const StyledButton = styled(Button)`
@@ -24,30 +25,99 @@ const StyledButton = styled(Button)`
   width: 100%;
 `;
 
-const MenuButton = ({ path, title, icon, onClick }: MenuButtonProps) => {
+interface Badge {
+  label: string;
+  color: string;
+  tip?: string;
+}
+
+const MultiBadge = (props: { badges?: Badge[] }) => {
+  if (!props.badges || props.badges.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box direction="row" align="center" gap="xxsmall">
+      {props.badges.map((badge) => (
+        <Box key={badge.label} pad="xxsmall" background={badge.color} round="small" align="center">
+          <Text size="small" color="white" tip={{ content: badge.tip }}>
+            {badge.label}
+          </Text>
+        </Box>
+      ))}
+    </Box>
+  );
+};
+
+const MenuButton = ({ path, title, icon, onClick, badges }: MenuButtonProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
     <StyledButton
       plain
-      label={title}
-      icon={icon}
       onClick={() =>
         onClick ? onClick() : path ? navigate(path, { state: { from: location } }) : null
       }
-    />
+    >
+      <Box>
+        {icon}
+        {title}
+        <MultiBadge badges={badges} />
+      </Box>
+    </StyledButton>
   );
 };
 
-function Menu() {
+interface MenuProps {
+  regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number };
+}
+
+function regsToBadges(regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number }) {
+  if (!regCount) {
+    return [];
+  }
+  const { unconfirmed, unpaid, uninvoiced } = regCount;
+  const badges: Badge[] = [];
+  if (unconfirmed > 0) {
+    badges.push({
+      label: unconfirmed < 10 ? `${unconfirmed}` : '9+',
+      color: 'status-critical',
+      tip: 'nepotvrdené',
+    });
+  }
+  if (uninvoiced > 0) {
+    badges.push({
+      label: uninvoiced < 10 ? `${uninvoiced}` : '9+',
+      color: 'status-ok',
+      tip: 'nefakturované',
+    });
+  }
+
+  if (unpaid > 0) {
+    badges.push({
+      label: unpaid < 10 ? `${unpaid}` : '9+',
+      color: 'status-warning',
+      tip: 'nezaplatené',
+    });
+  }
+  return badges;
+}
+
+function Menu(props: MenuProps) {
   const { isAuthenticated } = useAuthenticate();
   const { user: appUser } = useAppUser();
 
   return (
     <Nav align="center" justify="between" gap="medium">
       {!isAuthenticated && <MenuButton path={appPath.login} title={'Prihlásiť sa'} />}
-      {appUser?.isAdmin && <MenuButton path={appPath.registrations} title="Registrácie" />}
+      {appUser?.isAdmin && (
+        <MenuButton
+          path={appPath.registrations}
+          title="Registrácie"
+          badges={regsToBadges(props.regCount)}
+        />
+      )}
       {isAuthenticated && <MenuButton path={appPath.events} title="Turnaje" />}
       {appUser?.isAdmin && <MenuButton path={appPath.programs} title="Programy" />}
       {appUser?.isAdmin && <MenuButton path={appPath.teams} title="Tímy" />}
@@ -82,10 +152,11 @@ const Footer = () => {
 interface MainMenuProps {
   responsiveSize: string;
   userData?: UserFragmentFragment | null;
+  regCount?: { unconfirmed: number; unpaid: number; uninvoiced: number };
 }
 
 export function MainMenu(props: MainMenuProps) {
-  const { responsiveSize } = props;
+  const { responsiveSize, regCount } = props;
 
   return (
     <Sidebar
@@ -96,7 +167,7 @@ export function MainMenu(props: MainMenuProps) {
       footer={<Footer />}
       overflow="hidden"
     >
-      <Menu />
+      <Menu regCount={regCount} />
     </Sidebar>
   );
 }
