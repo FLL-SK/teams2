@@ -23,7 +23,11 @@ fragment ProgramBasicFragmentWithItems on Program {
 }
 
 fragment ProgramListFragment on Program {
-  registrationsCount
+  regCount
+  regUnconfirmed
+  regNotInvoiced
+  regUnpaid
+  regNotShipped
   ...ProgramBasicFragment
 }
 

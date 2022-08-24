@@ -30,7 +30,12 @@ export const ProgramMapper = {
       managers: [],
       events: [],
       registrations: [],
-      registrationsCount: 0,
+
+      regCount: 0,
+      regUnconfirmed: 0,
+      regNotInvoiced: 0,
+      regUnpaid: 0,
+      regNotShipped: 0,
     };
     return u;
   },

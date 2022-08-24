@@ -64,6 +64,10 @@ export class RegistrationDataSource extends BaseDataSource {
       q.invoiceIssuedOn = null;
       q.confirmedOn = { $ne: null };
     }
+    if (filter.onlyNotShipped) {
+      q.shippedOn = null;
+      q.confirmedOn = { $ne: null };
+    }
 
     const regsCount = await registrationRepository.count(q).exec();
     return regsCount;

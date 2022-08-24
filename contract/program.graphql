@@ -28,7 +28,11 @@ type Program implements INode {
   events: [Event!]!
   managers: [User!]!
   registrations: [Registration!]!
-  registrationsCount: Int!
+  regCount: Int!
+  regUnconfirmed: Int!
+  regNotInvoiced: Int!
+  regUnpaid: Int!
+  regNotShipped: Int!
 }
 
 input CreateProgramInput {
