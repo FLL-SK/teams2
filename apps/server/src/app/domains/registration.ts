@@ -21,9 +21,12 @@ export async function createRegistrationInvoice(
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
   log.debug(`registrationId: ${registrationId}`);
+
+  const settings = await getAppSettings();
   const reg = await registrationRepository.findById(registrationId).lean().exec();
-  const team = await teamRepository.findById(reg.teamId).lean().exec();
   const items = await invoiceItemRepository.find({ registrationId }).lean().exec();
+
+  const team = await teamRepository.findById(reg.teamId).lean().exec();
 
   // create invoice
   let api: InvoicingAPI;
@@ -36,7 +39,8 @@ export async function createRegistrationInvoice(
     reg.billTo,
     reg.shipTo,
     items,
-    reg.invoiceNote
+    reg.invoiceNote,
+    { email: settings.billingEmail }
   );
 
   // post invoice
