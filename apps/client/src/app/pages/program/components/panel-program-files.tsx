@@ -1,4 +1,4 @@
-import { Spinner } from 'grommet';
+import { Spinner, Text } from 'grommet';
 import React, { useCallback } from 'react';
 import { FileTile } from '../../../components/file-tile';
 import { FileUploadControl } from '../../../components/file-upload-control';
@@ -74,7 +74,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
     <Panel title="Súbory" gap="small">
       {filesLoading ? (
         <Spinner />
-      ) : (
+      ) : files.length > 0 ? (
         files.map((f) => (
           <FileTile
             key={f.id}
@@ -83,6 +83,8 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
             onDelete={(f) => removeFile({ variables: { fileId: f.id } })}
           />
         ))
+      ) : (
+        <Text>Pre program nie sú dostupné žiadne súbory.</Text>
       )}
       {canEdit && <FileUploadControl onUpload={handleFileUpload} />}
     </Panel>

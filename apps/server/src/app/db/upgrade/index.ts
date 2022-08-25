@@ -5,7 +5,6 @@ import { registrationRepository } from '../../models';
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
-  enrichRegistrations();
 }
 
 // accessing the database directly

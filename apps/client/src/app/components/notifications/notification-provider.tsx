@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useCallback, useContext, useReducer } from 'react';
 
 const ALERT_DELAY = 5000;
-const ALERT_DELAY_FATAL = 10000;
+const ALERT_DELAY_FATAL = 30000;
 
 export type NotificationVariant = 'info' | 'error' | 'fatal';
 
