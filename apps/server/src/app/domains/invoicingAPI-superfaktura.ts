@@ -5,6 +5,7 @@ import {
   Invoice,
   InvoiceEmailOptions,
   InvoiceEmailResult,
+  InvoiceIssuedBy,
   InvoicePostResult,
   InvoicingAPI,
 } from './invoicingAPI';
@@ -33,7 +34,8 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     billTo: Address,
     shipTo: Address | undefined,
     items: Omit<InvoiceItem, 'id'>[],
-    note: string
+    note: string,
+    issuedBy: InvoiceIssuedBy
   ): SFInvoice {
     const sfi: SFInvoice = {};
     sfi.Client = {
@@ -64,6 +66,18 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
       payment_type: 'transfer',
       header_comment: note,
     };
+    if (issuedBy.email) {
+      sfi.Invoice.issued_by_email = issuedBy.email;
+    }
+    if (issuedBy.phone) {
+      sfi.Invoice.issued_by_phone = issuedBy.phone;
+    }
+    if (issuedBy.url) {
+      sfi.Invoice.issued_by_web = issuedBy.url;
+    }
+    if (issuedBy.name) {
+      sfi.Invoice.issued_by = issuedBy.name;
+    }
 
     sfi.InvoiceItem = items.map((itm) => ({
       name: itm.text,
