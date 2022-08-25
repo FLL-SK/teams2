@@ -21,6 +21,13 @@ export interface InvoiceEmailOptions {
   subject?: string;
 }
 
+export interface InvoiceIssuedBy {
+  name?: string;
+  email: string;
+  phone?: string;
+  url?: string;
+}
+
 export interface InvoiceEmailResult {
   status: 'ok' | 'error';
   error?: string;
@@ -40,7 +47,8 @@ export class InvoicingAPI {
     billTo: Address,
     shipTo: Address | undefined,
     items: Omit<InvoiceItem, 'id'>[],
-    note: string
+    note: string,
+    issuedBy: InvoiceIssuedBy
   ) {
     return 'invoice';
   }
