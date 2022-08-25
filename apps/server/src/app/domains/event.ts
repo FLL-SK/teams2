@@ -63,11 +63,16 @@ export async function registerTeamToEvent(
     return { error: { code: 'wrong_input', message: 'wrong team id' } };
   }
 
-  // register team to event
-  const registration = await dataSources.registration.createRegistration(eventId, teamId);
+  let registration;
+  try {
+    // register team to event
+    registration = await dataSources.registration.createRegistration(eventId, teamId);
 
-  if (!registration) {
-    return { error: { code: 'registration_failed' } };
+    if (!registration) {
+      return { error: { code: 'registration_failed' } };
+    }
+  } catch (e) {
+    return { error: { code: 'registration_failed', message: e.message } };
   }
 
   // copy invoice items to registration

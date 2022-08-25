@@ -48,7 +48,9 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    if (!this.userGuard.isAdmin()) {
+      return -1;
+    }
     const q: FilterQuery<RegistrationData> = { canceledOn: null };
 
     if (filter.programId) {
@@ -75,11 +77,18 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
-    //FIXME: this.userGuard.isAdmin() || this.userGuard.isCoach(teamId) || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.isCoach(teamId) || this.userGuard.notAuthorized();
+
+    // check if team is not already registered
+    const r = await registrationRepository.count({ eventId, teamId, canceledOn: null }).exec();
+    if (r > 0) {
+      throw new Error('Tím je už registrovaný');
+    }
+
     const event = await eventRepository.findById(eventId).exec();
     const team = await teamRepository.findById(teamId).exec();
     if (!team || !event) {
-      throw new Error('Team or event not found');
+      throw new Error('Tím alebo turnaj nebol nájdený');
     }
     const newReg: RegistrationData = {
       programId: event.programId,
@@ -97,7 +106,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async updateRegistration(id: ObjectId, input: RegistrationInput): Promise<Registration> {
-    // FIXME: this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
     const registration = await registrationRepository
       .findByIdAndUpdate(id, input, { new: true })
       .exec();
