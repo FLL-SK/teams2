@@ -55,7 +55,10 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
     }
   }, [userLoading, user, fetchUser]);
 
-  const isUser = useCallback((userId: string): boolean => (user?.id ?? '0') === userId, [user]);
+  const isUser = useCallback(
+    (userId: string): boolean => (user ? user.id === userId : false),
+    [user]
+  );
 
   const isTeamCoach = useCallback(
     (teamId?: string): boolean => {
