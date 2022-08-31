@@ -13,8 +13,8 @@ import {
   useAddTagToTeamMutation,
   useCreateNoteMutation,
   useDeleteTagMutation,
-  useGetNotesQuery,
-  useGetRegistrationQuery,
+  useGetNotesLazyQuery,
+  useGetRegistrationLazyQuery,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
@@ -38,22 +38,22 @@ const labelWidth = '250px';
 export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const { registrationId, onClose } = props;
 
-  const {
-    data: notesData,
-    loading: notesLoading,
-    refetch: notesRefetch,
-  } = useGetNotesQuery({
-    variables: { type: 'registration', ref: registrationId ?? '0' },
-  });
+  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
+    useGetNotesLazyQuery();
 
-  const { data: regData, loading: regLoading } = useGetRegistrationQuery({
-    variables: { id: registrationId ?? '0' },
-  });
+  const [fetchRegistration, { data: regData }] = useGetRegistrationLazyQuery();
 
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+
+  React.useEffect(() => {
+    if (registrationId) {
+      fetchRegistration({ variables: { id: registrationId } });
+      fetchNotes({ variables: { type: 'registration', ref: registrationId } });
+    }
+  }, [registrationId, fetchRegistration, fetchNotes]);
 
   const registration = regData?.getRegistration;
 
