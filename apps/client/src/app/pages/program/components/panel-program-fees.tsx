@@ -14,7 +14,7 @@ import {
 } from '../../../generated/graphql';
 
 interface PanelProgramFeesProps {
-  program?: ProgramFragmentFragment;
+  program: ProgramFragmentFragment;
   canEdit: boolean;
   onUpdate: () => void;
 }
@@ -71,13 +71,13 @@ export function PanelProgramFees(props: PanelProgramFeesProps) {
           setInvoiceItemEdit(undefined);
         }}
         onSubmit={(values) => {
-          if (invoiceItemAdd) {
+          if (invoiceItemAdd || !values.id) {
             createInvoiceItem({
               variables: { type: 'program', refId: program.id, item: omit(values, 'id') },
             });
           } else {
             updateInvoiceItem({
-              variables: { id: values.id ?? '0', item: values },
+              variables: { id: values.id, item: values },
             });
           }
         }}

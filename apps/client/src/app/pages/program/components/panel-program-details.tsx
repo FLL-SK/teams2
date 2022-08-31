@@ -11,7 +11,7 @@ import { Panel } from '../../../components/panel';
 import { ProgramFragmentFragment, useUpdateProgramMutation } from '../../../generated/graphql';
 
 interface PanelProgramDetailsProps {
-  program?: ProgramFragmentFragment;
+  program: ProgramFragmentFragment;
   canEdit: boolean;
 }
 
@@ -30,10 +30,6 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
     onError: () => notify.error('Nepodarilo sa aktualizovať program'),
   });
 
-  if (!program) {
-    return null;
-  }
-
   return (
     <Panel title="Detaily programu" gap="medium">
       <LabelValueGroup labelWidth="150px" direction="row" gap="small">
@@ -42,7 +38,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
           <Box direction="row" gap="small" height="20px">
             <Tip content="Normálna farba">
               <Box
-                background={program?.color ?? undefined}
+                background={program.color ?? undefined}
                 round="small"
                 width="20px"
                 height="100%"
@@ -52,7 +48,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
             </Tip>
             <Tip content="Bledšia farba">
               <Box
-                background={program?.colorLight ?? undefined}
+                background={program.colorLight ?? undefined}
                 round="small"
                 width="20px"
                 height="100%"
@@ -64,11 +60,11 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         </LabelValue>
         <LabelValue
           label="Začiatok"
-          value={program?.startDate ? formatDate(program?.startDate) : 'neurčený'}
+          value={program.startDate ? formatDate(program.startDate) : 'neurčený'}
         />
         <LabelValue
           label="Koniec"
-          value={program?.endDate ? formatDate(program?.endDate) : 'neurčený'}
+          value={program.endDate ? formatDate(program.endDate) : 'neurčený'}
         />
         <LabelValue label="Popis">
           <Box
@@ -78,13 +74,13 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
             height={{ max: '200px' }}
             overflow={{ vertical: 'auto' }}
           >
-            <Markdown>{program?.description ?? ''}</Markdown>
+            <Markdown>{program.description ?? ''}</Markdown>
           </Box>
         </LabelValue>
         <LabelValue label="Podmienky">
           <Box background="light-2" flex pad="small">
             <Box flex height={{ max: '200px' }} overflow={{ vertical: 'auto' }}>
-              <Markdown>{program?.conditions ?? ''}</Markdown>
+              <Markdown>{program.conditions ?? ''}</Markdown>
             </Box>
             <Anchor label="Zobraz" onClick={() => setShowProgramTerms(true)} />
           </Box>
@@ -131,7 +127,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         showButton
       >
         <Box flex pad="medium" height={{ max: '100%' }} overflow={'auto'}>
-          <Markdown>{program?.conditions ?? ''}</Markdown>
+          <Markdown>{program.conditions ?? ''}</Markdown>
         </Box>
       </Modal>
     </Panel>

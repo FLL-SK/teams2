@@ -12,7 +12,7 @@ import {
 } from '../../../generated/graphql';
 
 interface PanelProgramEventsProps {
-  program?: ProgramFragmentFragment;
+  program: ProgramFragmentFragment;
   canEdit: boolean;
   onUpdate: () => void;
 }
@@ -33,7 +33,7 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
   });
 
   const events = useMemo(
-    () => (program?.events ?? []).filter((event) => !event.deletedOn),
+    () => (program.events ?? []).filter((event) => !event.deletedOn),
     [program]
   );
 
@@ -47,10 +47,6 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
     },
     [deleteEvent]
   );
-
-  if (!program) {
-    return null;
-  }
 
   return (
     <Panel title="Turnaje" gap="medium">
