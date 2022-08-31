@@ -16,7 +16,7 @@ import {
 } from '../../../generated/graphql';
 
 interface PanelEventDetailsProps {
-  event?: EventFragmentFragment | null;
+  event: EventFragmentFragment;
   canEdit?: boolean;
 }
 
@@ -108,9 +108,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
         show={showEventEditDialog}
         event={event}
         onClose={() => setShowEventEditDialog(false)}
-        onSubmit={(values) =>
-          updateEvent({ variables: { id: event.id ?? '0', input: { ...values } } })
-        }
+        onSubmit={(values) => updateEvent({ variables: { id: event.id, input: { ...values } } })}
       />
       <Modal
         show={showEventTerms}

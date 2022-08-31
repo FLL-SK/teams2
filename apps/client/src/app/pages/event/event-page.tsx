@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Text } from 'grommet';
+import { Box, Button, Spinner, Text } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
@@ -7,7 +7,7 @@ import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
   useAddEventManagerMutation,
-  useGetEventQuery,
+  useGetEventLazyQuery,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
 } from '../../generated/graphql';
@@ -24,12 +24,8 @@ export function EventPage() {
   const { isAdmin, isEventManager } = useAppUser();
   const { notify } = useNotification();
 
-  const {
-    data: eventData,
-    loading: eventLoading,
-    error: eventError,
-    refetch,
-  } = useGetEventQuery({ variables: { id: id ?? '0' } });
+  const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
+    useGetEventLazyQuery();
 
   const [undeleteEvent] = useUndeleteEventMutation({
     onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
@@ -41,6 +37,12 @@ export function EventPage() {
     onError: (e) => notify.error('Nepodarilo sa odstrániť manažéra turnaja.', e.message),
   });
 
+  React.useEffect(() => {
+    if (id) {
+      fetchEvent({ variables: { id } });
+    }
+  }, [id, fetchEvent]);
+
   const event = eventData?.getEvent;
   const canEdit = isAdmin() || isEventManager(id);
   const isDeleted = !!event?.deletedOn;
@@ -50,40 +52,44 @@ export function EventPage() {
   }
 
   return (
-    <BasePage title="Turnaj" loading={eventLoading}>
-      <Box gap="medium">
-        {isDeleted && (
-          <Box direction="row" gap="medium" align="center">
-            <Text color="status-error">Turnaj bol zrušený.</Text>
-            {isAdmin() && (
-              <Button
-                size="small"
-                label="Obnoviť turnaj"
-                onClick={() => undeleteEvent({ variables: { id: event?.id ?? '0' } })}
-              />
-            )}
-          </Box>
-        )}
-        <PanelEventDetails event={event} canEdit={canEdit} />
-        <PanelEventFees
-          event={event}
-          canEdit={canEdit && (event?.ownFeesAllowed ?? false)}
-          onChange={refetch}
-        />
-        {event && <PanelEventTeams event={event} canEdit={canEdit} />}
-        {canEdit && (
-          <Panel title="Manažéri">
-            <Box direction="row" wrap>
-              <UserTags
-                users={event?.managers ?? []}
-                onAdd={(userId) => addManager({ variables: { eventId: id ?? '0', userId } })}
-                onRemove={(userId) => removeManager({ variables: { eventId: id ?? '0', userId } })}
-                canEdit={canEdit}
-              />
+    <BasePage title="Turnaj">
+      {eventLoading || !event ? (
+        <Spinner />
+      ) : (
+        <Box gap="medium">
+          {isDeleted && (
+            <Box direction="row" gap="medium" align="center">
+              <Text color="status-error">Turnaj bol zrušený.</Text>
+              {isAdmin() && (
+                <Button
+                  size="small"
+                  label="Obnoviť turnaj"
+                  onClick={() => undeleteEvent({ variables: { id: event.id } })}
+                />
+              )}
             </Box>
-          </Panel>
-        )}
-      </Box>
+          )}
+          <PanelEventDetails event={event} canEdit={canEdit} />
+          <PanelEventFees
+            event={event}
+            canEdit={canEdit && (event?.ownFeesAllowed ?? false)}
+            onChange={refetch}
+          />
+          {event && <PanelEventTeams event={event} canEdit={canEdit} />}
+          {canEdit && (
+            <Panel title="Manažéri">
+              <Box direction="row" wrap>
+                <UserTags
+                  users={event?.managers ?? []}
+                  onAdd={(userId) => addManager({ variables: { eventId: id, userId } })}
+                  onRemove={(userId) => removeManager({ variables: { eventId: id, userId } })}
+                  canEdit={canEdit}
+                />
+              </Box>
+            </Panel>
+          )}
+        </Box>
+      )}
     </BasePage>
   );
 }
