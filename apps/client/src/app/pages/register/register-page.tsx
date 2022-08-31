@@ -9,8 +9,9 @@ import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import {
   Address,
+  GetTeamQuery,
   UpdateTeamInput,
-  useGetTeamQuery,
+  useGetTeamLazyQuery,
   useRegisterTeamForEventMutation,
   useUpdateTeamMutation,
 } from '../../generated/graphql';
@@ -46,13 +47,11 @@ export function RegisterPage() {
   const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
 
-  const {
-    data: teamData,
-    loading: teamLoading,
-    error: teamError,
-  } = useGetTeamQuery({
-    variables: { id: teamId ?? '0' },
-    onCompleted: (data) => {
+  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
+    useGetTeamLazyQuery();
+
+  const handleCompleted = React.useCallback(
+    (data: GetTeamQuery) => {
       const coachData: Pick<Address, 'contactName' | 'email' | 'phone'> = {
         contactName: formatFullName(user?.firstName ?? '', user?.lastName ?? ''),
         email: user?.username,
@@ -68,7 +67,14 @@ export function RegisterPage() {
           : { ...(coachData as Address) }, // remove null/undefined values
       });
     },
-  });
+    [registerDetails, user]
+  );
+
+  React.useEffect(() => {
+    if (teamId) {
+      fetchTeam({ variables: { id: teamId }, onCompleted: handleCompleted });
+    }
+  }, [teamId, fetchTeam, handleCompleted]);
 
   const { notify } = useNotification();
 
@@ -86,22 +92,20 @@ export function RegisterPage() {
 
   const doRegister = useCallback(
     async (data: RegisterDetails) => {
-      // let's assume everything is filled out properly
-      const _teamId = teamId ?? '0';
-      const _eventId = data.event?.id ?? '0';
+      if (teamId && data.event && data.event.id) {
+        const r1 = await registerTeam({ variables: { teamId, eventId: data.event.id } });
 
-      const r1 = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
-
-      if (
-        handleMutationErrors(
-          r1.data?.registerTeamForEvent,
-          'Nepodarilo sa registrovať tím.',
-          notify.error
-        )
-      ) {
-        return;
+        if (
+          handleMutationErrors(
+            r1.data?.registerTeamForEvent,
+            'Nepodarilo sa registrovať tím.',
+            notify.error
+          )
+        ) {
+          return;
+        }
+        setStep('success');
       }
-      setStep('success');
     },
     [notify, registerTeam, teamId]
   );

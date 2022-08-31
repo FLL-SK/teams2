@@ -4,8 +4,8 @@ import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import {
   TeamFragmentFragment,
-  useGetEventQuery,
-  useGetProgramQuery,
+  useGetEventLazyQuery,
+  useGetProgramLazyQuery,
 } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
@@ -23,27 +23,47 @@ const labelWidth = '180px';
 
 export function RegisterReview(props: RegisterReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
-  const { data: programData, loading: programLoading } = useGetProgramQuery({
-    variables: { id: details.program?.id ?? '0' },
-  });
-  const { data: eventData, loading: eventLoading } = useGetEventQuery({
-    variables: { id: details.event?.id ?? '0' },
-  });
+
+  const [fetchProgram, { data: programData, loading: programLoading }] = useGetProgramLazyQuery();
+  const [fetchEvent, { data: eventData, loading: eventLoading }] = useGetEventLazyQuery();
 
   const [acceptedProgramTC, setAcceptedProgramTC] = useState<boolean>(false);
   const [acceptedEventTC, setAcceptedEventTC] = useState<boolean>(false);
 
-  if (!team) {
-    return null;
-  }
+  React.useEffect(() => {
+    if (details.program) {
+      fetchProgram({
+        variables: { id: details.program.id },
+      });
+    }
+  }, [details.program, fetchProgram]);
+
+  React.useEffect(() => {
+    if (details.event) {
+      fetchEvent({
+        variables: { id: details.event.id },
+      });
+    }
+  }, [details.event, fetchEvent]);
 
   const program = programData?.getProgram;
   const event = eventData?.getEvent;
 
-  const items =
-    ((event?.ownFeesAllowed ?? false) && (event?.invoiceItems?.length ?? 0) > 0
-      ? event?.invoiceItems
-      : program?.invoiceItems) ?? [];
+  const items = React.useMemo(
+    () =>
+      ((event?.ownFeesAllowed ?? false) && (event?.invoiceItems?.length ?? 0) > 0
+        ? event?.invoiceItems
+        : program?.invoiceItems) ?? [],
+    [event, program]
+  );
+
+  if (programLoading || eventLoading) {
+    return <Spinner />;
+  }
+
+  if (!team || !program || !event) {
+    return null;
+  }
 
   const shipTo = details.shipTo;
   const billTo = details.billTo;
@@ -54,13 +74,13 @@ export function RegisterReview(props: RegisterReviewProps) {
       <Panel title="Registrácia" gap="small">
         <LabelValueGroup labelWidth={labelWidth} direction="row" gap="small">
           <LabelValue label="Tím" value={team.name} />
-          <LabelValue label="Program" value={details.program?.name} />
-          <LabelValue label="Turnaj" value={details.event?.name} />
+          <LabelValue label="Program" value={program.name} />
+          <LabelValue label="Turnaj" value={event.name} />
         </LabelValueGroup>
       </Panel>
 
       <Panel title="Poplatky" gap="small">
-        {programLoading || eventLoading ? <Spinner /> : <InvoiceItemList items={items} />}
+        <InvoiceItemList items={items} />
         <Box>
           <Text>
             Toto sú štandardné poplatky turnaja. Prípadné zľavy, napr. z dôvodu že vám bol
@@ -111,19 +131,19 @@ export function RegisterReview(props: RegisterReviewProps) {
         ) : null}
       </Panel>
 
-      {(program?.conditions || event?.conditions) && (
+      {(program.conditions || event.conditions) && (
         <Panel title="Podmienky" gap="small">
-          {program?.conditions && (
+          {program.conditions && (
             <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
               <Box background="light-2" flex pad="small">
-                <Markdown>{program?.conditions ?? ''}</Markdown>
+                <Markdown>{program.conditions}</Markdown>
               </Box>
             </LabelValue>
           )}
-          {event?.conditions && (
+          {event.conditions && (
             <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
               <Box background="light-2" flex pad="small">
-                <Markdown>{event?.conditions ?? ''}</Markdown>
+                <Markdown>{event.conditions}</Markdown>
               </Box>
             </LabelValue>
           )}
@@ -154,7 +174,7 @@ export function RegisterReview(props: RegisterReviewProps) {
           primary
           label="Registrovať"
           onClick={nextStep}
-          disabled={!(acceptedProgramTC && (acceptedEventTC || !event?.conditions))}
+          disabled={!(acceptedProgramTC && (acceptedEventTC || !event.conditions))}
         />
       </Box>
     </Box>
