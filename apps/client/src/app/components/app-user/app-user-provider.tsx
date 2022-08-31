@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import React, { createContext, useCallback, useEffect } from 'react';
-import { useGetUserQuery, UserFragmentFragment } from '../../generated/graphql';
+import { useGetUserLazyQuery, UserFragmentFragment } from '../../generated/graphql';
 import { useAuthenticate } from '../auth/useAuthenticate';
 
 type AppUser = UserFragmentFragment;
@@ -40,21 +40,25 @@ interface AppUserContextProviderProps {
 export function AppUserContextProvider(props: AppUserContextProviderProps) {
   const { children } = props;
   const { user } = useAuthenticate();
-  const {
-    data,
-    loading: userLoading,
-    error: userError,
-    refetch,
-  } = useGetUserQuery({ variables: { id: user?.id ?? '0' } });
+
+  const [fetchUser, { data, loading: userLoading, error: userError }] = useGetUserLazyQuery();
+
+  useEffect(() => {
+    if (user) {
+      fetchUser({ variables: { id: user.id } });
+    }
+  }, [user, fetchUser]);
 
   const refresh = useCallback(async (): Promise<void> => {
-    if (userLoading) {
-      return;
+    if (!userLoading && user) {
+      fetchUser({ variables: { id: user.id } });
     }
-    refetch();
-  }, [userLoading, refetch]);
+  }, [userLoading, user, fetchUser]);
 
-  const isUser = useCallback((userId: string): boolean => (user?.id ?? '0') === userId, [user]);
+  const isUser = useCallback(
+    (userId: string): boolean => (user ? user.id === userId : false),
+    [user]
+  );
 
   const isTeamCoach = useCallback(
     (teamId?: string): boolean => {

@@ -7,6 +7,7 @@ export const AddressMapper = {
       return null;
     }
     const u: Omit<Required<Address>, '__typename'> = {
+      id: address._id,
       name: address.name,
       street: address.street,
       city: address.city,

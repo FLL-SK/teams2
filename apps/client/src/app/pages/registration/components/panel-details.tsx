@@ -87,20 +87,22 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
         />
       )}
 
-      <ChangeTeamEventDialog
-        show={changeEvent}
-        team={reg.team}
-        event={reg.event}
-        onClose={() => setChangeEvent(false)}
-        onSubmit={(e) =>
-          switchTeamEvent({
-            variables: {
-              registrationId: reg.id,
-              newEventId: e.id,
-            },
-          })
-        }
-      />
+      {reg.event && (
+        <ChangeTeamEventDialog
+          show={changeEvent}
+          team={reg.team}
+          event={reg.event}
+          onClose={() => setChangeEvent(false)}
+          onSubmit={(e) =>
+            switchTeamEvent({
+              variables: {
+                registrationId: reg.id,
+                newEventId: e.id,
+              },
+            })
+          }
+        />
+      )}
     </Panel>
   );
 }

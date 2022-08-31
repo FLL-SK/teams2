@@ -75,7 +75,7 @@ export function PanelRegistrationShipping(props: PanelRegistrationShippingProps)
 
       <EditAddressDialog
         show={editShipToAddress}
-        address={reg?.shipTo}
+        address={reg.shipTo}
         onClose={() => setEditShipToAddress(false)}
         onSubmit={(data) =>
           updateRegistration({

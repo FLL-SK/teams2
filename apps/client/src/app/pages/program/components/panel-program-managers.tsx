@@ -10,7 +10,7 @@ import {
 } from '../../../generated/graphql';
 
 interface PanelProgramManagersProps {
-  program?: ProgramFragmentFragment;
+  program: ProgramFragmentFragment;
   canAddManagers: boolean;
 }
 
@@ -25,19 +25,13 @@ export function PanelProgramManagers(props: PanelProgramManagersProps) {
     onError: () => notify.error('Nepodarilo sa odstrániť manažéra.'),
   });
 
-  if (!program) {
-    return null;
-  }
-
   return (
     <Panel title="Manažéri">
       <Box direction="row" wrap>
         <UserTags
-          users={program?.managers ?? []}
-          onAdd={(userId) => addManager({ variables: { programId: program?.id ?? '0', userId } })}
-          onRemove={(userId) =>
-            removeManager({ variables: { programId: program?.id ?? '0', userId } })
-          }
+          users={program.managers ?? []}
+          onAdd={(userId) => addManager({ variables: { programId: program.id, userId } })}
+          onRemove={(userId) => removeManager({ variables: { programId: program.id, userId } })}
           canEdit={canAddManagers}
         />
       </Box>

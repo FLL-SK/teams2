@@ -15,7 +15,7 @@ import {
 import { uploadS3XHR } from '../../../utils/upload-s3-xhr';
 
 interface PanelProgramFilesProps {
-  program?: ProgramFragmentFragment;
+  program: ProgramFragmentFragment;
   canEdit: boolean;
 }
 
@@ -40,7 +40,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
     loading: filesLoading,
     refetch: filesRefetch,
   } = useGetProgramFilesQuery({
-    variables: { programId: program?.id ?? '0' },
+    variables: { programId: program.id },
     pollInterval: 600000, // get updated urls before they expire
   });
 
@@ -50,10 +50,10 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
         const f = files[i];
         const ff: FileUploadInput = { name: f.name, size: f.size, contentType: f.type };
         getUploadUrl({
-          variables: { programId: program?.id ?? '0', input: ff },
+          variables: { programId: program.id, input: ff },
           onCompleted: async (data) => {
             if (await uploadS3XHR(f, data.getProgramFileUploadUrl)) {
-              addProgramFile({ variables: { programId: program?.id ?? '0', input: ff } });
+              addProgramFile({ variables: { programId: program.id, input: ff } });
             }
 
             //TODO status/result notification
@@ -61,7 +61,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
         });
       }
     },
-    [addProgramFile, getUploadUrl, program?.id]
+    [addProgramFile, getUploadUrl, program.id]
   );
 
   const files = filesData?.getProgramFiles ?? [];

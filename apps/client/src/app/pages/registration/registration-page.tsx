@@ -5,13 +5,12 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import { Panel, PanelGroup } from '../../components/panel';
-import { UserTags } from '../../components/user-tags';
 import {
-  useGetNotesQuery,
   useCreateNoteMutation,
-  useGetRegistrationQuery,
   useDeleteTagMutation,
   useAddTagToTeamMutation,
+  useGetRegistrationLazyQuery,
+  useGetNotesLazyQuery,
 } from '../../generated/graphql';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
@@ -29,27 +28,27 @@ const columnWidth = '460px';
 
 export function RegistrationPage() {
   const { id } = useParams();
-  const { isAdmin, isTeamCoach, userLoading, user } = useAppUser();
+  const { isAdmin, isTeamCoach, userLoading } = useAppUser();
 
   const [removeTag] = useDeleteTagMutation();
   const [addTag] = useAddTagToTeamMutation();
 
-  const {
-    data: regData,
-    loading: regLoading,
-    error: regDataError,
-    refetch: regRefetch,
-  } = useGetRegistrationQuery({ variables: { id: id ?? '0' } });
+  const [
+    fetchRegistration,
+    { data: regData, loading: regLoading, error: regDataError, refetch: regRefetch },
+  ] = useGetRegistrationLazyQuery();
 
-  const {
-    data: notesData,
-    loading: notesLoading,
-    refetch: notesRefetch,
-  } = useGetNotesQuery({
-    variables: { type: 'registration', ref: id ?? '0' },
-  });
+  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
+    useGetNotesLazyQuery();
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+
+  React.useEffect(() => {
+    if (id) {
+      fetchRegistration({ variables: { id } });
+      fetchNotes({ variables: { type: 'registration', ref: id } });
+    }
+  }, [id, fetchRegistration, fetchNotes]);
 
   const reg = regData?.getRegistration;
   const invoiceItems = reg?.invoiceItems ?? [];
@@ -63,99 +62,102 @@ export function RegistrationPage() {
   }
 
   return (
-    <BasePage title="Registrácia" loading={regLoading}>
-      {reg?.canceledOn && (
-        <Box direction="row" gap="medium" pad="medium">
-          <Text color="red">Táto registrácia bola zrušená.</Text>
-        </Box>
-      )}
-      {reg && (
-        <Box direction="row" gap="small" wrap>
-          <PanelGroup width="1000px">
-            <PanelRegistrationDetails
-              registration={reg}
-              columnWidth={columnWidth}
-              readOnly={!!reg.canceledOn}
-            />
+    <BasePage title="Registrácia">
+      {regLoading || !reg ? (
+        <Spinner />
+      ) : (
+        <>
+          {reg.canceledOn && (
+            <Box direction="row" gap="medium" pad="medium">
+              <Text color="red">Táto registrácia bola zrušená.</Text>
+            </Box>
+          )}
 
-            <Panel title="Účasť" wrap direction="row" gap="small">
-              <Box width={columnWidth}>
-                <LabelValueGroup labelWidth="250px" gap="small" direction="row">
-                  <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
-                  <FieldTeamSizeConfirmedOn registration={reg} readOnly={!!reg.canceledOn} />
-                </LabelValueGroup>
-              </Box>
-            </Panel>
-
-            <Panel title="Súbory" gap="small">
-              <RegistrationFilesPanel registrationId={reg.id} regConfirmed={!!reg.confirmedOn} />
-            </Panel>
-
-            {isAdmin() && (
-              <PanelRegistrationInvoiceItems
+          <Box direction="row" gap="small" wrap>
+            <PanelGroup width="1000px">
+              <PanelRegistrationDetails
                 registration={reg}
-                invoiceItems={invoiceItems}
                 columnWidth={columnWidth}
-                canEdit={isAdmin()}
-                onRefetch={regRefetch}
                 readOnly={!!reg.canceledOn}
               />
-            )}
 
-            <PanelRegistrationBilling
-              registration={reg}
-              columnWidth={columnWidth}
-              readOnly={!!reg.canceledOn}
-              onUpdate={() => notesRefetch()}
-            />
-
-            <PanelRegistrationShipping
-              registration={reg}
-              columnWidth={columnWidth}
-              readOnly={!!reg.canceledOn}
-            />
-          </PanelGroup>
-
-          <PanelGroup width={{ min: '350px', width: 'auto', max: '400px' }}>
-            {(isAdmin() || isTeamCoach(reg.teamId)) && (
-              <Panel title="Tréneri">
-                <CoachList coaches={reg?.team?.coaches ?? []} canEdit={false} />
-              </Panel>
-            )}
-
-            {isAdmin() && (
-              <Panel title="Štítky tímu">
-                <Box direction="row" wrap>
-                  <TagList
-                    tags={reg?.team?.tags}
-                    onRemove={(id) => removeTag({ variables: { id } })}
-                    onAdd={(tag) =>
-                      addTag({ variables: { teamId: reg?.team?.id ?? '0', tagId: tag.id } })
-                    }
-                  />
+              <Panel title="Účasť" wrap direction="row" gap="small">
+                <Box width={columnWidth}>
+                  <LabelValueGroup labelWidth="250px" gap="small" direction="row">
+                    <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
+                    <FieldTeamSizeConfirmedOn registration={reg} readOnly={!!reg.canceledOn} />
+                  </LabelValueGroup>
                 </Box>
               </Panel>
-            )}
-            {isAdmin() && (
-              <Panel title="Poznámky">
-                {notesLoading ? (
-                  <Spinner />
-                ) : (
-                  <NoteList
-                    disabled={!!reg.canceledOn}
-                    notes={notesData?.getNotes ?? []}
-                    limit={20}
-                    onCreate={(text) =>
-                      createNote({
-                        variables: { input: { type: 'registration', ref: id, text } },
-                      })
-                    }
-                  />
-                )}
+
+              <Panel title="Súbory" gap="small">
+                <RegistrationFilesPanel registrationId={reg.id} regConfirmed={!!reg.confirmedOn} />
               </Panel>
-            )}
-          </PanelGroup>
-        </Box>
+
+              {isAdmin() && (
+                <PanelRegistrationInvoiceItems
+                  registration={reg}
+                  invoiceItems={invoiceItems}
+                  columnWidth={columnWidth}
+                  canEdit={isAdmin()}
+                  onRefetch={regRefetch}
+                  readOnly={!!reg.canceledOn}
+                />
+              )}
+
+              <PanelRegistrationBilling
+                registration={reg}
+                columnWidth={columnWidth}
+                readOnly={!!reg.canceledOn}
+                onUpdate={() => notesRefetch()}
+              />
+
+              <PanelRegistrationShipping
+                registration={reg}
+                columnWidth={columnWidth}
+                readOnly={!!reg.canceledOn}
+              />
+            </PanelGroup>
+
+            <PanelGroup width={{ min: '350px', width: 'auto', max: '400px' }}>
+              {(isAdmin() || isTeamCoach(reg.teamId)) && (
+                <Panel title="Tréneri">
+                  <CoachList coaches={reg?.team?.coaches ?? []} canEdit={false} />
+                </Panel>
+              )}
+
+              {isAdmin() && (
+                <Panel title="Štítky tímu">
+                  <Box direction="row" wrap>
+                    <TagList
+                      tags={reg.team.tags}
+                      onRemove={(id) => removeTag({ variables: { id } })}
+                      onAdd={(tag) => addTag({ variables: { teamId: reg.team.id, tagId: tag.id } })}
+                    />
+                  </Box>
+                </Panel>
+              )}
+              {isAdmin() && (
+                <Panel title="Poznámky">
+                  {notesLoading ? (
+                    <Spinner />
+                  ) : (
+                    <NoteList
+                      disabled={!!reg.canceledOn}
+                      notes={notesData?.getNotes ?? []}
+                      limit={20}
+                      onCreate={(text) =>
+                        createNote({
+                          variables: { input: { type: 'registration', ref: id, text } },
+                        })
+                      }
+                    />
+                  )}
+                </Panel>
+              )}
+            </PanelGroup>
+          </Box>
+        </>
       )}
     </BasePage>
   );

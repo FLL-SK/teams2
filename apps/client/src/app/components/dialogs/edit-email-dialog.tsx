@@ -12,7 +12,7 @@ interface EditEmailDialogProps {
 }
 
 export interface EditEmailDialogFields {
-  email?: string | null;
+  email: string;
 }
 
 export function EditEmailDialog(props: EditEmailDialogProps) {

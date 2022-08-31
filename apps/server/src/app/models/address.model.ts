@@ -1,6 +1,8 @@
+import { ObjectId } from 'mongodb';
 import { Schema } from 'mongoose';
 
 export interface AddressData {
+  _id?: ObjectId;
   name: string;
   street: string;
   city: string;
@@ -30,5 +32,5 @@ export const addressSchema = new Schema<AddressData>(
     email: { type: Types.String },
     phone: { type: Types.String },
   },
-  { _id: false }
+  { _id: true }
 );

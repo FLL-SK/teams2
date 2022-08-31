@@ -3,7 +3,7 @@ import { Box, Button, Paragraph, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../generated/graphql';
 
 interface RegisterIntroProps {
-  team?: TeamFragmentFragment;
+  team: TeamFragmentFragment;
   nextStep: () => void;
   prevStep: () => void;
 }

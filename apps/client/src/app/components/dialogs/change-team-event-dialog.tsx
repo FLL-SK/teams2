@@ -13,7 +13,7 @@ import { LabelValue } from '../label-value';
 interface ChangeTeamEventDialogProps {
   show?: boolean;
   team?: TeamBasicFragmentFragment;
-  event?: EventListFragmentFragment;
+  event: EventListFragmentFragment;
   onClose: () => void;
   onSubmit?: (newEvent: EventListFragmentFragment) => unknown;
 }
@@ -23,10 +23,10 @@ export function ChangeTeamEventDialog(props: ChangeTeamEventDialogProps) {
   const [selectedEvent, setSelectedEvent] = useState<EventListFragmentFragment>();
 
   const { data, loading } = useGetEventsQuery({
-    variables: { filter: { programId: event?.programId ?? '0', isActive: true } },
+    variables: { filter: { programId: event.programId, isActive: true } },
   });
 
-  if (!show || !team || !event) {
+  if (!show || !team) {
     return null;
   }
 

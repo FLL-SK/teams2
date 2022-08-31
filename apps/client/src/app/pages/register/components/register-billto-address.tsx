@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { Box, Button, Form, Text } from 'grommet';
-import { TeamFragmentFragment } from '../../../generated/graphql';
-import { Address, RegisterDetails } from './types';
 
 import { AddressForm } from './address-form';
+import { AddressInput } from '../../../generated/graphql';
 
 interface RegisterBillToAddressProps {
-  team?: TeamFragmentFragment;
-  details: RegisterDetails;
-  onSubmit: (a: Address) => void;
+  address?: AddressInput | null;
+  onSubmit: (a: AddressInput) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
 }
 
-type FormDataType = Address;
+type FormDataType = AddressInput;
 
 const emptyForm: FormDataType = {
   name: '',
@@ -25,16 +23,17 @@ const emptyForm: FormDataType = {
   contactName: '',
   email: '',
   phone: '',
+  companyNumber: '',
+  taxNumber: '',
+  vatNumber: '',
 };
 
 export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
-  const { team, details, onSubmit, nextStep, prevStep, cancel } = props;
+  const { address, onSubmit, nextStep, prevStep, cancel } = props;
 
-  const [formData, setFormData] = useState<Address>(details.billTo ?? team?.address ?? emptyForm);
-
-  if (!team) {
-    return null;
-  }
+  const [formData, setFormData] = useState<FormDataType>(
+    address ? { ...emptyForm, ...address } : emptyForm
+  );
 
   return (
     <Box gap="medium">

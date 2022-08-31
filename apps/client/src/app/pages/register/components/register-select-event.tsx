@@ -1,15 +1,10 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
-import {
-  EventListFragmentFragment,
-  TeamFragmentFragment,
-  useGetEventsQuery,
-} from '../../../generated/graphql';
+import { EventListFragmentFragment, useGetEventsLazyQuery } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
 
 interface RegisterSelectEventProps {
-  team?: TeamFragmentFragment;
   details: RegisterDetails;
   onSubmit: (event: EventListFragmentFragment) => void;
   nextStep: () => void;
@@ -19,10 +14,17 @@ interface RegisterSelectEventProps {
 
 export function RegisterSelectEvent(props: RegisterSelectEventProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
-  const { data, loading } = useGetEventsQuery({
-    variables: { filter: { programId: details.program?.id ?? '0', isActive: true } },
+  const [fetchEvents, { data, loading }] = useGetEventsLazyQuery({
     fetchPolicy: 'network-only',
   });
+
+  React.useEffect(() => {
+    if (details.program) {
+      fetchEvents({
+        variables: { filter: { programId: details.program.id, isActive: true } },
+      });
+    }
+  }, [details.program, fetchEvents]);
 
   if (loading) {
     return <Spinner />;
