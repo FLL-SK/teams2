@@ -26,5 +26,5 @@ export const scalarResolver = new GraphQLScalarType({
       return null;
     }
     throw new UserInputError(errorMessage);
-  }
+  },
 });

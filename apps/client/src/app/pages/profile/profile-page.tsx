@@ -13,7 +13,7 @@ import {
   UpdateUserInput,
   useCreateTeamMutation,
   useDeleteUserMutation,
-  useGetUserQuery,
+  useGetUserLazyQuery,
   useSetAdminMutation,
   useUndeleteUserMutation,
   useUpdateUserMutation,
@@ -31,7 +31,7 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isUser, xOut, isSuperAdmin, user } = useAppUser();
-  const { data, loading, refetch, error } = useGetUserQuery({ variables: { id: id ?? '0' } });
+  const [fetchUser, { data, loading, refetch, error }] = useGetUserLazyQuery();
 
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
@@ -53,6 +53,12 @@ export function ProfilePage() {
   const [undeleteUser] = useUndeleteUserMutation({
     onError: (e) => notify.error('Nepodarilo sa opätovne aktivovať profil.', e.message),
   });
+
+  React.useEffect(() => {
+    if (id) {
+      fetchUser({ variables: { id } });
+    }
+  }, [id, fetchUser]);
 
   if (!id && user?.id) {
     return <Navigate to={appPath.profile(user?.id)} />;
