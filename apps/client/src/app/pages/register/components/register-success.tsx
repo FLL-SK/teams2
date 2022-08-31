@@ -7,17 +7,13 @@ import { RegisterDetails } from './types';
 import { LabelValueGroup } from '../../../components/label-value-group';
 
 interface RegisterSuccessProps {
-  team?: TeamFragmentFragment;
+  team: TeamFragmentFragment;
   details: RegisterDetails;
   nextStep: () => void;
 }
 
 export function RegisterSuccess(props: RegisterSuccessProps) {
   const { team, details, nextStep } = props;
-
-  if (!team) {
-    return null;
-  }
 
   return (
     <Box gap="medium">

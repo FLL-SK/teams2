@@ -1,15 +1,10 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { ProgramTile } from '../../../components/program-tile';
-import {
-  ProgramListFragmentFragment,
-  TeamFragmentFragment,
-  useGetProgramsQuery,
-} from '../../../generated/graphql';
+import { ProgramListFragmentFragment, useGetProgramsQuery } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
 
 interface RegisterSelectProgramProps {
-  team?: TeamFragmentFragment;
   details: RegisterDetails;
   onSubmit: (program: ProgramListFragmentFragment) => void;
   nextStep: () => void;
@@ -18,11 +13,9 @@ interface RegisterSelectProgramProps {
 }
 
 export function RegisterSelectProgram(props: RegisterSelectProgramProps) {
-  const { team, details, onSubmit, nextStep, prevStep, cancel } = props;
+  const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const { data, loading } = useGetProgramsQuery({ variables: { filter: { isActive: true } } });
-  if (!team) {
-    return null;
-  }
+
   if (loading) {
     return <Spinner />;
   }

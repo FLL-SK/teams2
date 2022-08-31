@@ -13,7 +13,7 @@ import { Modal } from '../../../components/modal';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 
 interface PanelEventTeamsProps {
-  event?: EventFragmentFragment;
+  event: EventFragmentFragment;
   canEdit?: boolean;
 }
 
@@ -24,7 +24,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
   const { isAdmin } = useAppUser();
 
   const { data } = useGetRegisteredTeamsQuery({
-    variables: { eventId: event?.id ?? '0', includeCoaches: canEdit },
+    variables: { eventId: event.id, includeCoaches: canEdit },
   });
 
   const regs = data?.getRegisteredTeams;

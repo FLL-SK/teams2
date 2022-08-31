@@ -12,7 +12,7 @@ import {
 import { CoachList } from './coach-list';
 
 interface PanelTeamCoachesProps {
-  team?: TeamFragmentFragment;
+  team: TeamFragmentFragment;
   canEdit: boolean;
 }
 
@@ -27,10 +27,6 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
   const [removeCoach] = useRemoveCoachFromTeamMutation({
     onError: (error) => notify.error('Nepodarilo sa odstr8ániť trénera', error.message),
   });
-
-  if (!team) {
-    return null;
-  }
 
   return (
     <Panel title="Tréneri">
@@ -54,9 +50,7 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
         title="Pridať trénera"
         show={showAddCoachDialog}
         onClose={() => setShowAddCoachDialog(false)}
-        onSubmit={({ email }) =>
-          addCoach({ variables: { teamId: team.id, username: email ?? '0' } })
-        }
+        onSubmit={({ email }) => addCoach({ variables: { teamId: team.id, username: email } })}
       />
     </Panel>
   );

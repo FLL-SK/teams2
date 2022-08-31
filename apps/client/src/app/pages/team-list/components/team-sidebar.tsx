@@ -11,7 +11,7 @@ import {
   TeamListFragmentFragment,
   useAddTagToTeamMutation,
   useCreateNoteMutation,
-  useGetNotesQuery,
+  useGetNotesLazyQuery,
   useRemoveTagFromTeamMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
@@ -25,17 +25,20 @@ interface TeamSidebarProps {
 export function TeamSidebar(props: TeamSidebarProps) {
   const { team, onClose } = props;
 
-  const {
-    data: notesData,
-    loading: notesLoading,
-    refetch: notesRefetch,
-  } = useGetNotesQuery({
-    variables: { type: 'team', ref: team?.id ?? '0' },
-  });
+  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
+    useGetNotesLazyQuery();
 
   const [removeTag] = useRemoveTagFromTeamMutation();
   const [addTag] = useAddTagToTeamMutation();
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+
+  React.useEffect(() => {
+    if (team) {
+      fetchNotes({
+        variables: { type: 'team', ref: team.id },
+      });
+    }
+  }, [team, fetchNotes]);
 
   if (!team) {
     return null;

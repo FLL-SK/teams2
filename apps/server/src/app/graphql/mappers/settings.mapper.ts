@@ -1,5 +1,6 @@
 import { Settings } from '../../generated/graphql';
 import { SettingsData } from '../../models';
+import { AddressMapper } from './address.mapper';
 
 export const SettingsMapper = {
   toSettings(data: SettingsData | null | undefined): Settings | null {
@@ -9,7 +10,7 @@ export const SettingsMapper = {
     const u: Omit<Required<Settings>, '__typename'> = {
       id: data._id,
       appLogoUrl: data.appLogoUrl,
-      organization: data.organization,
+      organization: AddressMapper.toAddress(data.organization),
       sysEmail: data.sysEmail,
       billingEmail: data.billingEmail,
       privacyPolicyUrl: data.privacyPolicyUrl,

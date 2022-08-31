@@ -1,4 +1,3 @@
-import { Address, InvoiceItem } from '../generated/graphql';
 import axios from 'axios';
 import { logger } from '@teams2/logger';
 import {
@@ -10,6 +9,7 @@ import {
   InvoicingAPI,
 } from './invoicingAPI';
 import { getServerConfig } from '../../server-config';
+import { AddressData, InvoiceItemData } from '../models';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SFInvoice = any;
@@ -31,9 +31,9 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
 
   constructInvoice(
     name: string,
-    billTo: Address,
-    shipTo: Address | undefined,
-    items: Omit<InvoiceItem, 'id'>[],
+    billTo: AddressData,
+    shipTo: AddressData | undefined,
+    items: InvoiceItemData[],
     note: string,
     issuedBy: InvoiceIssuedBy
   ): SFInvoice {

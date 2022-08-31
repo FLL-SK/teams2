@@ -1,16 +1,15 @@
 import React from 'react';
 import { appPath } from '@teams2/common';
-import { Box } from 'grommet';
+import { Box, Spinner } from 'grommet';
 import { useCallback, useState } from 'react';
-import { omitBy, isNil } from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import {
-  Address,
+  AddressInput,
   UpdateTeamInput,
-  useGetTeamQuery,
+  useGetTeamLazyQuery,
   useRegisterTeamForEventMutation,
   useUpdateTeamMutation,
 } from '../../generated/graphql';
@@ -42,39 +41,18 @@ type RegistrationStep =
 export function RegisterPage() {
   const { id: teamId } = useParams();
   const navigate = useNavigate();
+  const { notify } = useNotification();
   const { isAdmin, isTeamCoach, user } = useAppUser();
   const [step, setStep] = useState<RegistrationStep>('intro');
   const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
 
-  const {
-    data: teamData,
-    loading: teamLoading,
-    error: teamError,
-  } = useGetTeamQuery({
-    variables: { id: teamId ?? '0' },
-    onCompleted: (data) => {
-      const coachData: Pick<Address, 'contactName' | 'email' | 'phone'> = {
-        contactName: formatFullName(user?.firstName ?? '', user?.lastName ?? ''),
-        email: user?.username,
-        phone: user?.phone,
-      };
-      setRegisterDetails({
-        ...registerDetails,
-        billTo: data.getTeam.billTo
-          ? { ...(omitBy(data.getTeam.billTo, isNil) as Address), ...(coachData as Address) }
-          : { ...(coachData as Address) }, // remove null/undefined values
-        shipTo: data.getTeam.shipTo
-          ? { ...(omitBy(data.getTeam.shipTo, isNil) as Address), ...(coachData as Address) }
-          : { ...(coachData as Address) }, // remove null/undefined values
-      });
-    },
-  });
-
-  const { notify } = useNotification();
+  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
+    useGetTeamLazyQuery();
 
   const [updateTeam] = useUpdateTeamMutation({
     onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
   });
+
   const [registerTeam] = useRegisterTeamForEventMutation({
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
@@ -82,26 +60,32 @@ export function RegisterPage() {
   const canRegister = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
 
+  React.useEffect(() => {
+    if (teamId) {
+      fetchTeam({
+        variables: { id: teamId },
+      });
+    }
+  }, [teamId, fetchTeam, user]);
+
   const cancel = useCallback(() => navigate(appPath.team(teamId)), [navigate, teamId]);
 
   const doRegister = useCallback(
     async (data: RegisterDetails) => {
-      // let's assume everything is filled out properly
-      const _teamId = teamId ?? '0';
-      const _eventId = data.event?.id ?? '0';
+      if (teamId && data.event && data.event.id) {
+        const r1 = await registerTeam({ variables: { teamId, eventId: data.event.id } });
 
-      const r1 = await registerTeam({ variables: { teamId: _teamId, eventId: _eventId } });
-
-      if (
-        handleMutationErrors(
-          r1.data?.registerTeamForEvent,
-          'Nepodarilo sa registrovať tím.',
-          notify.error
-        )
-      ) {
-        return;
+        if (
+          handleMutationErrors(
+            r1.data?.registerTeamForEvent,
+            'Nepodarilo sa registrovať tím.',
+            notify.error
+          )
+        ) {
+          return;
+        }
+        setStep('success');
       }
-      setStep('success');
     },
     [notify, registerTeam, teamId]
   );
@@ -115,104 +99,119 @@ export function RegisterPage() {
   }
 
   return (
-    <BasePage title={`Registrácia tímu: ${team?.name}`} loading={teamLoading}>
-      <Box>
-        {step === 'intro' && (
-          <RegisterIntro
-            team={team}
-            nextStep={() => setStep('confirm-billto-contact')}
-            prevStep={cancel}
-          />
-        )}
-        {step === 'confirm-billto-contact' && (
-          <RegisterConfirmBillToContact
-            details={registerDetails}
-            nextStep={() => setStep('select-program')}
-            prevStep={() => setStep('intro')}
-            cancel={cancel}
-          />
-        )}
-        {step === 'select-program' && (
-          <RegisterSelectProgram
-            team={team}
-            details={registerDetails}
-            onSubmit={(p) => setRegisterDetails({ ...registerDetails, program: p })}
-            nextStep={() => setStep('select-event')}
-            prevStep={() => setStep('confirm-billto-contact')}
-            cancel={cancel}
-          />
-        )}
-        {step === 'select-event' && (
-          <RegisterSelectEvent
-            team={team}
-            details={registerDetails}
-            onSubmit={(e) => setRegisterDetails({ ...registerDetails, event: e })}
-            nextStep={() => setStep('billto')}
-            prevStep={() => setStep('select-program')}
-            cancel={cancel}
-          />
-        )}
-        {step === 'billto' && (
-          <RegisterBillToAddress
-            team={team}
-            details={registerDetails}
-            onSubmit={async (a) => {
-              await updateTeam({ variables: { id: teamId, input: { billTo: { ...a } } } });
-              setRegisterDetails({ ...registerDetails, billTo: { ...a } });
-            }}
-            nextStep={() => setStep('shipto')}
-            prevStep={() => setStep('select-event')}
-            cancel={cancel}
-          />
-        )}
-        {step === 'shipto' && (
-          <RegisterShipToAddress
-            team={team}
-            details={registerDetails}
-            onSubmit={async (a, ub) => {
-              const u: UpdateTeamInput = { useBillTo: ub };
-              if (a) {
-                u.shipTo = a;
-              }
-              if (ub) {
-                u.shipTo = registerDetails.billTo;
-              }
-              await updateTeam({ variables: { id: teamId, input: u } });
-              setRegisterDetails({
-                ...registerDetails,
-                shipTo: a ? { ...a } : undefined,
-                useBillTo: ub,
-              });
-            }}
-            nextStep={() => setStep('review')}
-            prevStep={() => setStep('billto')}
-            cancel={cancel}
-          />
-        )}
-        {step === 'review' && (
-          <RegisterReview
-            team={team}
-            details={registerDetails}
-            prevStep={() => setStep('shipto')}
-            nextStep={() => doRegister(registerDetails)}
-            cancel={cancel}
-          />
-        )}
-        {step === 'success' && (
-          <RegisterSuccess
-            team={team}
-            details={registerDetails}
-            nextStep={() => navigate(appPath.team(teamId))}
-          />
-        )}
-        {step === 'error' && (
-          <RegisterError
-            team={team}
-            details={registerDetails}
-            nextStep={() => navigate(appPath.team(teamId))}
-          />
-        )}
-      </Box>
+    <BasePage title={`Registrácia tímu: ${team?.name}`}>
+      {teamLoading || !team || !user ? (
+        <Spinner />
+      ) : (
+        <Box>
+          {step === 'intro' && (
+            <RegisterIntro
+              team={team}
+              nextStep={() => setStep('confirm-billto-contact')}
+              prevStep={cancel}
+            />
+          )}
+          {step === 'confirm-billto-contact' && (
+            <RegisterConfirmBillToContact
+              contact={{
+                id: user.id,
+                name: formatFullName(user.firstName, user.lastName),
+                email: user.username,
+                phone: user.phone,
+              }}
+              details={registerDetails}
+              nextStep={(data) => {
+                setStep('select-program');
+                setRegisterDetails(data);
+              }}
+              prevStep={() => setStep('intro')}
+              cancel={cancel}
+            />
+          )}
+          {step === 'select-program' && (
+            <RegisterSelectProgram
+              details={registerDetails}
+              onSubmit={(p) => setRegisterDetails({ ...registerDetails, program: p })}
+              nextStep={() => setStep('select-event')}
+              prevStep={() => setStep('confirm-billto-contact')}
+              cancel={cancel}
+            />
+          )}
+          {step === 'select-event' && (
+            <RegisterSelectEvent
+              details={registerDetails}
+              onSubmit={(e) => setRegisterDetails({ ...registerDetails, event: e })}
+              nextStep={() => setStep('billto')}
+              prevStep={() => setStep('select-program')}
+              cancel={cancel}
+            />
+          )}
+          {step === 'billto' && (
+            <RegisterBillToAddress
+              address={registerDetails.billTo ?? team.billTo}
+              onSubmit={async (a) => {
+                const aa: AddressInput = {
+                  ...a,
+                  contactName: registerDetails.billToContact?.name ?? '',
+                  email: registerDetails.billToContact?.email ?? '',
+                  phone: registerDetails.billToContact?.phone ?? '',
+                };
+                await updateTeam({ variables: { id: teamId, input: { billTo: aa } } });
+                setRegisterDetails({ ...registerDetails, billTo: aa });
+              }}
+              nextStep={() => setStep('shipto')}
+              prevStep={() => setStep('select-event')}
+              cancel={cancel}
+            />
+          )}
+          {step === 'shipto' && (
+            <RegisterShipToAddress
+              details={registerDetails}
+              onSubmit={async (a, ub) => {
+                const u: UpdateTeamInput = { useBillTo: ub };
+                if (a) {
+                  u.shipTo = a;
+                }
+                if (ub) {
+                  u.shipTo = registerDetails.billTo;
+                }
+                await updateTeam({ variables: { id: teamId, input: u } });
+                setRegisterDetails({
+                  ...registerDetails,
+                  shipTo: a ? { ...a } : undefined,
+                  useBillTo: ub,
+                });
+              }}
+              nextStep={() => setStep('review')}
+              prevStep={() => setStep('billto')}
+              cancel={cancel}
+            />
+          )}
+          {step === 'review' && (
+            <RegisterReview
+              team={team}
+              details={registerDetails}
+              prevStep={() => setStep('shipto')}
+              nextStep={() => doRegister(registerDetails)}
+              cancel={cancel}
+            />
+          )}
+          {step === 'success' && (
+            <RegisterSuccess
+              team={team}
+              details={registerDetails}
+              nextStep={() => navigate(appPath.team(teamId))}
+            />
+          )}
+          {step === 'error' && (
+            <RegisterError
+              team={team}
+              details={registerDetails}
+              nextStep={() => navigate(appPath.team(teamId))}
+            />
+          )}
+        </Box>
+      )}
     </BasePage>
   );
 }

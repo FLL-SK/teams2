@@ -71,17 +71,17 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
           setInvoiceItemEdit(undefined);
         }}
         onSubmit={(values) => {
-          if (invoiceItemAdd) {
+          if (invoiceItemAdd || !values.id) {
             createInvoiceItem({
               variables: {
                 type: 'registration',
-                refId: registration.id ?? '0',
+                refId: registration.id,
                 item: omit(values, 'id'),
               },
             });
           } else {
             updateInvoiceItem({
-              variables: { id: values.id ?? '0', item: values },
+              variables: { id: values.id, item: values },
             });
           }
         }}

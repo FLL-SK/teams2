@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox, Spinner, Text } from 'grommet';
 import { useMemo, useState } from 'react';
@@ -12,13 +12,13 @@ import {
   CreateTeamInput,
   UpdateTeamInput,
   useAddTagToTeamMutation,
-  useGetNotesQuery,
-  useGetTeamQuery,
   useUpdateTeamMutation,
   useCreateNoteMutation,
   useDeleteTeamMutation,
   useUndeleteTeamMutation,
   useRemoveTagFromTeamMutation,
+  useGetTeamLazyQuery,
+  useGetNotesLazyQuery,
 } from '../../generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
@@ -41,19 +41,11 @@ export function TeamPage() {
   const { notify } = useNotification();
   const onError = useCallback(() => notify.error('Nepodarilo sa aktualizovať tím.'), [notify]);
 
-  const {
-    data: teamData,
-    loading: teamLoading,
-    error: teamError,
-  } = useGetTeamQuery({ variables: { id: id ?? '0' } });
+  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
+    useGetTeamLazyQuery();
 
-  const {
-    data: notesData,
-    loading: notesLoading,
-    refetch: notesRefetch,
-  } = useGetNotesQuery({
-    variables: { type: 'team', ref: id ?? '0' },
-  });
+  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
+    useGetNotesLazyQuery();
 
   const [removeTag] = useRemoveTagFromTeamMutation({ onError });
   const [addTag] = useAddTagToTeamMutation({ onError });
@@ -65,6 +57,15 @@ export function TeamPage() {
   const [undeleteTeam] = useUndeleteTeamMutation({ onError });
 
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
+
+  useEffect(() => {
+    if (id) {
+      fetchTeam({ variables: { id } });
+      fetchNotes({
+        variables: { type: 'team', ref: id },
+      });
+    }
+  }, [id, fetchTeam, fetchNotes]);
 
   const canEdit = isAdmin() || isTeamCoach(id);
   const team = teamData?.getTeam;
@@ -82,6 +83,10 @@ export function TeamPage() {
   );
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
+    if (!id) {
+      return;
+    }
+
     const input: UpdateTeamInput = {
       name: data.name,
       address: {
@@ -91,7 +96,7 @@ export function TeamPage() {
         zip: data.zip,
       },
     };
-    updateTeam({ variables: { id: id ?? '0', input } });
+    updateTeam({ variables: { id, input } });
   };
 
   if (!id || teamError) {
@@ -101,97 +106,103 @@ export function TeamPage() {
   const isDeleted = !!team?.deletedOn;
 
   return (
-    <BasePage title="Tím" loading={teamLoading}>
-      <PanelGroup>
-        {isDeleted && (
-          <Box direction="row" gap="medium" align="center">
-            <Text color="status-error">Tím bol deaktivovaný.</Text>
+    <BasePage title="Tím">
+      {teamLoading || !team ? (
+        <Spinner />
+      ) : (
+        <>
+          <PanelGroup>
+            {isDeleted && (
+              <Box direction="row" gap="medium" align="center">
+                <Text color="status-error">Tím bol deaktivovaný.</Text>
+                {isAdmin() && (
+                  <Button
+                    size="small"
+                    primary
+                    label="Aktivovať tím"
+                    onClick={() => undeleteTeam({ variables: { id } })}
+                  />
+                )}
+              </Box>
+            )}
+
+            <Panel title="Detaily tímu" gap="small">
+              <LabelValueGroup labelWidth="150px" gap="small" direction="row">
+                <LabelValue label="Názov tímu" value={team.name} />
+                <LabelValue label="Zriaďovateľ" value={fullAddress(team.address)} />
+              </LabelValueGroup>
+              <Box direction="row" gap="small">
+                <Button
+                  label="Zmeniť"
+                  onClick={() => setShowEditDialog(true)}
+                  disabled={!canEdit || isDeleted}
+                />
+                {(isAdmin() || isTeamCoach(id)) && !isDeleted && (
+                  <Button
+                    label="Deaktivovať tím"
+                    color="status-critical"
+                    onClick={() => deleteTeam({ variables: { id } })}
+                    disabled={registrations.length > 0}
+                  />
+                )}
+              </Box>
+            </Panel>
+
+            <Panel title="Registrácie" gap="small">
+              <Box direction="row" justify="between">
+                <Button
+                  label="Registrovať tím"
+                  onClick={() => navigate(appPath.register(id))}
+                  disabled={registrations.length > 0 || isDeleted}
+                />
+                <CheckBox
+                  toggle
+                  label="Zobraziť aj neaktívne"
+                  defaultChecked={showInactiveEvents}
+                  onChange={({ target }) => setShowInactiveEvents(target.checked)}
+                />
+              </Box>
+              <TeamRegistrationsList registrations={registrations} />
+            </Panel>
+
+            {canEdit && <PanelTeamCoaches team={team} canEdit={canEdit && !isDeleted} />}
+
             {isAdmin() && (
-              <Button
-                size="small"
-                primary
-                label="Aktivovať tím"
-                onClick={() => undeleteTeam({ variables: { id: team?.id ?? '0' } })}
-              />
+              <Panel title="Štítky">
+                <Box direction="row" wrap>
+                  <TagList
+                    tags={team.tags}
+                    onRemove={(tagId) => removeTag({ variables: { teamId: id, tagId } })}
+                    onAdd={(tag) => addTag({ variables: { teamId: id, tagId: tag.id } })}
+                  />
+                </Box>
+              </Panel>
             )}
-          </Box>
-        )}
-
-        <Panel title="Detaily tímu" gap="small">
-          <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-            <LabelValue label="Názov tímu" value={team?.name} />
-            <LabelValue label="Zriaďovateľ" value={fullAddress(team?.address)} />
-          </LabelValueGroup>
-          <Box direction="row" gap="small">
-            <Button
-              label="Zmeniť"
-              onClick={() => setShowEditDialog(true)}
-              disabled={!canEdit || isDeleted}
-            />
-            {(isAdmin() || isTeamCoach(id)) && !isDeleted && (
-              <Button
-                label="Deaktivovať tím"
-                color="status-critical"
-                onClick={() => deleteTeam({ variables: { id: team?.id ?? '0' } })}
-                disabled={registrations.length > 0}
-              />
+            {isAdmin() && (
+              <Panel title="Poznámky">
+                {notesLoading ? (
+                  <Spinner />
+                ) : (
+                  <NoteList
+                    notes={notesData?.getNotes ?? []}
+                    limit={20}
+                    onCreate={(text) =>
+                      createNote({ variables: { input: { type: 'team', ref: id, text } } })
+                    }
+                  />
+                )}
+              </Panel>
             )}
-          </Box>
-        </Panel>
-
-        <Panel title="Registrácie" gap="small">
-          <Box direction="row" justify="between">
-            <Button
-              label="Registrovať tím"
-              onClick={() => navigate(appPath.register(id))}
-              disabled={registrations.length > 0 || isDeleted}
-            />
-            <CheckBox
-              toggle
-              label="Zobraziť aj neaktívne"
-              defaultChecked={showInactiveEvents}
-              onChange={({ target }) => setShowInactiveEvents(target.checked)}
-            />
-          </Box>
-          <TeamRegistrationsList registrations={registrations} />
-        </Panel>
-
-        {canEdit && <PanelTeamCoaches team={team} canEdit={canEdit && !isDeleted} />}
-
-        {isAdmin() && (
-          <Panel title="Štítky">
-            <Box direction="row" wrap>
-              <TagList
-                tags={team?.tags}
-                onRemove={(tagId) => removeTag({ variables: { teamId: team?.id ?? '0', tagId } })}
-                onAdd={(tag) => addTag({ variables: { teamId: team?.id ?? '0', tagId: tag.id } })}
-              />
-            </Box>
-          </Panel>
-        )}
-        {isAdmin() && (
-          <Panel title="Poznámky">
-            {notesLoading ? (
-              <Spinner />
-            ) : (
-              <NoteList
-                notes={notesData?.getNotes ?? []}
-                limit={20}
-                onCreate={(text) =>
-                  createNote({ variables: { input: { type: 'team', ref: id, text } } })
-                }
-              />
-            )}
-          </Panel>
-        )}
-      </PanelGroup>
-      <EditTeamDialog
-        key={team?.id}
-        show={showEditDialog}
-        team={team}
-        onClose={() => setShowEditDialog(false)}
-        onSubmit={handleSubmit}
-      />
+          </PanelGroup>
+          <EditTeamDialog
+            key={id}
+            show={showEditDialog}
+            team={team}
+            onClose={() => setShowEditDialog(false)}
+            onSubmit={handleSubmit}
+          />
+        </>
+      )}
     </BasePage>
   );
 }
