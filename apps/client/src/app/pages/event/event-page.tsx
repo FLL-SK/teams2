@@ -72,15 +72,15 @@ export function EventPage() {
           <PanelEventDetails event={event} canEdit={canEdit} />
           <PanelEventFees
             event={event}
-            canEdit={canEdit && (event?.ownFeesAllowed ?? false)}
+            canEdit={canEdit && (event.ownFeesAllowed ?? false)}
             onChange={refetch}
           />
-          {event && <PanelEventTeams event={event} canEdit={canEdit} />}
+          <PanelEventTeams event={event} canEdit={canEdit} />
           {canEdit && (
             <Panel title="Manažéri">
               <Box direction="row" wrap>
                 <UserTags
-                  users={event?.managers ?? []}
+                  users={event.managers ?? []}
                   onAdd={(userId) => addManager({ variables: { eventId: id, userId } })}
                   onRemove={(userId) => removeManager({ variables: { eventId: id, userId } })}
                   canEdit={canEdit}

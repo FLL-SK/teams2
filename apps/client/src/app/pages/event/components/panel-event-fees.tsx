@@ -14,7 +14,7 @@ import {
 } from '../../../generated/graphql';
 
 interface PanelEventFeesProps {
-  event?: EventFragmentFragment | null;
+  event: EventFragmentFragment;
   onChange?: () => void;
   canEdit?: boolean;
 }
@@ -72,13 +72,13 @@ export function PanelEventFees(props: PanelEventFeesProps) {
           setInvoiceItemEdit(undefined);
         }}
         onSubmit={(values) => {
-          if (invoiceItemAdd) {
+          if (invoiceItemAdd || !values.id) {
             createInvoiceItem({
-              variables: { type: 'event', refId: event.id ?? '0', item: omit(values, 'id') },
+              variables: { type: 'event', refId: event.id, item: omit(values, 'id') },
             });
           } else {
             updateInvoiceItem({
-              variables: { id: values.id ?? '0', item: values },
+              variables: { id: values.id, item: values },
             });
           }
         }}
