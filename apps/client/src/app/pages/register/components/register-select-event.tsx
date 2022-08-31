@@ -1,15 +1,10 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
-import {
-  EventListFragmentFragment,
-  TeamFragmentFragment,
-  useGetEventsLazyQuery,
-} from '../../../generated/graphql';
+import { EventListFragmentFragment, useGetEventsLazyQuery } from '../../../generated/graphql';
 import { RegisterDetails } from './types';
 
 interface RegisterSelectEventProps {
-  team?: TeamFragmentFragment;
   details: RegisterDetails;
   onSubmit: (event: EventListFragmentFragment) => void;
   nextStep: () => void;

@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Button, CheckBox, Form, Text } from 'grommet';
-import { TeamFragmentFragment } from '../../../generated/graphql';
 import { Address, RegisterDetails } from './types';
 
 import { AddressForm } from './address-form';
 
 interface RegisterShipToAddressProps {
-  team?: TeamFragmentFragment;
   details: RegisterDetails;
   onSubmit: (a: Address | undefined, useBillTo: boolean) => void;
   nextStep: () => void;
@@ -28,14 +26,10 @@ const emptyForm: FormDataType = {
 };
 
 export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
-  const { team, details, onSubmit, nextStep, prevStep, cancel } = props;
+  const { details, onSubmit, nextStep, prevStep, cancel } = props;
 
   const [formData, setFormData] = useState<Address>(details.shipTo ?? emptyForm);
-  const [useBillTo, setUseBillTo] = useState(false);
-
-  if (!team) {
-    return null;
-  }
+  const [useBillTo, setUseBillTo] = useState(details.useBillTo ?? false);
 
   return (
     <Box gap="medium">
@@ -43,7 +37,7 @@ export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
       <CheckBox
         toggle
         label="Použiť fakturačné údaje"
-        checked={details.useBillTo}
+        checked={useBillTo}
         onChange={({ target }) => setUseBillTo(target.checked)}
       />
       <Form
@@ -61,12 +55,7 @@ export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
         <Box justify="between" direction="row">
           <Button label="Späť" onClick={prevStep} />
           <Button plain label="Zrušiť" hoverIndicator onClick={cancel} />
-          <Button
-            primary
-            label="Pokračovať"
-            type="submit"
-            disabled={!details.shipTo && !useBillTo}
-          />
+          <Button primary label="Pokračovať" type="submit" />
         </Box>
       </Form>
     </Box>

@@ -12,7 +12,7 @@ import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { LabelValueGroup } from '../../../components/label-value-group';
 
 interface RegisterReviewProps {
-  team?: TeamFragmentFragment;
+  team: TeamFragmentFragment;
   details: RegisterDetails;
   nextStep: () => void;
   prevStep: () => void;
@@ -61,7 +61,7 @@ export function RegisterReview(props: RegisterReviewProps) {
     return <Spinner />;
   }
 
-  if (!team || !program || !event) {
+  if (!program || !event) {
     return null;
   }
 
@@ -103,9 +103,9 @@ export function RegisterReview(props: RegisterReviewProps) {
               <LabelValue label="DIČ" value={billTo.taxNumber} />
               <LabelValue label="IČ-DPH" value={billTo.vatNumber} />
 
-              <LabelValue label="Kontaktná osoba" value={billTo.contactName} />
-              <LabelValue label="Telefón" value={billTo.phone} />
-              <LabelValue label="Email" value={billTo.email} />
+              <LabelValue label="Kontaktná osoba" value={details.billToContact?.name} />
+              <LabelValue label="Telefón" value={details.billToContact?.phone} />
+              <LabelValue label="Email" value={details.billToContact?.email} />
             </LabelValueGroup>
           </Box>
         )}
