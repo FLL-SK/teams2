@@ -7,6 +7,7 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import {
+  AddressInput,
   UpdateTeamInput,
   useGetTeamLazyQuery,
   useRegisterTeamForEventMutation,
@@ -18,7 +19,7 @@ import { RegisterReview } from './components/register-review';
 import { RegisterSelectEvent } from './components/register-select-event';
 import { RegisterSelectProgram } from './components/register-select-program';
 import { RegisterShipToAddress } from './components/register-shipto-address';
-import { Address, RegisterDetails } from './components/types';
+import { RegisterDetails } from './components/types';
 import { RegisterSuccess } from './components/register-success';
 import { RegisterError } from './components/register-error';
 import { useNotification } from '../../components/notifications/notification-provider';
@@ -149,7 +150,7 @@ export function RegisterPage() {
             <RegisterBillToAddress
               address={registerDetails.billTo ?? team.billTo}
               onSubmit={async (a) => {
-                const aa: Address = {
+                const aa: AddressInput = {
                   ...a,
                   contactName: registerDetails.billToContact?.name ?? '',
                   email: registerDetails.billToContact?.email ?? '',

@@ -1,4 +1,5 @@
 fragment AddressAddressFragment on Address {
+  id
   name
   street
   city

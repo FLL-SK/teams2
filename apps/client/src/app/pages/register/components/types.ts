@@ -1,5 +1,6 @@
 import {
   Address as AddressGQL,
+  AddressInput,
   EventListFragmentFragment,
   ProgramListFragmentFragment,
 } from '../../../generated/graphql';
@@ -9,8 +10,8 @@ export type Address = AddressGQL;
 export interface RegisterDetails {
   program?: ProgramListFragmentFragment;
   event?: EventListFragmentFragment;
-  shipTo?: Address;
-  billTo?: Address;
+  shipTo?: AddressInput;
+  billTo?: AddressInput;
   billToContact?: Contact;
   useBillTo?: boolean;
   items?: Item[];

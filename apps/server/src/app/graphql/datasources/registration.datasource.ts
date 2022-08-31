@@ -299,6 +299,7 @@ export class RegistrationDataSource extends BaseDataSource {
         girlCount: reg.girlCount ?? 0,
         sizeConfirmedOn: reg.sizeConfirmedOn,
         address: {
+          id: team.address._id,
           name: team.address.name,
           street: team.address.street,
           city: team.address.city,

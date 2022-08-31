@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { Box, Button, Form, Text } from 'grommet';
-import { Address } from './types';
 
 import { AddressForm } from './address-form';
+import { AddressInput } from '../../../generated/graphql';
 
 interface RegisterBillToAddressProps {
-  address?: Address | null;
-  onSubmit: (a: Address) => void;
+  address?: AddressInput | null;
+  onSubmit: (a: AddressInput) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
 }
 
-type FormDataType = Address;
+type FormDataType = AddressInput;
 
 const emptyForm: FormDataType = {
   name: '',
