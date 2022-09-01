@@ -21,7 +21,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getProgramFiles(programId: ObjectId, checkAccess = true): Promise<File[]> {
-    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get program files');
 
     const files = await fileRepository
       .find({ type: 'programDoc', ref: programId.toString() })
@@ -31,7 +31,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getEventFiles(eventId: ObjectId, checkAccess = true): Promise<File[]> {
-    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get event files');
 
     const files = await fileRepository
       .find({ type: 'eventDoc', ref: eventId.toString() })
@@ -41,7 +41,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add program file');
 
     const log = this.logBase.extend('addPFile');
     const nf: FileData = {
@@ -59,7 +59,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addEventFile(eventId: ObjectId, input: FileUploadInput): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add event file');
 
     const log = this.logBase.extend('addFFile');
     const nf: FileData = {
@@ -78,7 +78,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async removeFile(fileId: ObjectId): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove file');
 
     const log = this.logBase.extend('removeFile');
 

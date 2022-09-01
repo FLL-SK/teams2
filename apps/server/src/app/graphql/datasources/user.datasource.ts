@@ -41,7 +41,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get users');
 
     const q: FilterQuery<UserData> = {};
     if (filter) {
@@ -56,7 +56,9 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
-    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() ||
+      this.userGuard.isSelf(id) ||
+      this.userGuard.notAuthorized('Update user');
 
     const u: Partial<UserData> = {
       firstName: input.firstName,
@@ -79,7 +81,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async deleteUser(id: ObjectId): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete user');
     const u = await userRepository
       .findByIdAndUpdate(
         id,
@@ -92,7 +94,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async undeleteUser(id: ObjectId): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Undelete user');
     const u = await userRepository
       .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
       .lean()
@@ -101,19 +103,21 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() ||
+      this.userGuard.isSelf(id) ||
+      this.userGuard.notAuthorized('Change password');
     const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
     return UserMapper.toUser(u);
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
-    this.userGuard.isSuperAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isSuperAdmin() || this.userGuard.notAuthorized('Set admin');
     const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
     return UserMapper.toUser(u);
   }
 
   async declineGdpr(id: ObjectId): Promise<User> {
-    this.userGuard.isSelf(id) || this.userGuard.notAuthorized();
+    this.userGuard.isSelf(id) || this.userGuard.notAuthorized('Decline GDPR');
     const u = await userRepository
       .findOneAndUpdate(
         { _id: id, gdprDeclinedOn: null },
