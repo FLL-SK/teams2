@@ -67,7 +67,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async createEvent(input: CreateEventInput): Promise<CreateEventPayload> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create event');
     const u: EventData = { ...input, managersIds: [] };
     const nu = await eventRepository.create(u);
     return { event: EventMapper.toEvent(nu) };
@@ -76,14 +76,14 @@ export class EventDataSource extends BaseDataSource {
   async updateEvent(id: ObjectId, input: UpdateEventInput): Promise<UpdateEventPayload> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(id)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Update event');
     const u: Partial<EventData> = input;
     const nu = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
     return { event: EventMapper.toEvent(nu) };
   }
 
   async deleteEvent(id: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete event');
     const tq: Partial<RegistrationData> = { eventId: id, canceledOn: null };
     const teams = await registrationRepository.find(tq).lean().exec();
     if (teams.length > 0) {
@@ -95,7 +95,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async undeleteEvent(id: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Undelete event');
     const u: Partial<EventData> = { deletedOn: null, deletedBy: this.context.user._id };
     const ne = await eventRepository.findByIdAndUpdate(id, u, { new: true }).exec();
     return EventMapper.toEvent(ne);
@@ -109,7 +109,7 @@ export class EventDataSource extends BaseDataSource {
   async addEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Add event manager');
     const event = await eventRepository
       .findOneAndUpdate({ _id: eventId }, { $addToSet: { managersIds: userId } }, { new: true })
       .exec();
@@ -120,7 +120,7 @@ export class EventDataSource extends BaseDataSource {
   async removeEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Remove event manager');
     const event = await eventRepository
       .findOneAndUpdate({ _id: eventId }, { $pull: { managersIds: userId } }, { new: true })
       .exec();

@@ -20,7 +20,7 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async getNote(id: ObjectId): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get note');
 
     const note = await noteRepository.findById(id).exec();
     return NoteMapper.toNote(note);
@@ -40,7 +40,7 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async createNote(input: NoteCreateInput): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create note');
 
     const createdBy = this.context.user._id;
     const n: NoteData = { ...input, createdOn: new Date(), createdBy };
@@ -49,14 +49,14 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async updateNote(id: ObjectId, input: NoteUpdateInput): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update note');
 
     const note = await noteRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return NoteMapper.toNote(note);
   }
 
   async deleteNote(id: ObjectId): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete note');
 
     const note = await noteRepository
       .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })

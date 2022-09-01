@@ -23,7 +23,7 @@ export class SettingsDataSource extends BaseDataSource {
   }
 
   async put(input: UpdateSettingsInput): Promise<Settings> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Put settings');
     const s = await settingsRepository.put(input);
     return SettingsMapper.toSettings(s);
   }
