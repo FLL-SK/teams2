@@ -88,7 +88,7 @@ export class TeamDataSource extends BaseDataSource {
   async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(id)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Update team');
 
     const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
     return { team: TeamMapper.toTeam(u) };
@@ -97,7 +97,7 @@ export class TeamDataSource extends BaseDataSource {
   async deleteTeam(id: ObjectId): Promise<Team> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(id)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Delete team');
 
     const u = await teamRepository
       .findByIdAndUpdate(
@@ -112,7 +112,7 @@ export class TeamDataSource extends BaseDataSource {
   async undeleteTeam(id: ObjectId): Promise<Team> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(id)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Undelete team');
 
     const u = await teamRepository
       .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
@@ -121,7 +121,9 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamsCoachedBy(coachId: ObjectId): Promise<Team[]> {
-    this.userGuard.isAdmin() || this.userGuard.isSelf(coachId) || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() ||
+      this.userGuard.isSelf(coachId) ||
+      this.userGuard.notAuthorized('Get teams coached by');
 
     const log = this.logBase.extend('getCoachedBy');
     const teams = await teamRepository.findTeamsCoachedByUser(coachId);
@@ -132,7 +134,7 @@ export class TeamDataSource extends BaseDataSource {
   async addCoachToTeam(teamId: ObjectId, username: string): Promise<Team> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(teamId)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Add coach to team');
 
     const u = await userRepository.findActiveByUsername(username);
     if (!u) {
@@ -149,7 +151,7 @@ export class TeamDataSource extends BaseDataSource {
   async removeCoachFromTeam(teamId: ObjectId, coachId: ObjectId): Promise<Team> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(teamId)) ||
-      this.userGuard.notAuthorized();
+      this.userGuard.notAuthorized('Remove coach from team');
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
@@ -198,7 +200,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add tag to team');
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
@@ -209,7 +211,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove tag from team');
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
@@ -239,7 +241,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async recalculateTeamStats(): Promise<number> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized();
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Recalculate team stats');
     const teams = await teamRepository.find({ createdOn: null }).exec();
     for (const t of teams) {
       const tu: UpdateQuery<TeamData> = {};

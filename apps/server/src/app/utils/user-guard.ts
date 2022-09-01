@@ -72,7 +72,11 @@ export class UserGuard {
     return this.programManagerOfPrograms.includes(programId.toString());
   }
 
-  notAuthorized() {
-    throw new Error(this.message);
+  notAuthorized(context?: string) {
+    throw new Error(
+      `(${this.user ? this.user.username : 'not-logged-in'}) ${this.message}${
+        context ? `: ${context}` : ''
+      }`
+    );
   }
 }
