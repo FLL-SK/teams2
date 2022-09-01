@@ -47,7 +47,7 @@ async function server() {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
       if (user) {
         req.user = user;
-      } else {
+      } else if (err) {
         log.warn('Unauthorized request /graphql from ip=%s body=%o', req.ip.toString(), req.body);
         return res.status(401).send('Unauthorized');
       }
