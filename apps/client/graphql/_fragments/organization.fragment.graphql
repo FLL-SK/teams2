@@ -1,0 +1,28 @@
+fragment OrganizationListFragment on Organization {
+  id
+  name
+  type
+
+  streetAddr
+  city
+  postCode
+  countryCode
+
+  companyNumber
+  vatNumber
+  taxNumber
+
+  websiteUrl
+  email
+  phone
+
+  tagIds
+
+  createdOn
+  deletedOn
+  deletedBy
+}
+
+fragment OrganizationFragment on Organization {
+  ...OrganizationListFragment
+}

@@ -1,0 +1,45 @@
+mutation deleteOrganization($id: ID!) {
+  deleteOrganization(id: $id) {
+    ...OrganizationListFragment
+  }
+}
+
+mutation undeleteOrganization($id: ID!) {
+  undeleteOrganization(id: $id) {
+    ...OrganizationListFragment
+  }
+}
+
+mutation createOrganization($input: CreateOrganizationInput!) {
+  createOrganization(input: $input) {
+    organization {
+      ...OrganizationFragment
+    }
+    errors {
+      ...ValidationErrorFragment
+    }
+  }
+}
+
+mutation updateOrganization($id: ID!, $input: UpdateOrganizationInput!) {
+  updateOrganization(id: $id, input: $input) {
+    organization {
+      ...OrganizationFragment
+    }
+    errors {
+      ...ValidationErrorFragment
+    }
+  }
+}
+
+mutation addTagToOrganization($orgId: ID!, $tagId: ID!) {
+  addTagToOrganization(orgId: $orgId, tagId: $tagId) {
+    ...OrganizationFragment
+  }
+}
+
+mutation removeTagFromOrganization($orgId: ID!, $tagId: ID!) {
+  removeTagFromOrganization(orgId: $orgId, tagId: $tagId) {
+    ...OrganizationFragment
+  }
+}

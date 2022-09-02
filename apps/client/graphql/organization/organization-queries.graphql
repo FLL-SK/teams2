@@ -1,0 +1,11 @@
+query getOrganization($id: ID!) {
+  getOrganization(id: $id) {
+    ...OrganizationFragment
+  }
+}
+
+query getOrganizations($filter: OrganizationFilterInput) {
+  getOrganizations(filter: $filter) {
+    ...OrganizationListFragment
+  }
+}

@@ -1,0 +1,99 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./user.graphql"
+# import * from "./event.graphql"
+# import * from "./tag.graphql"
+# import * from "./registration.graphql"
+
+enum OrganizationType {
+  PER # Person
+  CMP # Company
+  SCH # School
+  FTC # Freetime center
+  OTH # Other
+}
+
+type Organization implements INode {
+  id: ID!
+  name: String!
+
+  type: OrganizationType!
+
+  streetAddr: String!
+  city: String!
+  postCode: String!
+  countryCode: String
+
+  companyNumber: String
+  vatNumber: String
+  taxNumber: String
+
+  websiteUrl: String
+  email: String
+  phone: String
+
+  tagIds: [ID!]!
+
+  createdOn: DateTime!
+  deletedOn: DateTime
+  deletedBy: ID
+}
+
+input CreateOrganizationInput {
+  type: OrganizationType!
+  name: String!
+  streetAddr: String!
+  city: String!
+  postCode: String!
+  countryCode: String
+  companyNumber: String
+  vatNumber: String
+  taxNumber: String
+}
+
+type CreateOrganizationPayload implements IMutationPayload {
+  organization: Organization
+  errors: [ValidationError!]
+}
+
+input UpdateOrganizationInput {
+  type: OrganizationType
+  name: String
+  streetAddr: String
+  city: String
+  postCode: String
+  countryCode: String
+  companyNumber: String
+  vatNumber: String
+  taxNumber: String
+  websiteUrl: String
+  email: String
+  phone: String
+}
+
+type UpdateOrganizationPayload implements IMutationPayload {
+  organization: Organization
+  errors: [ValidationError!]
+}
+
+input OrganizationFilterInput {
+  includeInactive: Boolean
+  hasTags: [ID!]
+  participatedInProgram: ID
+}
+
+extend type Query {
+  getOrganization(id: ID!): Organization!
+  getOrganizations(filter: OrganizationFilterInput): [Organization!]!
+}
+
+extend type Mutation {
+  createOrganization(input: CreateOrganizationInput!): CreateOrganizationPayload!
+  updateOrganization(id: ID!, input: UpdateOrganizationInput!): UpdateOrganizationPayload!
+  deleteOrganization(id: ID!): Organization!
+  undeleteOrganization(id: ID!): Organization!
+
+  addTagToOrganization(orgId: ID!, tagId: ID!): Organization!
+  removeTagFromOrganization(orgId: ID!, tagId: ID!): Organization!
+}
