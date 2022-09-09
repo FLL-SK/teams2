@@ -33,9 +33,9 @@ export function RegistrationsPage() {
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
   const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
-    useGetProgramRegistrationsLazyQuery();
+    useGetProgramRegistrationsLazyQuery({ fetchPolicy: 'cache-and-network' });
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
-    useGetProgramLazyQuery();
+    useGetProgramLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const [searchText, setSearchText] = useState('');
   const [registrations, setRegistrations] = useState<RegistrationListFragmentFragment[]>([]);

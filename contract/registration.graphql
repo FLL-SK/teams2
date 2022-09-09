@@ -81,6 +81,18 @@ type RegisteredTeamPayload {
   coaches: [User!]
 }
 
+type RegisterTeamPayload {
+  team: Team
+  event: Event
+  error: MutationError
+}
+
+type UnregisterTeamPayload {
+  team: Team
+  event: Event
+  error: MutationError
+}
+
 input RegistrationFilter {
   programId: ID
   onlyUnconfirmed: Boolean
@@ -118,7 +130,10 @@ extend type Mutation {
   registrationSetTeamSizeConfirmed(id: ID!, date: DateTime): Registration
   registrationClearTeamSizeConfirmed(id: ID!): Registration
 
+  createRegistration(eventId: ID!, teamId: ID!): RegistrationPayload!
   updateRegistration(id: ID!, input: RegistrationInput!): Registration
+  cancelRegistration(id: ID!): RegistrationPayload!
+  changeRegisteredEvent(registrationId: ID!, newEventId: ID!): RegistrationPayload!
 
   createRegistrationInvoice(id: ID!): RegistrationPayload!
   emailRegistrationInvoice(id: ID!): RegistrationPayload!

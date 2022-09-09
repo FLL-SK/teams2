@@ -1,7 +1,6 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { RegisterTeamPayload, SwitchTeamEventPayload } from '../generated/graphql';
 import { ApolloContext } from '../graphql/apollo-context';
 
 import {
@@ -14,11 +13,11 @@ import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
   emailTeamRegistered,
-  emailTeamUnRegisteredToCoach,
-  emailTeamUnRegisteredToEventManagers,
+  emailTeamUnregistered,
 } from '../utils/emails';
 
 import { logger } from '@teams2/logger';
+import { Registration, RegistrationPayload } from '../generated/graphql';
 
 const logLib = logger('domain:Event');
 
@@ -47,32 +46,32 @@ export async function registerTeamToEvent(
   teamId: ObjectId,
   eventId: ObjectId,
   ctx: ApolloContext
-): Promise<RegisterTeamPayload> {
+): Promise<RegistrationPayload> {
   const log = logLib.extend('registerTeam');
   log.info('Registering team %s to event %s', teamId, eventId);
   const { userGuard, dataSources } = ctx;
 
   if (!userGuard.isAdmin() && !(await userGuard.isCoach(teamId))) {
     log.error('Not authorized to register');
-    return { error: { code: 'not_authorized' } };
+    return { errors: [{ code: 'not_authorized' }] };
   }
 
   const team = await dataSources.team.getTeam(teamId);
   if (!team) {
     log.error('Team not found %s', teamId);
-    return { error: { code: 'wrong_input', message: 'wrong team id' } };
+    return { errors: [{ code: 'team_not_found' }] };
   }
 
-  let registration;
+  let registration: Registration;
   try {
     // register team to event
     registration = await dataSources.registration.createRegistration(eventId, teamId);
 
     if (!registration) {
-      return { error: { code: 'registration_failed' } };
+      return { errors: [{ code: 'registration_failed' }] };
     }
   } catch (e) {
-    return { error: { code: 'registration_failed', message: e.message } };
+    return { errors: [{ code: 'registration_failed' }] };
   }
 
   // copy invoice items to registration
@@ -81,11 +80,13 @@ export async function registerTeamToEvent(
   // email notifications
   emailTeamRegistered(registration.id, ctx.user._id);
 
-  const event = await dataSources.event.getEvent(eventId);
-  return { event, team };
+  return { registration };
 }
 
-export async function cancelRegistration(id: ObjectId, ctx: ApolloContext) {
+export async function cancelRegistration(
+  id: ObjectId,
+  ctx: ApolloContext
+): Promise<RegistrationPayload> {
   const { dataSources, userGuard } = ctx;
   const log = logLib.extend('registerTeam');
   const reg = await dataSources.registration.getRegistration(id);
@@ -104,23 +105,10 @@ export async function cancelRegistration(id: ObjectId, ctx: ApolloContext) {
     return null;
   }
 
-  const [event, program, eventMgrs, programMgrs, coaches, team] = await Promise.all([
-    dataSources.event.getEvent(registration.eventId),
-    dataSources.program.getProgram(registration.programId),
-    dataSources.event.getEventManagers(registration.eventId),
-    dataSources.program.getProgramManagers(registration.programId),
-    dataSources.team.getTeamCoaches(registration.teamId),
-    dataSources.team.getTeam(registration.teamId),
-  ]);
+  // email notifications
+  emailTeamUnregistered(registration.id, ctx.user._id);
 
-  const mgrEmails = [...eventMgrs.map((m) => m.username), ...programMgrs.map((m) => m.username)];
-  const coachEmails = coaches.map((c) => c.username);
-
-  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event.id.toString());
-  emailTeamUnRegisteredToCoach(coachEmails, team.name, event.name, program.name, eventUrl);
-  emailTeamUnRegisteredToEventManagers(mgrEmails, team.name, event.name, program.name, eventUrl);
-
-  return { event, team };
+  return { registration };
 }
 
 export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloContext) {
@@ -155,17 +143,19 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
   emailEventChangedToEventManagers(managerEmails, event.name, program.name, eventUrl);
 }
 
-export async function switchTeamEvent(
+export async function changeRegisteredEvent(
   registrationId: ObjectId,
   newEventId: ObjectId,
   ctx: ApolloContext
-): Promise<SwitchTeamEventPayload> {
+): Promise<RegistrationPayload> {
   const log = logLib.extend('switch');
   log.info('Switching team registration=%s', registrationId);
   try {
-    const u = await cancelRegistration(registrationId, ctx);
-    const r = await registerTeamToEvent(u.team.id, newEventId, ctx);
-    return { team: r.team, oldEvent: u.event, newEvent: r.event };
+    const registration = await ctx.dataSources.registration.changeRegisteredEvent(
+      registrationId,
+      newEventId
+    );
+    return { registration };
   } catch (e) {
     log.debug(
       'Error switching registration=%s to new event=%s error=%s',
@@ -173,6 +163,6 @@ export async function switchTeamEvent(
       newEventId,
       e.message
     );
-    return { error: { code: 'error' } };
+    return { errors: [{ code: 'error' }] };
   }
 }

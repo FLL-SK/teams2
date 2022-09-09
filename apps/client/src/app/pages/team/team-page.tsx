@@ -42,10 +42,10 @@ export function TeamPage() {
   const onError = useCallback(() => notify.error('Nepodarilo sa aktualizovať tím.'), [notify]);
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery();
+    useGetTeamLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery();
+    useGetNotesLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const [removeTag] = useRemoveTagFromTeamMutation({ onError });
   const [addTag] = useAddTagToTeamMutation({ onError });

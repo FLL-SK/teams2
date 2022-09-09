@@ -6,6 +6,11 @@ import {
   createRegistrationInvoice,
   getRegistrationFiles,
 } from '../../domains/registration';
+import {
+  cancelRegistration,
+  registerTeamToEvent,
+  changeRegisteredEvent,
+} from '../../domains/event';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
@@ -38,6 +43,14 @@ export const typeResolver: Resolver<Registration> = {
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
+  createRegistration: (_parent, { eventId, teamId }, context) =>
+    registerTeamToEvent(teamId, eventId, context),
+
+  cancelRegistration: async (_parent, { id }, context) => cancelRegistration(id, context),
+
+  changeRegisteredEvent: async (_parent, { registrationId, newEventId }, context) =>
+    changeRegisteredEvent(registrationId, newEventId, context),
+
   updateRegistration: async (_parent, { id, input }, { dataSources }) =>
     dataSources.registration.updateRegistration(id, input),
 

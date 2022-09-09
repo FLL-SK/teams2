@@ -16,7 +16,7 @@ mutation createEvent($input: CreateEventInput!) {
       ...EventFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
@@ -27,7 +27,7 @@ mutation updateEvent($id: ID!, $input: UpdateEventInput!) {
       ...EventFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
@@ -41,50 +41,5 @@ mutation addEventManager($eventId: ID!, $userId: ID!) {
 mutation removeEventManager($eventId: ID!, $userId: ID!) {
   removeEventManager(eventId: $eventId, userId: $userId) {
     ...EventFragment
-  }
-}
-
-mutation registerTeamForEvent($eventId: ID!, $teamId: ID!) {
-  registerTeamForEvent(eventId: $eventId, teamId: $teamId) {
-    event {
-      ...EventFragment
-    }
-    team {
-      ...TeamFragment
-    }
-    error {
-      ...MutationErrorFragment
-    }
-  }
-}
-
-mutation cancelEventRegistration($id: ID!) {
-  cancelEventRegistration(id: $id) {
-    event {
-      ...EventFragment
-    }
-    team {
-      ...TeamFragment
-    }
-    error {
-      ...MutationErrorFragment
-    }
-  }
-}
-
-mutation switchTeamEvent($registrationId: ID!, $newEventId: ID!) {
-  switchTeamEvent(registrationId: $registrationId, newEventId: $newEventId) {
-    team {
-      ...TeamFragment
-    }
-    oldEvent {
-      ...EventFragment
-    }
-    newEvent {
-      ...EventFragment
-    }
-    error {
-      ...MutationErrorFragment
-    }
   }
 }

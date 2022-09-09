@@ -6,8 +6,8 @@ import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {
   RegistrationFragmentFragment,
-  useCancelEventRegistrationMutation,
-  useSwitchTeamEventMutation,
+  useCancelRegistrationMutation,
+  useChangeRegisteredEventMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
@@ -31,10 +31,10 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const [askUnregisterTeam, setAskUnregisterTeam] = useState(false);
   const [changeEvent, setChangeEvent] = useState(false);
 
-  const [unregisterTeam] = useCancelEventRegistrationMutation({
+  const [unregisterTeam] = useCancelRegistrationMutation({
     onError: () => notify.error('Nepodarilo sa zrušiť registráciu.'),
   });
-  const [switchTeamEvent] = useSwitchTeamEventMutation({
+  const [switchTeamEvent] = useChangeRegisteredEventMutation({
     onError: () => notify.error('Nepodarilo sa presunúť tím na iný turnaj'),
   });
 

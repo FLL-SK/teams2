@@ -25,7 +25,7 @@ export function EventPage() {
   const { notify } = useNotification();
 
   const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
-    useGetEventLazyQuery();
+    useGetEventLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const [undeleteEvent] = useUndeleteEventMutation({
     onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
