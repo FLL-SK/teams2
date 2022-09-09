@@ -21,7 +21,7 @@ export function ProgramPage() {
   const [
     fetchProgram,
     { data: programData, loading: programLoading, error, refetch: programRefetch },
-  ] = useGetProgramLazyQuery();
+  ] = useGetProgramLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const { isProgramManager, isAdmin } = useAppUser();
 
