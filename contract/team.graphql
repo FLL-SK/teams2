@@ -39,9 +39,9 @@ input CreateTeamInput {
   email: String
 }
 
-type CreateTeamPayload implements IMutationPayload {
+type TeamPayload implements IMutationPayload {
   team: Team
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input UpdateTeamInput {
@@ -50,11 +50,6 @@ input UpdateTeamInput {
   billTo: AddressInput
   shipTo: AddressInput
   useBillTo: Boolean
-}
-
-type UpdateTeamPayload implements IMutationPayload {
-  team: Team
-  errors: [ValidationError!]
 }
 
 input TeamFilterInput {
@@ -69,8 +64,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createTeam(input: CreateTeamInput!): CreateTeamPayload!
-  updateTeam(id: ID!, input: UpdateTeamInput!): UpdateTeamPayload!
+  createTeam(input: CreateTeamInput!): TeamPayload!
+  updateTeam(id: ID!, input: UpdateTeamInput!): TeamPayload!
   deleteTeam(id: ID!): Team
   undeleteTeam(id: ID!): Team
 

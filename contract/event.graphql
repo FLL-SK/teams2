@@ -40,7 +40,7 @@ input CreateEventInput {
 
 type CreateEventPayload implements IMutationPayload {
   event: Event
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input UpdateEventInput {
@@ -51,33 +51,14 @@ input UpdateEventInput {
   ownFeesAllowed: Boolean
 }
 
-type UpdateEventPayload {
+type UpdateEventPayload implements IMutationPayload {
   event: Event
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input EventFilterInput {
   isActive: Boolean
   programId: ID
-}
-
-type RegisterTeamPayload {
-  team: Team
-  event: Event
-  error: MutationError
-}
-
-type UnregisterTeamPayload {
-  team: Team
-  event: Event
-  error: MutationError
-}
-
-type SwitchTeamEventPayload {
-  team: Team
-  oldEvent: Event
-  newEvent: Event
-  error: MutationError
 }
 
 extend type Query {
@@ -90,10 +71,6 @@ extend type Mutation {
   updateEvent(id: ID!, input: UpdateEventInput!): UpdateEventPayload!
   deleteEvent(id: ID!): Event
   undeleteEvent(id: ID!): Event
-
-  registerTeamForEvent(eventId: ID!, teamId: ID!): RegisterTeamPayload!
-  cancelEventRegistration(id: ID!): UnregisterTeamPayload!
-  switchTeamEvent(registrationId: ID!, newEventId: ID!): SwitchTeamEventPayload!
 
   addEventManager(eventId: ID!, userId: ID!): Event
   removeEventManager(eventId: ID!, userId: ID!): Event

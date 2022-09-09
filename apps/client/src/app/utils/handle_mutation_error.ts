@@ -2,15 +2,15 @@ import { NotificationMethod } from '../components/notifications/notification-pro
 import { MutationError } from '../generated/graphql';
 import { errorCodeToMessage } from '@teams2/common';
 
-type MutationData = { error?: MutationError | null } | undefined | null;
+type MutationData = { errors?: MutationError[] | null } | undefined | null;
 
 export const handleMutationErrors = (
   data: MutationData,
   message: string,
   notify: NotificationMethod
 ): boolean => {
-  if (data && data.error) {
-    notify(message, errorCodeToMessage(data.error.code, data.error.message));
+  if (data && data.errors) {
+    data.errors.forEach((e) => notify(message, errorCodeToMessage(e.code)));
     return true;
   }
   return false;

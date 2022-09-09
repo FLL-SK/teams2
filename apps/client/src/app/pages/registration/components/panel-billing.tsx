@@ -145,7 +145,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                         notify.error(
                           'Nepodarilo sa vytvoriť faktúru.',
                           (data.createRegistrationInvoice.errors ?? []).reduce(
-                            (e, t) => e + '\n' + t.message,
+                            (t, e) => t + '\n' + e.code,
                             ''
                           )
                         );

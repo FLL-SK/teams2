@@ -10,7 +10,7 @@ mutation createProgram($input: CreateProgramInput!) {
       ...ProgramFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
@@ -21,7 +21,7 @@ mutation updateProgram($id: ID!, $input: UpdateProgramInput!) {
       ...ProgramFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
