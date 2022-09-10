@@ -9,8 +9,8 @@ import { ErrorPage } from '../../components/error-page';
 import {
   AddressInput,
   UpdateTeamInput,
+  useCreateRegistrationMutation,
   useGetTeamLazyQuery,
-  useRegisterTeamForEventMutation,
   useUpdateTeamMutation,
 } from '../../generated/graphql';
 import { RegisterBillToAddress } from './components/register-billto-address';
@@ -53,7 +53,7 @@ export function RegisterPage() {
     onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
   });
 
-  const [registerTeam] = useRegisterTeamForEventMutation({
+  const [registerTeam] = useCreateRegistrationMutation({
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
@@ -77,7 +77,7 @@ export function RegisterPage() {
 
         if (
           handleMutationErrors(
-            r1.data?.registerTeamForEvent,
+            r1.data?.createRegistration,
             'Nepodarilo sa registrovať tím.',
             notify.error
           )

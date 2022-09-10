@@ -6,10 +6,9 @@ import { eventRepository, ProgramData, programRepository, userRepository } from 
 import { ProgramMapper } from '../mappers/program.mapper';
 import {
   CreateProgramInput,
-  CreateProgramPayload,
+  ProgramPayload,
   Program,
   UpdateProgramInput,
-  UpdateProgramPayload,
   User,
   Event,
   ProgramFilterInput,
@@ -55,7 +54,7 @@ export class ProgramDataSource extends BaseDataSource {
     return programs.map(ProgramMapper.toProgram);
   }
 
-  async createProgram(input: CreateProgramInput): Promise<CreateProgramPayload> {
+  async createProgram(input: CreateProgramInput): Promise<ProgramPayload> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create program');
 
     const u: ProgramData = { ...input, managersIds: [] };
@@ -63,7 +62,7 @@ export class ProgramDataSource extends BaseDataSource {
     return { program: ProgramMapper.toProgram(nu) };
   }
 
-  async updateProgram(id: ObjectId, input: UpdateProgramInput): Promise<UpdateProgramPayload> {
+  async updateProgram(id: ObjectId, input: UpdateProgramInput): Promise<ProgramPayload> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update program');
 
     const u: Partial<ProgramData> = input;

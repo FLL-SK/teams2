@@ -126,6 +126,20 @@ export class RegistrationDataSource extends BaseDataSource {
     return RegistrationMapper.toRegistration(registration);
   }
 
+  async changeRegisteredEvent(regId: ObjectId, newEventId: ObjectId): Promise<Registration> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Change registered event');
+    const registration = await registrationRepository.findById(regId).exec();
+    const newEvent = await eventRepository.findById(newEventId).exec();
+    if (!newEvent) {
+      throw new Error('Turnaj nebol nájdený');
+    }
+    registration.eventId = newEventId;
+    registration.programId = newEvent.programId;
+    await registration.save();
+
+    return RegistrationMapper.toRegistration(registration);
+  }
+
   async getEventRegistrations(eventId: ObjectId): Promise<Registration[]> {
     const regs = await registrationRepository
       .find({ eventId, canceledOn: null })

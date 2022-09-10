@@ -2,7 +2,7 @@ import { DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { UserData, userRepository } from '../../models';
-import { UpdateUserInput, UpdateUserPayload, User, UserFilterInput } from '../../generated/graphql';
+import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../generated/graphql';
 import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
@@ -55,7 +55,7 @@ export class UserDataSource extends BaseDataSource {
     return users.map(UserMapper.toUser);
   }
 
-  async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UpdateUserPayload> {
+  async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UserPayload> {
     this.userGuard.isAdmin() ||
       this.userGuard.isSelf(id) ||
       this.userGuard.notAuthorized('Update user');

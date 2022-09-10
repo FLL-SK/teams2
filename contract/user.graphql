@@ -35,9 +35,9 @@ input UpdateUserInput {
   gdprAccepted: Boolean
 }
 
-type UpdateUserPayload implements IMutationPayload {
+type UserPayload implements IMutationPayload {
   user: User
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input UserFilterInput {
@@ -52,7 +52,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  updateUser(id: ID!, input: UpdateUserInput!): UserPayload!
   deleteUser(id: ID!): User
   undeleteUser(id: ID!): User
 

@@ -16,7 +16,7 @@ mutation createTeam($input: CreateTeamInput!) {
       ...TeamFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
@@ -27,7 +27,7 @@ mutation updateTeam($id: ID!, $input: UpdateTeamInput!) {
       ...TeamFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }

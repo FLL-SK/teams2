@@ -46,9 +46,9 @@ input CreateProgramInput {
   logoUrl: String
 }
 
-type CreateProgramPayload implements IMutationPayload {
+type ProgramPayload implements IMutationPayload {
   program: Program
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input UpdateProgramInput {
@@ -62,11 +62,6 @@ input UpdateProgramInput {
   logoUrl: String
 }
 
-type UpdateProgramPayload {
-  program: Program
-  errors: [ValidationError!]
-}
-
 input ProgramFilterInput {
   isActive: Boolean
 }
@@ -77,8 +72,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  createProgram(input: CreateProgramInput!): CreateProgramPayload!
-  updateProgram(id: ID!, input: UpdateProgramInput!): UpdateProgramPayload!
+  createProgram(input: CreateProgramInput!): ProgramPayload!
+  updateProgram(id: ID!, input: UpdateProgramInput!): ProgramPayload!
   deleteProgram(id: ID!): Program
 
   addProgramManager(programId: ID!, userId: ID!): Program!

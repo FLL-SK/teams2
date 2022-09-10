@@ -97,3 +97,36 @@ mutation emailRegistrationInvoice($id: ID!) {
     }
   }
 }
+
+mutation createRegistration($eventId: ID!, $teamId: ID!) {
+  createRegistration(eventId: $eventId, teamId: $teamId) {
+    registration {
+      ...RegistrationListFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
+}
+
+mutation cancelRegistration($id: ID!) {
+  cancelRegistration(id: $id) {
+    registration {
+      ...RegistrationBasicFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
+}
+
+mutation changeRegisteredEvent($registrationId: ID!, $newEventId: ID!) {
+  changeRegisteredEvent(registrationId: $registrationId, newEventId: $newEventId) {
+    registration {
+      ...RegistrationListFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
+}

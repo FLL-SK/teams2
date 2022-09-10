@@ -14,22 +14,7 @@ interface IMutationPayload {
   """
   The object that was created/updated/deleted
   """
-  errors: [ValidationError!]
-}
-
-"""
-Represents validation error
-"""
-type ValidationError {
-  """
-  Indicates which field cause the error
-  """
-  field: String!
-
-  """
-  An error code for clients to match on.
-  """
-  code: ErrorCode!
+  errors: [MutationError!]
 }
 
 type MutationError {
@@ -40,6 +25,11 @@ type MutationError {
 
   """
   Indicates which field cause the error
+  """
+  field: String
+
+  """
+  A human readable message
   """
   message: String
 }

@@ -16,7 +16,7 @@ mutation updateUser($id: ID!, $input: UpdateUserInput!) {
       ...UserFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }

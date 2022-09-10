@@ -4,10 +4,9 @@ import { BaseDataSource } from './_base.datasource';
 import { registrationRepository, TeamData, teamRepository, userRepository } from '../../models';
 import {
   CreateTeamInput,
-  CreateTeamPayload,
+  TeamPayload,
   Team,
   UpdateTeamInput,
-  UpdateTeamPayload,
   User,
   Registration,
   Tag,
@@ -59,7 +58,7 @@ export class TeamDataSource extends BaseDataSource {
     return teams.map((t) => TeamMapper.toTeam(t));
   }
 
-  async createTeam(input: CreateTeamInput): Promise<CreateTeamPayload> {
+  async createTeam(input: CreateTeamInput): Promise<TeamPayload> {
     const log = this.logBase.extend('create');
     const currentUserId = this.context.user._id;
 
@@ -85,7 +84,7 @@ export class TeamDataSource extends BaseDataSource {
     return { team: TeamMapper.toTeam(nu) };
   }
 
-  async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<UpdateTeamPayload> {
+  async updateTeam(id: ObjectId, input: UpdateTeamInput): Promise<TeamPayload> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(id)) ||
       this.userGuard.notAuthorized('Update team');

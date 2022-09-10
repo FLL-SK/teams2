@@ -39,58 +39,6 @@ export function emailUserSignupToAdmin(userEmail: string) {
   getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
 }
 
-export function emailTeamRegisteredToCoach(
-  emails: string[],
-  teamName: string,
-  eventName: string,
-  programName: string,
-  eventUrl: string
-) {
-  const subject = `Registrácia vášho tímu ${teamName}`;
-  const title = subject;
-  const msg = `Váš tím ${teamName} bol úspešne zaregistrovaný na turnaj ${eventName} programu ${programName}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((m) => emailMessage(m, subject, title, msg));
-}
-
-export function emailTeamRegisteredToEventManagers(
-  emails: string[],
-  teamName: string,
-  eventName: string,
-  programName: string,
-  eventUrl: string
-) {
-  const subject = `Registrácia tímu ${teamName}`;
-  const title = subject;
-  const msg = `Tím ${teamName} bol úspešne zaregistrovaný na turnaj ${eventName} programu ${programName}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((m) => emailMessage(m, subject, title, msg));
-}
-
-export function emailTeamUnRegisteredToCoach(
-  emails: string[],
-  teamName: string,
-  eventName: string,
-  programName: string,
-  eventUrl: string
-) {
-  const subject = `Zrušenie registrácie vášho tímu ${teamName}`;
-  const title = subject;
-  const msg = `Registrácia vášho tímu ${teamName} na turnaj ${eventName} programu ${programName} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((m) => emailMessage(m, subject, title, msg));
-}
-
-export function emailTeamUnRegisteredToEventManagers(
-  emails: string[],
-  teamName: string,
-  eventName: string,
-  programName: string,
-  eventUrl: string
-) {
-  const subject = `Zrušenie registrácia tímu ${teamName}`;
-  const title = subject;
-  const msg = `Registrácia tímu ${teamName} turnaj ${eventName} programu ${programName} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((m) => emailMessage(m, subject, title, msg));
-}
-
 export function emailEventChangedToCoach(
   emails: string[],
   teamName: string,
@@ -268,6 +216,53 @@ export async function emailTeamRegistered(registrationId: ObjectId, registeredBy
   const msg = `Tím ${team.name} bol úspešne zaregistrovaný na turnaj ${event.name} programu ${program.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
 
   coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
+  log.debug(
+    'email sent to coaches %o',
+    coaches.map((m) => m.username)
+  );
+
+  managers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  log.debug(
+    'email sent to managers %o',
+    managers.map((m) => m.username)
+  );
+}
+
+export async function emailTeamUnregistered(registrationId: ObjectId, unregisteredBy: ObjectId) {
+  const log = logLib.extend('emailTeamUnregistered');
+
+  const reg = await registrationRepository.findById(registrationId).lean().exec();
+  const [team, event, program] = await Promise.all([
+    teamRepository.findById(reg.teamId).lean().exec(),
+    eventRepository.findById(reg.eventId).lean().exec(),
+    programRepository.findById(reg.programId).lean().exec(),
+  ]);
+
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
+
+  const coaches = await userRepository
+    .find({ _id: { $in: team.coachesIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const em = await userRepository
+    .find({ _id: { $in: event.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const pm = await userRepository
+    .find({ _id: { $in: program.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const managers = em.concat(pm);
+  const coachEmails = coaches.map((c) => c.username);
+
+  const subject = `Zrušenie registrácia tímu ${team.name}`;
+  const title = subject;
+  const msg = `Registrácia tímu ${team.name} turnaj ${event.name} programu ${program.name} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+
+  coachEmails.forEach((m) => emailMessage(m, subject, title, msg));
   log.debug(
     'email sent to coaches %o',
     coaches.map((m) => m.username)
