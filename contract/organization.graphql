@@ -54,7 +54,7 @@ input CreateOrganizationInput {
 
 type CreateOrganizationPayload implements IMutationPayload {
   organization: Organization
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input UpdateOrganizationInput {
@@ -74,7 +74,7 @@ input UpdateOrganizationInput {
 
 type UpdateOrganizationPayload implements IMutationPayload {
   organization: Organization
-  errors: [ValidationError!]
+  errors: [MutationError!]
 }
 
 input OrganizationFilterInput {

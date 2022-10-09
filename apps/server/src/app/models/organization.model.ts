@@ -73,4 +73,4 @@ schema.static('clean', function () {
   return this.deleteMany().exec();
 });
 
-export const teamRepository = model<OrganizationData, OrganizationModel>('Team', schema);
+export const orgRepository = model<OrganizationData, OrganizationModel>('Organization', schema);

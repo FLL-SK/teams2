@@ -16,7 +16,7 @@ mutation createOrganization($input: CreateOrganizationInput!) {
       ...OrganizationFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
@@ -27,7 +27,7 @@ mutation updateOrganization($id: ID!, $input: UpdateOrganizationInput!) {
       ...OrganizationFragment
     }
     errors {
-      ...ValidationErrorFragment
+      ...MutationErrorFragment
     }
   }
 }
