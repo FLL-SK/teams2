@@ -84,7 +84,7 @@ export function RegisterReview(props: RegisterReviewProps) {
         <Box>
           <Text>
             Toto sú štandardné poplatky turnaja. Prípadné zľavy, napr. z dôvodu že vám bol
-            poskytnutý grant budú zhľadnené vo faktúre.
+            poskytnutý grant budú zohľadnené vo faktúre.
           </Text>
         </Box>
       </Panel>
