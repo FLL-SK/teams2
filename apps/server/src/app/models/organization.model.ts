@@ -67,6 +67,7 @@ const schema = new Schema<OrganizationData, OrganizationModel>(
 );
 
 schema.index({ name: 1 }, { unique: false });
+schema.index({ companyNumber: 1 }, { unique: false });
 schema.index({ tagIds: 1 });
 
 schema.static('clean', function () {

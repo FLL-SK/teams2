@@ -3,6 +3,7 @@
 # import * from "./user.graphql"
 
 enum NoteType {
+  org # organization related note
   team
   registration
 }

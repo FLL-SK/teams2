@@ -9,6 +9,7 @@ export interface TeamData {
   name: string;
   coachesIds: ObjectId[];
   tagIds: ObjectId[];
+  orgId: ObjectId;
   address: AddressData;
   billTo?: AddressData;
   shipTo?: AddressData;
@@ -32,6 +33,7 @@ export interface TeamModel extends Model<TeamData> {
 const schema = new Schema<TeamData, TeamModel>(
   {
     name: { type: Types.String, required: true },
+    orgId: { type: Types.ObjectId, ref: 'Organization' },
     createdOn: { type: Types.Date, default: Date.now() },
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },

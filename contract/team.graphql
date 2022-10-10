@@ -12,9 +12,7 @@ type Team implements INode {
   coachesIds: [ID!]!
   tagIds: [ID!]!
 
-  address: Address!
-  billTo: Address
-  shipTo: Address
+  orgId: ID!
   useBillTo: Boolean
 
   createdOn: DateTime!
@@ -29,12 +27,12 @@ type Team implements INode {
 
 input CreateTeamInput {
   name: String!
+  orgId: ID
   orgName: String!
   street: String!
   city: String!
   zip: String!
   countryCode: String
-  contactName: String
   phone: String
   email: String
 }
