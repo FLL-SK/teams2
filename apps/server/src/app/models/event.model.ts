@@ -9,6 +9,7 @@ export interface EventData {
   programId: ObjectId;
   conditions?: string;
   ownFeesAllowed?: boolean;
+  maxTeams?: number;
 
   managersIds: ObjectId[];
 
@@ -39,6 +40,7 @@ const schema = new Schema<EventData, EventModel>(
     programId: { type: Types.ObjectId, ref: 'Program', required: true },
     conditions: { type: Types.String },
     ownFeesAllowed: { type: Types.Boolean },
+    maxTeams: { type: Types.Number },
 
     date: { type: Types.Date },
     registrationEnd: { type: Types.Date },

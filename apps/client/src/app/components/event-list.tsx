@@ -9,11 +9,12 @@ interface EventListProps {
   events: EventListFragmentFragment[];
   onClick?: (event: EventListFragmentFragment) => void;
   onRemove?: (event: EventListFragmentFragment) => Promise<unknown>;
+  showNotice?: boolean;
 }
 
 export function EventList(props: EventListProps) {
   const navigate = useNavigate();
-  const { events, onClick, onRemove } = props;
+  const { events, onClick, onRemove, showNotice } = props;
 
   return (
     <Box gap="small">
@@ -23,6 +24,7 @@ export function EventList(props: EventListProps) {
           event={event}
           onClick={onClick ? () => onClick(event) : () => navigate(appPath.event(event.id))}
           onRemove={onRemove ? () => onRemove(event) : undefined}
+          showNotice={showNotice}
         />
       ))}
     </Box>

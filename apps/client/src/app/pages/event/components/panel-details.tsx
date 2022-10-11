@@ -50,7 +50,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
   return (
     <Panel title="Detaily turnaja">
       <Box gap="medium">
-        <LabelValueGroup labelWidth="200px" gap="small" direction="row">
+        <LabelValueGroup labelWidth="250px" gap="small" direction="row">
           <LabelValue label="Program">
             <Text>
               <Anchor label={event?.program.name} href={appPath.program(event?.programId)} />
@@ -85,6 +85,10 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
           <LabelValue
             label="Koniec registrácie"
             value={event?.registrationEnd ? formatDate(event?.registrationEnd) : 'neurčený'}
+          />
+          <LabelValue
+            label="Maximálny počet tímov"
+            value={(event?.maxTeams ?? 'neurčený').toString()}
           />
         </LabelValueGroup>
 

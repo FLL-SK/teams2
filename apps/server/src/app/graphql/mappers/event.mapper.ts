@@ -12,6 +12,7 @@ export const EventMapper = {
       programId: event.programId,
       conditions: event.conditions,
       ownFeesAllowed: event.ownFeesAllowed,
+      maxTeams: event.maxTeams,
 
       date: event.date,
       registrationEnd: event.registrationEnd,

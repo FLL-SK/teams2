@@ -14,6 +14,7 @@ export function EventsPage(props: EventsPageProps) {
   });
 
   const events = eventsData?.getEvents ?? [];
+  events.sort((a, b) => (a.programId > b.programId ? 1 : -1));
   return (
     <BasePage title="Turnaje" loading={eventsLoading}>
       {events.length === 0 && (
@@ -21,7 +22,7 @@ export function EventsPage(props: EventsPageProps) {
           <Paragraph>Aktuálne ešte nie sú aktívne žiadne turnaje.</Paragraph>
         </Box>
       )}
-      <EventList events={events} />
+      <EventList events={events} showNotice />
     </BasePage>
   );
 }
