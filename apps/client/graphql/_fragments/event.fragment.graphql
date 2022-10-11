@@ -3,6 +3,8 @@ fragment EventBasicFragment on Event {
   name
   programId
 
+  maxTeams
+
   date
   registrationEnd
 
