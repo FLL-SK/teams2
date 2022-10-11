@@ -30,16 +30,21 @@ interface FormFields {
   registrationEnd?: string; // UTC ISO date
   conditions?: string;
   ownFeesAllowed?: boolean;
+  maxTeams: number | null;
 }
 
 export function EditEventDialog(props: EditEventDialogProps) {
   const { show, event, onClose, onSubmit } = props;
+  const [teamCountLimited, setTeamCountLimited] = useState<boolean>(
+    (!!event?.maxTeams && event.maxTeams > 0) ?? false
+  );
   const [formValues, setFormValues] = useState<FormFields>({
     name: event?.name ?? '',
     date: toZonedDateString(event?.date),
     registrationEnd: toZonedDateString(event?.registrationEnd),
     conditions: event?.conditions ?? '',
     ownFeesAllowed: event?.ownFeesAllowed ?? false,
+    maxTeams: event?.maxTeams ?? null,
   });
   const { isAdmin } = useAppUser();
 
@@ -48,11 +53,13 @@ export function EditEventDialog(props: EditEventDialogProps) {
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
+    console.log(value);
     onSubmit &&
       (await onSubmit({
         ...value,
         date: toUtcDateString(value.date),
         registrationEnd: toUtcDateString(value.registrationEnd),
+        maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : null,
       }));
     onClose();
   };
@@ -79,6 +86,14 @@ export function EditEventDialog(props: EditEventDialogProps) {
           </FormField>
           <FormField label="Termín registrácie" name="registrationEnd">
             <DateInput name="registrationEnd" format="dd.mm.yyyy" />
+          </FormField>
+          <CheckBox
+            label="Obmedziť počet tímov"
+            checked={teamCountLimited}
+            onChange={() => setTeamCountLimited(!teamCountLimited)}
+          />
+          <FormField label="Maximálny počet tímov" disabled={!teamCountLimited} name="maxTeams">
+            <TextInput type="number" name="maxTeams" />
           </FormField>
           {isAdmin() && <CheckBox name="ownFeesAllowed" label="Povoliť poplatky turnaja" />}
         </Grid>
