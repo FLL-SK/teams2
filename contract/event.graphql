@@ -16,6 +16,7 @@ type Event implements INode {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  maxTeams: Int
 
   managersIds: [ID!]!
 
@@ -36,6 +37,7 @@ input CreateEventInput {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  maxTeams: Int
 }
 
 type CreateEventPayload implements IMutationPayload {
@@ -49,6 +51,7 @@ input UpdateEventInput {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  maxTeams: Int
 }
 
 type UpdateEventPayload implements IMutationPayload {

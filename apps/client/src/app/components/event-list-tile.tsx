@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Text, Tip } from 'grommet';
-import { Calendar, Close, Group } from 'grommet-icons';
+import { Calendar, Close, Expand, Group } from 'grommet-icons';
 import { BorderType } from 'grommet/utils';
 
 import { EventListFragmentFragment } from '../generated/graphql';
@@ -14,18 +14,28 @@ interface EventListTileProps {
   onClick?: () => void;
   onRemove?: (e: EventListFragmentFragment) => void;
   hideProgram?: boolean;
+  disabled?: boolean;
 }
 
 export function EventListTile(props: EventListTileProps) {
-  const { event, selected, onClick, onRemove, hideProgram } = props;
+  const { event, selected, onClick, onRemove, hideProgram, disabled } = props;
   const border: BorderType = selected
     ? { color: getColor('brand'), size: 'large' }
     : { side: 'top' };
+  let maxColor = undefined;
+  let notice = undefined;
+  if (event.maxTeams && event.registrationsCount >= event.maxTeams) {
+    maxColor = 'status-critical';
+    notice = 'Turnaj je plný';
+  } else if (event.maxTeams && event.registrationsCount - event.maxTeams < 3) {
+    maxColor = 'status-warning';
+    notice = 'Posledné miesta';
+  }
 
   return (
     <ListRow2
-      columns="1fr 180px 75px auto"
-      onClick={onClick}
+      columns="1fr 180px 150px auto"
+      onClick={disabled ? undefined : onClick}
       pad="small"
       align="center"
       border={border}
@@ -43,12 +53,26 @@ export function EventListTile(props: EventListTileProps) {
         <Text>{event.date ? formatDate(event.date) : 'neurčený'}</Text>
       </Box>
 
-      <Tip content="Počet tímov">
-        <Box direction="row" gap="xsmall" align="center">
-          <Group />
-          <Text>{event.registrationsCount}</Text>
+      <Box gap="small">
+        <Box direction="row" gap="small">
+          <Tip content="Počet tímov">
+            <Box direction="row" gap="xsmall" align="center">
+              <Group color={maxColor} />
+              <Text color={maxColor}>{event.registrationsCount}</Text>
+            </Box>
+          </Tip>
+
+          <Tip content="Maximálny počet tímov">
+            <Box direction="row" gap="xsmall" align="center">
+              <Expand color={maxColor} />
+              <Text color={maxColor}>{event.maxTeams ?? '-'}</Text>
+            </Box>
+          </Tip>
         </Box>
-      </Tip>
+        <Text color={maxColor} size="small">
+          {notice}
+        </Text>
+      </Box>
 
       {onRemove && (
         <Button
