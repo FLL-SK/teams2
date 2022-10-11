@@ -43,6 +43,7 @@ export function RegisterSelectEvent(props: RegisterSelectEventProps) {
           onClick={() => onSubmit(event)}
           selected={details.event?.id === event.id}
           disabled={event.maxTeams && event.registrationsCount >= event.maxTeams ? true : false}
+          showNotice
         />
       ))}
 

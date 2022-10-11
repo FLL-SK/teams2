@@ -15,10 +15,11 @@ interface EventListTileProps {
   onRemove?: (e: EventListFragmentFragment) => void;
   hideProgram?: boolean;
   disabled?: boolean;
+  showNotice?: boolean;
 }
 
 export function EventListTile(props: EventListTileProps) {
-  const { event, selected, onClick, onRemove, hideProgram, disabled } = props;
+  const { event, selected, onClick, onRemove, hideProgram, disabled, showNotice } = props;
   const border: BorderType = selected
     ? { color: getColor('brand'), size: 'large' }
     : { side: 'top' };
@@ -69,9 +70,11 @@ export function EventListTile(props: EventListTileProps) {
             </Box>
           </Tip>
         </Box>
-        <Text color={maxColor} size="small">
-          {notice}
-        </Text>
+        {showNotice && (
+          <Text color={maxColor} size="small">
+            {notice}
+          </Text>
+        )}
       </Box>
 
       {onRemove && (
