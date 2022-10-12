@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Text, Tip } from 'grommet';
-import { Calendar, Close, Expand, Group } from 'grommet-icons';
+import { Calendar, Close, Group } from 'grommet-icons';
 import { BorderType } from 'grommet/utils';
 
 import { EventListFragmentFragment } from '../generated/graphql';
@@ -27,7 +27,7 @@ export function EventListTile(props: EventListTileProps) {
   let notice = undefined;
   if (event.maxTeams && event.registrationsCount >= event.maxTeams) {
     maxColor = 'status-critical';
-    notice = 'Turnaj je plný';
+    notice = 'Turnaj je naplnený';
   } else if (event.maxTeams && event.registrationsCount - event.maxTeams < 3) {
     maxColor = 'status-warning';
     notice = 'Posledné miesta';
@@ -56,17 +56,12 @@ export function EventListTile(props: EventListTileProps) {
 
       <Box gap="small">
         <Box direction="row" gap="small">
-          <Tip content="Počet tímov">
+          <Tip content="Počet tímov / maximálny">
             <Box direction="row" gap="xsmall" align="center">
               <Group color={maxColor} />
-              <Text color={maxColor}>{event.registrationsCount}</Text>
-            </Box>
-          </Tip>
-
-          <Tip content="Maximálny počet tímov">
-            <Box direction="row" gap="xsmall" align="center">
-              <Expand color={maxColor} />
-              <Text color={maxColor}>{event.maxTeams ?? '-'}</Text>
+              <Text color={maxColor}>
+                {event.registrationsCount}/{event.maxTeams ?? '-'}
+              </Text>
             </Box>
           </Tip>
         </Box>
