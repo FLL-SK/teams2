@@ -28,7 +28,7 @@ export function ProgramTile(props: ProgramTileProps) {
   let notice = undefined;
   if (program.maxTeams && program.regCount >= program.maxTeams) {
     maxColor = 'status-critical';
-    notice = 'Program je plný';
+    notice = 'Program je naplnený';
   } else if (program.maxTeams && program.regCount - program.maxTeams < 3) {
     maxColor = 'status-warning';
     notice = 'Posledné miesta';
