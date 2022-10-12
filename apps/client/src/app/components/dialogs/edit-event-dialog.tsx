@@ -53,7 +53,6 @@ export function EditEventDialog(props: EditEventDialogProps) {
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    console.log(value);
     onSubmit &&
       (await onSubmit({
         ...value,

@@ -2,20 +2,32 @@ import React from 'react';
 import { Box, Button } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
-import { TagFragmentFragment } from '../generated/graphql';
+import { TagColorType, TagFragmentFragment } from '../generated/graphql';
 import { SelectTag } from './select-tag';
 import { TagPill } from './tag-pill';
 
 interface TagListProps {
   tags?: TagFragmentFragment[];
+  onUpdate?: (id: string, label: string, color: TagColorType) => unknown;
   onRemove: (id: string) => void;
+  onRestore?: (id: string) => void;
   onAdd?: (tag: TagFragmentFragment) => void;
   disabled?: boolean;
   noCreate?: boolean;
+  tagSize?: 'small' | 'medium' | 'large';
 }
 
 export function TagList(props: TagListProps) {
-  const { tags, onRemove, disabled, onAdd, noCreate } = props;
+  const {
+    tags,
+    onUpdate,
+    onRemove,
+    onRestore,
+    disabled,
+    onAdd,
+    noCreate,
+    tagSize = 'small',
+  } = props;
   const [isAdding, setIsAdding] = useState(false);
 
   if (!tags) {
@@ -39,11 +51,17 @@ export function TagList(props: TagListProps) {
       )}
 
       <Box direction="row" wrap style={{ minHeight: '25px' }} align="center">
-        {tags
-          .filter((t) => !t.deletedOn)
-          .map((t) => (
-            <TagPill key={t.id} tag={t} onRemove={onRemove} disabled={disabled} size="small" />
-          ))}
+        {tags.map((t) => (
+          <TagPill
+            key={t.id}
+            tag={t}
+            size={tagSize}
+            onUpdate={onUpdate}
+            onRemove={onRemove}
+            disabled={disabled}
+            onRestore={onRestore}
+          />
+        ))}
         {onAdd && (
           <Button
             plain

@@ -1,12 +1,11 @@
 import React from 'react';
 import { BasePage } from '../../components/base-page';
-
-import { PanelGroup } from '../../components/panel';
 import { useGetSettingsQuery } from '../../generated/graphql';
-
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { PanelSettings } from './components/panel-settings';
+import { PanelTags } from './components/panel-tags';
+import { Box, Heading } from 'grommet';
 
 export function SettingsPage() {
   const { user, userLoading: loading } = useAppUser();
@@ -18,9 +17,16 @@ export function SettingsPage() {
 
   return (
     <BasePage title="Nastavenia" loading={loading}>
-      <PanelGroup>
-        <PanelSettings settings={settingsData?.getSettings} />
-      </PanelGroup>
+      <Box gap="medium">
+        <Box>
+          <Heading level="4">Základné nastavenia</Heading>
+          <PanelSettings settings={settingsData?.getSettings} />
+        </Box>
+        <Box>
+          <Heading level="4">Štítky</Heading>
+          <PanelTags />
+        </Box>
+      </Box>
     </BasePage>
   );
 }

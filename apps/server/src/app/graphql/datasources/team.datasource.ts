@@ -236,7 +236,7 @@ export class TeamDataSource extends BaseDataSource {
 
     const tags = await Promise.all(t.tagIds.map((c) => this.context.dataSources.tag.getTag(c)));
 
-    return tags.filter((c) => !!c); // this filter should remove nulls caused by data incosistency
+    return tags.filter((c) => !!c && !c.deletedOn); // this filter should remove nulls caused by data incosistency
   }
 
   async recalculateTeamStats(): Promise<number> {

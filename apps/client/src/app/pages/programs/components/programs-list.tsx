@@ -41,9 +41,19 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
     [navigate, program.id]
   );
 
+  let maxColor = undefined;
+  let notice = undefined;
+  if (program.maxTeams && program.regCount >= program.maxTeams) {
+    maxColor = 'status-critical';
+    notice = 'program je naplnený';
+  } else if (program.maxTeams && program.regCount - program.maxTeams < 3) {
+    maxColor = 'status-warning';
+    notice = 'posledné miesta';
+  }
+
   return (
     <ListRow2
-      columns="1fr 60px 60px 60px 60px 60px 120px 120px"
+      columns="1fr 60px 60px 60px 60px 80px 120px 120px"
       key={program.id}
       onClick={() => navigate(appPath.program(program.id))}
       hoverIndicator
@@ -98,10 +108,12 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
         <div />
       )}
 
-      <Tip content="počet registrácií">
+      <Tip content={`počet registrácií${notice ? ' / ' + notice : ''}`}>
         <Box direction="row" gap="xsmall" onClick={navigateRegs}>
           <Group />
-          <Text size="small">{program.regCount}</Text>
+          <Text size="small" color={maxColor}>
+            {program.regCount}/{program.maxTeams ? program.maxTeams : '-'}
+          </Text>
         </Box>
       </Tip>
 

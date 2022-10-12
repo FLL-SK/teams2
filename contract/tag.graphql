@@ -34,4 +34,5 @@ extend type Mutation {
   createTag(input: TagInput!): Tag
   updateTag(id: ID!, input: TagInput!): Tag
   deleteTag(id: ID!): Tag
+  restoreTag(id: ID!): Tag
 }

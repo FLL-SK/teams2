@@ -8,6 +8,7 @@ fragment ProgramBasicFragment on Program {
   conditions
   startDate
   endDate
+  maxTeams
 
   managersIds
 

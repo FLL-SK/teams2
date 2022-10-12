@@ -29,6 +29,7 @@ export function TeamListPage() {
     useGetTeamsLazyQuery();
 
   const [searchText, setSearchText] = useState('');
+  const [searchTextEditing, setSearchTextEditing] = useState('');
   const [searchResults, setSearchResults] = useState<TeamListFragmentFragment[]>([]);
 
   useEffect(() => {
@@ -41,6 +42,9 @@ export function TeamListPage() {
     if (flt.includeInactive) {
       f.includeInactive = flt.includeInactive;
     }
+
+    setSearchText(flt.query ?? '');
+    setSearchTextEditing(flt.query ?? '');
 
     fetchTeams({ variables: { filter: f } });
     setFilter(flt);
@@ -66,15 +70,17 @@ export function TeamListPage() {
   useEffect(() => {
     if (searchText.length === 0) {
       setSearchResults(searchList.map((l) => l.value));
+    } else {
+      const results = searchList
+        .filter((item) => item.text.includes(searchText.toLocaleLowerCase()))
+        .map((item) => item.value);
+      setSearchResults(results);
     }
   }, [searchText, searchList]);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const results = searchList
-      .filter((item) => item.text.includes(searchText.toLocaleLowerCase()))
-      .map((item) => item.value);
-    setSearchResults(results);
+    handleApplyFilter({ ...filter, query: searchTextEditing });
   };
 
   if (teamsDataError) {
@@ -97,13 +103,16 @@ export function TeamListPage() {
             <form onSubmit={handleSearchSubmit}>
               <TextInput
                 placeholder="Hľadať názov tímu/mesto"
-                onChange={({ target }) => setSearchText(target.value)}
-                value={searchText}
+                onChange={({ target }) => setSearchTextEditing(target.value)}
+                value={searchTextEditing}
                 width="auto"
               />
               <button hidden type="submit" />
             </form>
-            <Button icon={<Close />} onClick={() => setSearchText('')} />
+            <Button
+              icon={<Close />}
+              onClick={() => handleApplyFilter({ ...filter, query: null })}
+            />
             <Button
               plain
               icon={Object.keys(filter).length === 0 ? <Filter /> : <Filter color="red" />}

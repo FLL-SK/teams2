@@ -32,6 +32,8 @@ export function RegisterSelectProgram(props: RegisterSelectProgramProps) {
           program={program}
           onClick={() => onSubmit(program)}
           selected={details.program?.id === program.id}
+          disabled={program.maxTeams && program.regCount >= program.maxTeams ? true : false}
+          showNotice
         />
       ))}
       <Box justify="between" direction="row">

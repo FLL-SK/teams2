@@ -1,5 +1,15 @@
 import React, { useEffect } from 'react';
-import { Box, Button, DateInput, Form, FormField, Grid, TextArea, TextInput } from 'grommet';
+import {
+  Box,
+  Button,
+  CheckBox,
+  DateInput,
+  Form,
+  FormField,
+  Grid,
+  TextArea,
+  TextInput,
+} from 'grommet';
 import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../generated/graphql';
 import { Modal } from '../modal';
@@ -20,14 +30,19 @@ interface FormFields {
   conditions?: string;
   startDate: string;
   endDate: string;
+  maxTeams: number | null;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
   const { show, program, onClose, onSubmit } = props;
+  const [teamCountLimited, setTeamCountLimited] = useState<boolean>(
+    (!!program?.maxTeams && program.maxTeams > 0) ?? false
+  );
   const [formValues, setFormValues] = useState<FormFields>({
     name: '',
     startDate: '',
     endDate: '',
+    maxTeams: null,
   });
 
   useEffect(() => {
@@ -37,6 +52,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       conditions: program?.conditions ?? '',
       startDate: toZonedDateString(program?.startDate) ?? '',
       endDate: toZonedDateString(program?.endDate) ?? '',
+      maxTeams: program?.maxTeams ?? null,
     });
   }, [program]);
 
@@ -49,6 +65,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       ...value,
       startDate: toUtcDateString(value.startDate) ?? '',
       endDate: toUtcDateString(value.endDate) ?? '',
+      maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : null,
     });
     onClose();
   };
@@ -76,6 +93,14 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
           </FormField>
           <FormField label="Koniec programu" name="endDate">
             <DateInput name="endDate" format="dd.mm.yyyy" />
+          </FormField>
+          <CheckBox
+            label="Obmedziť počet tímov"
+            checked={teamCountLimited}
+            onChange={() => setTeamCountLimited(!teamCountLimited)}
+          />
+          <FormField label="Maximálny počet tímov" disabled={!teamCountLimited} name="maxTeams">
+            <TextInput type="number" name="maxTeams" />
           </FormField>
         </Grid>
 
