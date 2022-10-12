@@ -12,6 +12,7 @@ import { Tag } from '../../../components/tag';
 import { formatDate } from '@teams2/dateutils';
 import { Index } from 'react-virtualized';
 import { formatTeamSize } from '../../../utils/format-teamsize';
+import { TagPill } from '../../../components/tag-pill';
 
 type RegistrationListProps = {
   rowCount: number;
@@ -60,7 +61,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
         </Text>
         <Box direction="row">
           {data.team.tags.map((tag) => (
-            <Tag key={tag.id} value={tag.label} size="small" />
+            <TagPill key={tag.id} tag={tag} size="small" />
           ))}
         </Box>
       </ListCol>
