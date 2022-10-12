@@ -8,10 +8,10 @@ import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
 import styled from 'styled-components';
-import { Tag } from '../../../components/tag';
 import { formatDate } from '@teams2/dateutils';
 import { Index } from 'react-virtualized';
 import { formatTeamSize } from '../../../utils/format-teamsize';
+import { TagPill } from '../../../components/tag-pill';
 
 type RegistrationListProps = {
   rowCount: number;
@@ -60,7 +60,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
         </Text>
         <Box direction="row">
           {data.team.tags.map((tag) => (
-            <Tag key={tag.id} value={tag.label} size="small" />
+            <TagPill key={tag.id} tag={tag} size="small" />
           ))}
         </Box>
       </ListCol>

@@ -38,21 +38,24 @@ export interface ProgramModel extends Model<ProgramData> {
   ): Promise<ProgramDocument[]>;
 }
 
-const schema = new Schema<ProgramData, ProgramModel>({
-  name: { type: Types.String, required: true },
-  description: { type: Types.String },
-  logoUrl: { type: Types.String },
-  color: { type: Types.String },
-  colorLight: { type: Types.String },
-  conditions: { type: Types.String },
-  managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
+const schema = new Schema<ProgramData, ProgramModel>(
+  {
+    name: { type: Types.String, required: true },
+    description: { type: Types.String },
+    logoUrl: { type: Types.String },
+    color: { type: Types.String },
+    colorLight: { type: Types.String },
+    conditions: { type: Types.String },
+    managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 
-  startDate: { type: Types.Date, required: true },
-  endDate: { type: Types.Date, required: true },
+    startDate: { type: Types.Date, required: true },
+    endDate: { type: Types.Date, required: true },
 
-  deletedOn: { type: Types.Date },
-  deletedBy: { type: Types.ObjectId, ref: 'User' },
-});
+    deletedOn: { type: Types.Date },
+    deletedBy: { type: Types.ObjectId, ref: 'User' },
+  },
+  { collation: { locale: 'sk', strength: 1 } }
+);
 
 schema.index({ name: 1 }, { unique: true });
 schema.index({ managersIds: 1 });
