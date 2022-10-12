@@ -8,7 +8,6 @@ import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
 import styled from 'styled-components';
-import { Tag } from '../../../components/tag';
 import { formatDate } from '@teams2/dateutils';
 import { Index } from 'react-virtualized';
 import { formatTeamSize } from '../../../utils/format-teamsize';
