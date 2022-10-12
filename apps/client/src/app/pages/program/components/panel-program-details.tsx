@@ -32,7 +32,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
 
   return (
     <Panel title="Detaily programu" gap="medium">
-      <LabelValueGroup labelWidth="150px" direction="row" gap="small">
+      <LabelValueGroup labelWidth="250px" direction="row" gap="small">
         <LabelValue label="Názov" value={program?.name} />
         <LabelValue label="Farby">
           <Box direction="row" gap="small" height="20px">
@@ -65,6 +65,10 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         <LabelValue
           label="Koniec"
           value={program.endDate ? formatDate(program.endDate) : 'neurčený'}
+        />
+        <LabelValue
+          label="Maximálny počet tímov"
+          value={program.maxTeams ? program.maxTeams.toString() : 'neurčený'}
         />
         <LabelValue label="Popis">
           <Box
