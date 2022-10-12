@@ -18,12 +18,15 @@ export interface TagModel extends Model<TagData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
-const schema = new Schema<TagData, TagModel>({
-  label: { type: Types.String, required: true },
-  color: { type: Types.String, required: true },
-  deletedOn: { type: Types.Date },
-  deletedBy: { type: Types.ObjectId },
-});
+const schema = new Schema<TagData, TagModel>(
+  {
+    label: { type: Types.String, required: true },
+    color: { type: Types.String, required: true },
+    deletedOn: { type: Types.Date },
+    deletedBy: { type: Types.ObjectId },
+  },
+  { collation: { locale: 'sk', strength: 1 } }
+);
 
 schema.index({ text: 1 });
 
