@@ -43,7 +43,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
   return (
     <ListRow2
-      columns="1fr 60px 60px 60px 60px 60px 120px 120px"
+      columns="1fr 60px 60px 60px 60px 80px 120px 120px"
       key={program.id}
       onClick={() => navigate(appPath.program(program.id))}
       hoverIndicator
@@ -101,7 +101,9 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
       <Tip content="počet registrácií">
         <Box direction="row" gap="xsmall" onClick={navigateRegs}>
           <Group />
-          <Text size="small">{program.regCount}</Text>
+          <Text size="small">
+            {program.regCount}/{program.maxTeams ? program.maxTeams : '-'}
+          </Text>
         </Box>
       </Tip>
 

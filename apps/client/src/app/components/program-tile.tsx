@@ -9,6 +9,8 @@ interface ProgramTileProps {
   program: ProgramListFragmentFragment;
   onClick?: () => void;
   selected?: boolean;
+  disabled?: boolean;
+  showNotice?: boolean;
 }
 
 const Container = styled(Box)`
@@ -19,18 +21,31 @@ const Container = styled(Box)`
 `;
 
 export function ProgramTile(props: ProgramTileProps) {
-  const { program, onClick, selected } = props;
+  const { program, onClick, selected, disabled, showNotice } = props;
   const border: BorderType = selected ? { color: getColor('brand'), size: 'large' } : {};
+
+  let maxColor = undefined;
+  let notice = undefined;
+  if (program.maxTeams && program.regCount >= program.maxTeams) {
+    maxColor = 'status-critical';
+    notice = 'Program je plný';
+  } else if (program.maxTeams && program.regCount - program.maxTeams < 3) {
+    maxColor = 'status-warning';
+    notice = 'Posledné miesta';
+  }
 
   return (
     <Container
       pad="medium"
       gap="medium"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       background={program.colorLight ?? 'light-2'}
       border={border}
     >
-      <Text>{program.name}</Text>
+      <Box direction="row" justify="between">
+        <Text>{program.name}</Text>
+        {showNotice && <Text color={maxColor}>{notice}</Text>}
+      </Box>
       <Markdown>{program.description ?? ''}</Markdown>
     </Container>
   );
