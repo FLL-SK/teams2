@@ -15,3 +15,9 @@ mutation deleteTag($id: ID!) {
     ...TagFragment
   }
 }
+
+mutation restoreTag($id: ID!) {
+  restoreTag(id: $id) {
+    ...TagFragment
+  }
+}

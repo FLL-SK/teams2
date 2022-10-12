@@ -71,10 +71,24 @@ export class TagDataSource extends BaseDataSource {
 
   async deleteTag(id: ObjectId): Promise<Tag> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete tag');
-    const log = this.logBase.extend('getTag');
+    const log = this.logBase.extend('deleteTag');
     log.debug('start', id);
     const tag = await tagRepository
-      .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { deletedOn: new Date(), deletedBy: this.context.user._id },
+        { new: true }
+      )
+      .exec();
+    return TagMapper.toTag(tag);
+  }
+
+  async restoreTag(id: ObjectId): Promise<Tag> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Restore tag');
+    const log = this.logBase.extend('restoreTag');
+    log.debug('start', id);
+    const tag = await tagRepository
+      .findByIdAndUpdate(id, { deletedOn: null, deletedBy: null }, { new: true })
       .exec();
     return TagMapper.toTag(tag);
   }

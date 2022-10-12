@@ -1,29 +1,33 @@
 import React from 'react';
-import { Box, Drop, Text } from 'grommet';
+import { Box } from 'grommet';
 import styled from 'styled-components';
-import { TagColorType, useUpdateTagMutation } from '../generated/graphql';
+import { TagColorType } from '../generated/graphql';
 import { getTagColor } from '../theme';
 import { getColor } from '../theme/colors';
-import { Close } from 'grommet-icons';
-import { useRef, useState } from 'react';
-import { TagColorPicker } from './tag-color-picker';
+import { Close, Revert } from 'grommet-icons';
+import { useState } from 'react';
+
+import { TextStriked } from './text-striked';
+import { EditTagDialog } from './dialogs/edit-tag-dialog';
 
 interface TagPillProps {
-  tag: { label: string; id: string; color: TagColorType };
+  tag: { label: string; id: string; color: TagColorType; deletedOn?: string | null };
   size?: 'small' | 'medium' | 'large';
   margin?: 'xsmall' | 'small' | 'medium';
   onRemove?: (id: string) => unknown;
+  onRestore?: (id: string) => unknown;
+  onUpdate?: (id: string, label: string, color: TagColorType) => unknown;
   disabled?: boolean;
-  editable?: boolean;
 }
 
 const ColoredTag = styled(Box)<{
   tagColor?: TagColorType | null;
   disabled?: boolean;
   editable?: boolean;
+  deleted?: boolean;
 }>`
-  background-color: ${({ tagColor }) => tagColor && getTagColor(tagColor)};
-  border-style: solid;
+  background-color: ${({ tagColor }) => tagColor && getTagColor(tagColor)?.background};
+  border-style: ${({ deleted }) => (deleted ? 'dashed' : 'solid')};
   border-width: 1px;
   border-radius: 6px;
   border-color: ${getColor('icon')};
@@ -33,53 +37,66 @@ const ColoredTag = styled(Box)<{
 export const TagPill = ({
   tag,
   onRemove,
+  onRestore,
+  onUpdate,
   disabled,
   size: tagSize,
-  editable,
   margin,
 }: TagPillProps) => {
-  const [updateTag] = useUpdateTagMutation();
-  const { color: tagColor, label, id } = tag;
+  const { color: tagColor, label, id, deletedOn } = tag;
   const [color, setColor] = useState<TagColorType>(tagColor ?? 'TC1');
   const [editing, setEditing] = useState<boolean>(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   const size = tagSize ?? 'medium';
-  const closeSize = size === 'small' ? 'small' : 'medium';
+  const iconSize = size === 'small' ? 'small' : 'medium';
+  const textColor = tagColor ? getTagColor(tagColor)?.text : undefined;
 
   return (
     <ColoredTag
-      ref={ref}
       direction="row"
       pad="xxsmall"
       gap="xsmall"
       align="center"
       tagColor={color}
       margin={margin ?? 'xxsmall'}
-      editable={editable}
+      editable={!!onUpdate}
+      deleted={!!deletedOn}
     >
-      <Text size={size} onClick={() => editable && setEditing(true)}>
+      <TextStriked
+        striked={!!deletedOn}
+        size={size}
+        onClick={() => !deletedOn && !!onUpdate && setEditing(true)}
+        color={textColor}
+      >
         {label}
-      </Text>
-      {onRemove && (
+      </TextStriked>
+      {onRemove && !deletedOn && (
         <Close
-          size={closeSize}
-          onClick={() => (disabled ? undefined : onRemove && onRemove(id))}
+          size={iconSize}
+          onClick={() => (disabled ? undefined : onRemove(id))}
           cursor="pointer"
+          color={textColor}
         />
       )}
-      {editing && (
-        <Drop target={ref.current ?? undefined} align={{ bottom: 'top' }}>
-          <TagColorPicker
-            selected={color}
-            onChange={(c) => {
-              updateTag({ variables: { id, input: { label, color: c } } });
-              setColor(c);
-              setEditing(false);
-            }}
-            onClose={() => setEditing(false)}
-          />
-        </Drop>
+      {onRestore && !!deletedOn && (
+        <Revert
+          size={iconSize}
+          onClick={() => (disabled ? undefined : onRestore(id))}
+          cursor="pointer"
+          color={textColor}
+        />
+      )}
+      {editing && onUpdate && (
+        <EditTagDialog
+          label={label}
+          color={color}
+          onClose={() => setEditing(false)}
+          onSubmit={async (newLabel, newColor) => {
+            await onUpdate(id, newLabel, newColor);
+            setColor(newColor);
+            setEditing(false);
+          }}
+        />
       )}
     </ColoredTag>
   );

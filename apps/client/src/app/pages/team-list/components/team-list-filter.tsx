@@ -8,6 +8,7 @@ import { useGetTagsQuery } from '../../../generated/graphql';
 export interface TeamListFilterValues {
   tags?: string[];
   includeInactive?: boolean;
+  query?: string | null;
 }
 
 interface TeamListFilterProps {

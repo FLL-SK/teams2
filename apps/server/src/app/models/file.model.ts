@@ -21,15 +21,18 @@ export interface FileModel extends Model<FileData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
-const schema = new Schema<FileData, FileModel>({
-  type: { type: String, required: true },
-  ref: { type: Types.String, required: true },
-  name: { type: Types.String, required: true },
-  storagePath: { type: Types.String, required: true },
-  size: { type: Types.Number, required: true },
-  contentType: { type: Types.String, required: true },
-  updatedOn: { type: Types.Date, required: true },
-});
+const schema = new Schema<FileData, FileModel>(
+  {
+    type: { type: String, required: true },
+    ref: { type: Types.String, required: true },
+    name: { type: Types.String, required: true },
+    storagePath: { type: Types.String, required: true },
+    size: { type: Types.Number, required: true },
+    contentType: { type: Types.String, required: true },
+    updatedOn: { type: Types.Date, required: true },
+  },
+  { collation: { locale: 'sk', strength: 1 } }
+);
 
 schema.index({ ttype: 1, ref: 1 });
 

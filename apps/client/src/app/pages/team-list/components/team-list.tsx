@@ -7,8 +7,8 @@ import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
 import styled from 'styled-components';
-import { Tag } from '../../../components/tag';
 import { Index } from 'react-virtualized';
+import { TagPill } from '../../../components/tag-pill';
 
 type TeamListProps = {
   rowCount: number;
@@ -34,7 +34,7 @@ function TeamListRow(props: TeamListRowProps) {
           {data.tags
             .filter((t) => !t.deletedOn)
             .map((tag) => (
-              <Tag key={tag.id} value={tag.label} size="small" />
+              <TagPill key={tag.id} tag={tag} size="small" />
             ))}
         </Box>
       </ListCol>
