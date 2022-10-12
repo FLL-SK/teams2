@@ -8,6 +8,9 @@ export function parseTeamListSearchParams(searchParams: URLSearchParams): TeamLi
   if (searchParams.get('ii') === 'true') {
     values.includeInactive = true;
   }
+
+  values.query = searchParams.get('q');
+
   return values;
 }
 
@@ -20,6 +23,10 @@ export function constructTeamListSearchParams(values: TeamListFilterValues): URL
 
   if (values.includeInactive) {
     searchParams.append('ii', 'true');
+  }
+
+  if (values.query) {
+    searchParams.append('q', values.query);
   }
 
   return searchParams;
