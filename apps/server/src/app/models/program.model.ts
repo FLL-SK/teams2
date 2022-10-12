@@ -13,6 +13,7 @@ export interface ProgramData {
   conditions?: string;
   startDate: Date;
   endDate: Date;
+  maxTeams?: number;
 
   managersIds: ObjectId[];
 
@@ -46,6 +47,7 @@ const schema = new Schema<ProgramData, ProgramModel>(
     color: { type: Types.String },
     colorLight: { type: Types.String },
     conditions: { type: Types.String },
+    maxTeams: { type: Types.Number },
     managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 
     startDate: { type: Types.Date, required: true },
