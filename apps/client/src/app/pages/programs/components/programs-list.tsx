@@ -43,10 +43,11 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
   let maxColor = undefined;
   let notice = undefined;
+
   if (program.maxTeams && program.regCount >= program.maxTeams) {
     maxColor = 'status-critical';
     notice = 'program je naplnený';
-  } else if (program.maxTeams && program.regCount - program.maxTeams < 3) {
+  } else if (program.maxTeams && program.maxTeams - program.regCount < 3) {
     maxColor = 'status-warning';
     notice = 'posledné miesta';
   }
