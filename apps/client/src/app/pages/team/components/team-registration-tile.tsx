@@ -1,6 +1,6 @@
 import React from 'react';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Text } from 'grommet';
+import { Anchor, Box, Paragraph, Text } from 'grommet';
 import { TeamRegistrationFragmentFragment } from '../../../generated/graphql';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { LabelValue } from '../../../components/label-value';
@@ -53,6 +53,14 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
               readOnly={!!registration.canceledOn || !isAdmin()}
             />
             <FieldTeamSize registration={registration} readOnly={!!registration.canceledOn} />
+            {registration.program.maxTeamSize &&
+              registration.girlCount + registration.boyCount > registration.program.maxTeamSize && (
+                <Paragraph color="status-critical">
+                  Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna veľkosť tímu
+                  je {registration.program.maxTeamSize}. Na turnaji sa môže súťažne zúčastniť iba
+                  povolený počet detí. Ostatní sa môžu zúčastniť ako diváci.
+                </Paragraph>
+              )}
             <FieldTeamSizeConfirmedOn
               registration={registration}
               teamId={registration.teamId}

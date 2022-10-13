@@ -61,8 +61,6 @@ export function RegistrationPage() {
     return <ErrorPage title="Nemáte oprávnenie k tejto stránke." />;
   }
 
-  console.log(reg?.girlCount, reg?.boyCount, reg?.program.maxTeamSize);
-
   return (
     <BasePage title="Registrácia">
       {regLoading || !reg ? (
