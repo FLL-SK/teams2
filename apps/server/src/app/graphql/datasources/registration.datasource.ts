@@ -72,8 +72,22 @@ export class RegistrationDataSource extends BaseDataSource {
       q.confirmedOn = { $ne: null };
     }
 
-    const regsCount = await registrationRepository.count(q).exec();
-    return regsCount;
+    const regsCount = await registrationRepository
+      .aggregate([
+        {
+          $match: q,
+        },
+        {
+          $group: {
+            _id: '$teamId',
+          },
+        },
+        {
+          $count: 'count',
+        },
+      ])
+      .exec();
+    return regsCount[0]?.count ?? 0;
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {

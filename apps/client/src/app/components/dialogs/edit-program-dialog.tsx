@@ -24,13 +24,15 @@ interface EditProgramDialogProps {
 
 interface FormFields {
   name: string;
+  group?: string;
   description?: string;
   color?: string;
   colorLight?: string;
   conditions?: string;
   startDate: string;
   endDate: string;
-  maxTeams: number | null;
+  maxTeams?: number | null;
+  maxTeamSize?: number | null;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
@@ -38,21 +40,25 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
   const [teamCountLimited, setTeamCountLimited] = useState<boolean>(
     (!!program?.maxTeams && program.maxTeams > 0) ?? false
   );
+  const [teamSizeLimited, setTeamSizeLimited] = useState<boolean>(
+    (!!program?.maxTeamSize && program.maxTeamSize > 0) ?? false
+  );
   const [formValues, setFormValues] = useState<FormFields>({
     name: '',
     startDate: '',
     endDate: '',
-    maxTeams: null,
   });
 
   useEffect(() => {
     setFormValues({
       name: program?.name ?? '',
+      group: program?.group ?? '',
       description: program?.description ?? '',
       conditions: program?.conditions ?? '',
       startDate: toZonedDateString(program?.startDate) ?? '',
       endDate: toZonedDateString(program?.endDate) ?? '',
-      maxTeams: program?.maxTeams ?? null,
+      maxTeams: program?.maxTeams ?? 0,
+      maxTeamSize: program?.maxTeamSize ?? 0,
     });
   }, [program]);
 
@@ -66,6 +72,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       startDate: toUtcDateString(value.startDate) ?? '',
       endDate: toUtcDateString(value.endDate) ?? '',
       maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : null,
+      maxTeamSize: teamSizeLimited && value.maxTeamSize ? Number(value.maxTeamSize) : null,
     });
     onClose();
   };
@@ -86,6 +93,9 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
         <FormField label="Názov" name="name" required autoFocus>
           <TextInput name="name" />
         </FormField>
+        <FormField label="Skupina programov" name="group">
+          <TextInput name="group" />
+        </FormField>
 
         <Grid columns={['1fr', '1fr']} gap="small">
           <FormField label="Začiatok programu" name="startDate">
@@ -101,6 +111,14 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
           />
           <FormField label="Maximálny počet tímov" disabled={!teamCountLimited} name="maxTeams">
             <TextInput type="number" name="maxTeams" />
+          </FormField>
+          <CheckBox
+            label="Obmedziť veľkosť tímu tímov"
+            checked={teamSizeLimited}
+            onChange={() => setTeamSizeLimited(!teamSizeLimited)}
+          />
+          <FormField label="Maximálna veľkosť tímu" disabled={!teamSizeLimited} name="maxTeamSize">
+            <TextInput type="number" name="maxTeamSize" />
           </FormField>
         </Grid>
 

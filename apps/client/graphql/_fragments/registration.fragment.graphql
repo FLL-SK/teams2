@@ -45,6 +45,8 @@ fragment RegistrationListFragment on Registration {
   program {
     id
     name
+    maxTeamSize
+    maxTeams
   }
 
   team {
@@ -74,6 +76,8 @@ fragment TeamRegistrationFragment on Registration {
   program {
     id
     name
+    maxTeamSize
+    maxTeams
   }
 
   invoiceItems {

@@ -28,7 +28,7 @@ export function EventListTile(props: EventListTileProps) {
   if (event.maxTeams && event.registrationsCount >= event.maxTeams) {
     maxColor = 'status-critical';
     notice = 'Turnaj je naplnený';
-  } else if (event.maxTeams && event.registrationsCount - event.maxTeams < 3) {
+  } else if (event.maxTeams && event.maxTeams - event.registrationsCount < 3) {
     maxColor = 'status-warning';
     notice = 'Posledné miesta';
   }

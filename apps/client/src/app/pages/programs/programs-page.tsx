@@ -27,7 +27,7 @@ export function ProgramsPage(props: ProgramsPageProps) {
   });
 
   const programs = [...(data?.getPrograms ?? [])]
-    .sort((a, b) => (a.endDate < b.endDate ? 1 : -1))
+    .sort((a, b) => (a.group + a.endDate < b.group + b.endDate ? 1 : -1))
     .filter((p) => showInactivePrograms || (p.endDate > today && !p.deletedOn));
 
   return (

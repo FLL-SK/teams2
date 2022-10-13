@@ -14,6 +14,8 @@ export interface ProgramData {
   startDate: Date;
   endDate: Date;
   maxTeams?: number;
+  maxTeamSize?: number;
+  group?: string;
 
   managersIds: ObjectId[];
 
@@ -48,7 +50,9 @@ const schema = new Schema<ProgramData, ProgramModel>(
     colorLight: { type: Types.String },
     conditions: { type: Types.String },
     maxTeams: { type: Types.Number },
+    maxTeamSize: { type: Types.Number },
     managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
+    group: { type: Types.String },
 
     startDate: { type: Types.Date, required: true },
     endDate: { type: Types.Date, required: true },
@@ -80,7 +84,7 @@ schema.static(
     if (filter.isActive) {
       q = { ...q, startDate: { $lt: new Date() }, endDate: { $gte: new Date() }, deletedOn: null };
     }
-    return this.find(q, projection).exec();
+    return this.find(q, projection).sort({ group: 1, startDate: -1 }).exec();
   }
 );
 
