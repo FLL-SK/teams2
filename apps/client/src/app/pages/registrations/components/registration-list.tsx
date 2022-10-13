@@ -49,6 +49,10 @@ function StatusIcon(props: {
 
 function RegistrationListRow(props: RegistrationListRowProps) {
   const { data } = props;
+  const teamColor =
+    data.program.maxTeamSize && data.girlCount + data.boyCount > data.program.maxTeamSize
+      ? 'status-critical'
+      : undefined;
   return (
     <>
       <ListCol linkPath={appPath.registration(data.id)}>
@@ -103,7 +107,9 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       />
 
       <ListCol>
-        <Text alignSelf="center">{formatTeamSize(data)}</Text>
+        <Text alignSelf="center" color={teamColor}>
+          {formatTeamSize(data)}
+        </Text>
       </ListCol>
 
       <StatusIcon

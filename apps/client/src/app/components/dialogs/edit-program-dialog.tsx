@@ -31,6 +31,7 @@ interface FormFields {
   startDate: string;
   endDate: string;
   maxTeams: number | null;
+  maxTeamSize: number | null;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
@@ -38,11 +39,15 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
   const [teamCountLimited, setTeamCountLimited] = useState<boolean>(
     (!!program?.maxTeams && program.maxTeams > 0) ?? false
   );
+  const [teamSizeLimited, setTeamSizeLimited] = useState<boolean>(
+    (!!program?.maxTeamSize && program.maxTeamSize > 0) ?? false
+  );
   const [formValues, setFormValues] = useState<FormFields>({
     name: '',
     startDate: '',
     endDate: '',
     maxTeams: null,
+    maxTeamSize: null,
   });
 
   useEffect(() => {
@@ -53,6 +58,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       startDate: toZonedDateString(program?.startDate) ?? '',
       endDate: toZonedDateString(program?.endDate) ?? '',
       maxTeams: program?.maxTeams ?? null,
+      maxTeamSize: program?.maxTeamSize ?? null,
     });
   }, [program]);
 
@@ -66,6 +72,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       startDate: toUtcDateString(value.startDate) ?? '',
       endDate: toUtcDateString(value.endDate) ?? '',
       maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : null,
+      maxTeamSize: teamSizeLimited && value.maxTeamSize ? Number(value.maxTeamSize) : null,
     });
     onClose();
   };
@@ -101,6 +108,14 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
           />
           <FormField label="Maximálny počet tímov" disabled={!teamCountLimited} name="maxTeams">
             <TextInput type="number" name="maxTeams" />
+          </FormField>
+          <CheckBox
+            label="Obmedziť veľkosť tímu tímov"
+            checked={teamSizeLimited}
+            onChange={() => setTeamSizeLimited(!teamSizeLimited)}
+          />
+          <FormField label="Maximálna veľkosť tímu" disabled={!teamSizeLimited} name="maxTeamSize">
+            <TextInput type="number" name="maxTeamSize" />
           </FormField>
         </Grid>
 
