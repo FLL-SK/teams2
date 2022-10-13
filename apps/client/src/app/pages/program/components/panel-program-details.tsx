@@ -34,6 +34,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
     <Panel title="Detaily programu" gap="medium">
       <LabelValueGroup labelWidth="250px" direction="row" gap="small">
         <LabelValue label="Názov" value={program?.name} />
+        <LabelValue label="Skupina programov" value={program?.group} />
         <LabelValue label="Farby">
           <Box direction="row" gap="small" height="20px">
             <Tip content="Normálna farba">

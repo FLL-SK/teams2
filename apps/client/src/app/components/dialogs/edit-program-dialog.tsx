@@ -24,14 +24,15 @@ interface EditProgramDialogProps {
 
 interface FormFields {
   name: string;
+  group?: string;
   description?: string;
   color?: string;
   colorLight?: string;
   conditions?: string;
   startDate: string;
   endDate: string;
-  maxTeams: number | null;
-  maxTeamSize: number | null;
+  maxTeams?: number | null;
+  maxTeamSize?: number | null;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
@@ -46,19 +47,18 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
     name: '',
     startDate: '',
     endDate: '',
-    maxTeams: null,
-    maxTeamSize: null,
   });
 
   useEffect(() => {
     setFormValues({
       name: program?.name ?? '',
+      group: program?.group ?? '',
       description: program?.description ?? '',
       conditions: program?.conditions ?? '',
       startDate: toZonedDateString(program?.startDate) ?? '',
       endDate: toZonedDateString(program?.endDate) ?? '',
-      maxTeams: program?.maxTeams ?? null,
-      maxTeamSize: program?.maxTeamSize ?? null,
+      maxTeams: program?.maxTeams ?? 0,
+      maxTeamSize: program?.maxTeamSize ?? 0,
     });
   }, [program]);
 
@@ -92,6 +92,9 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       >
         <FormField label="Názov" name="name" required autoFocus>
           <TextInput name="name" />
+        </FormField>
+        <FormField label="Skupina programov" name="group">
+          <TextInput name="group" />
         </FormField>
 
         <Grid columns={['1fr', '1fr']} gap="small">
