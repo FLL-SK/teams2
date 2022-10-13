@@ -19,6 +19,7 @@ type Program implements INode {
   endDate: DateTime!
   maxTeams: Int
   maxTeamSize: Int
+  group: String
 
   managersIds: [ID!]!
 
@@ -45,6 +46,7 @@ input CreateProgramInput {
   endDate: DateTime!
   maxTeams: Int
   maxTeamSize: Int
+  group: String
   color: String
   colorLight: String
   logoUrl: String
@@ -63,6 +65,7 @@ input UpdateProgramInput {
   endDate: DateTime
   maxTeams: Int
   maxTeamSize: Int
+  group: String
   color: String
   colorLight: String
   logoUrl: String
