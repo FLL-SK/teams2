@@ -10,6 +10,7 @@ fragment ProgramBasicFragment on Program {
   endDate
   maxTeams
   maxTeamSize
+  group
 
   managersIds
 
