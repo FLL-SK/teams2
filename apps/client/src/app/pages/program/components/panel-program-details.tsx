@@ -70,6 +70,10 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
           label="Maximálny počet tímov"
           value={program.maxTeams ? program.maxTeams.toString() : 'neurčený'}
         />
+        <LabelValue
+          label="Maximálna veľkosť tímu"
+          value={program.maxTeamSize ? program.maxTeamSize.toString() : 'neurčená'}
+        />
         <LabelValue label="Popis">
           <Box
             background="light-2"
