@@ -50,7 +50,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
         {(regs ?? []).map((reg, idx) => (
           <ListRow2
             key={reg.id}
-            columns="50px 1fr 80px auto"
+            columns="50px 1fr 100px auto"
             pad="small"
             align="center"
             onClick={isAdmin() ? () => navigate(appPath.registration(reg.id)) : undefined}
