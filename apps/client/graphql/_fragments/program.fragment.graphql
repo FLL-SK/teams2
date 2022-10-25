@@ -4,7 +4,6 @@ fragment ProgramBasicFragment on Program {
   description
   logoUrl
   color
-  colorLight
   conditions
   startDate
   endDate
