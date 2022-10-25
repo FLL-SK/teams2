@@ -1,27 +1,22 @@
 import debugLib from 'debug';
 import mongoose from 'mongoose';
-import { registrationRepository } from '../../models';
+import { programRepository, registrationRepository } from '../../models';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
+  await removeLightColor();
 }
 
 // accessing the database directly
 // const et = await mongoose.connection.db.collection('t1_users').findOne({ email: u.username });
 
-async function enrichRegistrations() {
-  const debug = debugLib('upgrade:enrichRegistrations');
-  debug('enrichRegistrations');
+async function removeLightColor() {
+  const debug = debugLib('upgrade:removeLightColor');
+  debug('removeLightColor');
 
-  const regs = await registrationRepository
-    .find({ createdOn: { $lt: new Date(2022, 0, 1) }, shippedOn: null })
+  const regs = await programRepository
+    .updateMany({ colorLight: { $exists: true } }, { $unset: { colorLight: '' } })
     .exec();
-  for (const reg of regs) {
-    reg.shippedOn = reg.createdOn;
-    reg.paidOn = reg.createdOn;
-    reg.invoiceIssuedOn = reg.createdOn;
-    await reg.save();
-  }
-  debug('updated %d registrations', regs.length);
+  debug('updated %d registrations', regs.modifiedCount);
 }
