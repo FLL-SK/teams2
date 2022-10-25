@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document } from 'mongoose';
+import { Schema, model, Model, Document, FilterQuery } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { AddressData, addressSchema } from './address.model';
 
@@ -41,7 +41,19 @@ export type RegistrationDocument =
   | (Document<unknown, unknown, RegistrationData> & RegistrationData)
   | null;
 
+interface CountRegistrationsFilter {
+  onlyNotInvoiced?: boolean;
+  onlyNotShipped?: boolean;
+  onlyUnconfirmed?: boolean;
+  onlyUnpaid?: boolean;
+  programId?: ObjectId;
+  eventId?: ObjectId;
+  teamId?: ObjectId;
+  active?: boolean;
+}
+
 export interface RegistrationModel extends Model<RegistrationData> {
+  countRegistrations(filter: CountRegistrationsFilter): Promise<number>; //
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
@@ -83,9 +95,61 @@ schema.index({ eventId: 1, teamId: 1 });
 schema.index({ teamId: 1, createdOn: -1 });
 schema.index({ programId: 1 });
 
-schema.static('clean', function () {
+schema.static('clean', function (): Promise<DeleteResult> {
   return this.deleteMany().exec();
 });
+
+schema.static(
+  'countRegistrations',
+  async function getRegistrationsCount(filter: CountRegistrationsFilter): Promise<number> {
+    const q: FilterQuery<RegistrationData> = {};
+    if (typeof filter.active === 'boolean') {
+      if (filter.active) {
+        q.canceledOn = null;
+      } else {
+        q.canceledOn = { $ne: null };
+      }
+    } else {
+      q.canceledOn = null;
+    }
+
+    if (filter.programId) {
+      q.programId = filter.programId;
+    }
+    if (filter.onlyUnconfirmed) {
+      q.confirmedOn = null;
+    }
+    if (filter.onlyUnpaid) {
+      q.paidOn = null;
+      q.invoiceIssuedOn = { $ne: null };
+    }
+    if (filter.onlyNotInvoiced) {
+      q.invoiceIssuedOn = null;
+      q.confirmedOn = { $ne: null };
+    }
+    if (filter.onlyNotShipped) {
+      q.shippedOn = null;
+      q.confirmedOn = { $ne: null };
+    }
+
+    const regsCount = await registrationRepository
+      .aggregate([
+        {
+          $match: q,
+        },
+        {
+          $group: {
+            _id: '$teamId',
+          },
+        },
+        {
+          $count: 'count',
+        },
+      ])
+      .exec();
+    return regsCount[0]?.count ?? 0;
+  }
+);
 
 export const registrationRepository = model<RegistrationData, RegistrationModel>(
   'Registration',

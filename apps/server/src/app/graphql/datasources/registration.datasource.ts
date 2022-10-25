@@ -20,7 +20,6 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
-import { FilterQuery } from 'mongoose';
 
 export class RegistrationDataSource extends BaseDataSource {
   private loader: Dataloader<string, Registration, string>;
@@ -48,46 +47,9 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
-    if (!this.userGuard.isAdmin()) {
-      return -1;
-    }
-    const q: FilterQuery<RegistrationData> = { canceledOn: null };
-
-    if (filter.programId) {
-      q.programId = filter.programId;
-    }
-    if (filter.onlyUnconfirmed) {
-      q.confirmedOn = null;
-    }
-    if (filter.onlyUnpaid) {
-      q.paidOn = null;
-      q.invoiceIssuedOn = { $ne: null };
-    }
-    if (filter.onlyNotInvoiced) {
-      q.invoiceIssuedOn = null;
-      q.confirmedOn = { $ne: null };
-    }
-    if (filter.onlyNotShipped) {
-      q.shippedOn = null;
-      q.confirmedOn = { $ne: null };
-    }
-
-    const regsCount = await registrationRepository
-      .aggregate([
-        {
-          $match: q,
-        },
-        {
-          $group: {
-            _id: '$teamId',
-          },
-        },
-        {
-          $count: 'count',
-        },
-      ])
-      .exec();
-    return regsCount[0]?.count ?? 0;
+    // TODO: candidate for dataloader
+    const regsCount = await registrationRepository.countRegistrations(filter);
+    return regsCount;
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
@@ -96,16 +58,28 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.notAuthorized('Create registration');
 
     // check if team is not already registered
-    const r = await registrationRepository.count({ eventId, teamId, canceledOn: null }).exec();
+    const r = await registrationRepository.countRegistrations({ eventId, teamId, active: true });
     if (r > 0) {
-      throw new Error('Tím je už registrovaný');
+      throw { name: 'team_already_registered' };
     }
 
     const event = await eventRepository.findById(eventId).exec();
-    const team = await teamRepository.findById(teamId).exec();
-    if (!team || !event) {
-      throw new Error('Tím alebo turnaj nebol nájdený');
+    if (!event) {
+      throw { name: 'event_not_found' };
     }
+
+    if (
+      event.maxTeams &&
+      (await registrationRepository.countRegistrations({ eventId, active: true })) >= event.maxTeams
+    ) {
+      throw { name: 'event_full' };
+    }
+
+    const team = await teamRepository.findById(teamId).exec();
+    if (!team) {
+      throw { name: 'team_not_found' };
+    }
+
     const newReg: RegistrationData = {
       programId: event.programId,
       eventId,
