@@ -41,8 +41,19 @@ export type RegistrationDocument =
   | (Document<unknown, unknown, RegistrationData> & RegistrationData)
   | null;
 
+interface CountRegistrationsFilter {
+  onlyNotInvoiced?: boolean;
+  onlyNotShipped?: boolean;
+  onlyUnconfirmed?: boolean;
+  onlyUnpaid?: boolean;
+  programId?: ObjectId;
+  eventId?: ObjectId;
+  teamId?: ObjectId;
+  active?: boolean;
+}
+
 export interface RegistrationModel extends Model<RegistrationData> {
-  countActiveRegistrations(eventId: ObjectId, teamId?: ObjectId): Promise<number>; //
+  countRegistrations(filter: CountRegistrationsFilter): Promise<number>; //
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
@@ -89,13 +100,54 @@ schema.static('clean', function (): Promise<DeleteResult> {
 });
 
 schema.static(
-  'countActiveRegistrations',
-  function (eventId: ObjectId, teamId?: ObjectId): Promise<number> {
-    const query: FilterQuery<RegistrationDocument> = { eventId, canceledOn: null };
-    if (teamId) {
-      query.teamId = teamId;
+  'countRegistrations',
+  async function getRegistrationsCount(filter: CountRegistrationsFilter): Promise<number> {
+    const q: FilterQuery<RegistrationData> = {};
+    if (typeof filter.active === 'boolean') {
+      if (filter.active) {
+        q.canceledOn = null;
+      } else {
+        q.canceledOn = { $ne: null };
+      }
+    } else {
+      q.canceledOn = null;
     }
-    return this.count(query).exec();
+
+    if (filter.programId) {
+      q.programId = filter.programId;
+    }
+    if (filter.onlyUnconfirmed) {
+      q.confirmedOn = null;
+    }
+    if (filter.onlyUnpaid) {
+      q.paidOn = null;
+      q.invoiceIssuedOn = { $ne: null };
+    }
+    if (filter.onlyNotInvoiced) {
+      q.invoiceIssuedOn = null;
+      q.confirmedOn = { $ne: null };
+    }
+    if (filter.onlyNotShipped) {
+      q.shippedOn = null;
+      q.confirmedOn = { $ne: null };
+    }
+
+    const regsCount = await registrationRepository
+      .aggregate([
+        {
+          $match: q,
+        },
+        {
+          $group: {
+            _id: '$teamId',
+          },
+        },
+        {
+          $count: 'count',
+        },
+      ])
+      .exec();
+    return regsCount[0]?.count ?? 0;
   }
 );
 

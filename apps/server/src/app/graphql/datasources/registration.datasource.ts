@@ -20,7 +20,6 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
-import { FilterQuery } from 'mongoose';
 
 export class RegistrationDataSource extends BaseDataSource {
   private loader: Dataloader<string, Registration, string>;
@@ -48,43 +47,9 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
-    const q: FilterQuery<RegistrationData> = { canceledOn: null };
-
-    if (filter.programId) {
-      q.programId = filter.programId;
-    }
-    if (filter.onlyUnconfirmed) {
-      q.confirmedOn = null;
-    }
-    if (filter.onlyUnpaid) {
-      q.paidOn = null;
-      q.invoiceIssuedOn = { $ne: null };
-    }
-    if (filter.onlyNotInvoiced) {
-      q.invoiceIssuedOn = null;
-      q.confirmedOn = { $ne: null };
-    }
-    if (filter.onlyNotShipped) {
-      q.shippedOn = null;
-      q.confirmedOn = { $ne: null };
-    }
-
-    const regsCount = await registrationRepository
-      .aggregate([
-        {
-          $match: q,
-        },
-        {
-          $group: {
-            _id: '$teamId',
-          },
-        },
-        {
-          $count: 'count',
-        },
-      ])
-      .exec();
-    return regsCount[0]?.count ?? 0;
+    // TODO: candidate for dataloader
+    const regsCount = await registrationRepository.countRegistrations(filter);
+    return regsCount;
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
@@ -93,7 +58,7 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.notAuthorized('Create registration');
 
     // check if team is not already registered
-    const r = await registrationRepository.countActiveRegistrations(eventId, teamId);
+    const r = await registrationRepository.countRegistrations({ eventId, teamId, active: true });
     if (r > 0) {
       throw { name: 'team_already_registered' };
     }
@@ -105,7 +70,7 @@ export class RegistrationDataSource extends BaseDataSource {
 
     if (
       event.maxTeams &&
-      (await registrationRepository.countActiveRegistrations(eventId)) >= event.maxTeams
+      (await registrationRepository.countRegistrations({ eventId, active: true })) >= event.maxTeams
     ) {
       throw { name: 'event_full' };
     }
