@@ -27,7 +27,6 @@ interface FormFields {
   group?: string;
   description?: string;
   color?: string;
-  colorLight?: string;
   conditions?: string;
   startDate: string;
   endDate: string;

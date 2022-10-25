@@ -14,7 +14,6 @@ export const ProgramMapper = {
 
       logoUrl: program.logoUrl,
       color: program.color,
-      colorLight: program.colorLight,
 
       conditions: program.conditions,
 
