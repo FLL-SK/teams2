@@ -48,9 +48,6 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
-    if (!this.userGuard.isAdmin()) {
-      return -1;
-    }
     const q: FilterQuery<RegistrationData> = { canceledOn: null };
 
     if (filter.programId) {
@@ -96,16 +93,28 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.notAuthorized('Create registration');
 
     // check if team is not already registered
-    const r = await registrationRepository.count({ eventId, teamId, canceledOn: null }).exec();
+    const r = await registrationRepository.countActiveRegistrations(eventId, teamId);
     if (r > 0) {
-      throw new Error('Tím je už registrovaný');
+      throw { name: 'team_already_registered' };
     }
 
     const event = await eventRepository.findById(eventId).exec();
-    const team = await teamRepository.findById(teamId).exec();
-    if (!team || !event) {
-      throw new Error('Tím alebo turnaj nebol nájdený');
+    if (!event) {
+      throw { name: 'event_not_found' };
     }
+
+    if (
+      event.maxTeams &&
+      (await registrationRepository.countActiveRegistrations(eventId)) >= event.maxTeams
+    ) {
+      throw { name: 'event_full' };
+    }
+
+    const team = await teamRepository.findById(teamId).exec();
+    if (!team) {
+      throw { name: 'team_not_found' };
+    }
+
     const newReg: RegistrationData = {
       programId: event.programId,
       eventId,
