@@ -1,6 +1,6 @@
 import debugLib from 'debug';
 import mongoose from 'mongoose';
-import { programRepository, registrationRepository } from '../../models';
+import { programRepository } from '../../models';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
