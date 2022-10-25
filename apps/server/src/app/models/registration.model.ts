@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document } from 'mongoose';
+import { Schema, model, Model, Document, FilterQuery } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { AddressData, addressSchema } from './address.model';
 
@@ -42,6 +42,7 @@ export type RegistrationDocument =
   | null;
 
 export interface RegistrationModel extends Model<RegistrationData> {
+  countActiveRegistrations(eventId: ObjectId, teamId?: ObjectId): Promise<number>; //
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
@@ -83,9 +84,20 @@ schema.index({ eventId: 1, teamId: 1 });
 schema.index({ teamId: 1, createdOn: -1 });
 schema.index({ programId: 1 });
 
-schema.static('clean', function () {
+schema.static('clean', function (): Promise<DeleteResult> {
   return this.deleteMany().exec();
 });
+
+schema.static(
+  'countActiveRegistrations',
+  function (eventId: ObjectId, teamId?: ObjectId): Promise<number> {
+    const query: FilterQuery<RegistrationDocument> = { eventId, canceledOn: null };
+    if (teamId) {
+      query.teamId = teamId;
+    }
+    return this.count(query).exec();
+  }
+);
 
 export const registrationRepository = model<RegistrationData, RegistrationModel>(
   'Registration',
