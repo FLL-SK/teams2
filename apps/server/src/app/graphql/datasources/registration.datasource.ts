@@ -53,18 +53,21 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+    const log = this.logBase.extend('createRegistration');
     this.userGuard.isAdmin() ||
       this.userGuard.isCoach(teamId) ||
       this.userGuard.notAuthorized('Create registration');
 
     // check if team is not already registered
     const r = await registrationRepository.countRegistrations({ eventId, teamId, active: true });
+    log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
     if (r > 0) {
       throw { name: 'team_already_registered' };
     }
 
     const event = await eventRepository.findById(eventId).exec();
     if (!event) {
+      log.warn('Event not found teamId=%s eventId=%s', teamId.toHexString(), eventId.toHexString());
       throw { name: 'event_not_found' };
     }
 

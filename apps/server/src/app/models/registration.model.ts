@@ -131,6 +131,12 @@ schema.static(
       q.shippedOn = null;
       q.confirmedOn = { $ne: null };
     }
+    if (filter.eventId) {
+      q.eventId = filter.eventId;
+    }
+    if (filter.teamId) {
+      q.teamId = filter.teamId;
+    }
 
     const regsCount = await registrationRepository
       .aggregate([
