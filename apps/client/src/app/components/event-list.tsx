@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box } from 'grommet';
 import { EventListTile } from './event-list-tile';
 import { EventListFragmentFragment } from '../generated/graphql';
@@ -16,14 +16,9 @@ export function EventList(props: EventListProps) {
   const navigate = useNavigate();
   const { events, onClick, onRemove, showNotice } = props;
 
-  const eventsM = useMemo(
-    () => events.map((e) => e).sort((a, b) => (a.id > b.id ? 1 : -1)),
-    [events]
-  );
-
   return (
     <Box gap="small">
-      {eventsM.map((event) => (
+      {events.map((event) => (
         <EventListTile
           key={event.id}
           event={event}
