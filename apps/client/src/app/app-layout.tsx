@@ -2,7 +2,7 @@ import React from 'react';
 import { Grommet, Box } from 'grommet';
 import styled from 'styled-components';
 import { AppRouter } from './app-router';
-import { defaultTheme, device } from './theme';
+import { defaultTheme } from './theme';
 import { Notifications } from './components/notifications/notifications';
 
 export function AppLayout() {

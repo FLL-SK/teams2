@@ -5,7 +5,7 @@ import { programRepository } from '../../models';
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
-  await removeLightColor();
+  //await removeLightColor();
 }
 
 // accessing the database directly
