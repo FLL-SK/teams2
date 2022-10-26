@@ -10,11 +10,14 @@
         "outputPath": "dist/apps/server",
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
-        "assets": ["apps/server/src/assets",  {
-          "input": "apps/server/src/app/templates",
-          "glob": "**/*.pug",
-          "output": "templates"
-        }]
+        "assets": [
+          "apps/server/src/assets",
+          {
+            "input": "apps/server/src/app/templates",
+            "glob": "**/*.pug",
+            "output": "templates"
+          }
+        ]
       },
       "configurations": {
         "production": {
@@ -53,7 +56,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/server"],
+      "outputs": ["{workspaceRoot}/coverage/apps/server"],
       "options": {
         "jestConfig": "apps/server/jest.config.ts",
         "passWithNoTests": true
