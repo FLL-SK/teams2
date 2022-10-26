@@ -61,7 +61,7 @@ export class EventDataSource extends BaseDataSource {
     }
     log.debug('filter=%o', q);
 
-    const events = await eventRepository.find(q).sort({ date: 1, name: 1 }).exec();
+    const events = await eventRepository.find(q).sort({ programId: 1, date: 1 }).exec();
     log.debug('Found %o', events);
     return events.map(EventMapper.toEvent);
   }
