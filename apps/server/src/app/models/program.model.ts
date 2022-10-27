@@ -9,7 +9,6 @@ export interface ProgramData {
   description?: string;
   logoUrl?: string;
   color?: string;
-  colorLight?: string;
   conditions?: string;
   startDate: Date;
   endDate: Date;
@@ -47,7 +46,6 @@ const schema = new Schema<ProgramData, ProgramModel>(
     description: { type: Types.String },
     logoUrl: { type: Types.String },
     color: { type: Types.String },
-    colorLight: { type: Types.String },
     conditions: { type: Types.String },
     maxTeams: { type: Types.Number },
     maxTeamSize: { type: Types.Number },

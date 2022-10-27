@@ -1,5 +1,5 @@
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Markdown, Tip } from 'grommet';
+import { Anchor, Box, Button, Markdown } from 'grommet';
 import React, { useState } from 'react';
 import { EditColorDialog } from '../../../components/dialogs/edit-color-dialog';
 import { EditProgramDialog } from '../../../components/dialogs/edit-program-dialog';
@@ -22,7 +22,6 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
   const [showProgramTerms, setShowProgramTerms] = useState(false);
 
   const [editColor, setEditColor] = useState(false);
-  const [editColorLight, setEditColorLight] = useState(false);
 
   const { notify } = useNotification();
 
@@ -35,28 +34,16 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
       <LabelValueGroup labelWidth="250px" direction="row" gap="small">
         <LabelValue label="Názov" value={program?.name} />
         <LabelValue label="Skupina programov" value={program?.group} />
-        <LabelValue label="Farby">
+        <LabelValue label="Farba">
           <Box direction="row" gap="small" height="20px">
-            <Tip content="Normálna farba">
-              <Box
-                background={program.color ?? undefined}
-                round="small"
-                width="20px"
-                height="100%"
-                border={{ color: 'dark-5', size: 'xsmall' }}
-                onClick={(e) => setEditColor(true)}
-              />
-            </Tip>
-            <Tip content="Bledšia farba">
-              <Box
-                background={program.colorLight ?? undefined}
-                round="small"
-                width="20px"
-                height="100%"
-                border={{ color: 'dark-5', size: 'xsmall' }}
-                onClick={() => setEditColorLight(true)}
-              />
-            </Tip>
+            <Box
+              background={program.color ?? undefined}
+              round="small"
+              width="20px"
+              height="100%"
+              border={{ color: 'dark-5', size: 'xsmall' }}
+              onClick={(e) => setEditColor(true)}
+            />
           </Box>
         </LabelValue>
         <LabelValue
@@ -116,15 +103,6 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         color={program.color ?? '#ffffff'}
         onClose={() => setEditColor(false)}
         onSubmit={(color) => updateProgram({ variables: { id: program.id, input: { color } } })}
-      />
-
-      <EditColorDialog
-        show={editColorLight}
-        color={program.colorLight ?? '#ffffff'}
-        onClose={() => setEditColorLight(false)}
-        onSubmit={(colorLight) =>
-          updateProgram({ variables: { id: program.id, input: { colorLight } } })
-        }
       />
 
       <Modal

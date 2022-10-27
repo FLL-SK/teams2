@@ -113,6 +113,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                   size="small"
                   label="Otvoriť"
                   href={appPath.sfShowInvoice(reg.invoiceRef)}
+                  target="_blank"
                 />
               </LabelValue>
             )}

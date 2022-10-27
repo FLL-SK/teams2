@@ -35,18 +35,17 @@ export function ProgramTile(props: ProgramTileProps) {
   }
 
   return (
-    <Container
-      pad="medium"
-      gap="medium"
-      onClick={disabled ? undefined : onClick}
-      background={program.colorLight ?? 'light-2'}
-      border={border}
-    >
-      <Box direction="row" justify="between">
-        <Text>{program.name}</Text>
-        {showNotice && <Text color={maxColor}>{notice}</Text>}
+    <Container onClick={disabled ? undefined : onClick} border={border}>
+      <Box direction="row" gap="small" pad="small" align="center">
+        <Box width="50px" height={{ min: '50px' }} background={program.color ?? 'light-5'} />
+        <Box width="100%">
+          <Box direction="row" justify="between">
+            <Text>{program.name}</Text>
+            {showNotice && <Text color={maxColor}>{notice}</Text>}
+          </Box>
+          <Markdown>{program.description ?? ''}</Markdown>
+        </Box>
       </Box>
-      <Markdown>{program.description ?? ''}</Markdown>
     </Container>
   );
 }

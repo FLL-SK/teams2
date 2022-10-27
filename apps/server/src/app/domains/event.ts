@@ -56,12 +56,6 @@ export async function registerTeamToEvent(
     return { errors: [{ code: 'not_authorized' }] };
   }
 
-  const team = await dataSources.team.getTeam(teamId);
-  if (!team) {
-    log.error('Team not found %s', teamId);
-    return { errors: [{ code: 'team_not_found' }] };
-  }
-
   let registration: Registration;
   try {
     // register team to event
@@ -71,14 +65,24 @@ export async function registerTeamToEvent(
       return { errors: [{ code: 'registration_failed' }] };
     }
   } catch (e) {
-    return { errors: [{ code: 'registration_failed' }] };
+    return { errors: [{ code: 'registration_failed' }, { code: e.name }] };
   }
 
-  // copy invoice items to registration
-  await copyInvoiceItemsToRegistration(registration.id);
+  try {
+    // copy invoice items to registration
+    await copyInvoiceItemsToRegistration(registration.id);
+  } catch (e) {
+    log.error('Failed to copy invoice items to registration %s', registration.id);
+    return { errors: [{ code: 'registration_failed_to_copy_items' }, { code: e.name }] };
+  }
 
-  // email notifications
-  emailTeamRegistered(registration.id, ctx.user._id);
+  try {
+    // email notifications
+    emailTeamRegistered(registration.id, ctx.user._id);
+  } catch (e) {
+    log.error('Failed to send email to team %s', teamId);
+    return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
+  }
 
   return { registration };
 }

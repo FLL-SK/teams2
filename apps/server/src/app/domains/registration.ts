@@ -140,10 +140,13 @@ export async function getRegistrationFiles(
 
   if (!accessAllowed && registration.confirmedOn) {
     accessAllowed = await ctx.userGuard.isCoach(registration.teamId);
+    if (!accessAllowed) {
+      return [];
+    }
   }
 
   if (!accessAllowed) {
-    throw new Error('Access denied');
+    throw new Error('Access denied getting files for registration');
   }
 
   const pf = await ctx.dataSources.file.getProgramFiles(registration.programId, false);
