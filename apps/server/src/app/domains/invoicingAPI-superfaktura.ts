@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { logger } from '@teams2/logger';
 import {
   Invoice,
@@ -10,6 +9,7 @@ import {
 } from './invoicingAPI';
 import { getServerConfig } from '../../server-config';
 import { AddressData, InvoiceItemData } from '../models';
+import axios from 'axios';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SFInvoice = any;
@@ -95,15 +95,16 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     const config = getServerConfig();
 
     try {
-      log.debug('Posting invoice to SF');
+      log.debug('Posting to SF %o', invoice);
       const url = `${config.invoicing.sf.apiUrl}/invoices/create`;
-      log.debug('url=%s', url);
       const data = 'data=' + JSON.stringify(invoice);
-      log.debug('data=%s', data);
-      const headers = { headers: this.getHeaders() };
-      log.debug('headers=%o', headers);
-
-      const result = await axios.post(url, data, headers);
+      const headers = this.getHeaders();
+      const result = await axios({
+        method: 'post',
+        url,
+        data,
+        headers,
+      });
       log.debug('result=%s', JSON.stringify(result.data));
 
       if (result.status != 200) {
