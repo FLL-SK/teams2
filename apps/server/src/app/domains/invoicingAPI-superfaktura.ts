@@ -95,12 +95,15 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     const config = getServerConfig();
 
     try {
-      log.debug('Posting to SF %o', invoice);
-      const result = await axios.post(
-        `${config.invoicing.sf.apiUrl}/invoices/create`,
-        'data=' + JSON.stringify(invoice),
-        { headers: this.getHeaders() }
-      );
+      log.debug('Posting invoice to SF');
+      const url = `${config.invoicing.sf.apiUrl}/invoices/create`;
+      log.debug('url=%s', url);
+      const data = 'data=' + JSON.stringify(invoice);
+      log.debug('data=%s', data);
+      const headers = { headers: this.getHeaders() };
+      log.debug('headers=%o', headers);
+
+      const result = await axios.post(url, data, headers);
       log.debug('result=%s', JSON.stringify(result.data));
 
       if (result.status != 200) {
