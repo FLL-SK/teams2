@@ -9,7 +9,9 @@ import {
 } from './invoicingAPI';
 import { getServerConfig } from '../../server-config';
 import { AddressData, InvoiceItemData } from '../models';
-import axios from 'axios';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const axios = require('axios').default;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SFInvoice = any;
@@ -97,8 +99,12 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     try {
       log.debug('Posting to SF %o', invoice);
       const url = `${config.invoicing.sf.apiUrl}/invoices/create`;
+      log.debug('url=%s', url);
       const data = 'data=' + JSON.stringify(invoice);
+      log.debug('data=%s', data);
       const headers = this.getHeaders();
+      log.debug('headers=%o', headers);
+
       const result = await axios({
         method: 'post',
         url,
