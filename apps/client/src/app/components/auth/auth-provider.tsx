@@ -120,13 +120,24 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       setState({ isLoggingIn: true, user: undefined, error: undefined });
       clearToken();
 
-      const response = await postAuth(url.toString(), { username, password });
+      let response: Response | null = null;
+      let error: Error | undefined = undefined;
 
-      if (!response.ok) {
+      try {
+        response = await postAuth(url.toString(), { username, password });
+      } catch (err) {
+        error = err as Error;
+      } finally {
+        if (response && !response.ok) {
+          error = new Error(response.statusText);
+        }
+      }
+
+      if (error || !response) {
         setState({
           isAuthenticated: false,
           isLoggingIn: false,
-          error: new Error(response.statusText),
+          error,
         });
         return {};
       }
@@ -212,7 +223,15 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
   );
 
   useEffect(() => {
-    silentCheck().then(() => setInitializing(false));
+    silentCheck()
+      .catch(() =>
+        setState({
+          error: new Error('Authentication failed.'),
+          user: undefined,
+          isLoggingIn: false,
+        })
+      )
+      .finally(() => setInitializing(false));
   }, [silentCheck]);
 
   return (

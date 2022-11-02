@@ -18,15 +18,20 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
     logLib.debug('error=%o', err);
     return res.json(err);
   }
-  const u: Pick<UserData, 'username'> = {
-    username: user.username,
-  };
-  const uq: Partial<UserData> = { lastLoginOn: new Date() };
-  userRepository.findOneAndUpdate(u, uq).exec();
-  const token = createToken(user);
+  try {
+    const u: Pick<UserData, 'username'> = {
+      username: user.username,
+    };
+    const uq: Partial<UserData> = { lastLoginOn: new Date() };
+    userRepository.findOneAndUpdate(u, uq).exec();
+    const token = createToken(user);
 
-  res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days
-  return res.json({ user, token });
+    res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days
+    return res.json({ user, token });
+  } catch (e) {
+    logLib.error('login error=%o', e);
+    res.status(500).send({ error: { message: 'Internal error. Login failed.' } });
+  }
 };
 
 router.get('/', (req, res) => {
@@ -46,11 +51,15 @@ router.post('/forgot', async function (req, res) {
   const log = logLib.extend('post/forgot');
   log.debug('user forgot password=%o', username);
 
-  const u = await userRepository.findActiveByUsername(username);
-  if (u) {
-    requestPassworReset(username);
-  } else {
-    log.debug('user not found', username);
+  try {
+    const u = await userRepository.findActiveByUsername(username);
+    if (u) {
+      requestPassworReset(username);
+    } else {
+      log.debug('user not found', username);
+    }
+  } catch (e) {
+    log.error('forgot password error=%o', e);
   }
 
   res.send({});
