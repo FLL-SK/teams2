@@ -7,10 +7,10 @@ import { ErrorPage } from '../../components/error-page';
 import { Panel, PanelGroup } from '../../components/panel';
 import {
   useCreateNoteMutation,
-  useDeleteTagMutation,
   useAddTagToTeamMutation,
   useGetRegistrationLazyQuery,
   useGetNotesLazyQuery,
+  useRemoveTagFromTeamMutation,
 } from '../../generated/graphql';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
@@ -30,7 +30,7 @@ export function RegistrationPage() {
   const { id } = useParams();
   const { isAdmin, isTeamCoach, userLoading } = useAppUser();
 
-  const [removeTag] = useDeleteTagMutation();
+  const [removeTag] = useRemoveTagFromTeamMutation();
   const [addTag] = useAddTagToTeamMutation();
 
   const [
@@ -139,7 +139,7 @@ export function RegistrationPage() {
                   <Box direction="row" wrap>
                     <TagList
                       tags={reg.team.tags}
-                      onRemove={(id) => removeTag({ variables: { id } })}
+                      onRemove={(tagId) => removeTag({ variables: { teamId: reg.team.id, tagId } })}
                       onAdd={(tag) => addTag({ variables: { teamId: reg.team.id, tagId: tag.id } })}
                     />
                   </Box>
