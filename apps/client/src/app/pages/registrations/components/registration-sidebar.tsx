@@ -12,9 +12,9 @@ import { TagList } from '../../../components/tag-list';
 import {
   useAddTagToTeamMutation,
   useCreateNoteMutation,
-  useDeleteTagMutation,
   useGetNotesLazyQuery,
   useGetRegistrationLazyQuery,
+  useRemoveTagFromTeamMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
@@ -43,7 +43,7 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
 
   const [fetchRegistration, { data: regData }] = useGetRegistrationLazyQuery();
 
-  const [removeTag] = useDeleteTagMutation();
+  const [removeTag] = useRemoveTagFromTeamMutation();
   const [addTag] = useAddTagToTeamMutation();
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
