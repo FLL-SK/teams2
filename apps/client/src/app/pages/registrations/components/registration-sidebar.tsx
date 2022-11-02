@@ -107,7 +107,9 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
           <SidebarPanel label="Štítky tímu">
             <TagList
               tags={registration.team.tags}
-              onRemove={(id) => removeTag({ variables: { id } })}
+              onRemove={(tagId) =>
+                removeTag({ variables: { teamId: registration.team.id, tagId } })
+              }
               onAdd={(tag) =>
                 addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })
               }
