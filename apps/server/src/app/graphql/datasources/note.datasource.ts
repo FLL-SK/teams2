@@ -20,6 +20,7 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async getNote(id: ObjectId): Promise<Note> {
+    if (!id) return null;
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get note');
 
     const note = await noteRepository.findById(id).exec();

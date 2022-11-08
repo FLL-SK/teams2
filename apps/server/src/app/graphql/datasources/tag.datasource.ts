@@ -31,6 +31,7 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async getTag(id: ObjectId): Promise<Tag> {
+    if (!id) return null;
     const log = this.logBase.extend('getTag');
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get tag');
     const tag = this.loader.load(id.toString());

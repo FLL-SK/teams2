@@ -39,6 +39,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async getProgram(id: ObjectId): Promise<Program> {
+    if (!id) return null;
     const log = this.logBase.extend('getP');
     log.debug('id=%s', id);
     const program = this.loader.load(id.toString());
