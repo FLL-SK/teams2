@@ -45,6 +45,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async getEvent(id: ObjectId): Promise<Event> {
+    if (!id) return null;
     const event = this.loader.load(id.toString());
     return event;
   }
