@@ -31,9 +31,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUser(id?: ObjectId): Promise<User> {
-    if (!id) {
-      return null;
-    }
+    if (!id) return null;
     const log = this.logBase.extend('getUser');
     log.debug('id: %s', id);
     const u = await this.loader.load(id.toString());

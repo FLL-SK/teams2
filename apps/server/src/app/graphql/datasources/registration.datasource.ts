@@ -42,6 +42,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistration(id: ObjectId): Promise<Registration> {
+    if (!id) return null;
     const reg = this.loader.load(id.toString());
     return reg;
   }
