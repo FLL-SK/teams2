@@ -25,7 +25,7 @@ export function FileTile(props: FileTileProps) {
   const { file, onDelete, readOnly } = props;
 
   return (
-    <Box flex width={{ min: '580px' }}>
+    <Box flex width="580px">
       <ListRow2
         columns="1fr 100px auto"
         align="center"
