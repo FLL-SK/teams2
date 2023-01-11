@@ -2,6 +2,9 @@
   "name": "teams2",
   "version": "0.0.0",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start:dev": "yarn start:nx",
     "start": "yarn start:server",
