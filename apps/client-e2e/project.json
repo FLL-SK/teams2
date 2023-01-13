@@ -24,5 +24,6 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["client"]
+  "implicitDependencies": ["client"],
+  "name": "client-e2e"
 }
