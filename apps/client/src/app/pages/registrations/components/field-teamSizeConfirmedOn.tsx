@@ -29,7 +29,7 @@ export const FieldTeamSizeConfirmedOn = (props: {
   return (
     <LabelValue label="Veľkosť tímu potvrdená">
       <SetClearDate
-        tip="Dátum potvrdenia počtu detí a trénerov, ktorí sa NAOZAJ záčastnia na turnaji."
+        tip="Dátum potvrdenia počtu detí a trénerov, ktorí sa NAOZAJ záčastnia na turnaji. Dá sa potvrdiť až 30 dní pred turnajom."
         canEdit={(isAdmin() || isTeamCoach(teamId)) && !readOnly}
         date={registration.sizeConfirmedOn}
         onClear={() => clearSizeConfirmed({ variables: { id: registration.id } })}
