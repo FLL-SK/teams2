@@ -64,7 +64,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
             <FieldTeamSizeConfirmedOn
               registration={registration}
               teamId={registration.teamId}
-              readOnly={!!registration.canceledOn || eventDateDiff > 30}
+              readOnly={!!registration.canceledOn}
             />
           </LabelValueGroup>
         </Box>
