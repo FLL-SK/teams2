@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { NoteType } from '../generated/graphql';
-import { ApolloContext } from '../graphql/apollo-context';
+import { ApolloContext } from '../apollo/apollo-context';
 import { NoteData, NoteDocument, noteRepository } from '../models';
 
 export async function createNote(

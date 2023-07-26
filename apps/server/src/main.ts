@@ -7,7 +7,7 @@ import { configure as configureAuth } from './app/auth';
 import { loadDotEnvFiles } from './app/utils/env-loader';
 import { getServerConfig } from './server-config';
 import { bootstrapMongoDB, testDbSeed } from './app/db';
-import { bootstrapApolloServer } from './app/graphql/bootstrap-apollo-server';
+import { bootstrapApolloServer } from './app/apollo/bootstrap-apollo-server';
 
 import { logger } from '@teams2/logger';
 import { buildRootRouter } from './app/routes';

@@ -1,7 +1,7 @@
 import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { ApolloContext } from '../graphql/apollo-context';
+import { ApolloContext } from '../apollo/apollo-context';
 
 import {
   eventRepository,
