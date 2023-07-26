@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { FileData, fileRepository } from '../../models';
 import { File, FileUploadInput } from '../../generated/graphql';
@@ -10,15 +8,9 @@ import { logger } from '@teams2/logger';
 import { deleteFileFromBucket } from '../../utils/aws-s3';
 import { storagePath } from '../../utils/storage-path';
 
-export class FileDataSource extends BaseDataSource {
-  constructor() {
-    super();
-    this.logBase = logger('DS:File');
-  }
+const logBase = logger('DS:File');
 
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
-  }
+export class FileDataSource extends BaseDataSource {
 
   async getProgramFiles(programId: ObjectId, checkAccess = true): Promise<File[]> {
     !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get program files');
@@ -43,7 +35,7 @@ export class FileDataSource extends BaseDataSource {
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add program file');
 
-    const log = this.logBase.extend('addPFile');
+    const log = logBase.extend('addPFile');
     const nf: FileData = {
       type: 'programDoc',
       ref: programId.toString(),
@@ -61,7 +53,7 @@ export class FileDataSource extends BaseDataSource {
   async addEventFile(eventId: ObjectId, input: FileUploadInput): Promise<File> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add event file');
 
-    const log = this.logBase.extend('addFFile');
+    const log = logBase.extend('addFFile');
     const nf: FileData = {
       type: 'eventDoc',
       ref: eventId.toString(),
@@ -80,7 +72,7 @@ export class FileDataSource extends BaseDataSource {
   async removeFile(fileId: ObjectId): Promise<File> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove file');
 
-    const log = this.logBase.extend('removeFile');
+    const log = logBase.extend('removeFile');
 
     const f = await fileRepository.findByIdAndDelete(fileId).lean().exec();
     log.debug('File removed from repository');

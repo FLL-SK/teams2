@@ -8,7 +8,7 @@ import {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import omitDeep from 'omit-deep';
-import { setContext } from '@apollo/link-context';
+import { setContext } from '@apollo/client/link/context';
 import React from 'react';
 import { appConfig } from '../../app-config';
 
@@ -39,6 +39,7 @@ export function AuthedApolloProvider({ children }: AuthedApolloProviderProps) {
       return {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Apollo-Require-Preflight": "true",
         },
       };
     } else return {};

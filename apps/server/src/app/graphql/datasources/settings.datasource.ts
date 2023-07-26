@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { settingsRepository } from '../../models';
 import { Settings, UpdateSettingsInput } from '../../generated/graphql';
@@ -7,15 +5,9 @@ import { Settings, UpdateSettingsInput } from '../../generated/graphql';
 import { logger } from '@teams2/logger';
 import { SettingsMapper } from '../mappers/settings.mapper';
 
-export class SettingsDataSource extends BaseDataSource {
-  constructor() {
-    super();
-    this.logBase = logger('DS:Settings');
-  }
+const logBase = logger('DS:Settings');
 
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
-  }
+export class SettingsDataSource extends BaseDataSource {
 
   async get(): Promise<Settings> {
     const s = await settingsRepository.get();

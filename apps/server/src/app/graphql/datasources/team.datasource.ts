@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { registrationRepository, TeamData, teamRepository, userRepository } from '../../models';
 import {
@@ -18,16 +16,12 @@ import * as Dataloader from 'dataloader';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 
+const logBase = logger('DS:Team');
+
 export class TeamDataSource extends BaseDataSource {
   private loader: Dataloader<string, Team, string>;
 
-  constructor() {
-    super();
-    this.logBase = logger('DS:team');
-  }
-
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
+  protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
   }
 
@@ -40,7 +34,7 @@ export class TeamDataSource extends BaseDataSource {
 
   async getTeam(id: ObjectId): Promise<Team> {
     if (!id) return null;
-    const log = this.logBase.extend('getTeam');
+    const log = logBase.extend('getTeam');
     log.debug('getTeam %s', id.toString());
     const team = this.loader.load(id.toString());
     return team;
@@ -60,7 +54,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async createTeam(input: CreateTeamInput): Promise<TeamPayload> {
-    const log = this.logBase.extend('create');
+    const log = logBase.extend('create');
     const currentUserId = this.context.user._id;
 
     const t: TeamData = {
@@ -125,7 +119,7 @@ export class TeamDataSource extends BaseDataSource {
       this.userGuard.isSelf(coachId) ||
       this.userGuard.notAuthorized('Get teams coached by');
 
-    const log = this.logBase.extend('getCoachedBy');
+    const log = logBase.extend('getCoachedBy');
     const teams = await teamRepository.findTeamsCoachedByUser(coachId);
     log.debug('getCoachedBy %s %d', coachId.toString(), teams.length);
     return teams.filter((t) => !!t).map((t) => TeamMapper.toTeam(t));
@@ -162,7 +156,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamCoaches(teamId: ObjectId): Promise<User[]> {
-    const log = this.logBase.extend('getTeamCoaches');
+    const log = logBase.extend('getTeamCoaches');
     const isAdmin = this.userGuard.isAdmin();
     const isCoach = await this.userGuard.isCoach(teamId);
     const isEvtMgr = await this.isTeamRegisteredOnEventManagedBy(this.context.user._id, teamId);
@@ -222,7 +216,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeamTags(teamId: ObjectId): Promise<Tag[]> {
-    const log = this.logBase.extend('getTeamTags');
+    const log = logBase.extend('getTeamTags');
     log.debug('start', this.userGuard.isAdmin());
     if (!this.userGuard.isAdmin()) {
       return [];

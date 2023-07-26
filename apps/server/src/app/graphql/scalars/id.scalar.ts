@@ -1,30 +1,43 @@
-import { UserInputError } from 'apollo-server-express';
-import { GraphQLScalarType } from 'graphql';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
+import { GraphQLError, GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
 import { ObjectId } from 'mongodb';
 
-const errorMessage = 'Wrong format of ID. Expected 24 hex characters.';
+const errorMessage = 'Wrong ID format.';
 
 function parse(value?: string | number | null) {
   if (value) {
-    if (ObjectId.isValid(value)) {
-      return new ObjectId(value);
+    if (typeof value === 'object' && Object.keys(value).length == 0) {
+      // handling of undefined
+      return null;
     }
-    throw new UserInputError(errorMessage);
+    let d: ObjectId;
+    try {
+      d = new ObjectId(value);
+    } catch (error) {
+      throw new GraphQLError(errorMessage, {
+        extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+      });
+    }
+
+    return d;
   }
   return null;
 }
 
 export const scalarResolver = new GraphQLScalarType({
   name: 'ID',
-  description: 'ObjectId',
-  serialize: (value?: ObjectId) => value?.toHexString() ?? null,
-  parseValue: (value?: string | number | null): ObjectId | null => parse(value),
+  description: 'BSON ObjectId',
+  serialize: (value?: ObjectId) => value?.toString() ?? null,
+  parseValue: (value?: string | null): ObjectId | null => parse(value),
   parseLiteral: (ast): ObjectId | null => {
-    if (ast.kind === 'StringValue' || ast.kind === 'IntValue') {
+    if (ast.kind === Kind.STRING) {
       return parse(ast.value);
-    } else if (ast.kind === 'NullValue') {
+    } else if (ast.kind === Kind.NULL) {
       return null;
     }
-    throw new UserInputError(errorMessage);
+    throw new GraphQLError(errorMessage, {
+      extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+    });
   },
 });

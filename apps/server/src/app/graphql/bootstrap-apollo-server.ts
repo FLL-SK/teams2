@@ -1,30 +1,24 @@
 import { Application } from 'express';
-import { ApolloServer, Config, ExpressContext } from 'apollo-server-express';
+import { ApolloServer, ApolloServerOptions } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+
 import { loadTypedefs } from '@graphql-tools/load';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
+import { createServer } from 'http';
 
 import { getServerConfig } from '../../server-config';
 import { resolvers } from './resolvers';
 import { scalarResolvers } from './scalars';
 import { initApolloContext } from './init-apollo-context';
-import { ApolloContextDataSources } from './apollo-context';
-import {
-  EventDataSource,
-  RegistrationDataSource,
-  FileDataSource,
-  InvoiceItemDataSource,
-  NoteDataSource,
-  ProgramDataSource,
-  TagDataSource,
-  TeamDataSource,
-  UserDataSource,
-  SettingsDataSource,
-} from './datasources';
+import { ApolloContext } from './apollo-context';
+
 import { logger } from '@teams2/logger';
 import { errorFormatter } from './error-formatter';
 
-export async function bootstrapApolloServer(app: Application): Promise<void> {
+export async function bootstrapApolloServer(app: Application) {
+  const httpServer = createServer(app);
   const appConfig = getServerConfig();
   const sources = await loadTypedefs(appConfig.graphQLSchemaPath, {
     // load from a single schema file
@@ -37,30 +31,20 @@ export async function bootstrapApolloServer(app: Application): Promise<void> {
     resolvers: { ...resolvers, ...scalarResolvers },
   });
 
-  const apolloServerConfig: Config<ExpressContext> = {
+  const apolloServerConfig: ApolloServerOptions<ApolloContext> = {
     schema: schema,
     cache: 'bounded',
-    context: initApolloContext,
     formatError: errorFormatter,
-    dataSources: (): ApolloContextDataSources => ({
-      user: new UserDataSource(),
-      event: new EventDataSource(),
-      team: new TeamDataSource(),
-      program: new ProgramDataSource(),
-      invoice: new InvoiceItemDataSource(),
-      file: new FileDataSource(),
-      registration: new RegistrationDataSource(),
-      tag: new TagDataSource(),
-      note: new NoteDataSource(),
-      settings: new SettingsDataSource(),
-    }),
     introspection: true,
-    debug: true,
-    logger: logger('apollo-logger'),
+    logger: logger('apollo'),
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   };
 
-  const apolloServer = new ApolloServer(apolloServerConfig);
+  const apolloServer = new ApolloServer<ApolloContext>(apolloServerConfig);
   await apolloServer.start();
 
-  apolloServer.applyMiddleware({ app });
+  return expressMiddleware(apolloServer, {
+    context: initApolloContext,
+  });
+
 }

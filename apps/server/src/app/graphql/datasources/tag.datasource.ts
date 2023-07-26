@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { TagData, tagRepository } from '../../models';
 import { Tag, TagInput } from '../../generated/graphql';
@@ -10,16 +8,12 @@ import { logger } from '@teams2/logger';
 import { FilterQuery } from 'mongoose';
 import * as Dataloader from 'dataloader';
 
+const logBase = logger('DS:Tag');
+
 export class TagDataSource extends BaseDataSource {
   private loader: Dataloader<string, Tag, string>;
 
-  constructor() {
-    super();
-    this.logBase = logger('DS:tag');
-  }
-
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
+  protected _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
   }
 
@@ -32,7 +26,7 @@ export class TagDataSource extends BaseDataSource {
 
   async getTag(id: ObjectId): Promise<Tag> {
     if (!id) return null;
-    const log = this.logBase.extend('getTag');
+    const log = logBase.extend('getTag');
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get tag');
     const tag = this.loader.load(id.toString());
     if (!tag) {
@@ -42,7 +36,7 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async getTags(includeDeleted = false): Promise<Tag[]> {
-    const log = this.logBase.extend('getTags');
+    const log = logBase.extend('getTags');
     log.debug('start', this.userGuard.isAdmin());
     if (!this.userGuard.isAdmin()) {
       return [];
@@ -72,7 +66,7 @@ export class TagDataSource extends BaseDataSource {
 
   async deleteTag(id: ObjectId): Promise<Tag> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete tag');
-    const log = this.logBase.extend('deleteTag');
+    const log = logBase.extend('deleteTag');
     log.debug('start', id);
     const tag = await tagRepository
       .findByIdAndUpdate(
@@ -86,7 +80,7 @@ export class TagDataSource extends BaseDataSource {
 
   async restoreTag(id: ObjectId): Promise<Tag> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Restore tag');
-    const log = this.logBase.extend('restoreTag');
+    const log = logBase.extend('restoreTag');
     log.debug('start', id);
     const tag = await tagRepository
       .findByIdAndUpdate(id, { deletedOn: null, deletedBy: null }, { new: true })

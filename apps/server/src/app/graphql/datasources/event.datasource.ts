@@ -1,5 +1,4 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
+
 import { BaseDataSource } from './_base.datasource';
 import {
   EventData,
@@ -24,16 +23,12 @@ import * as Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
 
+const logBase = logger('DS:Event');
+
 export class EventDataSource extends BaseDataSource {
   private loader: Dataloader<string, Event, string>;
 
-  constructor() {
-    super();
-    this.logBase = logger('DS:Event');
-  }
-
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
+  protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
   }
 
@@ -51,7 +46,7 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async getEvents(filter: EventFilterInput): Promise<Event[]> {
-    const log = this.logBase.extend('getEvents');
+    const log = logBase.extend('getEvents');
     const q: FilterQuery<Event> = {};
     if (filter.programId) {
       q.programId = filter.programId;

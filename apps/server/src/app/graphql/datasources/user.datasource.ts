@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { UserData, userRepository } from '../../models';
 import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../generated/graphql';
@@ -10,16 +8,12 @@ import * as Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailUserAcceptedGdprToAdmin, emailUserRejectedGdprToAdmin } from '../../utils/emails';
 
+const logBase = logger('DS:User');
+
 export class UserDataSource extends BaseDataSource {
   private loader: Dataloader<string, User, string>;
 
-  constructor() {
-    super();
-    this.logBase = logger('DS:user');
-  }
-
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
+  protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
   }
 
@@ -32,7 +26,7 @@ export class UserDataSource extends BaseDataSource {
 
   async getUser(id?: ObjectId): Promise<User> {
     if (!id) return null;
-    const log = this.logBase.extend('getUser');
+    const log = logBase.extend('getUser');
     log.debug('id: %s', id);
     const u = await this.loader.load(id.toString());
     return u;

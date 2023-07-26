@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { ObjectId } from 'mongodb';
 import { eventRepository, ProgramData, programRepository, userRepository } from '../../models';
@@ -19,15 +17,12 @@ import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
 import { emailProgramManagerAdded } from '../../utils/emails';
 
+const logBase = logger('DS:Program');
+
 export class ProgramDataSource extends BaseDataSource {
   private loader: Dataloader<string, Program, string>;
-  constructor() {
-    super();
-    this.logBase = logger('DS:program');
-  }
 
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
+  protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
   }
 
@@ -40,7 +35,7 @@ export class ProgramDataSource extends BaseDataSource {
 
   async getProgram(id: ObjectId): Promise<Program> {
     if (!id) return null;
-    const log = this.logBase.extend('getP');
+    const log = logBase.extend('getP');
     log.debug('id=%s', id);
     const program = this.loader.load(id.toString());
     log.debug('id=%s done', id);
@@ -48,7 +43,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async getPrograms(filter?: ProgramFilterInput): Promise<Program[]> {
-    const log = this.logBase.extend('getPrgs');
+    const log = logBase.extend('getPrgs');
     log.debug('getting prgs');
     const programs = await programRepository.findPrograms(filter ?? {});
     log.debug('getting prgs - done');

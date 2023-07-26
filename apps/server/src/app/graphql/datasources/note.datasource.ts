@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { NoteData, noteRepository } from '../../models';
 import { Note, NoteCreateInput, NoteType, NoteUpdateInput } from '../../generated/graphql';
@@ -9,15 +7,9 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import { FilterQuery } from 'mongoose';
 
-export class NoteDataSource extends BaseDataSource {
-  constructor() {
-    super();
-    this.logBase = logger('DS:Note');
-  }
+const logBase = logger('DS:Note');
 
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
-  }
+export class NoteDataSource extends BaseDataSource {
 
   async getNote(id: ObjectId): Promise<Note> {
     if (!id) return null;

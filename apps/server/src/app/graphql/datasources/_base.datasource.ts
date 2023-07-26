@@ -1,21 +1,19 @@
-import { DataSource, DataSourceConfig } from 'apollo-datasource';
 import { ApolloContext } from '../apollo-context';
 
-import { logger } from '@teams2/logger';
 import { UserGuard } from '../../utils/user-guard';
 
-export class BaseDataSource extends DataSource<ApolloContext> {
+export class BaseDataSource {
   protected context: ApolloContext;
   protected userGuard: UserGuard;
-  protected logBase;
 
-  constructor() {
-    super();
-    this.logBase = logger('DS');
-  }
-
-  initialize(config: DataSourceConfig<ApolloContext>) {
+  constructor(config: { context: ApolloContext }) {
     this.context = config.context;
     this.userGuard = config.context.userGuard;
+    this._initialize();
+  }
+
+  protected _initialize() {
+    // override this method to initialize the data source
   }
 }
+

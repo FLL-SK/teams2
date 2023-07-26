@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import {
   eventRepository,
@@ -21,17 +19,13 @@ import { logger } from '@teams2/logger';
 import * as Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
 
+const logBase = logger('DS:Registration');
+
 export class RegistrationDataSource extends BaseDataSource {
   private loader: Dataloader<string, Registration, string>;
 
-  constructor() {
-    super();
-  }
-
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
+  protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
-    this.logBase = logger('DS:Registration');
   }
 
   private async loaderFn(ids: string[]): Promise<Registration[]> {
@@ -54,7 +48,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
-    const log = this.logBase.extend('createRegistration');
+    const log = logBase.extend('createRegistration');
     this.userGuard.isAdmin() ||
       this.userGuard.isCoach(teamId) ||
       this.userGuard.notAuthorized('Create registration');

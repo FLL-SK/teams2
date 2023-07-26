@@ -1,5 +1,6 @@
-import { UserInputError } from 'apollo-server-express';
-import { GraphQLScalarType } from 'graphql';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
+import { GraphQLError, GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
 
 const errorMessage = 'Wrong DateTime format.';
 
@@ -11,7 +12,9 @@ function parse(value?: string | number | null) {
     }
     const d: Date = new Date(value);
     if (d.toString() === 'Invalid Date') {
-      throw new UserInputError(errorMessage);
+      throw new GraphQLError(errorMessage, {
+        extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+      });
     }
     return d;
   }
@@ -24,11 +27,13 @@ export const scalarResolver = new GraphQLScalarType({
   serialize: (value?: Date) => value?.toISOString() ?? null,
   parseValue: (value?: string | number | null): Date | null => parse(value),
   parseLiteral: (ast): Date | null => {
-    if (ast.kind === 'StringValue' || ast.kind === 'IntValue') {
+    if (ast.kind === Kind.STRING || ast.kind === Kind.INT) {
       return parse(ast.value);
-    } else if (ast.kind === 'NullValue') {
+    } else if (ast.kind === Kind.NULL) {
       return null;
     }
-    throw new UserInputError(errorMessage);
+    throw new GraphQLError(errorMessage, {
+      extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
+    });
   },
 });

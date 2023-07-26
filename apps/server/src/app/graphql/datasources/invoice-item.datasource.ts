@@ -1,5 +1,3 @@
-import { DataSourceConfig } from 'apollo-datasource';
-import { ApolloContext } from '../apollo-context';
 import { BaseDataSource } from './_base.datasource';
 import { InvoiceItemData, invoiceItemRepository } from '../../models';
 import { InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../generated/graphql';
@@ -8,15 +6,9 @@ import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
 
-export class InvoiceItemDataSource extends BaseDataSource {
-  constructor() {
-    super();
-    this.logBase = logger('DS:Invoice');
-  }
+const logBase = logger('DS:Invoice');
 
-  initialize(config: DataSourceConfig<ApolloContext>) {
-    super.initialize(config);
-  }
+export class InvoiceItemDataSource extends BaseDataSource {
 
   async getEventInvoiceItems(eventId: ObjectId): Promise<InvoiceItem[]> {
     if (!this.userGuard.isLoggedIn()) {

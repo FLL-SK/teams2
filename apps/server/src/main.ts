@@ -26,8 +26,8 @@ async function server() {
   // CORS configuration
   const corsOptions = {
     origin: [getServerConfig().clientAppRootUrl],
-    preflightContinue: true,
-    credentials: true,
+    preflightContinue: false,
+    credentials: false,
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
   };
 
@@ -43,10 +43,16 @@ async function server() {
   // configure passport authentication
   configureAuth(app);
 
+  const rootRouter = buildRootRouter();
+  app.use('/', rootRouter);
+
+  const graphQlMW = await bootstrapApolloServer(app);
+
   app.use('/graphql', (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
       if (user) {
         req.user = user;
+        console.log('User authenticated', req.headers, req.body);
       } else if (err) {
         log.warn('Unauthorized request /graphql from ip=%s body=%o', req.ip.toString(), req.body);
         return res.status(401).send('Unauthorized');
@@ -56,13 +62,10 @@ async function server() {
     })(req, res, next);
   });
 
-  await bootstrapApolloServer(app);
+  app.use('/graphql', graphQlMW);
 
   const assetsPath = __dirname + '/assets';
   app.use(express.static(assetsPath));
-
-  const rootRouter = buildRootRouter();
-  app.use('/', rootRouter);
 
   // app.get('*', function (request, response) {
   //   response.sendFile(resolve(assetsPath, 'index.html'));
