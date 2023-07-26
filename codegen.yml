@@ -25,7 +25,7 @@ generates:
         ID: mongodb#ObjectId
       enumsAsTypes: true
       useIndexSignature: true
-      contextType: ../graphql/apollo-context#ApolloContext
+      contextType: ../apollo/apollo-context#ApolloContext
   apps/client/src/app/generated/graphql.tsx:
     documents: 'apps/client/**/*.graphql'
     plugins:
