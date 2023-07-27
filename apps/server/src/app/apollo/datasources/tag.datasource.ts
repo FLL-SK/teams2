@@ -6,7 +6,7 @@ import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
 import { FilterQuery } from 'mongoose';
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 
 const logBase = logger('DS:Tag');
 

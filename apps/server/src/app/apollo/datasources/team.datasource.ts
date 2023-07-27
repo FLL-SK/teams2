@@ -12,7 +12,7 @@ import {
 } from '../../generated/graphql';
 import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 

@@ -19,7 +19,7 @@ import {
 import { EventMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
 

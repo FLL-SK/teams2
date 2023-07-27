@@ -16,7 +16,7 @@ import {
 import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
 
 const logBase = logger('DS:Registration');

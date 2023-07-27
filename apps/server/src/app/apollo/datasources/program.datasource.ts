@@ -14,7 +14,7 @@ import {
 import { EventMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 import { emailProgramManagerAdded } from '../../utils/emails';
 
 const logBase = logger('DS:Program');

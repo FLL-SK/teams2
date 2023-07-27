@@ -4,7 +4,7 @@ import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../gener
 import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailUserAcceptedGdprToAdmin, emailUserRejectedGdprToAdmin } from '../../utils/emails';
 
