@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/server",
@@ -19,8 +19,15 @@
             "output": "templates"
           }
         ],
-        "compiler": "tsc",
-        "target": "node"
+        "format": ["cjs"],
+        "bundle": false,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+        
       },
       "configurations": {
         "production": {
@@ -32,7 +39,15 @@
               "replace": "apps/server/src/environments/environment.ts",
               "with": "apps/server/src/environments/environment.prod.ts"
             }
-          ]
+          ],
+          
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+          
+          }
         }
       }
     },

@@ -1,4 +1,4 @@
-import passport = require('passport');
+import passport from 'passport';
 import { sign, verify } from 'jsonwebtoken';
 import { compare } from 'bcryptjs';
 import { Strategy as PassportLocalStrategy } from 'passport-local';

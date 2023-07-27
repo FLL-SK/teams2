@@ -1,6 +1,5 @@
-import * as express from 'express';
-import * as cors from 'cors';
-import * as morgan from 'morgan';
+import cors from  'cors';
+import morgan  from 'morgan';
 import { command } from 'yargs';
 import { configure as configureAuth } from './app/auth';
 
@@ -11,7 +10,8 @@ import { bootstrapApolloServer } from './app/apollo/bootstrap-apollo-server';
 
 import { logger } from '@teams2/logger';
 import { buildRootRouter } from './app/routes';
-import passport = require('passport');
+import passport from 'passport';
+import express from 'express';
 const log = logger('main');
 
 loadDotEnvFiles();

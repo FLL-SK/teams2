@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/web:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
@@ -45,19 +45,18 @@
       }
     },
     "serve": {
-      "executor": "@nx/web:dev-server",
+      "executor": "@nx/web:file-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "client:build",
-        "hmr": true
+        "buildTarget": "client:build"
       },
       "configurations": {
         "development": {
           "buildTarget": "client:build:development"
         },
         "production": {
-          "buildTarget": "client:build:production",
-          "hmr": false
+          "buildTarget": "client:build:production"
+          
         }
       }
     },

@@ -1,9 +1,9 @@
 import { appPath } from '@teams2/common';
-import path = require('path');
-import * as pug from 'pug';
+import path from 'path';
+import pug from 'pug';
 import { getServerConfig } from '../../server-config';
 import { logger } from '@teams2/logger';
-import { AddressData, settingsRepository } from '../models';
+import { AddressData } from '../models';
 import { getAppSettings } from '../utils/settings';
 
 const getTemplate = (name: string) => pug.compileFile(path.join(__dirname, 'templates', name));

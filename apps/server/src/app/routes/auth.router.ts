@@ -1,7 +1,7 @@
 import { validateEmail } from '@teams2/common';
 import { logger } from '@teams2/logger';
-import express = require('express');
-import passport = require('passport');
+import express from 'express';
+import passport from 'passport';
 import { AuthUser, createToken, verifyToken } from '../auth';
 import { UserData, userRepository } from '../models';
 import { emailUserSignupToAdmin, emailUserSignupToUser } from '../utils/emails';
