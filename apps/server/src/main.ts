@@ -3,7 +3,6 @@ import morgan  from 'morgan';
 import { command } from 'yargs';
 import { configure as configureAuth } from './app/auth';
 
-import { loadDotEnvFiles } from './app/utils/env-loader';
 import { getServerConfig } from './server-config';
 import { bootstrapMongoDB, testDbSeed } from './app/db';
 import { bootstrapApolloServer } from './app/apollo/bootstrap-apollo-server';
@@ -13,8 +12,6 @@ import { buildRootRouter } from './app/routes';
 import passport from 'passport';
 import express from 'express';
 const log = logger('main');
-
-loadDotEnvFiles();
 
 async function server() {
   const port = getServerConfig().port;
