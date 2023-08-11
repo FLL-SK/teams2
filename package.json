@@ -62,7 +62,7 @@
     "react-router-dom": "6.11.2",
     "react-virtualized": "^9.22.5",
     "regenerator-runtime": "^0.13.11",
-    "styled-components": "^5.3.10",
+    "styled-components": "^6.0.7",
     "tslib": "^2.6.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz",
     "yargs": "^17.7.2"
