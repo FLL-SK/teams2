@@ -7,8 +7,12 @@
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
+        "platform": "node",
         "outputPath": "dist/apps/server",
+        "format": ["cjs"],
+        "bundle": false,
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
         "assets": [
@@ -19,8 +23,7 @@
             "output": "templates"
           }
         ],
-        "format": ["cjs"],
-        "bundle": false,
+        "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -30,10 +33,8 @@
         
       },
       "configurations": {
+        "development": {},
         "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
           "fileReplacements": [
             {
               "replace": "apps/server/src/environments/environment.ts",
@@ -78,6 +79,12 @@
       "options": {
         "jestConfig": "apps/server/jest.config.ts",
         "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
       }
     }
   },
