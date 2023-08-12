@@ -1,65 +1,58 @@
-import { S3 } from 'aws-sdk';
+import {
+  S3Client,
+  DeleteObjectCommand,
+  DeleteObjectCommandInput,
+  GetObjectCommand,
+  GetObjectCommandInput,
+  PutObjectCommand,
+  PutObjectCommandInput,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getServerConfig } from '../../server-config';
 import { logger } from '@teams2/logger';
 
 const logLib = logger('aws-s3');
 
-export const s3Client = new S3(getServerConfig().s3);
+const s3Client = createClient();
 
-export async function deleteObjectsPromise(
-  params: S3.DeleteObjectsRequest
-): Promise<S3.DeleteObjectsOutput> {
-  return new Promise((resolve, reject) =>
-    s3Client.deleteObjects(params, function (err, data) {
-      if (err) return reject(err);
-      else return resolve(data);
-    })
-  );
+function createClient() {
+  const cfg = getServerConfig().s3;
+  return new S3Client({
+    region: cfg.region,
+    credentials: { accessKeyId: cfg.accessKeyId, secretAccessKey: cfg.secretAccessKey },
+  });
 }
 
 export function getLogoFileName() {
   return 'logo';
 }
 
-export async function listObjectsV2Promise(
-  params: S3.ListObjectsV2Request
-): Promise<S3.ListObjectsV2Output> {
-  return new Promise((resolve, reject) =>
-    s3Client.listObjectsV2(params, function (err, data) {
-      if (err) return reject(err);
-      else return resolve(data);
-    })
-  );
-}
-
 export async function deleteFileFromBucket(fileName: string): Promise<boolean> {
   const log = logLib.extend('deleteFile');
-  const files: S3.ObjectIdentifier[] = [{ Key: fileName }];
 
-  const params: S3.DeleteObjectsRequest = {
+  const params: DeleteObjectCommandInput = {
     Bucket: getServerConfig().s3.bucket,
-    Delete: {
-      Objects: files,
-      Quiet: false,
-    },
+    Key: fileName,
   };
 
-  log.debug('Going to delete file from S3 %o', params.Delete);
-  const data = await deleteObjectsPromise(params);
-  log.debug('Deleted %o', data);
-  return data.Errors.length === 0;
+  log.debug('Going to delete file from S3 %o', params);
+  const command = new DeleteObjectCommand(params);
+  const result = await s3Client.send(command);
+  log.debug('Deleted %o', result);
+  return result.DeleteMarker === true;
 }
 
 export async function getSignedUrlForUpload(fileName: string, fileType: string, expiresIn = 120) {
   const log = logLib.extend('pUrlUp');
-  const params = {
+  const params: PutObjectCommandInput = {
     Bucket: getServerConfig().s3.bucket,
     Key: fileName,
-    Expires: expiresIn, // seconds
     ContentType: fileType,
   };
 
-  const url = await s3Client.getSignedUrlPromise('putObject', params);
+  const command = new PutObjectCommand(params);
+
+  const url = getSignedUrl(s3Client, command, { expiresIn });
 
   log.debug('Pre-signed url created. Blob id=%s ContentType=%s url=%s', fileName, fileType, url);
   return url;
@@ -67,13 +60,13 @@ export async function getSignedUrlForUpload(fileName: string, fileType: string, 
 
 export async function getSignedUrlForDownload(fileName: string, fileType: string, expiresIn = 900) {
   const log = logLib.extend('pUrlDown');
-  const params = {
+  const params: GetObjectCommandInput = {
     Bucket: getServerConfig().s3.bucket,
     Key: fileName,
-    Expires: expiresIn, // seconds
   };
+  const command = new GetObjectCommand(params);
 
-  const url = await s3Client.getSignedUrlPromise('getObject', params);
+  const url = await getSignedUrl(s3Client, command, { expiresIn });
 
   log.debug('Pre-signed url created. Blob id=%s ContentType=%s url=%s', fileName, fileType, url);
   return url;
