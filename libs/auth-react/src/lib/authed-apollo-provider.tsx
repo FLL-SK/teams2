@@ -5,41 +5,40 @@ import {
   createHttpLink,
   InMemoryCache,
 } from '@apollo/client';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import omitDeep from 'omit-deep';
 import { setContext } from '@apollo/client/link/context';
+import omitDeep from 'omit-deep';
 import React from 'react';
-import { appConfig } from '../../app-config';
 
 interface AuthedApolloProviderProps {
   children: React.ReactNode;
 }
 
-export function AuthedApolloProvider({ children }: AuthedApolloProviderProps) {
-  const httpLink = createHttpLink({
-    uri: `${appConfig.rootApiUrl}/graphql`, // your URI here...
-  });
+export const AuthedApolloProvider = ({
+  children,
+  apiUri,
+  apiToken,
+}: AuthedApolloProviderProps & { apiUri: string; apiToken?: string | null }) => {
+  const httpLink = createHttpLink({ uri: apiUri });
 
   // cleans __typename from the input data
   // SEE: https://stackoverflow.com/questions/47211778/cleaning-unwanted-fields-from-graphql-responses/51380645#51380645
   const cleanTypeName = new ApolloLink((operation, forward) => {
     if (operation.variables) {
-      operation.variables = omitDeep(operation.variables, '__typename');
+      operation.variables = omitDeep(operation.variables, ['__typename']);
     }
     return forward(operation).map((data) => {
       return data;
     });
   });
 
-  const authLink = setContext(async () => {
+  const authLink = setContext(() => {
     // return authorization header with jwt token
-    const token = localStorage.getItem('token');
+    const token = apiToken;
     if (token) {
       return {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Apollo-Require-Preflight": "true",
+          'Apollo-Require-Preflight': 'true',
         },
       };
     } else return {};
@@ -52,4 +51,4 @@ export function AuthedApolloProvider({ children }: AuthedApolloProviderProps) {
   });
 
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
-}
+};

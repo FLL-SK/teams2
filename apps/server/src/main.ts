@@ -1,8 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import cors from  'cors';
 import morgan  from 'morgan';
 import { command } from 'yargs';
-import { configure as configureAuth } from './app/auth';
-
+import { configureAuth } from './app/configure-auth';
 import { getServerConfig } from './server-config';
 import { bootstrapMongoDB, testDbSeed } from './app/db';
 import { bootstrapApolloServer } from './app/apollo/bootstrap-apollo-server';
@@ -11,13 +13,15 @@ import { logger } from '@teams2/logger';
 import { buildRootRouter } from './app/routes';
 import passport from 'passport';
 import express from 'express';
+
 const log = logger('main');
 
 async function server() {
   const port = getServerConfig().port;
   log.info('Starting server ...');
-  log.debug('Config: %o', getServerConfig());
+  log.info('Config: %o', getServerConfig());
   log.info(`Environment: ${process.env.NODE_ENV}`);
+  log.info(`Debug: ${process.env.DEBUG}`);
   const app = express();
 
   // CORS configuration
@@ -46,12 +50,14 @@ async function server() {
   const graphQlMW = await bootstrapApolloServer(app);
 
   app.use('/graphql', (req, res, next) => {
-    passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    passport.authenticate('jwt', { session: false }, (err, user) => {
+      
       if (user) {
         req.user = user;
-        console.log('User authenticated', req.headers, req.body);
-      } else if (err) {
+        
+      } else {
         log.warn('Unauthorized request /graphql from ip=%s body=%o', req.ip.toString(), req.body);
+
         return res.status(401).send('Unauthorized');
       }
 

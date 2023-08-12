@@ -1,7 +1,7 @@
 import { ApolloError } from '@apollo/client';
 import React, { createContext, useCallback, useEffect } from 'react';
 import { useGetUserLazyQuery, UserFragmentFragment } from '../../generated/graphql';
-import { useAuthenticate } from '../auth/useAuthenticate';
+import { useAuthenticate } from '@teams2/auth-react';
 
 type AppUser = UserFragmentFragment;
 
@@ -40,24 +40,56 @@ interface AppUserContextProviderProps {
 export function AppUserContextProvider(props: AppUserContextProviderProps) {
   const { children } = props;
   const { user } = useAuthenticate();
+  const [fetchCount, setFetchCount] = React.useState(0);
 
-  const [fetchUser, { data, loading: userLoading, error: userError }] = useGetUserLazyQuery();
+  const [fetchUser, { data, loading: userLoading, error: userError }] = useGetUserLazyQuery({
+    fetchPolicy: 'network-only',
+  });
+
+  const incrementError = useCallback(() => {
+    setFetchCount(fetchCount + 1);
+    if (fetchCount >= 2) {
+      setTimeout(() => {
+        setFetchCount(0);
+      }, 10000);
+    }
+  }, [fetchCount]);
 
   useEffect(() => {
-    if (user) {
-      fetchUser({ variables: { id: user.id } });
+    if (user && user.id && fetchCount < 3) {
+      fetchUser({ variables: { id: user.id } })
+        .catch((err) => {
+          incrementError();
+        })
+        .then(() => {
+          if (userError) {
+            incrementError();
+          } else {
+            setFetchCount(0);
+          }
+        });
     }
-  }, [user, fetchUser]);
+  }, [user, fetchUser, fetchCount, userError, incrementError]);
 
   const refresh = useCallback(async (): Promise<void> => {
-    if (!userLoading && user) {
-      fetchUser({ variables: { id: user.id } });
+    if (!userLoading && user && user.id && fetchCount < 3) {
+      fetchUser({ variables: { id: user.id } })
+        .then(() => {
+          if (userError) {
+            incrementError();
+          } else {
+            setFetchCount(0);
+          }
+        })
+        .catch((err) => {
+          incrementError();
+        });
     }
-  }, [userLoading, user, fetchUser]);
+  }, [userLoading, user, fetchCount, fetchUser, userError, incrementError]);
 
   const isUser = useCallback(
     (userId: string): boolean => (user ? user.id === userId : false),
-    [user]
+    [user],
   );
 
   const isTeamCoach = useCallback(
@@ -67,7 +99,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
       }
       return false;
     },
-    [data]
+    [data],
   );
 
   const isEventManager = useCallback(
@@ -77,7 +109,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
       }
       return false;
     },
-    [data]
+    [data],
   );
 
   const isProgramManager = useCallback(
@@ -87,7 +119,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
       }
       return false;
     },
-    [data]
+    [data],
   );
 
   useEffect(() => {

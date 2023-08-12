@@ -32,7 +32,7 @@ export function createPasswordResetToken(username: string) {
 
 export function verifyToken(token: string): AuthUser | null {
   const log = logLib.extend('login');
-  let ret: any;
+  let ret;
   try {
     ret = verify(token, getServerConfig().jwt.secret);
     log.debug('Token data type:%s data:%O', typeof ret, ret);
@@ -74,12 +74,19 @@ const passportLoginStrategy = new PassportLocalStrategy(
   }
 );
 
+interface JWTPayload {
+  id: string;
+  username: string;
+  iat: number;
+  exp: number;
+}
+
 const passportJwtAuthStrategy = new PassportJwtStrategy(
   {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: getServerConfig().jwt.secret,
   },
-  async function (payload: any, cb: (err: Error, user?: AuthUser | boolean) => void) {
+  async function (payload: JWTPayload, cb: (err: Error, user?: AuthUser | boolean) => void) {
     const log = logLib.extend('jwt');
     try {
       log.debug('Authenticating using JWT=%o', payload);
@@ -124,12 +131,3 @@ const passportSignupStrategy = new PassportLocalStrategy(
   }
 );
 
-export function configure(app: Application) {
-  //Create a passport middleware to handle user registration
-  logLib.debug('Configuring passport');
-  passport.use('signup', passportSignupStrategy);
-  passport.use('login', passportLoginStrategy);
-  passport.use('jwt', passportJwtAuthStrategy);
-
-  app.use(passport.initialize());
-}

@@ -7,8 +7,8 @@ import {
   useUpdateUserMutation,
 } from '../../generated/graphql';
 import { useAppUser } from '../app-user/use-app-user';
-import { useAuthenticate } from '../auth/useAuthenticate';
 import { EditUserDialog, EditUserDialogFields } from './edit-user-dialog';
+import { useAuthenticate } from '@teams2/auth-react';
 
 interface ForceGdprDialogProps {
   show?: boolean;

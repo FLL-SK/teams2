@@ -10,15 +10,33 @@
     "importHelpers": true,
     "target": "es2020",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@teams2/common": ["libs/common/src/index.ts"],
-      "@teams2/dateutils": ["libs/dateutils/src/index.ts"],
-      "@teams2/logger": ["libs/logger/src/index.ts"]
+      "@teams2/auth-node": [
+        "libs/auth-node/src/index.ts"
+      ],
+      "@teams2/auth-react": [
+        "libs/auth-react/src/index.ts"
+      ],
+      "@teams2/common": [
+        "libs/common/src/index.ts"
+      ],
+      "@teams2/dateutils": [
+        "libs/dateutils/src/index.ts"
+      ],
+      "@teams2/logger": [
+        "libs/logger/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }
