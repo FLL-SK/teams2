@@ -45,7 +45,7 @@
       }
     },
     "serve": {
-      "executor": "@nx/web:dev-server",
+      "executor": "@nx/webpack:dev-server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "client:build"
