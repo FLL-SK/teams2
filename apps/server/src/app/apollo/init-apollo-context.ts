@@ -7,7 +7,6 @@ import {
   apolloContextEmpty,
   AuthProfileData,
 } from './apollo-context';
-import { AuthUser } from '../auth';
 import {
   EventDataSource,
   FileDataSource,
@@ -21,6 +20,7 @@ import {
   UserDataSource,
 } from './datasources';
 import { logger } from '@teams2/logger';
+import { AuthUser } from '@teams2/auth-node';
 
 interface ExpressContextFunctionArgumentWithUser extends ExpressContextFunctionArgument {
   req: ExpressContextFunctionArgument['req'] & {
