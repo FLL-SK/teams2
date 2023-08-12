@@ -6,9 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { useGetSettingsQuery } from '../../generated/graphql';
 import { validateEmail, validatePhone } from '@teams2/common';
-import { useAuthenticate } from '@teams2/auth-react';
+import { AuthSignupData, useAuthenticate } from '@teams2/auth-react';
 
-export interface SignupDataType {
+export interface SignupDataType extends AuthSignupData {
   firstName: string;
   lastName: string;
   username: string;
@@ -20,7 +20,7 @@ export interface SignupDataType {
 
 export function SignupPage() {
   const navigate = useNavigate();
-  const {signup} = useAuthenticate();
+  const { signup } = useAuthenticate();
   const [message, setMessage] = useState<string>();
   const [formValues, setFormValues] = useState<SignupDataType>();
 
@@ -44,9 +44,8 @@ export function SignupPage() {
     if (!value.gdprAccepted) {
       return false;
     }
-    const resp = await signup(value.username,value.password);
+    const resp = await signup(value);
     if (resp) {
-      //FIXME store user profile data
       setMessage('Účet vytvorený. Môžete sa prihlásiť.');
       return;
     } else {

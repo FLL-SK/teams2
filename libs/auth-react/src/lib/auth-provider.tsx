@@ -11,6 +11,11 @@ interface AuthResponse {
   error?: Error;
 }
 
+export interface AuthSignupData {
+  username: string;
+  password: string;
+}
+
 export interface AuthState {
   isAuthenticated?: boolean;
   isLoggingIn?: boolean;
@@ -20,7 +25,7 @@ export interface AuthState {
 
 export interface AuthContextData extends AuthState {
   isInitializing: boolean;
-  signup: (username: string, password: string) => Promise<AuthResponse>;
+  signup: (data: AuthSignupData) => Promise<AuthResponse>;
   login: (username: string, password: string) => Promise<AuthResponse>;
   logout: () => void;
   silentCheck: () => Promise<AuthResponse>;
@@ -124,7 +129,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
 
   // signup ------------------------------------------------------------------
   const signup = useCallback(
-    async (username: string, password: string): Promise<AuthResponse> => {
+    async (data: AuthSignupData): Promise<AuthResponse> => {
       const url = new URL(authApiUrl);
       url.pathname += '/signup';
 
@@ -132,7 +137,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       let response: Response | null = null;
 
       try {
-        response = await postAuth(url.toString(), { username, password });
+        response = await postAuth(url.toString(), { ...data });
       } catch (err) {
         error = err as Error;
       } finally {
@@ -165,7 +170,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       setState({ isAuthenticated: false, isLoggingIn: false, error: authResponse.error });
       return {};
     },
-    [authApiUrl, state, storeToken],
+    [authApiUrl, storeToken],
   );
 
   // perform log-in ------------------------------------------------------------
@@ -217,7 +222,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       setState({ isAuthenticated: false, isLoggingIn: false, error: authResponse.error });
       return {};
     },
-    [authApiUrl, clearToken, initializing, state, storeToken],
+    [authApiUrl, clearToken, initializing, storeToken],
   );
 
   // ---------------------------------------------------------------------------

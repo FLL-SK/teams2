@@ -3,6 +3,11 @@ export interface AuthUser {
   id?: string | null;
 }
 
+export interface AuthSignupData {
+  username: string;
+  password: string;
+}
+
 export type SecretGetterFn = () => string;
 
 export type VerifyUserLoginFn = (username: string, password: string) => Promise<AuthUser>;
