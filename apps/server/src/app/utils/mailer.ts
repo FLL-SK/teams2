@@ -38,13 +38,13 @@ function sendEmail_prim(mailOptions: nodemailer.SendMailOptions) {
   log.debug('Sending email to=%o subject=%s text=%s', mailOptions.to, mailOptions.subject);
   mailer.sendMail(mailOptions, (err, info) => {
     if (err) {
-      return logLib.warn('Error sending options=%o err=%o', mailOptions, err);
+      return logLib.warn('Error sending email. options=%o err=%o', mailOptions, err);
     }
     logLib.info(
-      'Message to:%o subject:%s id:%s',
+      'Message sent to:%o subject:%s id:%s',
       mailOptions.to,
       mailOptions.subject,
-      info.messageId
+      info.messageId,
     );
   });
 }

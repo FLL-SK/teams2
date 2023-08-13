@@ -15,14 +15,7 @@
         "bundle": false,
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
-        "assets": [
-          "apps/server/src/assets",
-          {
-            "input": "apps/server/src/app/templates",
-            "glob": "**/*.pug",
-            "output": "templates"
-          }
-        ],
+        "assets": ["apps/server/src/assets"],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,
@@ -30,7 +23,6 @@
             ".js": ".js"
           }
         }
-        
       },
       "configurations": {
         "development": {},
@@ -41,13 +33,12 @@
               "with": "apps/server/src/environments/environment.prod.ts"
             }
           ],
-          
-            "esbuildOptions": {
-              "sourcemap": false,
-              "outExtension": {
-                ".js": ".js"
-              }
-          
+
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
           }
         }
       }

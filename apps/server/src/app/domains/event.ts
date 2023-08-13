@@ -45,7 +45,7 @@ async function copyInvoiceItemsToRegistration(registrationId: ObjectId) {
 export async function registerTeamToEvent(
   teamId: ObjectId,
   eventId: ObjectId,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const log = logLib.extend('registerTeam');
   log.info('Registering team %s to event %s', teamId, eventId);
@@ -78,7 +78,7 @@ export async function registerTeamToEvent(
 
   try {
     // email notifications
-    emailTeamRegistered(registration.id, ctx.user._id);
+    emailTeamRegistered(registration.id);
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -89,7 +89,7 @@ export async function registerTeamToEvent(
 
 export async function cancelRegistration(
   id: ObjectId,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const { dataSources, userGuard } = ctx;
   const log = logLib.extend('registerTeam');
@@ -110,7 +110,7 @@ export async function cancelRegistration(
   }
 
   // email notifications
-  emailTeamUnregistered(registration.id, ctx.user._id);
+  emailTeamUnregistered(registration.id);
 
   return { registration };
 }
@@ -130,13 +130,13 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
     evt.map(async (t) => ({
       name: (await dataSources.team.getTeam(t.teamId)).name,
       coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
-    }))
+    })),
   );
 
   // send email to coaches of registered teams
   log.debug('Sending notitications to %d teams', teams.length);
   teams.forEach((t) =>
-    emailEventChangedToCoach(t.coaches, t.name, event.name, program.name, eventUrl)
+    emailEventChangedToCoach(t.coaches, t.name, event.name, program.name, eventUrl),
   );
 
   // get data for sending emails to managers
@@ -150,14 +150,14 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
 export async function changeRegisteredEvent(
   registrationId: ObjectId,
   newEventId: ObjectId,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const log = logLib.extend('switch');
   log.info('Switching team registration=%s', registrationId);
   try {
     const registration = await ctx.dataSources.registration.changeRegisteredEvent(
       registrationId,
-      newEventId
+      newEventId,
     );
     return { registration };
   } catch (e) {
@@ -165,7 +165,7 @@ export async function changeRegisteredEvent(
       'Error switching registration=%s to new event=%s error=%s',
       registrationId,
       newEventId,
-      e.message
+      e.message,
     );
     return { errors: [{ code: 'error' }] };
   }
