@@ -1,70 +1,81 @@
-import * as nodemailer from 'nodemailer';
+import { SendEmailCommand, SendEmailCommandInput, SESClient } from '@aws-sdk/client-ses';
 import { getServerConfig } from '../../server-config';
+import { debugLib } from './debug';
 
-import { logger } from '@teams2/logger';
+const debug = debugLib.extend('mailer');
 
-const logLib = logger('mailer');
+const sesClient = createSESClient();
 
-const mailer = createMailer();
-
-function createMailer() {
+function createSESClient() {
   const cfg = getServerConfig();
-  const options = {
-    host: cfg.smtp.host,
-    port: cfg.smtp.port,
-    secure: cfg.smtp.tls,
-    auth: {
-      user: cfg.smtp.username,
-      pass: cfg.smtp.password,
-    },
-  };
-  logLib.debug('Creating mailer using config=%o', options);
-  const transporter = nodemailer.createTransport(options);
-  return transporter;
-}
-
-export function sendEmailSeparately(to: string[], subject: string, text: string) {
-  logLib.debug('Sending email to=%o subject=%s', to, subject);
-  to.forEach((t) => sendEmail([t], subject, text));
-}
-
-export function sendHtmlEmailSeparately(to: string[], subject: string, html: string) {
-  logLib.debug('Sending email to=%o subject=%s', to, subject);
-  to.forEach((t) => sendHtmlEmail(t, subject, html));
-}
-
-function sendEmail_prim(mailOptions: nodemailer.SendMailOptions) {
-  const log = logLib.extend('sendEmail');
-  log.debug('Sending email to=%o subject=%s text=%s', mailOptions.to, mailOptions.subject);
-  mailer.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      return logLib.warn('Error sending email. options=%o err=%o', mailOptions, err);
-    }
-    logLib.info(
-      'Message sent to:%o subject:%s id:%s',
-      mailOptions.to,
-      mailOptions.subject,
-      info.messageId,
-    );
+  return new SESClient({
+    region: cfg.aws.region,
+    credentials: { accessKeyId: cfg.aws.accessKeyId, secretAccessKey: cfg.aws.secretAccessKey },
   });
 }
 
-export function sendHtmlEmail(to: string, subject: string, html: string) {
-  const mailOptions = {
-    from: getServerConfig().smtp.from,
-    to,
-    subject,
-    html,
-  };
-  sendEmail_prim(mailOptions);
+interface SendEmailOptions {
+  from?: string;
+  to?: string | string[];
+  bcc?: string | string[];
+  cc?: string | string[];
+  subject: string;
+  text?: string;
+  html?: string;
+  replyTo?: string;
 }
 
-export function sendEmail(to: string[], subject: string, text: string) {
-  const mailOptions = {
-    from: getServerConfig().smtp.from,
-    to: to.join(','),
-    subject,
-    text,
+const createSendEmailCommand = (options: SendEmailOptions) => {
+  const { to, bcc, cc, subject, text, html, from, replyTo } = options;
+
+  if (!to) throw new Error('Missing "to" address.');
+  if (!subject) throw new Error('Missing "subject".');
+  if (!html && !text) throw new Error('Missing "html" or "text" body.');
+
+  const params: SendEmailCommandInput = {
+    Destination: {
+      ToAddresses: typeof to === 'string' ? [to] : to,
+      BccAddresses: typeof bcc === 'string' ? [bcc] : bcc,
+      CcAddresses: typeof cc === 'string' ? [cc] : cc,
+    },
+    Message: {
+      Body: {},
+      Subject: {
+        Charset: 'UTF-8',
+        Data: subject,
+      },
+    },
+    Source: from,
+    ReplyToAddresses: typeof replyTo === 'string' ? [replyTo] : replyTo,
   };
-  sendEmail_prim(mailOptions);
+
+  if (html) {
+    params.Message.Body.Html = {
+      Charset: 'UTF-8',
+      Data: html,
+    };
+  } else if (text)
+    params.Message.Body.Text = {
+      Charset: 'UTF-8',
+      Data: text,
+    };
+
+  debug('Created SendEmailCommand. %o', params);
+
+  return new SendEmailCommand(params);
+};
+
+export async function sendEmail(options: SendEmailOptions) {
+  const cfg = getServerConfig();
+  const sendEmailCommand = createSendEmailCommand({
+    from: cfg.email.from,
+    ...options,
+  });
+  debug('Sending email. from=%o options=%o', cfg.email.from, options);
+  try {
+    return await sesClient.send(sendEmailCommand);
+  } catch (e) {
+    debug('Failed to send email. %o', e);
+    return e;
+  }
 }

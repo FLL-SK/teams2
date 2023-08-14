@@ -9,20 +9,22 @@ import {
   userRepository,
 } from '../models';
 import { msgFromTemplate, msgPasswordReset } from './messages';
-import { sendHtmlEmail } from './mailer';
 import { getAppSettings } from './settings';
 
 import { logger } from '@teams2/logger';
+import { sendEmail } from './mailer';
 
 const logLib = logger('domain:email');
 
 export function emailMessage(to: string, subject: string, title: string, message: string) {
-  msgFromTemplate(title, message).then((html) => sendHtmlEmail(to, subject, html));
+  msgFromTemplate(title, message).then((html) => sendEmail({ to, subject, html }));
 }
 
 export function emailPasswordReset(email: string, token: string) {
   // send email
-  msgPasswordReset(email, token).then((html) => sendHtmlEmail(email, 'Password reset', html));
+  msgPasswordReset(email, token).then((html) =>
+    sendEmail({ to: email, subject: 'Password reset', html }),
+  );
 }
 
 export function emailUserSignupToUser(userEmail: string) {

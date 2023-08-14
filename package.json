@@ -24,6 +24,7 @@
     "@apollo/client": "^3.8.1",
     "@apollo/server": "^4.9.1",
     "@aws-sdk/client-s3": "^3.388.0",
+    "@aws-sdk/client-ses": "^3.390.0",
     "@aws-sdk/s3-request-presigner": "^3.388.0",
     "@graphql-tools/graphql-file-loader": "^8.0.0",
     "@graphql-tools/load": "^8.0.0",

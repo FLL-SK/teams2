@@ -16,7 +16,7 @@ const logLib = logger('aws-s3');
 const s3Client = createClient();
 
 function createClient() {
-  const cfg = getServerConfig().s3;
+  const cfg = getServerConfig().aws;
   return new S3Client({
     region: cfg.region,
     credentials: { accessKeyId: cfg.accessKeyId, secretAccessKey: cfg.secretAccessKey },
@@ -31,7 +31,7 @@ export async function deleteFileFromBucket(fileName: string): Promise<boolean> {
   const log = logLib.extend('deleteFile');
 
   const params: DeleteObjectCommandInput = {
-    Bucket: getServerConfig().s3.bucket,
+    Bucket: getServerConfig().aws.s3bucket,
     Key: fileName,
   };
 
@@ -45,7 +45,7 @@ export async function deleteFileFromBucket(fileName: string): Promise<boolean> {
 export async function getSignedUrlForUpload(fileName: string, fileType: string, expiresIn = 120) {
   const log = logLib.extend('pUrlUp');
   const params: PutObjectCommandInput = {
-    Bucket: getServerConfig().s3.bucket,
+    Bucket: getServerConfig().aws.s3bucket,
     Key: fileName,
     ContentType: fileType,
   };
@@ -61,7 +61,7 @@ export async function getSignedUrlForUpload(fileName: string, fileType: string, 
 export async function getSignedUrlForDownload(fileName: string, fileType: string, expiresIn = 900) {
   const log = logLib.extend('pUrlDown');
   const params: GetObjectCommandInput = {
-    Bucket: getServerConfig().s3.bucket,
+    Bucket: getServerConfig().aws.s3bucket,
     Key: fileName,
   };
   const command = new GetObjectCommand(params);
