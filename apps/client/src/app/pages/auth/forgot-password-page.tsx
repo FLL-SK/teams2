@@ -17,7 +17,7 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useAuthenticate } from '../../components/auth/useAuthenticate';
+import { useAuthenticate } from '@teams2/auth-react';
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate();

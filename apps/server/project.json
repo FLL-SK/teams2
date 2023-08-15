@@ -1,46 +1,56 @@
 {
+  "name": "server",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/server/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
+        "platform": "node",
         "outputPath": "dist/apps/server",
+        "format": ["cjs"],
+        "bundle": false,
         "main": "apps/server/src/main.ts",
         "tsConfig": "apps/server/tsconfig.app.json",
-        "assets": [
-          "apps/server/src/assets",
-          {
-            "input": "apps/server/src/app/templates",
-            "glob": "**/*.pug",
-            "output": "templates"
+        "assets": ["apps/server/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
           }
-        ]
+        }
       },
       "configurations": {
+        "development": {},
         "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
           "fileReplacements": [
             {
               "replace": "apps/server/src/environments/environment.ts",
               "with": "apps/server/src/environments/environment.prod.ts"
             }
-          ]
+          ],
+
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
         }
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "server:build"
       }
     },
     "testseed": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "server:build",
         "watch": false,
@@ -48,21 +58,26 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/server/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/server"],
       "options": {
         "jestConfig": "apps/server/jest.config.ts",
         "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
       }
     }
   },
-  "tags": [],
-  "name": "server"
+  "tags": []
 }

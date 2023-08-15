@@ -10,24 +10,19 @@ export function getServerConfig() {
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
 
     graphQLSchemaPath: process.env.APP_GRAPHQL_SCHEMA_PATH ?? './dist/schema.graphql',
-    smtp: {
-      from: process.env.APP_SMTP_FROM,
-      host: process.env.APP_SMTP_HOST,
-      port: process.env.APP_SMTP_PORT ? Number(process.env.APP_SMTP_PORT) ?? 587 : 587,
-      tls: (process.env.APP_SMTP_TLS ?? 'no').toLowerCase() === 'yes',
-      username: process.env.APP_SMTP_USERNAME,
-      password: process.env.APP_SMTP_PASSWORD,
+    email: {
+      from: process.env.APP_EMAIL_FROM,
     },
     jwt: {
       secret: process.env.APP_JWT_SECRET,
     },
 
     clientAppRootUrl: process.env.APP_CLIENT_ROOT_URL ?? 'http://localhost:4200',
-    s3: {
+    aws: {
       region: process.env.AWS_REGION,
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      bucket: process.env.AWS_BUCKET,
+      s3bucket: process.env.AWS_BUCKET,
     },
     invoicing: {
       type: 'superfaktura',

@@ -1,33 +1,34 @@
-import * as express from 'express';
-import * as cors from 'cors';
-import * as morgan from 'morgan';
-import { command } from 'yargs';
-import { configure as configureAuth } from './app/auth';
+import dotenv from 'dotenv';
+dotenv.config();
 
-import { loadDotEnvFiles } from './app/utils/env-loader';
+import cors from  'cors';
+import morgan  from 'morgan';
+import { command } from 'yargs';
+import { configureAuth } from './app/configure-auth';
 import { getServerConfig } from './server-config';
 import { bootstrapMongoDB, testDbSeed } from './app/db';
-import { bootstrapApolloServer } from './app/graphql/bootstrap-apollo-server';
+import { bootstrapApolloServer } from './app/apollo/bootstrap-apollo-server';
 
 import { logger } from '@teams2/logger';
 import { buildRootRouter } from './app/routes';
-import passport = require('passport');
-const log = logger('main');
+import passport from 'passport';
+import express from 'express';
 
-loadDotEnvFiles();
+const log = logger('main');
 
 async function server() {
   const port = getServerConfig().port;
   log.info('Starting server ...');
-  log.debug('Config: %o', getServerConfig());
+  log.info('Config: %o', getServerConfig());
   log.info(`Environment: ${process.env.NODE_ENV}`);
+  log.info(`Debug: ${process.env.DEBUG}`);
   const app = express();
 
   // CORS configuration
   const corsOptions = {
     origin: [getServerConfig().clientAppRootUrl],
-    preflightContinue: true,
-    credentials: true,
+    preflightContinue: false,
+    credentials: false,
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
   };
 
@@ -43,12 +44,20 @@ async function server() {
   // configure passport authentication
   configureAuth(app);
 
+  const rootRouter = buildRootRouter();
+  app.use('/', rootRouter);
+
+  const graphQlMW = await bootstrapApolloServer(app);
+
   app.use('/graphql', (req, res, next) => {
-    passport.authenticate('jwt', { session: false }, (err, user, info) => {
+    passport.authenticate('jwt', { session: false }, (err, user) => {
+      
       if (user) {
         req.user = user;
-      } else if (err) {
+        
+      } else {
         log.warn('Unauthorized request /graphql from ip=%s body=%o', req.ip.toString(), req.body);
+
         return res.status(401).send('Unauthorized');
       }
 
@@ -56,13 +65,10 @@ async function server() {
     })(req, res, next);
   });
 
-  await bootstrapApolloServer(app);
+  app.use('/graphql', graphQlMW);
 
   const assetsPath = __dirname + '/assets';
   app.use(express.static(assetsPath));
-
-  const rootRouter = buildRootRouter();
-  app.use('/', rootRouter);
 
   // app.get('*', function (request, response) {
   //   response.sendFile(resolve(assetsPath, 'index.html'));

@@ -1,5 +1,5 @@
-import * as express from 'express';
-import path = require('path');
+import express from 'express';
+import path from 'path';
 import authRouter from './auth.router';
 import paymentCbRouter from './payment-cb.router';
 

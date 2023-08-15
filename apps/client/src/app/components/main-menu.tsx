@@ -4,11 +4,11 @@ import { Nav, Sidebar, Button, Box, Text } from 'grommet';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { UserFragmentFragment } from '../generated/graphql';
 import { Logo } from './logo';
-import { useAuthenticate } from './auth/useAuthenticate';
 import { useAppUser } from './app-user/use-app-user';
 import { getColor } from '../theme';
 import styled from 'styled-components';
 import { useApolloClient } from '@apollo/client';
+import { useAuthenticate } from '@teams2/auth-react';
 
 interface MenuButtonProps {
   icon?: JSX.Element;
@@ -141,7 +141,7 @@ const Footer = () => {
 
   return (
     <Nav gap="medium" align="center">
-      {isAuthenticated && <MenuButton path={appPath.profile(user?.id)} title={'Môj profil'} />}
+      {isAuthenticated && <MenuButton path={appPath.profile(user?.username)} title={'Môj profil'} />}
       {isAuthenticated && (
         <MenuButton
           title={'Odhlásiť sa'}
@@ -163,7 +163,7 @@ interface MainMenuProps {
 }
 
 export function MainMenu(props: MainMenuProps) {
-  const { responsiveSize, regCount } = props;
+  const { regCount } = props;
 
   return (
     <Sidebar

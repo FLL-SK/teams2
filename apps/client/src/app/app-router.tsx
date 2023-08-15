@@ -1,7 +1,6 @@
 import React from 'react';
 import { appPath } from '@teams2/common';
 import { Route, Routes } from 'react-router-dom';
-import { RequireAuth } from './components/auth/require-auth';
 import { LoginPage } from './pages/auth/login-page';
 import { ForgotPasswordPage } from './pages/auth/forgot-password-page';
 import { ProfilePage } from './pages/profile/profile-page';
@@ -19,6 +18,7 @@ import { RegistrationsPage } from './pages/registrations/registrations-page';
 import { RegistrationPage } from './pages/registration/registration-page';
 import { EventsPage } from './pages/events/events-page';
 import { ProgramsPage } from './pages/programs/programs-page';
+import { RequireAuth } from '@teams2/auth-react';
 
 export function AppRouter() {
   return (
@@ -26,7 +26,7 @@ export function AppRouter() {
       <Route
         path="/"
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <ProfilePage />
           </RequireAuth>
         }
@@ -34,7 +34,7 @@ export function AppRouter() {
       <Route
         path={appPath.profile(':id')}
         element={
-          <RequireAuth>
+<RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <ProfilePage />
           </RequireAuth>
         }
@@ -42,7 +42,7 @@ export function AppRouter() {
       <Route
         path={appPath.team(':id')}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <TeamPage />
           </RequireAuth>
         }
@@ -53,7 +53,7 @@ export function AppRouter() {
       <Route
         path={appPath.register(':id')}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <RegisterPage />
           </RequireAuth>
         }
@@ -66,7 +66,7 @@ export function AppRouter() {
       <Route
         path={appPath.settings}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <SettingsPage />
           </RequireAuth>
         }
@@ -74,7 +74,7 @@ export function AppRouter() {
       <Route
         path={appPath.teams}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <TeamListPage />
           </RequireAuth>
         }
@@ -82,7 +82,7 @@ export function AppRouter() {
       <Route
         path={appPath.users}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <UserListPage />
           </RequireAuth>
         }
@@ -90,7 +90,7 @@ export function AppRouter() {
       <Route
         path={appPath.registrations}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <RegistrationsPage />
           </RequireAuth>
         }
@@ -98,7 +98,7 @@ export function AppRouter() {
       <Route
         path={appPath.events}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <EventsPage />
           </RequireAuth>
         }
@@ -106,7 +106,7 @@ export function AppRouter() {
       <Route
         path={appPath.programs}
         element={
-          <RequireAuth>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <ProgramsPage />
           </RequireAuth>
         }
