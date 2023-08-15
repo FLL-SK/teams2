@@ -1,12 +1,12 @@
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
-import { ApolloContext } from '../graphql/apollo-context';
+import { ApolloContext } from '../apollo/apollo-context';
 import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
 import { File, RegistrationPayload } from '../generated/graphql';
-import { RegistrationMapper } from '../graphql/mappers';
+import { RegistrationMapper } from '../apollo/mappers';
 import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
 import { getAppSettings } from '../utils/settings';
 import { createNote } from './note';

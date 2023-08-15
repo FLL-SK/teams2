@@ -8,21 +8,23 @@ import {
   teamRepository,
   userRepository,
 } from '../models';
-import { msgFromTemplate, msgPasswordReset } from '../templates';
-import { sendHtmlEmail } from './mailer';
+import { msgFromTemplate, msgPasswordReset } from './messages';
 import { getAppSettings } from './settings';
 
 import { logger } from '@teams2/logger';
+import { sendEmail } from './mailer';
 
 const logLib = logger('domain:email');
 
 export function emailMessage(to: string, subject: string, title: string, message: string) {
-  msgFromTemplate(title, message).then((html) => sendHtmlEmail(to, subject, html));
+  msgFromTemplate(title, message).then((html) => sendEmail({ to, subject, html }));
 }
 
 export function emailPasswordReset(email: string, token: string) {
   // send email
-  msgPasswordReset(email, token).then((html) => sendHtmlEmail(email, 'Password reset', html));
+  msgPasswordReset(email, token).then((html) =>
+    sendEmail({ to: email, subject: 'Password reset', html }),
+  );
 }
 
 export function emailUserSignupToUser(userEmail: string) {
@@ -44,7 +46,7 @@ export function emailEventChangedToCoach(
   teamName: string,
   eventName: string,
   programName: string,
-  eventUrl: string
+  eventUrl: string,
 ) {
   const subject = `Zmena na turnaji ${eventName}`;
   const title = subject;
@@ -56,7 +58,7 @@ export function emailEventChangedToEventManagers(
   emails: string[],
   eventName: string,
   programName: string,
-  eventUrl: string
+  eventUrl: string,
 ) {
   const subject = `Zmena turnaja ${eventName}`;
   const title = subject;
@@ -121,7 +123,7 @@ export function emailUserRejectedGdprToAdmin(userEmail: string) {
 export async function emailTeamSizeConfirmed(
   eventId: ObjectId,
   teamId: ObjectId,
-  confirmedBy: string
+  confirmedBy: string,
 ) {
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
@@ -145,7 +147,7 @@ export async function emailTeamSizeConfirmed(
 export async function emailRegistrationConfirmed(
   eventId: ObjectId,
   teamId: ObjectId,
-  confirmedBy: string
+  confirmedBy: string,
 ) {
   const log = logLib.extend('emailRegistrationConfirmed');
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
@@ -171,7 +173,7 @@ export async function emailRegistrationConfirmed(
   eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
   log.debug(
     'email sent to event managers %s',
-    eventManagers.map((m) => m.username)
+    eventManagers.map((m) => m.username),
   );
 
   // email to coaches
@@ -182,7 +184,7 @@ export async function emailRegistrationConfirmed(
   coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
 }
 
-export async function emailTeamRegistered(registrationId: ObjectId, registeredBy: ObjectId) {
+export async function emailTeamRegistered(registrationId: ObjectId) {
   const log = logLib.extend('emailTeamRegistered');
 
   const reg = await registrationRepository.findById(registrationId).lean().exec();
@@ -218,17 +220,17 @@ export async function emailTeamRegistered(registrationId: ObjectId, registeredBy
   coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
   log.debug(
     'email sent to coaches %o',
-    coaches.map((m) => m.username)
+    coaches.map((m) => m.username),
   );
 
   managers.forEach((m) => emailMessage(m.username, subject, title, msg));
   log.debug(
     'email sent to managers %o',
-    managers.map((m) => m.username)
+    managers.map((m) => m.username),
   );
 }
 
-export async function emailTeamUnregistered(registrationId: ObjectId, unregisteredBy: ObjectId) {
+export async function emailTeamUnregistered(registrationId: ObjectId) {
   const log = logLib.extend('emailTeamUnregistered');
 
   const reg = await registrationRepository.findById(registrationId).lean().exec();
@@ -265,12 +267,12 @@ export async function emailTeamUnregistered(registrationId: ObjectId, unregister
   coachEmails.forEach((m) => emailMessage(m, subject, title, msg));
   log.debug(
     'email sent to coaches %o',
-    coaches.map((m) => m.username)
+    coaches.map((m) => m.username),
   );
 
   managers.forEach((m) => emailMessage(m.username, subject, title, msg));
   log.debug(
     'email sent to managers %o',
-    managers.map((m) => m.username)
+    managers.map((m) => m.username),
   );
 }

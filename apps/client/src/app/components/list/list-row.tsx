@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from 'grommet';
 import { EdgeSizeType, PadType } from 'grommet/utils';
 import { ReactNode } from 'react';
-import styled, { CSSProperties } from 'styled-components';
+import styled from 'styled-components';
 import { Density, getColor, margins } from '../../theme';
 
 const Container = styled(Box)<{ cols: string; padding?: PadType; gap?: EdgeSizeType }>`
@@ -26,7 +26,7 @@ interface ListRowProps<T = unknown> {
   density?: Density;
   gap?: EdgeSizeType;
   pad?: PadType;
-  style?: CSSProperties;
+  style?: React.CSSProperties
   onSelect?: (value: T) => unknown;
   value?: T; // value to be returned onSelect
 }

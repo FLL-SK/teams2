@@ -4,10 +4,19 @@ import { Box, Button, CheckBox, Form, FormField, Paragraph, Text } from 'grommet
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useAuthenticate } from '../../components/auth/useAuthenticate';
-import { SignupDataType } from '../../components/auth/auth-provider';
 import { useGetSettingsQuery } from '../../generated/graphql';
 import { validateEmail, validatePhone } from '@teams2/common';
+import { AuthSignupData, useAuthenticate } from '@teams2/auth-react';
+
+export interface SignupDataType extends AuthSignupData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  passwordConfirm: string;
+  phone: string;
+  gdprAccepted: boolean;
+}
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -18,6 +27,7 @@ export function SignupPage() {
   const { data } = useGetSettingsQuery();
   const url = data?.getSettings?.privacyPolicyUrl ?? '';
 
+  //----------------------------------------------------------------------------
   useEffect(() => {
     setFormValues({
       firstName: '',
@@ -31,6 +41,9 @@ export function SignupPage() {
   }, []);
 
   const handleSignup = async ({ value }: { value: SignupDataType }) => {
+    if (!value.gdprAccepted) {
+      return false;
+    }
     const resp = await signup(value);
     if (resp) {
       setMessage('Účet vytvorený. Môžete sa prihlásiť.');

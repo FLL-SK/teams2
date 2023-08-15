@@ -1,4 +1,4 @@
-import { createPasswordResetToken } from '../auth';
+import { createPasswordResetToken } from '@teams2/auth-node';
 import { emailPasswordReset } from './emails';
 import { logger } from '@teams2/logger';
 

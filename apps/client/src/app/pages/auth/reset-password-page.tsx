@@ -16,7 +16,7 @@ import {
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useAuthenticate } from '../../components/auth/useAuthenticate';
+import { useAuthenticate } from '@teams2/auth-react';
 
 export function ResetPasswordPage() {
   const navigate = useNavigate();

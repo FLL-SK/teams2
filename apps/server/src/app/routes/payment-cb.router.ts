@@ -1,5 +1,5 @@
 import { logger } from '@teams2/logger';
-import express = require('express');
+import express from 'express';
 import { getServerConfig } from '../../server-config';
 import { registrationRepository } from '../models';
 

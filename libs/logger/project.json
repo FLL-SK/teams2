@@ -1,17 +1,18 @@
 {
+  "name": "logger",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/logger/src",
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["libs/logger/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/logger"],
       "options": {
         "jestConfig": "libs/logger/jest.config.ts",
@@ -19,6 +20,5 @@
       }
     }
   },
-  "tags": [],
-  "name": "logger"
+  "tags": []
 }

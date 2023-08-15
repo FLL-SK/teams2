@@ -46,3 +46,6 @@ graphql.schema.json
 
 # local config
 .env
+
+# yarn files
+.yarn/
