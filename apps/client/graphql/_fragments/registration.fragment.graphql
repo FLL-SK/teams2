@@ -39,7 +39,7 @@ fragment RegistrationListFragment on Registration {
   ...RegistrationBasicFragment
 
   event {
-    ...EventListFragment
+    ...EventBasicFragment
   }
 
   program {
@@ -50,7 +50,10 @@ fragment RegistrationListFragment on Registration {
   }
 
   team {
-    ...TeamListFragment
+    ...TeamBasicFragment
+    tags {
+      ...TagFragment
+    }
   }
 }
 
