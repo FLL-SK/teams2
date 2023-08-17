@@ -2,10 +2,13 @@
   "name": "teams2",
   "version": "0.0.0",
   "license": "MIT",
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=3"
+  },
   "scripts": {
-    "start:dev": "yarn start:nx",
     "start": "yarn start:server",
-    "start:nx": "yarn nx run-many --parallel --target=serve --projects=server,client",
+    "start:dev": "yarn nx run-many --parallel --target=serve --projects=server,client",
     "start:server": "node dist/apps/server/main.js",
     "build": "yarn build:server",
     "build:all": "yarn generate && yarn compile:all",
@@ -15,9 +18,9 @@
     "compile:server": "yarn nx run-many --target=build --projects=server",
     "compile:all": "yarn nx run-many --target=build --projects=server,client",
     "test": "yarn nx test",
-    "generate": "yarn run-s build:contract generate:contract",
-    "generate:contract": "graphql-codegen --config codegen.yml",
-    "build:contract": "ts-node ./scripts/build-schema.ts",
+    "generate": "yarn run-s gql:schema gql:codegen",
+    "gql:codegen": "graphql-codegen --config codegen.yml",
+    "gql:schema": "ts-node ./scripts/build-schema.ts",
     "testseed": "yarn nx run server:testseed"
   },
   "private": true,
