@@ -3,6 +3,7 @@ import { Box, Button, Select, Spinner } from 'grommet';
 import { useState } from 'react';
 
 import {
+  EventBasicFragmentFragment,
   EventListFragmentFragment,
   TeamBasicFragmentFragment,
   useGetEventsQuery,
@@ -13,14 +14,14 @@ import { LabelValue } from '../label-value';
 interface ChangeTeamEventDialogProps {
   show?: boolean;
   team?: TeamBasicFragmentFragment;
-  event: EventListFragmentFragment;
+  event: EventBasicFragmentFragment;
   onClose: () => void;
-  onSubmit?: (newEvent: EventListFragmentFragment) => unknown;
+  onSubmit?: (newEvent: EventBasicFragmentFragment) => unknown;
 }
 
 export function ChangeTeamEventDialog(props: ChangeTeamEventDialogProps) {
   const { show, team, event, onClose, onSubmit } = props;
-  const [selectedEvent, setSelectedEvent] = useState<EventListFragmentFragment>();
+  const [selectedEvent, setSelectedEvent] = useState<EventBasicFragmentFragment>();
 
   const { data, loading } = useGetEventsQuery({
     variables: { filter: { programId: event.programId, isActive: true } },
