@@ -96,7 +96,13 @@ export async function emailProgramManagerAdded(programId: ObjectId, userId: Obje
   const msg = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}. Viac informácií o programe nájdete tu ${url}`;
 
   // send to admin
-  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+  getAppSettings().then((s) => {
+    if (s.sysEmail) {
+      emailMessage(s.sysEmail, subject, title, msg);
+    } else {
+      logLib.error('emailProgramManagerAdded: no sysEmail in settings');
+    }
+  });
 
   // send to program managers
   const managers = await userRepository
@@ -110,14 +116,26 @@ export function emailUserAcceptedGdprToAdmin(userEmail: string) {
   const subject = `Akceptované GDPR ${userEmail}`;
   const title = subject;
   const msg = `Používateľ ${userEmail} akceptoval GDPR.`;
-  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+  getAppSettings().then((s) => {
+    if (s.sysEmail) {
+      emailMessage(s.sysEmail, subject, title, msg);
+    } else {
+      logLib.error('emailUserAcceptedGdprToAdmin: no sysEmail in settings');
+    }
+  });
 }
 
 export function emailUserRejectedGdprToAdmin(userEmail: string) {
   const subject = `Odmietnuté GDPR ${userEmail}`;
   const title = subject;
   const msg = `Používateľ ${userEmail} odmietol GDPR.`;
-  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+  getAppSettings().then((s) => {
+    if (s.sysEmail) {
+      emailMessage(s.sysEmail, subject, title, msg);
+    } else {
+      logLib.error('emailUserRejectedGdprToAdmin: no sysEmail in settings');
+    }
+  });
 }
 
 export async function emailTeamSizeConfirmed(
@@ -133,7 +151,13 @@ export async function emailTeamSizeConfirmed(
   const msg = `Používateľ ${confirmedBy} potvrdil veľkosť tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
-  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+  getAppSettings().then((s) => {
+    if (s.sysEmail) {
+      emailMessage(s.sysEmail, subject, title, msg);
+    } else {
+      logLib.error('emailTeamSizeConfirmed: no sysEmail in settings');
+    }
+  });
 
   // email to event managers
   const event = await eventRepository.findById(eventId).lean().exec();
@@ -160,6 +184,10 @@ export async function emailRegistrationConfirmed(
   // email to admin
 
   getAppSettings().then((s) => {
+    if (!s.sysEmail) {
+      log.error('emailRegistrationConfirmed: no sysEmail in settings');
+      return;
+    }
     emailMessage(s.sysEmail, subject, title, msg + '\n\n Potvrdené:' + confirmedBy);
     log.debug('email sent to admin %s', s.sysEmail);
   });
