@@ -30,13 +30,13 @@ interface FormFields {
   registrationEnd?: string; // UTC ISO date
   conditions?: string;
   ownFeesAllowed?: boolean;
-  maxTeams: number | null;
+  maxTeams: number;
 }
 
 export function EditEventDialog(props: EditEventDialogProps) {
   const { show, event, onClose, onSubmit } = props;
   const [teamCountLimited, setTeamCountLimited] = useState<boolean>(
-    (!!event?.maxTeams && event.maxTeams > 0) ?? false
+    (!!event?.maxTeams && event.maxTeams > 0) ?? false,
   );
   const [formValues, setFormValues] = useState<FormFields>({
     name: event?.name ?? '',
@@ -44,7 +44,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
     registrationEnd: toZonedDateString(event?.registrationEnd),
     conditions: event?.conditions ?? '',
     ownFeesAllowed: event?.ownFeesAllowed ?? false,
-    maxTeams: event?.maxTeams ?? null,
+    maxTeams: event?.maxTeams ?? 0,
   });
   const { isAdmin } = useAppUser();
 
@@ -58,7 +58,7 @@ export function EditEventDialog(props: EditEventDialogProps) {
         ...value,
         date: toUtcDateString(value.date),
         registrationEnd: toUtcDateString(value.registrationEnd),
-        maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : null,
+        maxTeams: Number(value.maxTeams),
       }));
     onClose();
   };
