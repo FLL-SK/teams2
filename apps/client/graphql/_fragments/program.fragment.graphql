@@ -10,6 +10,7 @@ fragment ProgramBasicFragment on Program {
   maxTeams
   maxTeamSize
   group
+  classPackEnabled
 
   managersIds
 
