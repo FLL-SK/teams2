@@ -26,12 +26,14 @@ import { useNotification } from '../../components/notifications/notification-pro
 import { RegisterConfirmBillToContact } from './components/register-confirm-billto-contact';
 import { formatFullName } from '../../utils/format-fullname';
 import { handleMutationErrors } from '../../utils/handle_mutation_error';
+import { RegisterSelectType } from './components/register-select-type';
 
 type RegistrationStep =
   | 'intro'
   | 'confirm-billto-contact'
   | 'select-event'
   | 'select-program'
+  | 'select-type'
   | 'review'
   | 'billto'
   | 'shipto'
@@ -73,13 +75,23 @@ export function RegisterPage() {
   const doRegister = useCallback(
     async (data: RegisterDetails) => {
       if (teamId && data.event && data.event.id) {
-        const r1 = await registerTeam({ variables: { teamId, eventId: data.event.id } });
+        const r1 = await registerTeam({
+          variables: {
+            teamId,
+            eventId: data.event.id,
+            input: {
+              type: data.type,
+              impactedTeamCount: data.teamsImpacted,
+              impactedChildrenCount: data.childrenImpacted,
+            },
+          },
+        });
 
         if (
           handleMutationErrors(
             r1.data?.createRegistration,
             'Nepodarilo sa registrovať tím.',
-            notify.error
+            notify.error,
           )
         ) {
           return;
@@ -87,7 +99,7 @@ export function RegisterPage() {
         setStep('success');
       }
     },
-    [notify, registerTeam, teamId]
+    [notify, registerTeam, teamId],
   );
 
   if (!canRegister) {
@@ -141,8 +153,17 @@ export function RegisterPage() {
             <RegisterSelectEvent
               details={registerDetails}
               onSubmit={(e) => setRegisterDetails({ ...registerDetails, event: e })}
-              nextStep={() => setStep('billto')}
+              nextStep={() => setStep('select-type')}
               prevStep={() => setStep('select-program')}
+              cancel={cancel}
+            />
+          )}
+          {step === 'select-type' && (
+            <RegisterSelectType
+              details={registerDetails}
+              onSubmit={setRegisterDetails}
+              nextStep={() => setStep('billto')}
+              prevStep={() => setStep('select-event')}
               cancel={cancel}
             />
           )}

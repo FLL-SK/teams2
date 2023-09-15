@@ -4,6 +4,8 @@ import { AddressData, addressSchema } from './address.model';
 
 const Types = Schema.Types;
 
+export type RegistrtionType = 'NORMAL' | 'CLASS_PACK';
+
 export interface RegistrationData {
   _id?: ObjectId;
   programId: ObjectId;
@@ -35,6 +37,10 @@ export interface RegistrationData {
   boyCount?: number;
   coachCount?: number;
   sizeConfirmedOn?: Date;
+
+  type: RegistrtionType;
+  teamsImpacted: number;
+  childrenImpacted: number;
 }
 
 export type RegistrationDocument =
@@ -89,6 +95,10 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   boyCount: { type: Types.Number, default: 0 },
   coachCount: { type: Types.Number, default: 0 },
   sizeConfirmedOn: { type: Types.Date },
+
+  type: { type: Types.String, enum: ['NORMAL', 'CLASS_PACK'], required: true },
+  teamsImpacted: { type: Types.Number, default: 0 },
+  childrenImpacted: { type: Types.Number, default: 0 },
 });
 
 schema.index({ eventId: 1, teamId: 1 });
@@ -154,10 +164,10 @@ schema.static(
       ])
       .exec();
     return regsCount[0]?.count ?? 0;
-  }
+  },
 );
 
 export const registrationRepository = model<RegistrationData, RegistrationModel>(
   'Registration',
-  schema
+  schema,
 );

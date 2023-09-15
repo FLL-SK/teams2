@@ -54,7 +54,7 @@ export function RegisterReview(props: RegisterReviewProps) {
       ((event?.ownFeesAllowed ?? false) && (event?.invoiceItems?.length ?? 0) > 0
         ? event?.invoiceItems
         : program?.invoiceItems) ?? [],
-    [event, program]
+    [event, program],
   );
 
   if (programLoading || eventLoading) {
@@ -76,6 +76,10 @@ export function RegisterReview(props: RegisterReviewProps) {
           <LabelValue label="Tím" value={team.name} />
           <LabelValue label="Program" value={program.name} />
           <LabelValue label="Turnaj" value={event.name} />
+          <LabelValue
+            label="Typ"
+            value={`${details.type} T:${details.teamsImpacted} D:${details.childrenImpacted}`}
+          />
         </LabelValueGroup>
       </Panel>
 

@@ -18,6 +18,7 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
+import { UpdateQuery } from 'mongoose';
 
 const logBase = logger('DS:Registration');
 
@@ -47,7 +48,11 @@ export class RegistrationDataSource extends BaseDataSource {
     return regsCount;
   }
 
-  async createRegistration(eventId: ObjectId, teamId: ObjectId): Promise<Registration> {
+  async createRegistration(
+    eventId: ObjectId,
+    teamId: ObjectId,
+    input: RegistrationInput,
+  ): Promise<Registration> {
     const log = logBase.extend('createRegistration');
     this.userGuard.isAdmin() ||
       this.userGuard.isCoach(teamId) ||
@@ -86,6 +91,9 @@ export class RegistrationDataSource extends BaseDataSource {
       createdBy: this.context.user._id,
       shipTo: team.shipTo,
       billTo: team.billTo,
+      type: input.type,
+      childrenImpacted: input.impactedChildrenCount,
+      teamsImpacted: input.impactedTeamCount,
     };
 
     const registration = new registrationRepository(newReg);
@@ -95,8 +103,13 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async updateRegistration(id: ObjectId, input: RegistrationInput): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update registration');
+    const u: UpdateQuery<RegistrationData> = {
+      type: input.type,
+      childrenImpacted: input.impactedChildrenCount,
+      teamsImpacted: input.impactedTeamCount,
+    };
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, input, { new: true })
+      .findByIdAndUpdate(id, u, { new: true })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -155,7 +168,7 @@ export class RegistrationDataSource extends BaseDataSource {
   async setInvoicedOn(
     id: ObjectId,
     invoiceIssuedOn?: Date,
-    invoiceRef?: string
+    invoiceRef?: string,
   ): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set invoiced on');
 
@@ -264,7 +277,7 @@ export class RegistrationDataSource extends BaseDataSource {
     emailRegistrationConfirmed(
       registration.eventId,
       registration.teamId,
-      this.context.user.username
+      this.context.user.username,
     );
     return RegistrationMapper.toRegistration(registration);
   }
@@ -280,7 +293,7 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async getRegisteredTeams(
     eventId: ObjectId,
-    includeCoaches?: boolean
+    includeCoaches?: boolean,
   ): Promise<RegisteredTeamPayload[]> {
     const regs = await registrationRepository.find({ eventId, canceledOn: null }).exec();
     const teams: RegisteredTeamPayload[] = [];

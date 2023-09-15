@@ -3,6 +3,7 @@ import {
   AddressInput,
   EventListFragmentFragment,
   ProgramListFragmentFragment,
+  RegistrationType,
 } from '../../../generated/graphql';
 
 export type Address = AddressGQL;
@@ -15,6 +16,9 @@ export interface RegisterDetails {
   billToContact?: Contact;
   useBillTo?: boolean;
   items?: Item[];
+  type?: RegistrationType;
+  teamsImpacted?: number;
+  childrenImpacted?: number;
 }
 
 export interface Contact {

@@ -57,6 +57,10 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
         </Box>
         <Box width={columnWidth}>
           <LabelValueGroup labelWidth="200px" gap="small" direction="row">
+            <LabelValue
+              label="Typ"
+              value={`${reg.type} - T:${reg.impactedTeamCount} - D:${reg.impactedChildrenCount}`}
+            />
             <LabelValue label="Dátum registrácie" value={formatDate(reg.createdOn)} />
             <FieldConfirmedOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>

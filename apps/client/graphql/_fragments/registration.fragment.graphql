@@ -33,6 +33,10 @@ fragment RegistrationBasicFragment on Registration {
   boyCount
   coachCount
   sizeConfirmedOn
+
+  type
+  impactedChildrenCount
+  impactedTeamCount
 }
 
 fragment RegistrationListFragment on Registration {
