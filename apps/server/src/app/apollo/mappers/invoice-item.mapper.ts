@@ -13,6 +13,7 @@ export const InvoiceItemMapper = {
       note: item.note,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
+      public: item.public,
     };
     return u;
   },

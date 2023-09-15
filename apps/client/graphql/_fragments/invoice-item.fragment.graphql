@@ -5,4 +5,5 @@ fragment InvoiceItemFragment on InvoiceItem {
   note
   unitPrice
   quantity
+  public
 }

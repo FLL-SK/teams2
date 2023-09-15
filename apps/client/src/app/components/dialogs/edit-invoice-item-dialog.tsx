@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Button, Form, FormField, Grid, TextInput } from 'grommet';
+import { Box, Button, CheckBox, Form, FormField, Grid, TextInput } from 'grommet';
 import { useState } from 'react';
 
 import { InvoiceItemFragmentFragment } from '../../generated/graphql';
@@ -19,6 +19,7 @@ interface FormFields {
   note?: string;
   unitPrice: number;
   quantity: number;
+  public?: boolean;
 }
 
 export function EditInvoiceItemDialog(props: EditInvoiceItemDialogProps) {
@@ -33,6 +34,7 @@ export function EditInvoiceItemDialog(props: EditInvoiceItemDialogProps) {
       note: item?.note ?? '',
       unitPrice: item?.unitPrice ?? 1.0,
       quantity: item?.quantity ?? 1.0,
+      public: item?.public ?? false,
     });
   }, [item]);
 
@@ -73,6 +75,10 @@ export function EditInvoiceItemDialog(props: EditInvoiceItemDialogProps) {
         <FormField label="Poznámka" name="note">
           <TextInput name="note" />
         </FormField>
+        <FormField label="Verejne viditeľná" name="public">
+          <CheckBox name="public" toggle />
+        </FormField>
+
         <Grid columns={['1fr', '1fr']} gap="small">
           <FormField label="Jednotková cena" name="unitPrice">
             <TextInput type="number" name="unitPrice" />

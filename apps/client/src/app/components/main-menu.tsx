@@ -141,7 +141,7 @@ const Footer = () => {
 
   return (
     <Nav gap="medium" align="center">
-      {isAuthenticated && <MenuButton path={appPath.profile(user?.username)} title={'Môj profil'} />}
+      {isAuthenticated && <MenuButton path={appPath.profile(user?.id)} title={'Môj profil'} />}
       {isAuthenticated && (
         <MenuButton
           title={'Odhlásiť sa'}

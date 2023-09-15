@@ -14,6 +14,8 @@ export interface InvoiceItemData {
   note?: string;
   quantity: number;
   unitPrice: number;
+
+  public?: boolean;
 }
 
 export type InvoiceItemDocument =
@@ -33,6 +35,7 @@ const schema = new Schema<InvoiceItemData>({
   note: { type: Types.String },
   quantity: { type: Types.Number, required: true },
   unitPrice: { type: Types.Number, required: true },
+  public: { type: Types.Boolean },
 });
 
 schema.index({ programId: 1 });
@@ -45,5 +48,5 @@ schema.static('clean', function () {
 
 export const invoiceItemRepository = model<InvoiceItemData, InvoiceItemModel>(
   'InvoiceItem',
-  schema
+  schema,
 );

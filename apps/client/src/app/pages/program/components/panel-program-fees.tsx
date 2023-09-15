@@ -1,6 +1,6 @@
 import { Box, Button, Text } from 'grommet';
 import { omit } from 'lodash';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { EditInvoiceItemDialog } from '../../../components/dialogs/edit-invoice-item-dialog';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { useNotification } from '../../../components/notifications/notification-provider';
@@ -17,10 +17,11 @@ interface PanelProgramFeesProps {
   program: ProgramFragmentFragment;
   canEdit: boolean;
   onUpdate: () => void;
+  publicOnly: boolean;
 }
 
 export function PanelProgramFees(props: PanelProgramFeesProps) {
-  const { program, canEdit, onUpdate } = props;
+  const { program, canEdit, onUpdate, publicOnly } = props;
   const { notify } = useNotification();
 
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
@@ -39,16 +40,21 @@ export function PanelProgramFees(props: PanelProgramFeesProps) {
     onError: (e) => notify.error('Nepodarilo sa vymazať položku faktúry.', e.message),
   });
 
+  const invoiceItems = useMemo(
+    () => (!publicOnly ? program.invoiceItems : program.invoiceItems.filter((i) => i.public)),
+    [program.invoiceItems, publicOnly],
+  );
+
   if (!program) {
     return null;
   }
 
   return (
     <Panel title="Poplatky" gap="medium">
-      {program.invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
-      {program.invoiceItems.length > 0 && (
+      {invoiceItems.length === 0 && <Text>Tento program je organizovaný bezplatne.</Text>}
+      {invoiceItems.length > 0 && (
         <InvoiceItemList
-          items={program.invoiceItems}
+          items={invoiceItems}
           onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
           onClick={(item) => setInvoiceItemEdit(item)}
           editable={canEdit}

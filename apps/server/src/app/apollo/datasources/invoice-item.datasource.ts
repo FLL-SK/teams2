@@ -9,7 +9,6 @@ import { logger } from '@teams2/logger';
 const logBase = logger('DS:Invoice');
 
 export class InvoiceItemDataSource extends BaseDataSource {
-
   async getEventInvoiceItems(eventId: ObjectId): Promise<InvoiceItem[]> {
     if (!this.userGuard.isLoggedIn()) {
       return [];
@@ -52,7 +51,7 @@ export class InvoiceItemDataSource extends BaseDataSource {
   async createInvoiceItem(
     type: InvoiceItemType,
     refId: ObjectId,
-    item: InvoiceItemData
+    item: InvoiceItemData,
   ): Promise<InvoiceItem> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create invoice item');
 

@@ -1,6 +1,6 @@
 import { Box, Button, Text } from 'grommet';
 import { omit } from 'lodash';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { EditInvoiceItemDialog } from '../../../components/dialogs/edit-invoice-item-dialog';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { useNotification } from '../../../components/notifications/notification-provider';
@@ -17,10 +17,11 @@ interface PanelEventFeesProps {
   event: EventFragmentFragment;
   onChange?: () => void;
   canEdit?: boolean;
+  publicOnly: boolean;
 }
 
 export function PanelEventFees(props: PanelEventFeesProps) {
-  const { event, canEdit, onChange } = props;
+  const { event, canEdit, onChange, publicOnly } = props;
   const { notify } = useNotification();
 
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
@@ -39,7 +40,23 @@ export function PanelEventFees(props: PanelEventFeesProps) {
     onError: (e) => notify.error('Nepodarilo sa vymazať položku faktúry.', e.message),
   });
 
-  const invoiceItems = event?.invoiceItems ?? [];
+  const eventInvoiceItems: InvoiceItemFragmentFragment[] = useMemo(() => {
+    if (!event) return [];
+    if (publicOnly) {
+      return event.invoiceItems.filter((i) => i.public);
+    } else {
+      return event.invoiceItems;
+    }
+  }, [event, publicOnly]);
+
+  const programInvoiceItems: InvoiceItemFragmentFragment[] = useMemo(() => {
+    if (!event) return [];
+    if (publicOnly) {
+      return event.program.invoiceItems.filter((i) => i.public);
+    } else {
+      return event.program.invoiceItems;
+    }
+  }, [event, publicOnly]);
 
   if (!event) {
     return null;
@@ -47,15 +64,15 @@ export function PanelEventFees(props: PanelEventFeesProps) {
 
   return (
     <Panel title="Poplatky" gap="medium">
-      {invoiceItems.length === 0 && (
+      {eventInvoiceItems.length === 0 && (
         <>
           <Text>Tento turnaj preberá poplatky z programu v rámci ktorého je organizovaný.</Text>
-          <InvoiceItemList items={event.program.invoiceItems} editable={false} />
+          <InvoiceItemList items={programInvoiceItems} editable={false} />
         </>
       )}
-      {invoiceItems.length > 0 && (
+      {eventInvoiceItems.length > 0 && (
         <InvoiceItemList
-          items={invoiceItems}
+          items={eventInvoiceItems}
           onRemove={(i) => deleteInvoiceItem({ variables: { id: i.id } })}
           onClick={(item) => setInvoiceItemEdit(item)}
           editable={canEdit}
