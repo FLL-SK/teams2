@@ -9,9 +9,10 @@ import {
   useRegistrationSetInvoicedMutation,
 } from '../../../generated/graphql';
 import { SetClearDate } from './set-clear-date';
+import { appPath } from '@teams2/common';
 
 export const FieldInvoiceIssuedOn = (props: {
-  registration: Pick<Registration, 'id' | 'invoiceIssuedOn'>;
+  registration: Pick<Registration, 'id' | 'invoiceIssuedOn' | 'invoiceRef'>;
   readOnly: boolean;
 }) => {
   const { registration, readOnly } = props;
@@ -25,6 +26,7 @@ export const FieldInvoiceIssuedOn = (props: {
     <LabelValue label="Faktúra vystavená">
       <SetClearDate
         canEdit={isAdmin() && !readOnly}
+        clearType="button"
         date={registration.invoiceIssuedOn}
         onClear={() => clearInvoiced({ variables: { id: registration.id } })}
         onSet={() =>
@@ -32,6 +34,13 @@ export const FieldInvoiceIssuedOn = (props: {
             variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
           })
         }
+        action={{
+          hide: !registration.invoiceRef,
+          label: 'Otvoriť',
+          onClick: () =>
+            registration.invoiceRef &&
+            window.open(appPath.sfShowInvoice(registration.invoiceRef), '_blank'),
+        }}
       />
     </LabelValue>
   );
