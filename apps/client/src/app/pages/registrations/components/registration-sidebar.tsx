@@ -10,11 +10,11 @@ import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
 import {
-  useAddTagToTeamMutation,
+  useAddTagsToTeamMutation,
   useCreateNoteMutation,
   useGetNotesLazyQuery,
   useGetRegistrationLazyQuery,
-  useRemoveTagFromTeamMutation,
+  useRemoveTagsFromTeamMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
@@ -43,8 +43,8 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
 
   const [fetchRegistration, { data: regData }] = useGetRegistrationLazyQuery();
 
-  const [removeTag] = useRemoveTagFromTeamMutation();
-  const [addTag] = useAddTagToTeamMutation();
+  const [removeTags] = useRemoveTagsFromTeamMutation();
+  const [addTags] = useAddTagsToTeamMutation();
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
@@ -108,10 +108,10 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
             <TagList
               tags={registration.team.tags}
               onRemove={(tagId) =>
-                removeTag({ variables: { teamId: registration.team.id, tagId } })
+                removeTags({ variables: { teamId: registration.team.id, tagIds: [tagId] } })
               }
               onAdd={(tag) =>
-                addTag({ variables: { teamId: registration.team.id, tagId: tag.id } })
+                addTags({ variables: { teamId: registration.team.id, tagIds: [tag.id] } })
               }
             />
           </SidebarPanel>

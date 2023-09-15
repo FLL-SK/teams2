@@ -9,10 +9,10 @@ import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-pan
 import { TagList } from '../../../components/tag-list';
 import {
   TeamListFragmentFragment,
-  useAddTagToTeamMutation,
+  useAddTagsToTeamMutation,
   useCreateNoteMutation,
   useGetNotesLazyQuery,
-  useRemoveTagFromTeamMutation,
+  useRemoveTagsFromTeamMutation,
 } from '../../../generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { CoachList } from '../../team/components/coach-list';
@@ -28,8 +28,8 @@ export function TeamSidebar(props: TeamSidebarProps) {
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
     useGetNotesLazyQuery();
 
-  const [removeTag] = useRemoveTagFromTeamMutation();
-  const [addTag] = useAddTagToTeamMutation();
+  const [removeTag] = useRemoveTagsFromTeamMutation();
+  const [addTag] = useAddTagsToTeamMutation();
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
   React.useEffect(() => {
@@ -63,8 +63,8 @@ export function TeamSidebar(props: TeamSidebarProps) {
         <SidebarPanel label="Štítky">
           <TagList
             tags={team.tags}
-            onRemove={(tagId) => removeTag({ variables: { teamId: team.id, tagId } })}
-            onAdd={(tag) => addTag({ variables: { teamId: team.id, tagId: tag.id } })}
+            onRemove={(tagId) => removeTag({ variables: { teamId: team.id, tagIds: [tagId] } })}
+            onAdd={(tag) => addTag({ variables: { teamId: team.id, tagIds: [tag.id] } })}
           />
         </SidebarPanel>
         <SidebarPanel label="Poznámky">

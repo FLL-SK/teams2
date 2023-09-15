@@ -72,8 +72,8 @@ extend type Mutation {
   addCoachToTeam(teamId: ID!, username: String!): Team!
   removeCoachFromTeam(teamId: ID!, userId: ID!): Team!
 
-  addTagToTeam(teamId: ID!, tagId: ID!): Team
-  removeTagFromTeam(teamId: ID!, tagId: ID!): Team
+  addTagsToTeam(teamId: ID!, tagIds: [ID!]!): Team
+  removeTagsFromTeam(teamId: ID!, tagIds: [ID!]!): Team
 
   recalculateTeamFields: Int
 }

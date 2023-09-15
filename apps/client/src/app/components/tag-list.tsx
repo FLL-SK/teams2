@@ -28,6 +28,7 @@ export function TagList(props: TagListProps) {
     noCreate,
     tagSize = 'small',
   } = props;
+
   const [isAdding, setIsAdding] = useState(false);
 
   if (!tags) {
@@ -67,9 +68,7 @@ export function TagList(props: TagListProps) {
             plain
             size="small"
             icon={<Add />}
-            label="Pridať"
             onClick={() => setIsAdding(true)}
-            style={{ marginLeft: '5px', marginTop: '5px' }}
             disabled={disabled}
           />
         )}

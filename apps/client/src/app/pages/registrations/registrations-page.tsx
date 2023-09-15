@@ -5,11 +5,13 @@ import { ErrorPage } from '../../components/error-page';
 import {
   RegistrationListFragmentFragment,
   TeamFilterInput,
+  useAddTagsToTeamMutation,
   useGetProgramLazyQuery,
   useGetProgramRegistrationsLazyQuery,
+  useRemoveTagsFromTeamMutation,
 } from '../../generated/graphql';
 import { RegistrationList } from './components/registration-list';
-import { Close, Download, Filter } from 'grommet-icons';
+import { Close, Download, Filter, Tag } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';
 import { BasePage } from '../../components/base-page';
 import RegistrationListFilter, {
@@ -21,6 +23,7 @@ import {
   constructRegistrationsSearchParams,
   parseRegistrationsSearchParams,
 } from './components/registration-list-params';
+import { MultitagPanel } from './components/multitag-panel';
 
 const localStoreFilterEntry = 'registrations-filter';
 
@@ -40,6 +43,14 @@ export function RegistrationsPage() {
   const [searchText, setSearchText] = useState('');
   const [registrations, setRegistrations] = useState<RegistrationListFragmentFragment[]>([]);
 
+  const [showMultiTag, setShowMultiTag] = useState(false);
+
+  const [showTeamSelect, setShowTeamSelect] = useState(false);
+  const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([]);
+
+  const [removeTags] = useRemoveTagsFromTeamMutation();
+  const [addTags] = useAddTagsToTeamMutation();
+
   // prepare search entries for text search
   const searchOptions = useMemo(
     () =>
@@ -47,7 +58,7 @@ export function RegistrationsPage() {
         text: `${t.team.name.toLocaleLowerCase()} ${t.team.address.city.toLocaleLowerCase()}`,
         value: t,
       })),
-    [regsData]
+    [regsData],
   );
 
   const applyFilter = useCallback(
@@ -73,7 +84,7 @@ export function RegistrationsPage() {
       }
       return ok;
     },
-    [filter]
+    [filter],
   );
 
   // apply full text search
@@ -135,8 +146,25 @@ export function RegistrationsPage() {
       const p = new URLSearchParams(sp);
       setSearchParams(p);
     },
-    [setSearchParams]
+    [setSearchParams],
   );
+
+  const handleSelectTeam = useCallback(
+    (teamId: string) => {
+      const i = selectedTeamIds.findIndex((t) => t === teamId);
+      if (i > -1) {
+        setSelectedTeamIds(selectedTeamIds.filter((t) => t !== teamId));
+      } else {
+        setSelectedTeamIds([...selectedTeamIds, teamId]);
+      }
+    },
+
+    [selectedTeamIds],
+  );
+
+  useEffect(() => {
+    setShowTeamSelect(showMultiTag);
+  }, [showMultiTag]);
 
   const rowGetter = (index: number) => (index < registrations.length ? registrations[index] : null);
 
@@ -158,38 +186,58 @@ export function RegistrationsPage() {
         <RegistrationList
           rowCount={registrations.length}
           rowGetter={rowGetter}
+          selectTeams={{ show: showTeamSelect, teams: selectedTeamIds, onSelect: handleSelectTeam }}
           actionPanel={
-            <Box direction="row" width="100%">
-              <Box width="200px">
-                <form onSubmit={handleSearchSubmit}>
-                  <TextInput
-                    placeholder="Hľadať názov tímu/mesto"
-                    onChange={({ target }) => setSearchText(target.value)}
-                    value={searchText}
-                    width="auto"
-                  />
-                  <button hidden type="submit" />
-                </form>
+            <Box>
+              <Box direction="row" width="100%">
+                <Box width="200px">
+                  <form onSubmit={handleSearchSubmit}>
+                    <TextInput
+                      placeholder="Hľadať názov tímu/mesto"
+                      onChange={({ target }) => setSearchText(target.value)}
+                      value={searchText}
+                      width="auto"
+                    />
+                    <button hidden type="submit" />
+                  </form>
+                </Box>
+                <Button icon={<Close />} onClick={() => setSearchText('')} />
+                <Button
+                  icon={Object.keys(filter).length > 0 ? <Filter color="red" /> : <Filter />}
+                  tip="Filter"
+                  onClick={() => {
+                    setShowFilter(true);
+                    setSelectedReg(undefined);
+                  }}
+                />
+                <Button
+                  icon={<Download />}
+                  tip="Export"
+                  onClick={() =>
+                    exportRegistrationsForShipping(progData?.getProgram.name ?? '', registrations)
+                  }
+                />
+                <Button icon={<Tag />} tip="Tagy" onClick={() => setShowMultiTag(!showMultiTag)} />
               </Box>
-              <Button icon={<Close />} onClick={() => setSearchText('')} />
-              <Button
-                icon={Object.keys(filter).length > 0 ? <Filter color="red" /> : <Filter />}
-                tip="Filter"
-                onClick={() => {
-                  setShowFilter(true);
-                  setSelectedReg(undefined);
-                }}
-              />
-              <Button
-                icon={<Download />}
-                tip="Export"
-                onClick={() =>
-                  exportRegistrationsForShipping(progData?.getProgram.name ?? '', registrations)
-                }
-              />
+              {showMultiTag && (
+                <Box direction="row">
+                  <MultitagPanel
+                    onAdd={async (tagIds) => {
+                      for (const teamId of selectedTeamIds) {
+                        await addTags({ variables: { teamId, tagIds } });
+                      }
+                    }}
+                    onRemove={async (tagIds) => {
+                      for (const teamId of selectedTeamIds) {
+                        await removeTags({ variables: { teamId, tagIds } });
+                      }
+                    }}
+                  />
+                </Box>
+              )}
             </Box>
           }
-          onSelect={(t) => {
+          onClick={(t) => {
             setSelectedReg(t.id);
             setShowFilter(false);
           }}
