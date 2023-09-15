@@ -34,7 +34,7 @@ export function ProgramPage() {
   const program = programData?.getProgram;
   const canEdit: boolean = useMemo(
     () => (isProgramManager(program?.id) || isAdmin()) && !program?.deletedOn,
-    [isAdmin, isProgramManager, program?.deletedOn, program?.id]
+    [isAdmin, isProgramManager, program?.deletedOn, program?.id],
   );
   const canAddManagers: boolean = isProgramManager(program?.id) || isAdmin();
 
@@ -59,13 +59,12 @@ export function ProgramPage() {
             <PanelProgramDetails program={program} canEdit={canEdit} />
             <PanelProgramFiles program={program} canEdit={canEdit} />
 
-            {canEdit && (
-              <PanelProgramFees
-                program={program}
-                canEdit={canEdit}
-                onUpdate={() => programRefetch()}
-              />
-            )}
+            <PanelProgramFees
+              program={program}
+              canEdit={canEdit}
+              onUpdate={() => programRefetch()}
+              publicOnly={!canEdit}
+            />
 
             {canEdit && <PanelProgramManagers program={program} canAddManagers={canAddManagers} />}
 

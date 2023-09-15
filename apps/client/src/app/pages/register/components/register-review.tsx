@@ -49,13 +49,13 @@ export function RegisterReview(props: RegisterReviewProps) {
   const program = programData?.getProgram;
   const event = eventData?.getEvent;
 
-  const items = React.useMemo(
-    () =>
+  const items = React.useMemo(() => {
+    const i =
       ((event?.ownFeesAllowed ?? false) && (event?.invoiceItems?.length ?? 0) > 0
         ? event?.invoiceItems
-        : program?.invoiceItems) ?? [],
-    [event, program],
-  );
+        : program?.invoiceItems) ?? [];
+    return i.filter((i) => i.public);
+  }, [event, program]);
 
   if (programLoading || eventLoading) {
     return <Spinner />;

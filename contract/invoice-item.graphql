@@ -19,6 +19,7 @@ type InvoiceItem {
   note: String
   unitPrice: Float!
   quantity: Float!
+  public: Boolean
 }
 
 input InvoiceItemInput {
@@ -28,6 +29,7 @@ input InvoiceItemInput {
   note: String
   unitPrice: Float!
   quantity: Float!
+  public: Boolean
 }
 
 extend type Mutation {

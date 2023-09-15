@@ -3,7 +3,7 @@ import { Box, Button, Text } from 'grommet';
 import { InvoiceItemFragmentFragment } from '../generated/graphql';
 import { JustifiedText } from './justified-text';
 import { ListHeader2, ListRow2 } from './list-row';
-import { Close } from 'grommet-icons';
+import { Close, FormView } from 'grommet-icons';
 
 interface InvoiceItemListProps {
   items: InvoiceItemFragmentFragment[];
@@ -14,10 +14,12 @@ interface InvoiceItemListProps {
 
 export function InvoiceItemList(props: InvoiceItemListProps) {
   const { items, onRemove, onClick, editable } = props;
+  const columns = '20px 1fr 75px 100px 150px auto';
 
   return (
     <Box>
-      <ListHeader2 columns="1fr 75px 100px 150px auto" pad="small">
+      <ListHeader2 columns={columns} pad="small">
+        <JustifiedText justify="center"></JustifiedText>
         <JustifiedText justify="start">Položka</JustifiedText>
         <JustifiedText justify="center">Množstvo</JustifiedText>
         <JustifiedText justify="center">Cena</JustifiedText>
@@ -26,7 +28,7 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
       {items.map((item) => (
         <ListRow2
           key={item.id}
-          columns="1fr 75px 100px 150px auto"
+          columns={columns}
           pad="small"
           align="center"
           onClick={
@@ -38,6 +40,9 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
               : undefined
           }
         >
+          <JustifiedText justify="center">
+            {item.public ? <FormView color="green" /> : null}
+          </JustifiedText>
           <Box>
             <Text>{item.text}</Text>
             <Text size="small">{item.note}</Text>
