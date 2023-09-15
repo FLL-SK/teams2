@@ -31,7 +31,10 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
     label: 'Turnaj',
     id: 'event.name',
   },
-
+  {
+    label: 'Typ',
+    id: 'type',
+  },
   {
     label: 'Registrovaný',
     id: 'createdOn',
@@ -88,7 +91,7 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
 
 export function exportRegistrationsForShipping(
   programName: string,
-  registrations: ExportSourceType[]
+  registrations: ExportSourceType[],
 ) {
   const aoa: ArrayOfArraysOfAny = json2Aoa<ExportSourceType>(registrations, fields);
   const today = new Date().toISOString().substring(0, 10);

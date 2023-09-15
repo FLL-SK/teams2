@@ -1,22 +1,27 @@
 import debugLib from 'debug';
 import mongoose from 'mongoose';
-import { programRepository } from '../../models';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
   debug('DB Upgrade');
+  await normalRegistrations();
   //await removeLightColor();
 }
 
 // accessing the database directly
 // const et = await mongoose.connection.db.collection('t1_users').findOne({ email: u.username });
 
-async function removeLightColor() {
-  const debug = debugLib('upgrade:removeLightColor');
-  debug('removeLightColor');
-
-  const regs = await programRepository
-    .updateMany({ colorLight: { $exists: true } }, { $unset: { colorLight: '' } })
-    .exec();
-  debug('updated %d registrations', regs.modifiedCount);
+async function normalRegistrations() {
+  const debug = debugLib('upgrade:normalRegistrations');
+  debug('normalRegistrations');
+  const et = mongoose.connection.db.collection('registrations').find({ type: null });
+  for await (const r of et) {
+    debug('updating registration %s', r._id);
+    await mongoose.connection.db
+      .collection('registrations')
+      .updateOne(
+        { _id: r._id },
+        { $set: { type: 'NORMAL', impactedTeams: 0, impactedChildren: 0 } },
+      );
+  }
 }

@@ -54,6 +54,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
           label="Koniec"
           value={program.endDate ? formatDate(program.endDate) : 'neurčený'}
         />
+        <LabelValue label="ClassPack povolený" value={program.classPackEnabled ? 'áno' : '-'} />
         <LabelValue
           label="Maximálny počet tímov"
           value={program.maxTeams ? program.maxTeams.toString() : 'neurčený'}

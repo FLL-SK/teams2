@@ -43,8 +43,8 @@ export const typeResolver: Resolver<Registration> = {
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
-  createRegistration: (_parent, { eventId, teamId }, context) =>
-    registerTeamToEvent(teamId, eventId, context),
+  createRegistration: (_parent, { eventId, teamId, input }, context) =>
+    registerTeamToEvent(teamId, eventId, input, context),
 
   cancelRegistration: async (_parent, { id }, context) => cancelRegistration(id, context),
 

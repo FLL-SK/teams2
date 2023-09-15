@@ -24,6 +24,7 @@ export const ProgramMapper = {
       maxTeamSize: program.maxTeamSize,
 
       group: program.group,
+      classPackEnabled: program.classPackEnabled,
 
       managersIds: program.managersIds,
 

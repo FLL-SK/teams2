@@ -20,6 +20,8 @@ export interface ProgramData {
 
   deletedOn?: Date;
   deletedBy?: ObjectId;
+
+  classPackEnabled?: boolean;
 }
 
 export type ProgramDocument = (Document<unknown, unknown, ProgramData> & ProgramData) | null;
@@ -32,11 +34,11 @@ export interface ProgramModel extends Model<ProgramData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
   findProgramsManagedByUser(
     userId: ObjectId,
-    projection?: ProjectionType<ProgramData>
+    projection?: ProjectionType<ProgramData>,
   ): Promise<ProgramDocument[]>;
   findPrograms(
     filter: ProgramFilter,
-    projection?: ProjectionType<ProgramData>
+    projection?: ProjectionType<ProgramData>,
   ): Promise<ProgramDocument[]>;
 }
 
@@ -52,13 +54,15 @@ const schema = new Schema<ProgramData, ProgramModel>(
     managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
     group: { type: Types.String },
 
+    classPackEnabled: { type: Types.Boolean, default: false },
+
     startDate: { type: Types.Date, required: true },
     endDate: { type: Types.Date, required: true },
 
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
   },
-  { collation: { locale: 'sk', strength: 1 } }
+  { collation: { locale: 'sk', strength: 1 } },
 );
 
 schema.index({ name: 1 }, { unique: true });
@@ -72,7 +76,7 @@ schema.static(
   'findProgramsManagedByUser',
   function (userId: ObjectId, projection?: ProjectionType<ProgramData>) {
     return this.find({ managersIds: userId, deletedOn: null }, projection).exec();
-  }
+  },
 );
 
 schema.static(
@@ -83,7 +87,7 @@ schema.static(
       q = { ...q, startDate: { $lt: new Date() }, endDate: { $gte: new Date() }, deletedOn: null };
     }
     return this.find(q, projection).sort({ group: 1, startDate: -1 }).exec();
-  }
+  },
 );
 
 export const programRepository = model<ProgramData, ProgramModel>('Program', schema);

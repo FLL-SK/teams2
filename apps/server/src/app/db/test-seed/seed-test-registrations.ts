@@ -7,6 +7,7 @@ import {
   programRepository,
   teamRepository,
   userRepository,
+  UserData,
 } from '../../models';
 import { addDays } from 'date-fns';
 import { logger } from '@teams2/logger';
@@ -35,6 +36,9 @@ export const seedTestRegistrationData: TestSeedData[] = [
     girlCount: 3,
     boyCount: 5,
     coachCount: 1,
+    type: 'CLASS_PACK',
+    teamsImpacted: 5,
+    childrenImpacted: 20,
   },
   {
     event: 'Event2',
@@ -44,25 +48,35 @@ export const seedTestRegistrationData: TestSeedData[] = [
     girlCount: 2,
     boyCount: 1,
     coachCount: 2,
+    type: 'NORMAL',
+    teamsImpacted: 1,
+    childrenImpacted: 5,
   },
   {
     event: 'Event2',
     team: 'Team3',
     registeredOnOffset: -2,
     invoicedOnOffset: -1,
+    type: 'NORMAL',
+    teamsImpacted: 1,
+    childrenImpacted: 5,
   },
   {
     event: 'Event3',
     team: 'Team3',
     registeredOnOffset: -2,
     invoicedOnOffset: -1,
+    type: 'CLASS_PACK',
+    teamsImpacted: 3,
+    childrenImpacted: 15,
   },
 ];
 
 const log = logger('testseed:Registrations');
 
 export async function seedTestRegistrations() {
-  const adminUser = await userRepository.findOne({ email: admin_username }).exec();
+  const q: Partial<UserData> = { username: admin_username };
+  const adminUser = await userRepository.findOne(q).exec();
   for (const d of seedTestRegistrationData) {
     const e = await eventRepository.findOne({ name: d.event }).exec();
     if (!e) {
@@ -88,6 +102,9 @@ export async function seedTestRegistrations() {
       girlCount: d.girlCount ?? 0,
       boyCount: d.boyCount ?? 0,
       coachCount: d.coachCount ?? 0,
+      type: d.type,
+      teamsImpacted: d.teamsImpacted ?? 1,
+      childrenImpacted: d.childrenImpacted,
     };
     const r = await registrationRepository.create(et);
 

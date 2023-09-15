@@ -10,7 +10,6 @@ import { appPath } from '@teams2/common';
 import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { RegistrationFilesPanel } from '../../registration/components/registration-files';
-import { differenceInDays } from 'date-fns';
 
 interface TeamRegistrationTileProps {
   registration: TeamRegistrationFragmentFragment;
@@ -19,10 +18,6 @@ interface TeamRegistrationTileProps {
 export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
   const { registration } = props;
   const { isAdmin } = useAppUser();
-
-  const [eventDateDiff] = React.useState<number>(
-    registration.event.date ? differenceInDays(new Date(registration.event.date), Date.now()) : 100
-  );
 
   return (
     <Box>
@@ -42,6 +37,9 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
               <Text>
                 {registration.event.date ? formatDate(registration.event.date) : 'neurčený'}
               </Text>
+            </LabelValue>
+            <LabelValue label="Typ registrácie">
+              <Text>{registration.type}</Text>
             </LabelValue>
           </LabelValueGroup>
         </Box>

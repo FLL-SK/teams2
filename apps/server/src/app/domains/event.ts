@@ -17,7 +17,7 @@ import {
 } from '../utils/emails';
 
 import { logger } from '@teams2/logger';
-import { Registration, RegistrationPayload } from '../generated/graphql';
+import { Registration, RegistrationInput, RegistrationPayload } from '../generated/graphql';
 
 const logLib = logger('domain:Event');
 
@@ -45,6 +45,7 @@ async function copyInvoiceItemsToRegistration(registrationId: ObjectId) {
 export async function registerTeamToEvent(
   teamId: ObjectId,
   eventId: ObjectId,
+  input: RegistrationInput,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const log = logLib.extend('registerTeam');
@@ -59,7 +60,7 @@ export async function registerTeamToEvent(
   let registration: Registration;
   try {
     // register team to event
-    registration = await dataSources.registration.createRegistration(eventId, teamId);
+    registration = await dataSources.registration.createRegistration(eventId, teamId, input);
 
     if (!registration) {
       return { errors: [{ code: 'registration_failed' }] };

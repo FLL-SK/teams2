@@ -41,6 +41,10 @@ export const RegistrationMapper = {
 
       sizeConfirmedOn: registration.sizeConfirmedOn,
 
+      type: registration.type,
+      impactedChildrenCount: registration.childrenImpacted ?? 0,
+      impactedTeamCount: registration.teamsImpacted ?? 1,
+
       invoiceItems: [],
       team: null,
       event: null,

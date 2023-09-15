@@ -30,17 +30,18 @@ interface FormFields {
   conditions?: string;
   startDate: string;
   endDate: string;
-  maxTeams?: number | null;
-  maxTeamSize?: number | null;
+  maxTeams?: number;
+  maxTeamSize?: number;
+  classPackEnabled?: boolean;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
   const { show, program, onClose, onSubmit } = props;
   const [teamCountLimited, setTeamCountLimited] = useState<boolean>(
-    (!!program?.maxTeams && program.maxTeams > 0) ?? false
+    (!!program?.maxTeams && program.maxTeams > 0) ?? false,
   );
   const [teamSizeLimited, setTeamSizeLimited] = useState<boolean>(
-    (!!program?.maxTeamSize && program.maxTeamSize > 0) ?? false
+    (!!program?.maxTeamSize && program.maxTeamSize > 0) ?? false,
   );
   const [formValues, setFormValues] = useState<FormFields>({
     name: '',
@@ -58,6 +59,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       endDate: toZonedDateString(program?.endDate) ?? '',
       maxTeams: program?.maxTeams ?? 0,
       maxTeamSize: program?.maxTeamSize ?? 0,
+      classPackEnabled: program?.classPackEnabled ?? false,
     });
   }, [program]);
 
@@ -66,13 +68,15 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    await onSubmit({
+    const result = {
       ...value,
       startDate: toUtcDateString(value.startDate) ?? '',
       endDate: toUtcDateString(value.endDate) ?? '',
-      maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : null,
-      maxTeamSize: teamSizeLimited && value.maxTeamSize ? Number(value.maxTeamSize) : null,
-    });
+      maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : 0,
+      maxTeamSize: teamSizeLimited && value.maxTeamSize ? Number(value.maxTeamSize) : 0,
+      classPackEnabled: value.classPackEnabled ?? false,
+    };
+    await onSubmit(result);
     onClose();
   };
 
@@ -103,6 +107,8 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
           <FormField label="Koniec programu" name="endDate">
             <DateInput name="endDate" format="dd.mm.yyyy" />
           </FormField>
+          <CheckBox label="Povoliť ClassPack" name="classPackEnabled" />
+          <br />
           <CheckBox
             label="Obmedziť počet tímov"
             checked={teamCountLimited}

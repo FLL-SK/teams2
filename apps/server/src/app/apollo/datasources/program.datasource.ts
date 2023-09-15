@@ -38,7 +38,7 @@ export class ProgramDataSource extends BaseDataSource {
     const log = logBase.extend('getP');
     log.debug('id=%s', id);
     const program = this.loader.load(id.toString());
-    log.debug('id=%s done', id);
+    log.debug('id=%s done %o', id, program);
     return program;
   }
 
@@ -113,7 +113,7 @@ export class ProgramDataSource extends BaseDataSource {
       throw new Error('Program not found');
     }
     const users = await Promise.all(
-      program.managersIds.map(async (u) => userRepository.findById(u).exec())
+      program.managersIds.map(async (u) => userRepository.findById(u).exec()),
     );
     return users.filter((u) => !!u).map(UserMapper.toUser);
   }
