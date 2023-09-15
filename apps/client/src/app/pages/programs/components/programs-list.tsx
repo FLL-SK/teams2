@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router';
 import { ListRow2 } from '../../../components/list-row';
 import { TextStriked } from '../../../components/text-striked';
 import { ProgramListFragmentFragment } from '../../../generated/graphql';
+import { constructRegistrationsSearchParams } from '../../registrations/components/registration-list-params';
 
 interface ProgramsListProps {
   programs: ProgramListFragmentFragment[];
@@ -33,12 +34,28 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
   const navigate = useNavigate();
 
   const navigateRegs = useCallback(
-    (ev: Event) => {
+    (
+      ev: Event,
+      {
+        notShipped,
+        notInvoiced,
+        notConfirmed,
+        notPaid,
+      }: { notConfirmed?: boolean; notPaid?: boolean; notShipped?: boolean; notInvoiced?: boolean },
+    ) => {
       ev.preventDefault();
       ev.stopPropagation();
-      navigate(`${appPath.registrations}/?p=${program.id}`);
+      const p = constructRegistrationsSearchParams({
+        programId: program.id,
+        notPaid,
+        notConfirmed,
+        notShipped,
+        notInvoiced,
+      });
+
+      navigate(`${appPath.registrations}?${p.toString()}`);
     },
-    [navigate, program.id]
+    [navigate, program.id],
   );
 
   let maxColor = undefined;
@@ -71,7 +88,11 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regUnconfirmed ? (
         <Tip content="nepotvrdené">
-          <Box direction="row" gap="xsmall" onClick={navigateRegs}>
+          <Box
+            direction="row"
+            gap="xsmall"
+            onClick={(e) => navigateRegs(e, { notConfirmed: true })}
+          >
             <Halt />
             <Text size="small">{program.regUnconfirmed}</Text>
           </Box>
@@ -82,7 +103,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regNotInvoiced ? (
         <Tip content="nefakturované">
-          <Box direction="row" gap="xsmall" onClick={navigateRegs}>
+          <Box direction="row" gap="xsmall" onClick={(e) => navigateRegs(e, { notInvoiced: true })}>
             <Document />
             <Text size="small">{program.regNotInvoiced}</Text>
           </Box>
@@ -93,7 +114,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regUnpaid ? (
         <Tip content="nezaplatené">
-          <Box direction="row" gap="xsmall" onClick={navigateRegs}>
+          <Box direction="row" gap="xsmall" onClick={(e) => navigateRegs(e, { notPaid: true })}>
             <Money />
             <Text size="small">{program.regUnpaid}</Text>
           </Box>
@@ -104,7 +125,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regNotShipped ? (
         <Tip content="neodoslané">
-          <Box direction="row" gap="xsmall" onClick={navigateRegs}>
+          <Box direction="row" gap="xsmall" onClick={(e) => navigateRegs(e, { notShipped: true })}>
             <Deliver />
             <Text size="small">{program.regNotShipped}</Text>
           </Box>
