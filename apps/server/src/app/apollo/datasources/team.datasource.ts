@@ -97,7 +97,7 @@ export class TeamDataSource extends BaseDataSource {
       .findByIdAndUpdate(
         id,
         { deletedOn: new Date(), deletedBy: this.context.user._id },
-        { new: true }
+        { new: true },
       )
       .exec();
     return TeamMapper.toTeam(u);
@@ -137,7 +137,7 @@ export class TeamDataSource extends BaseDataSource {
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { coachesIds: u._id } },
-      { new: true }
+      { new: true },
     );
     return TeamMapper.toTeam(t);
   }
@@ -150,7 +150,7 @@ export class TeamDataSource extends BaseDataSource {
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { coachesIds: coachId } },
-      { new: true }
+      { new: true },
     );
     return TeamMapper.toTeam(t);
   }
@@ -165,7 +165,7 @@ export class TeamDataSource extends BaseDataSource {
       teamId.toString(),
       isAdmin,
       isCoach,
-      isEvtMgr
+      isEvtMgr,
     );
     if (!(isAdmin || isCoach || isEvtMgr)) {
       return [];
@@ -179,7 +179,7 @@ export class TeamDataSource extends BaseDataSource {
       return [];
     }
     const coaches = await Promise.all(
-      t.coachesIds.map((c) => this.context.dataSources.user.getUser(c))
+      t.coachesIds.map((c) => this.context.dataSources.user.getUser(c)),
     );
     return coaches.filter((c) => !!c);
   }
@@ -193,24 +193,24 @@ export class TeamDataSource extends BaseDataSource {
     return events.map((c) => RegistrationMapper.toRegistration(c));
   }
 
-  async addTagToTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add tag to team');
+  async addTagsToTeam(teamId: ObjectId, tagIds: ObjectId[]): Promise<Team> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add tags to team');
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
-      { $addToSet: { tagIds: tagId } },
-      { new: true }
+      { $addToSet: { tagIds } },
+      { new: true },
     );
     return TeamMapper.toTeam(t);
   }
 
-  async removeTagFromTeam(teamId: ObjectId, tagId: ObjectId): Promise<Team> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove tag from team');
+  async removeTagsFromTeam(teamId: ObjectId, tagIds: ObjectId[]): Promise<Team> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove tags from team');
 
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
-      { $pull: { tagIds: tagId } },
-      { new: true }
+      { $pullAll: { tagIds: tagIds } },
+      { new: true },
     );
     return TeamMapper.toTeam(t);
   }

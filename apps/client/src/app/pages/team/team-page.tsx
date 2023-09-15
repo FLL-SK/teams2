@@ -11,12 +11,12 @@ import { Panel, PanelGroup } from '../../components/panel';
 import {
   CreateTeamInput,
   UpdateTeamInput,
-  useAddTagToTeamMutation,
+  useAddTagsToTeamMutation,
   useUpdateTeamMutation,
   useCreateNoteMutation,
   useDeleteTeamMutation,
   useUndeleteTeamMutation,
-  useRemoveTagFromTeamMutation,
+  useRemoveTagsFromTeamMutation,
   useGetTeamLazyQuery,
   useGetNotesLazyQuery,
 } from '../../generated/graphql';
@@ -47,8 +47,8 @@ export function TeamPage() {
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
     useGetNotesLazyQuery({ fetchPolicy: 'cache-and-network' });
 
-  const [removeTag] = useRemoveTagFromTeamMutation({ onError });
-  const [addTag] = useAddTagToTeamMutation({ onError });
+  const [removeTag] = useRemoveTagsFromTeamMutation({ onError });
+  const [addTag] = useAddTagsToTeamMutation({ onError });
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch(), onError });
 
@@ -77,9 +77,9 @@ export function TeamPage() {
           !reg.canceledOn &&
           (!reg.event.date ||
             showInactiveEvents ||
-            (reg.event.date ?? '').substring(0, 10) >= today)
+            (reg.event.date ?? '').substring(0, 10) >= today),
       ),
-    [showInactiveEvents, team?.registrations, today]
+    [showInactiveEvents, team?.registrations, today],
   );
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
@@ -172,8 +172,8 @@ export function TeamPage() {
                 <Box direction="row" wrap>
                   <TagList
                     tags={team.tags}
-                    onRemove={(tagId) => removeTag({ variables: { teamId: id, tagId } })}
-                    onAdd={(tag) => addTag({ variables: { teamId: id, tagId: tag.id } })}
+                    onRemove={(tagId) => removeTag({ variables: { teamId: id, tagIds: [tagId] } })}
+                    onAdd={(tag) => addTag({ variables: { teamId: id, tagIds: [tag.id] } })}
                   />
                 </Box>
               </Panel>

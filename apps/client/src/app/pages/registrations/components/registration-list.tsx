@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Box, Text, Tip } from 'grommet';
+import { Box, CheckBox, Text, Tip } from 'grommet';
 import { Checkmark, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
@@ -13,16 +13,24 @@ import { Index } from 'react-virtualized';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 import { TagPill } from '../../../components/tag-pill';
 
+interface SelectTeamsProps {
+  show: boolean;
+  teams: string[];
+  onSelect: (teamId: string) => unknown;
+}
+
 type RegistrationListProps = {
   rowCount: number;
   rowGetter: (index: number) => RegistrationListFragmentFragment | null;
   onEmptyList?: () => unknown;
   actionPanel: ReactNode;
-  onSelect: (team: RegistrationListFragmentFragment) => unknown;
+  onClick: (team: RegistrationListFragmentFragment) => unknown;
+  selectTeams?: SelectTeamsProps;
 };
 
 interface RegistrationListRowProps {
   data: RegistrationListFragmentFragment;
+  selectTeams?: SelectTeamsProps;
 }
 
 const colorOK = 'limegreen';
@@ -48,13 +56,25 @@ function StatusIcon(props: {
 }
 
 function RegistrationListRow(props: RegistrationListRowProps) {
-  const { data } = props;
+  const { data, selectTeams } = props;
   const teamColor =
     data.program.maxTeamSize && data.girlCount + data.boyCount > data.program.maxTeamSize
       ? 'status-critical'
       : undefined;
+
+  const checked = selectTeams?.teams.includes(data.team.id);
   return (
     <>
+      {selectTeams && selectTeams.show && (
+        <CheckBox
+          checked={checked}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            selectTeams?.onSelect(data.team.id);
+          }}
+        />
+      )}
       <ListCol linkPath={appPath.registration(data.id)}>
         <TextStriked striked={!!data.team.deletedOn || !!data.canceledOn}>
           {data.team.name}
@@ -136,22 +156,27 @@ const ListWrapper = styled(Box)`
 `;
 
 export function RegistrationList(props: RegistrationListProps) {
-  const { rowCount, rowGetter, actionPanel, onSelect } = props;
+  const { rowCount, rowGetter, actionPanel, onClick, selectTeams } = props;
 
   const getHeight = ({ index }: Index) =>
     (rowGetter(index)?.team?.tags.length ?? 0) > 0 ? 100 : 50;
+
+  let cols = '350px 30px 30px 30px 30px 80px 30px 50px 30px auto';
+  if (selectTeams?.show) {
+    cols = '30px ' + cols;
+  }
 
   return (
     <ListWrapper>
       <BaseList
         actionPanel={actionPanel}
-        renderRow={(data) => <RegistrationListRow data={data} />}
-        cols="350px 30px 30px 30px 30px 80px 30px 50px 30px auto"
+        renderRow={(data) => <RegistrationListRow data={data} selectTeams={selectTeams} />}
+        cols={cols}
         rowCount={rowCount}
         rowGetter={rowGetter}
         rowHeight={getHeight}
         columnGap="medium"
-        onRowSelect={(team) => onSelect && onSelect(team)}
+        onRowSelect={(team) => onClick && onClick(team)}
       />
     </ListWrapper>
   );
