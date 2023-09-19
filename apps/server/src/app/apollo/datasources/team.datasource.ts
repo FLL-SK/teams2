@@ -13,7 +13,7 @@ import {
 import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import Dataloader from 'dataloader';
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 
 const logBase = logger('DS:Team');
@@ -232,21 +232,6 @@ export class TeamDataSource extends BaseDataSource {
     const tags = await Promise.all(t.tagIds.map((c) => this.context.dataSources.tag.getTag(c)));
 
     return tags.filter((c) => !!c && !c.deletedOn); // this filter should remove nulls caused by data incosistency
-  }
-
-  async recalculateTeamStats(): Promise<number> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Recalculate team stats');
-    const teams = await teamRepository.find({ createdOn: null }).exec();
-    for (const t of teams) {
-      const tu: UpdateQuery<TeamData> = {};
-      const r = await registrationRepository.find({ teamId: t._id }).sort({ createdOn: -1 }).exec();
-      if (r.length > 0) {
-        tu.lastRegOn = r[0].createdOn;
-      }
-      await teamRepository.updateOne({ _id: t._id }, tu).exec();
-    }
-
-    return teams.length;
   }
 
   async isTeamRegisteredOnEventManagedBy(userId: ObjectId, teamId: ObjectId): Promise<boolean> {

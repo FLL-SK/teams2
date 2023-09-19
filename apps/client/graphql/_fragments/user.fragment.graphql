@@ -30,3 +30,22 @@ fragment UserFragment on User {
     ...ProgramBasicFragment
   }
 }
+
+fragment UserProfileFragment on User {
+  ...UserListFragment
+  coachingTeams {
+    ...TeamBasicFragment
+    registrations {
+      ...TeamRegistrationFragment
+      files {
+        ...FileFragment
+      }
+    }
+  }
+  managingEvents {
+    ...EventBasicFragment
+  }
+  managingPrograms {
+    ...ProgramBasicFragment
+  }
+}

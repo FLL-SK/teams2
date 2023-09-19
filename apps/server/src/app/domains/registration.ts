@@ -15,7 +15,7 @@ const logLib = logger('domain:Registration');
 
 export async function createRegistrationInvoice(
   registrationId: ObjectId,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const { dataSources } = ctx;
   const config = getServerConfig();
@@ -40,7 +40,7 @@ export async function createRegistrationInvoice(
     reg.shipTo,
     items,
     reg.invoiceNote,
-    { email: settings.billingEmail }
+    { email: settings.billingEmail },
   );
 
   // post invoice
@@ -56,14 +56,14 @@ export async function createRegistrationInvoice(
   const r = await dataSources.registration.setInvoicedOn(
     reg._id,
     new Date(result.createdOn),
-    result.id
+    result.id,
   );
   return { registration: r };
 }
 
 export async function emailRegistrationInvoice(
   id: ObjectId,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const { dataSources } = ctx;
   const config = getServerConfig();
@@ -73,7 +73,7 @@ export async function emailRegistrationInvoice(
   const registration = await registrationRepository.findById(id).lean().exec();
   const team = await teamRepository.findById(registration.teamId).lean().exec();
   const coachEmails = (await dataSources.team.getTeamCoaches(registration.teamId)).map(
-    (c) => c.username
+    (c) => c.username,
   );
 
   // invoices will be sent bcc to organization's billing email
@@ -114,7 +114,7 @@ export async function emailRegistrationInvoice(
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
     { invoiceSentOn: new Date() },
-    { new: true }
+    { new: true },
   );
 
   return { registration: RegistrationMapper.toRegistration(ni) };
@@ -123,14 +123,14 @@ export async function emailRegistrationInvoice(
 export async function createRegistrationNote(
   registrationId: ObjectId,
   text: string,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ) {
   return await createNote('registration', registrationId, text, ctx);
 }
 
 export async function getRegistrationFiles(
   registrationId: ObjectId,
-  ctx: ApolloContext
+  ctx: ApolloContext,
 ): Promise<File[]> {
   const log = logLib.extend('getRegFiles');
   log.debug(`registrationId: ${registrationId}`);
@@ -138,20 +138,25 @@ export async function getRegistrationFiles(
 
   let accessAllowed = ctx.userGuard.isAdmin();
 
-  if (!accessAllowed && registration.confirmedOn) {
+  if (!accessAllowed && registration.confirmedOn && !registration.canceledOn) {
     accessAllowed = await ctx.userGuard.isCoach(registration.teamId);
     if (!accessAllowed) {
+      log.debug(`not coach regid=${registrationId}`);
       return [];
     }
   }
 
   if (!accessAllowed) {
+    log.debug(`not allowed regid=${registrationId}`);
+    return [];
     throw new Error('Access denied getting files for registration');
   }
 
   const pf = await ctx.dataSources.file.getProgramFiles(registration.programId, false);
   const ef = await ctx.dataSources.file.getEventFiles(registration.eventId, false);
   const f = pf.concat(ef).sort((a, b) => a.name.localeCompare(b.name));
+
+  log.debug(`returning ${f.length} files for registration ${registrationId}`);
 
   return f;
 }

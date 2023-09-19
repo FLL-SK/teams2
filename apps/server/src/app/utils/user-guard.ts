@@ -1,5 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { eventRepository, programRepository, teamRepository, UserDataNoPassword } from '../models';
+import {
+  eventRepository,
+  programRepository,
+  registrationRepository,
+  teamRepository,
+  UserDataNoPassword,
+} from '../models';
 
 export class UserGuard {
   protected user?: UserDataNoPassword;
@@ -40,10 +46,44 @@ export class UserGuard {
     if (!this.coachOfTeams) {
       this.coachOfTeams =
         (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
-          t._id.toString()
+          t._id.toString(),
         ) ?? [];
     }
     return this.coachOfTeams.includes(teamId.toString());
+  }
+
+  async isCoachOfRegisteredTeamForEvent(eventId: ObjectId) {
+    if (!this.user) {
+      return false;
+    }
+    if (!this.coachOfTeams) {
+      this.coachOfTeams =
+        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
+          t._id.toString(),
+        ) ?? [];
+    }
+    const teams = await registrationRepository.find({
+      eventId: eventId,
+      teamId: { $in: this.coachOfTeams },
+    });
+    return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
+  }
+
+  async isCoachOfRegisteredTeamForProgram(programId: ObjectId) {
+    if (!this.user) {
+      return false;
+    }
+    if (!this.coachOfTeams) {
+      this.coachOfTeams =
+        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
+          t._id.toString(),
+        ) ?? [];
+    }
+    const teams = await registrationRepository.find({
+      programId: programId,
+      teamId: { $in: this.coachOfTeams },
+    });
+    return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
   }
 
   async isEventManager(eventId: ObjectId) {
@@ -53,7 +93,7 @@ export class UserGuard {
     if (!this.eventManagerOfEvents) {
       this.eventManagerOfEvents =
         (await eventRepository.findEventsManagedByUser(this.user._id, { _id: 1 }))?.map((e) =>
-          e._id.toString()
+          e._id.toString(),
         ) ?? [];
     }
     return this.eventManagerOfEvents.includes(eventId.toString());
@@ -66,7 +106,7 @@ export class UserGuard {
     if (!this.programManagerOfPrograms) {
       this.programManagerOfPrograms =
         (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>
-          p._id.toString()
+          p._id.toString(),
         ) ?? [];
     }
     return this.programManagerOfPrograms.includes(programId.toString());
@@ -76,7 +116,7 @@ export class UserGuard {
     throw new Error(
       `(${this.user ? this.user.username : 'not-logged-in'}) ${this.message}${
         context ? `: ${context}` : ''
-      }`
+      }`,
     );
   }
 }

@@ -4,6 +4,12 @@ query getUser($id: ID!) {
   }
 }
 
+query getUserProfile($id: ID!) {
+  getUser(id: $id) {
+    ...UserProfileFragment
+  }
+}
+
 query getUsers($filter: UserFilterInput) {
   getUsers(filter: $filter) {
     ...UserListFragment

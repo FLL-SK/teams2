@@ -52,6 +52,8 @@ export const RegistrationMapper = {
       program: null,
       createdByUser: null,
       invoiceIssuedByUser: null,
+
+      files: [],
     };
     return u;
   },

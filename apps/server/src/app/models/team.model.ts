@@ -14,7 +14,6 @@ export interface TeamData {
   shipTo?: AddressData;
   useBillTo?: boolean;
   createdOn: Date;
-  lastRegOn?: Date;
   deletedOn?: Date;
   deletedBy?: ObjectId;
 }
@@ -25,7 +24,7 @@ export interface TeamModel extends Model<TeamData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
   findTeamsCoachedByUser(
     coachId: ObjectId,
-    projection?: ProjectionType<TeamData>
+    projection?: ProjectionType<TeamData>,
   ): Promise<TeamDocument[]>; // remove all docs from repo
 }
 
@@ -35,7 +34,6 @@ const schema = new Schema<TeamData, TeamModel>(
     createdOn: { type: Types.Date, default: Date.now() },
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
-    lastRegOn: { type: Types.Date },
     coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
     tagIds: [{ type: Types.ObjectId, ref: 'Tag', default: [] }],
     address: { type: addressSchema },
@@ -43,7 +41,7 @@ const schema = new Schema<TeamData, TeamModel>(
     shipTo: { type: addressSchema },
     useBillTo: { type: Types.Boolean, default: true },
   },
-  { collation: { locale: 'sk', strength: 1 } }
+  { collation: { locale: 'sk', strength: 1 } },
 );
 
 schema.index({ name: 1 }, { unique: false });
@@ -58,7 +56,7 @@ schema.static(
   'findTeamsCoachedByUser',
   function (coachId: ObjectId, projection?: ProjectionType<TeamData>) {
     return this.find({ coachesIds: coachId, deletedOn: null }, projection).exec();
-  }
+  },
 );
 
 export const teamRepository = model<TeamData, TeamModel>('Team', schema);

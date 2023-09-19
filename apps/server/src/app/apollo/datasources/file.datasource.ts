@@ -11,9 +11,11 @@ import { storagePath } from '../../utils/storage-path';
 const logBase = logger('DS:File');
 
 export class FileDataSource extends BaseDataSource {
-
   async getProgramFiles(programId: ObjectId, checkAccess = true): Promise<File[]> {
-    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get program files');
+    !checkAccess ||
+      this.userGuard.isAdmin() ||
+      this.userGuard.isCoachOfRegisteredTeamForProgram(programId) ||
+      this.userGuard.notAuthorized('Get program files');
 
     const files = await fileRepository
       .find({ type: 'programDoc', ref: programId.toString() })
@@ -23,7 +25,10 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getEventFiles(eventId: ObjectId, checkAccess = true): Promise<File[]> {
-    !checkAccess || this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get event files');
+    !checkAccess ||
+      this.userGuard.isAdmin() ||
+      this.userGuard.isCoachOfRegisteredTeamForEvent(eventId) ||
+      this.userGuard.notAuthorized('Get event files');
 
     const files = await fileRepository
       .find({ type: 'eventDoc', ref: eventId.toString() })

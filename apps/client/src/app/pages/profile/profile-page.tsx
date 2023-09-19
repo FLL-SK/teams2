@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { Add } from 'grommet-icons';
@@ -13,7 +13,7 @@ import {
   UpdateUserInput,
   useCreateTeamMutation,
   useDeleteUserMutation,
-  useGetUserLazyQuery,
+  useGetUserProfileLazyQuery,
   useSetAdminMutation,
   useUndeleteUserMutation,
   useUpdateUserMutation,
@@ -25,13 +25,14 @@ import { EditUserDialog } from '../../components/dialogs/edit-user-dialog';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { isNil, omitBy } from 'lodash';
 import { formatDate } from '@teams2/dateutils';
+import { ListRow2 } from '../../components/list-row';
 
 export function ProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isUser, xOut, isSuperAdmin, user } = useAppUser();
-  const [fetchUser, { data, loading, refetch, error }] = useGetUserLazyQuery();
+  const [fetchUser, { data, loading, refetch, error }] = useGetUserProfileLazyQuery();
 
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
@@ -59,6 +60,21 @@ export function ProfilePage() {
       fetchUser({ variables: { id } });
     }
   }, [id, fetchUser]);
+
+  const teamData = useMemo(() => {
+    const td = (data?.getUser?.coachingTeams ?? [])
+      .filter((t) => !t.deletedOn)
+      .map((t) => {
+        return {
+          ...t,
+          registrations: t.registrations.filter(
+            (r) => !r.canceledOn && (!r.event.date || new Date(r.event.date) > new Date()),
+          ),
+          hasFiles: t.registrations.some((r) => r.files.length > 0),
+        };
+      });
+    return td;
+  }, [data?.getUser?.coachingTeams]);
 
   if (!id && user?.id) {
     return <Navigate to={appPath.profile(user?.id)} />;
@@ -153,12 +169,21 @@ export function ProfilePage() {
             </Panel>
             {canEdit && (
               <Panel title="Tímy">
-                <Box direction="row" wrap>
-                  {profile.coachingTeams
-                    .filter((t) => !t.deletedOn)
-                    .map((t) => (
-                      <Tag key={t.id} onClick={() => navigate(appPath.team(t.id))} value={t.name} />
-                    ))}
+                <Box gap="medium">
+                  {teamData.map((t) => (
+                    <ListRow2
+                      key={t.id}
+                      columns="1fr 150px 150px"
+                      onClick={() => navigate(appPath.team(t.id))}
+                      align="center"
+                      height="50px"
+                      pad={{ horizontal: 'small' }}
+                    >
+                      <Text>{t.name}</Text>
+                      <Text>{t.registrations.length > 0 ? 'Má aktívne registrácie' : ''}</Text>
+                      <Text>{t.hasFiles ? 'Súbory na stiahnutie' : ''}</Text>
+                    </ListRow2>
+                  ))}
                   <Button
                     plain
                     icon={<Add />}
