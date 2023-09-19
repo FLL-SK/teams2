@@ -40,6 +40,7 @@ export const typeResolver: Resolver<Registration> = {
     dataSources.user.getUser(invoiceIssuedBy),
   invoiceItems: async ({ id }, _args, { dataSources }) =>
     dataSources.invoice.getRegistrationInvoiceItems(id),
+  files: async ({ id }, _args, ctx) => getRegistrationFiles(id, ctx),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

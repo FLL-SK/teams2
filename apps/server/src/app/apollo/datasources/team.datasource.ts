@@ -13,7 +13,7 @@ import {
 import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import Dataloader from 'dataloader';
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 import { logger } from '@teams2/logger';
 
 const logBase = logger('DS:Team');
