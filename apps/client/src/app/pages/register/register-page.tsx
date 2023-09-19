@@ -94,7 +94,7 @@ export function RegisterPage() {
           input.impactedChildrenCount = Number(data.childrenImpacted) ?? 1;
           input.setCount = Number(data.setCount) ?? 1;
         }
-        console.log('registering team', teamId, data.event.id, input);
+
         const r1 = await registerTeam({
           variables: {
             teamId,
