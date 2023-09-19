@@ -234,21 +234,6 @@ export class TeamDataSource extends BaseDataSource {
     return tags.filter((c) => !!c && !c.deletedOn); // this filter should remove nulls caused by data incosistency
   }
 
-  async recalculateTeamStats(): Promise<number> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Recalculate team stats');
-    const teams = await teamRepository.find({ createdOn: null }).exec();
-    for (const t of teams) {
-      const tu: UpdateQuery<TeamData> = {};
-      const r = await registrationRepository.find({ teamId: t._id }).sort({ createdOn: -1 }).exec();
-      if (r.length > 0) {
-        tu.lastRegOn = r[0].createdOn;
-      }
-      await teamRepository.updateOne({ _id: t._id }, tu).exec();
-    }
-
-    return teams.length;
-  }
-
   async isTeamRegisteredOnEventManagedBy(userId: ObjectId, teamId: ObjectId): Promise<boolean> {
     const reg = await registrationRepository
       .findOne({ teamId, eventId: this.context.userGuard.getManagedEvents() })

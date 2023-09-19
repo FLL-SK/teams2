@@ -19,7 +19,6 @@ export const TeamMapper = {
       useBillTo: team.useBillTo,
 
       createdOn: team.createdOn,
-      lastRegOn: team.lastRegOn,
       deletedOn: team.deletedOn,
       deletedBy: team.deletedBy,
 

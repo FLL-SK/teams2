@@ -51,10 +51,6 @@ export function TeamSidebar(props: TeamSidebarProps) {
             <LabelValue label="Názov" value={team.name} />
             <LabelValue label="Zriaďovateľ" value={fullAddress(team.address)} />
             <LabelValue label="Vytvorený" value={formatDate(team.createdOn)} />
-            <LabelValue
-              label="Posledná registrácia"
-              value={team.lastRegOn ? formatDate(team.lastRegOn) : '-'}
-            />
           </LabelValueGroup>
         </SidebarPanel>
         <SidebarPanel label="Tréneri">
