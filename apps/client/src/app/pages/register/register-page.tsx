@@ -181,7 +181,7 @@ export function RegisterPage() {
                 setRegisterDetails({ ...registerDetails, billTo: aa });
               }}
               nextStep={() => setStep('shipto')}
-              prevStep={() => setStep('select-event')}
+              prevStep={() => setStep('select-type')}
               cancel={cancel}
             />
           )}
