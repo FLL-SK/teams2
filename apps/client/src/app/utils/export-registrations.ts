@@ -4,6 +4,7 @@ import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
 
 interface ExportSourceType {
   registeredOn: string;
+  type: string;
   paidOn?: string | null;
   confirmedOn?: string | null;
   coachCount: number;
@@ -19,6 +20,10 @@ interface ExportSourceType {
   };
 
   eventName: string;
+
+  impactedChildrenCount?: number | null;
+  impactedTeamCount?: number | null;
+  setCount?: number | null;
 
   coach1?: {
     name: string;
@@ -48,6 +53,10 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
   {
     label: 'Turnaj',
     id: 'eventName',
+  },
+  {
+    label: 'Typ registrácie',
+    id: 'type',
   },
 
   {
@@ -95,6 +104,20 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
     label: 'Adresa-PSČ',
     id: 'address.zip',
   },
+
+  {
+    label: 'ClassPack tímy',
+    id: 'impactedTeamCount',
+  },
+  {
+    label: 'ClassPack deti',
+    id: 'impactedChildrenCount',
+  },
+  {
+    label: 'ClassPack sety',
+    id: 'setCount',
+  },
+
   {
     label: 'Tréner1-meno',
     id: 'coach1.name',

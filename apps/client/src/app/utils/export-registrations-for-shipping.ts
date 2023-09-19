@@ -8,6 +8,9 @@ interface ExportSourceType {
   paidOn?: string | null;
   shipmentGroup?: string | null;
 
+  type: string;
+  setCount?: number | null;
+
   team: {
     name: string;
     shipTo?: {
@@ -35,6 +38,11 @@ export const fields: Json2AoaInputType<ExportSourceType>[] = [
     label: 'Typ',
     id: 'type',
   },
+  {
+    label: 'Počet setov',
+    id: 'setCount',
+  },
+
   {
     label: 'Registrovaný',
     id: 'createdOn',

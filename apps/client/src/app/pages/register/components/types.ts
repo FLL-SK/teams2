@@ -16,9 +16,10 @@ export interface RegisterDetails {
   billToContact?: Contact;
   useBillTo?: boolean;
   items?: Item[];
-  type?: RegistrationType;
+  type: RegistrationType;
   teamsImpacted?: number;
   childrenImpacted?: number;
+  setCount?: number;
 }
 
 export interface Contact {

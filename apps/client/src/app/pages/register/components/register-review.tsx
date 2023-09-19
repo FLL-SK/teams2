@@ -78,7 +78,12 @@ export function RegisterReview(props: RegisterReviewProps) {
           <LabelValue label="Turnaj" value={event.name} />
           <LabelValue
             label="Typ"
-            value={`${details.type} T:${details.teamsImpacted} D:${details.childrenImpacted}`}
+            value={
+              `${details.type} ` +
+              (details.type === 'CLASS_PACK'
+                ? `T:${details.teamsImpacted} D:${details.childrenImpacted} S:${details.setCount}`
+                : '')
+            }
           />
         </LabelValueGroup>
       </Panel>

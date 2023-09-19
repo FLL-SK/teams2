@@ -37,6 +37,7 @@ fragment RegistrationBasicFragment on Registration {
   type
   impactedChildrenCount
   impactedTeamCount
+  setCount
 }
 
 fragment RegistrationListFragment on Registration {
@@ -108,4 +109,8 @@ fragment RegisteredTeamFragment on RegisteredTeamPayload {
   coaches {
     ...UserBasicFragment
   }
+  type
+  impactedChildrenCount
+  impactedTeamCount
+  setCount
 }
