@@ -44,6 +44,7 @@ export const RegistrationMapper = {
       type: registration.type,
       impactedChildrenCount: registration.childrenImpacted ?? 0,
       impactedTeamCount: registration.teamsImpacted ?? 1,
+      setCount: registration.setCount ?? 1,
 
       invoiceItems: [],
       team: null,

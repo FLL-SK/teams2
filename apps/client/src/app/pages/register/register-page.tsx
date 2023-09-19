@@ -8,6 +8,7 @@ import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import {
   AddressInput,
+  RegistrationInput,
   UpdateTeamInput,
   useCreateRegistrationMutation,
   useGetTeamLazyQuery,
@@ -46,7 +47,7 @@ export function RegisterPage() {
   const { notify } = useNotification();
   const { isAdmin, isTeamCoach, user } = useAppUser();
   const [step, setStep] = useState<RegistrationStep>('intro');
-  const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({});
+  const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({ type: 'NORMAL' });
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
     useGetTeamLazyQuery();
@@ -75,15 +76,30 @@ export function RegisterPage() {
   const doRegister = useCallback(
     async (data: RegisterDetails) => {
       if (teamId && data.event && data.event.id) {
+        if (!data.billTo) {
+          notify.error('Fakturačná adresa nie je vyplnená.');
+          return;
+        }
+        if (!data.shipTo) {
+          notify.error('Doručovacia adresa nie je vyplnená.');
+          return;
+        }
+        const input: RegistrationInput = {
+          type: data.type,
+          billTo: data.billTo,
+          shipTo: data.shipTo,
+        };
+        if (input.type === 'CLASS_PACK') {
+          input.impactedTeamCount = Number(data.teamsImpacted) ?? 1;
+          input.impactedChildrenCount = Number(data.childrenImpacted) ?? 1;
+          input.setCount = Number(data.setCount) ?? 1;
+        }
+        console.log('registering team', teamId, data.event.id, input);
         const r1 = await registerTeam({
           variables: {
             teamId,
             eventId: data.event.id,
-            input: {
-              type: data.type,
-              impactedTeamCount: data.teamsImpacted,
-              impactedChildrenCount: data.childrenImpacted,
-            },
+            input,
           },
         });
 
@@ -181,7 +197,7 @@ export function RegisterPage() {
                 setRegisterDetails({ ...registerDetails, billTo: aa });
               }}
               nextStep={() => setStep('shipto')}
-              prevStep={() => setStep('select-event')}
+              prevStep={() => setStep('select-type')}
               cancel={cancel}
             />
           )}

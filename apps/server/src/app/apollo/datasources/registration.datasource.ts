@@ -92,9 +92,13 @@ export class RegistrationDataSource extends BaseDataSource {
       shipTo: team.shipTo,
       billTo: team.billTo,
       type: input.type,
-      childrenImpacted: input.impactedChildrenCount,
-      teamsImpacted: input.impactedTeamCount,
     };
+
+    if (input.type === 'CLASS_PACK') {
+      newReg.setCount = input.setCount;
+      newReg.childrenImpacted = input.impactedChildrenCount;
+      newReg.teamsImpacted = input.impactedTeamCount;
+    }
 
     const registration = new registrationRepository(newReg);
     await registration.save();
@@ -313,6 +317,10 @@ export class RegistrationDataSource extends BaseDataSource {
         boyCount: reg.boyCount ?? 0,
         girlCount: reg.girlCount ?? 0,
         sizeConfirmedOn: reg.sizeConfirmedOn,
+        type: reg.type,
+        impactedChildrenCount: reg.childrenImpacted ?? 0,
+        impactedTeamCount: reg.teamsImpacted ?? 1,
+        setCount: reg.setCount ?? 1,
         address: {
           id: team.address._id,
           name: team.address.name,
