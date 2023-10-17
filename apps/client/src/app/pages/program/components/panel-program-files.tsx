@@ -61,12 +61,12 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
         });
       }
     },
-    [addProgramFile, getUploadUrl, program.id]
+    [addProgramFile, getUploadUrl, program.id],
   );
 
   const files = filesData?.getProgramFiles ?? [];
 
-  if (!program) {
+  if (!program || !canEdit) {
     return null;
   }
 
