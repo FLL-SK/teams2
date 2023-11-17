@@ -9,5 +9,8 @@ export const buildRootRouter = () => {
   rootRouter.use('/public', express.static(path.join(__dirname, 'assets')));
   rootRouter.use('/auth', authRouter);
   rootRouter.use('/payment-cb', paymentCbRouter);
+  rootRouter.get('/ping', (req, res) => {
+    res.send('pong');
+  });
   return rootRouter;
 };
