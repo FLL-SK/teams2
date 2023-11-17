@@ -10,3 +10,5 @@ export function logger(module: string) {
     extend: (sub: string) => logger(`${module}:${sub}`),
   };
 }
+
+debugLib.enable('info:* error:* warning:*');
