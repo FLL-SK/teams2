@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import cors from  'cors';
-import morgan  from 'morgan';
+import cors from 'cors';
+import morgan from 'morgan';
 import { command } from 'yargs';
 import { configureAuth } from './app/configure-auth';
 import { getServerConfig } from './server-config';
@@ -26,7 +26,7 @@ async function server() {
 
   // CORS configuration
   const corsOptions = {
-    origin: [getServerConfig().clientAppRootUrl],
+    origin: getServerConfig().clientAppRootUrlsForCORS,
     preflightContinue: false,
     credentials: false,
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
@@ -51,10 +51,8 @@ async function server() {
 
   app.use('/graphql', (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user) => {
-      
       if (user) {
         req.user = user;
-        
       } else {
         log.warn('Unauthorized request /graphql from ip=%s body=%o', req.ip.toString(), req.body);
 

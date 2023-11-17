@@ -1,4 +1,7 @@
 export function getServerConfig() {
+  const clientRootUrls = (process.env.APP_CLIENT_ROOT_URL ?? 'http://localhost:4200')
+    .split(',')
+    .map((u) => u.trim());
   return {
     // https://stackoverflow.com/questions/58090082/process-env-node-env-always-development-when-building-nestjs-app-with-nrwl-nx
     nodeEnv: process.env['NODE_ENV'] || 'development',
@@ -17,7 +20,8 @@ export function getServerConfig() {
       secret: process.env.APP_JWT_SECRET,
     },
 
-    clientAppRootUrl: process.env.APP_CLIENT_ROOT_URL ?? 'http://localhost:4200',
+    clientAppRootUrl: clientRootUrls[0], // the first one is the primary
+    clientAppRootUrlsForCORS: clientRootUrls,
     aws: {
       region: process.env.AWS_REGION,
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
