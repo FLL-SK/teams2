@@ -13,14 +13,14 @@ async function setup() {
 
 async function loadSchemaFromFile(schemaPath: string) {
   return await loadSchema(schemaPath, {
-    loaders: [new GraphQLFileLoader()]
+    loaders: [new GraphQLFileLoader()],
   });
 }
 
 async function saveSchemaString(schemaKey: string, schema: GraphQLSchema) {
   const schemaString = printSchemaWithDirectives(schema, {
     assumeValid: false,
-    commentDescriptions: true
+    commentDescriptions: true,
   });
   await writeFile(getTargetSchema(schemaKey), schemaString);
 }
@@ -49,10 +49,11 @@ async function validateGraphQL(schemaKey: string) {
 
 (async () => {
   try {
+    console.log('Building GraphQL schema...');
     await setup();
     await buildSchema('schema');
     await validateGraphQL('schema');
-    console.log('Schema built successfuly!');
+    console.log('GraphQL schema built successfuly!');
   } catch (e) {
     console.log(e);
   }

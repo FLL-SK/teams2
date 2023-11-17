@@ -33,7 +33,6 @@
               "with": "apps/server/src/environments/environment.prod.ts"
             }
           ],
-
           "esbuildOptions": {
             "sourcemap": false,
             "outExtension": {
@@ -58,7 +57,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/server/**/*.ts"]
@@ -68,14 +67,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/server"],
       "options": {
-        "jestConfig": "apps/server/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
+        "jestConfig": "apps/server/jest.config.ts"
       }
     }
   },
