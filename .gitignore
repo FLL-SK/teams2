@@ -55,3 +55,6 @@ graphql.schema.json
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# NX cache
+.nx/cache
