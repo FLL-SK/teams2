@@ -6,10 +6,6 @@
 
 [context.production]
   [context.production.environment]
-    NX_API_URL = "https://fll-teams2.herokuapp.com"
+    NX_API_URL = "https://api.flltms.spv99.com"
     NX_SF_API_URL="https://moja.superfaktura.sk"
 
-# Deploy staging branch context:
-[context.staging.environment]
-  NX_API_URL = "https://fll-teams2-staging.herokuapp.com"
-  NX_SF_API_URL="https://sandbox.superfaktura.sk"
