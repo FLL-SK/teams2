@@ -35,14 +35,15 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
   const navigateRegs = useCallback(
     (
-      ev: Event,
-      {
-        notShipped,
-        notInvoiced,
-        notConfirmed,
-        notPaid,
-      }: { notConfirmed?: boolean; notPaid?: boolean; notShipped?: boolean; notInvoiced?: boolean },
+      ev: React.MouseEvent<Element, MouseEvent>,
+      options?: {
+        notConfirmed?: boolean;
+        notPaid?: boolean;
+        notShipped?: boolean;
+        notInvoiced?: boolean;
+      },
     ) => {
+      const { notConfirmed, notPaid, notShipped, notInvoiced } = options ?? {};
       ev.preventDefault();
       ev.stopPropagation();
       const p = constructRegistrationsSearchParams({
