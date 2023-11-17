@@ -1,6 +1,6 @@
 # Description: Dockerfile for server
 
-FROM node:19-slim
+FROM node:20-slim
 
 RUN mkdir -p /server
 
@@ -11,7 +11,8 @@ COPY package.json .
 COPY yarn.lock .
 
 # install dependencies
-RUN yarn install --production
+RUN yarn set version 3.x
+RUN yarn install
 
 # copy server files
 COPY dist/apps/server .
