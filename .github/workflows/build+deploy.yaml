@@ -25,7 +25,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Build apps
         run: yarn build:all
@@ -66,8 +66,8 @@ jobs:
         # made by a random appleboy to copy specified file to target server
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_HOST_USERNAME }}
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_HOST_USERNAME }}
           key: ${{ secrets.DEPLOY_HOST_SSH_KEY }}
           source: 'docker-compose.yaml'
           target: '~/.deploy/'
@@ -75,8 +75,8 @@ jobs:
       - name: Run docker-compose up on production server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_HOST_USERNAME }}
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_HOST_USERNAME }}
           key: ${{ secrets.DEPLOY_HOST_SSH_KEY }}
           script: |
             cd ~/
