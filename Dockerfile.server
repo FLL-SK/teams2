@@ -15,7 +15,7 @@ COPY .yarn ./.yarn
 COPY .yarnrc.yml .
 
 # install dependencies
-RUN yarn workspaces focus --production
+RUN yarn workspaces focus --production --all
 
 # copy server files
 COPY dist/apps/server .
