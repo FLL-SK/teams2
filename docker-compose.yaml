@@ -44,9 +44,9 @@ services:
     depends_on:
       - server
     environment:
-      - VIRTUAL_HOST=flltms.spv99.com
+      - VIRTUAL_HOST=tms.fll.sk
       - VIRTUAL_PORT=80
-      - LETSENCRYPT_HOST=flltms.spv99.com
+      - LETSENCRYPT_HOST=tms.fll.sk
 
     expose:
       - 80
