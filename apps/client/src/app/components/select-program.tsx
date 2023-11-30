@@ -8,11 +8,14 @@ interface SelectProgramProps {
   onClose?: () => void;
   disabled?: boolean;
   value?: string;
+  showOnlyActive?: boolean;
 }
 
 export function SelectProgram(props: SelectProgramProps) {
-  const { onSelect, onClose, disabled, value } = props;
-  const { data, loading } = useGetProgramsQuery();
+  const { onSelect, onClose, disabled, value, showOnlyActive = true } = props;
+  const { data, loading } = useGetProgramsQuery({
+    variables: { filter: { isActive: showOnlyActive } },
+  });
   const [options, setOptions] = useState<ProgramListFragmentFragment[]>([]);
 
   useEffect(() => {

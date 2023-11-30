@@ -1,7 +1,7 @@
 import { RegistrationListFilterValues } from './registration-list-filter';
 
 export function parseRegistrationsSearchParams(
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): RegistrationListFilterValues {
   const values: RegistrationListFilterValues = {};
   if (searchParams.has('t')) {
@@ -28,11 +28,14 @@ export function parseRegistrationsSearchParams(
   if (searchParams.has('nc')) {
     values.notConfirmed = searchParams.get('nc') === 'true';
   }
+  if (searchParams.has('ip')) {
+    values.showInactivePrograms = searchParams.get('ip') === 'true';
+  }
   return values;
 }
 
 export function constructRegistrationsSearchParams(
-  values: RegistrationListFilterValues
+  values: RegistrationListFilterValues,
 ): URLSearchParams {
   const searchParams = new URLSearchParams();
   if (values.tags) {
@@ -58,6 +61,9 @@ export function constructRegistrationsSearchParams(
   }
   if (values.notConfirmed) {
     searchParams.append('nc', 'true');
+  }
+  if (values.showInactivePrograms) {
+    searchParams.append('ip', 'true');
   }
 
   return searchParams;

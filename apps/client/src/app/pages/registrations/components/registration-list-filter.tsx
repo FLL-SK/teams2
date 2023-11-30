@@ -16,6 +16,7 @@ export interface RegistrationListFilterValues {
   notShipped?: boolean;
   notConfirmedSize?: boolean;
   notConfirmed?: boolean;
+  showInactivePrograms?: boolean;
 }
 
 interface RegistrationListFilterProps {
@@ -39,7 +40,7 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
         onChange({ ...values, tags });
       }
     },
-    [filterTags, onChange, values]
+    [filterTags, onChange, values],
   );
 
   const removeTagFromFilter = useCallback(
@@ -53,15 +54,24 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
         onChange({ ...values, tags });
       }
     },
-    [filterTags, onChange, values]
+    [filterTags, onChange, values],
   );
 
   return (
     <ClosableSidebar onClose={onClose} show={show} title="Filter" width="350px">
       <SidebarPanelGroup gap="small">
         <SidebarPanel label="Program">
+          <CheckBox
+            toggle={true}
+            label="Ukázať neaktívne programy"
+            checked={values.showInactivePrograms ?? false}
+            onChange={() =>
+              onChange({ ...values, showInactivePrograms: !values.showInactivePrograms })
+            }
+          />
           <SelectProgram
             onSelect={(prg) => onChange({ ...values, programId: prg.id })}
+            showOnlyActive={!values.showInactivePrograms}
             value={values.programId ?? ''}
           />
         </SidebarPanel>
