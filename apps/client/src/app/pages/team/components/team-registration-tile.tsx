@@ -1,6 +1,6 @@
 import React from 'react';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Paragraph, Text } from 'grommet';
+import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import { TeamRegistrationFragmentFragment } from '../../../generated/graphql';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { LabelValue } from '../../../components/label-value';
@@ -65,6 +65,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
               readOnly={!!registration.canceledOn}
             />
           </LabelValueGroup>
+          <Anchor href={appPath.registration(registration.id)} label="Detaily registrácie" />
         </Box>
       </Box>
       <Box background={'light-2'} pad="small">
