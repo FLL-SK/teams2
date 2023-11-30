@@ -12,25 +12,33 @@ services:
       - LETSENCRYPT_HOST=api.flltms.spv99.com
       - PORT=3000
 
+      # following entries are used by the application and must be provided by the server administrator
+      # e.g. by using a .env file directly on the server
       - APP_CLIENT_ROOT_URL=${APP_CLIENT_ROOT_URL}
       - APP_EMAIL_FROM=${APP_EMAIL_FROM}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
       - APP_LOGO_URL=${APP_LOGO_URL}
       - APP_MONGODB=${APP_MONGODB}
       - APP_GRAPHQL_SCHEMA_PATH=${APP_GRAPHQL_SCHEMA_PATH}
+
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_BUCKET=${AWS_BUCKET}
       - AWS_REGION=${AWS_REGION}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
       - DEBUG=${DEBUG}
+
       - NODE_ENV=${NODE_ENV}
+
       - NX_SF_API_URL=${NX_SF_API_URL}
       - SF_AUTH_API_KEY=${SF_AUTH_API_KEY}
       - SF_AUTH_COMPANY_ID=${SF_AUTH_COMPANY_ID}
       - SF_AUTH_EMAIL=${SF_AUTH_EMAIL}
       - SF_AUTH_MODULE=${SF_AUTH_MODULE}
       - SF_PAYMENT_KEY=${SF_PAYMENT_KEY}
+
       - SUPERADMIN_USERNAME=${SUPERADMIN_USERNAME}
+
       - TEAMS_ADMIN_EMAIL=${TEAMS_ADMIN_EMAIL}
 
     networks:
