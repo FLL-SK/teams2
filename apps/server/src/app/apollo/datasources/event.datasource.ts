@@ -1,4 +1,3 @@
-
 import { BaseDataSource } from './_base.datasource';
 import {
   EventData,
@@ -52,7 +51,10 @@ export class EventDataSource extends BaseDataSource {
       q.programId = filter.programId;
     }
     if (filter.isActive) {
-      q.date = { $not: { $lt: new Date() } };
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      q.date = { $not: { $lt: tomorrow } };
       q.deletedOn = null;
     }
     log.debug('filter=%o', q);
@@ -137,7 +139,7 @@ export class EventDataSource extends BaseDataSource {
       throw new Error('Event not found');
     }
     const users = await Promise.all(
-      event.managersIds.map(async (u) => userRepository.findById(u).exec())
+      event.managersIds.map(async (u) => userRepository.findById(u).exec()),
     );
     return users.filter((e) => !!e).map(UserMapper.toUser);
   }
