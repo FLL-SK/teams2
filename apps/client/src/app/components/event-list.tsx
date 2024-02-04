@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from 'grommet';
 import { EventListTile } from './event-list-tile';
-import { EventListFragmentFragment } from '../generated/graphql';
+import { EventListFragmentFragment } from '../_generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 

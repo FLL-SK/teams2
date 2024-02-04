@@ -39,7 +39,7 @@ testem.log
 Thumbs.db
 
 # generated files
-generated
+_generated
 
 # GraphQL schema
 graphql.schema.json

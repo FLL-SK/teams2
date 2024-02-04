@@ -11,7 +11,7 @@ import {
   useCreateInvoiceItemMutation,
   useDeleteInvoiceItemMutation,
   useUpdateInvoiceItemMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 
 interface PanelRegistrationInvoiceItemsProps {
   registration: RegistrationFragmentFragment;

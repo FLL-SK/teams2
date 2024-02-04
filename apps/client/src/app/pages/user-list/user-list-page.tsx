@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, TextInput } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
-import { useGetUsersQuery, UserListFragmentFragment } from '../../generated/graphql';
+import { useGetUsersQuery, UserListFragmentFragment } from '../../_generated/graphql';
 import { UserList } from './components/user-list';
 import { Close, Filter } from 'grommet-icons';
 import UserSidebar from './components/user-sidebar';
@@ -38,7 +38,7 @@ export function UserListPage() {
       const sp = constructUserListSearchParams(filter);
       setSearchParams(new URLSearchParams(sp));
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   const searchList = useMemo(
@@ -46,11 +46,11 @@ export function UserListPage() {
       (usersData?.getUsers ?? []).map((t) => ({
         text: `${formatFullName(
           t.firstName,
-          t.lastName
+          t.lastName,
         ).toLocaleLowerCase()} ${t.username.toLocaleLowerCase()}`,
         value: t,
       })),
-    [usersData]
+    [usersData],
   );
 
   const applyFilter = useCallback(
@@ -72,7 +72,7 @@ export function UserListPage() {
 
       setSearchResults(r.map((l) => l.value));
     },
-    [searchList]
+    [searchList],
   );
 
   useEffect(() => {

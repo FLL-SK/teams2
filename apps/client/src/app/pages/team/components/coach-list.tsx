@@ -2,7 +2,7 @@ import { appPath } from '@teams2/common';
 import { Anchor, Box, Button, Text } from 'grommet';
 import { Close } from 'grommet-icons';
 import React from 'react';
-import { UserBasicFragmentFragment } from '../../../generated/graphql';
+import { UserBasicFragmentFragment } from '../../../_generated/graphql';
 import { formatFullName } from '../../../utils/format-fullname';
 
 interface CoachListProps {

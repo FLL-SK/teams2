@@ -7,7 +7,7 @@ import {
   Registration,
   useRegistrationClearInvoicedMutation,
   useRegistrationSetInvoicedMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { SetClearDate } from './set-clear-date';
 import { appPath } from '@teams2/common';
 

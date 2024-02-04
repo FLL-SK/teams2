@@ -1,6 +1,6 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { TagColorType } from '../generated/graphql';
+import { TagColorType } from '../_generated/graphql';
 
 const Types = Schema.Types;
 
@@ -25,7 +25,7 @@ const schema = new Schema<TagData, TagModel>(
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId },
   },
-  { collation: { locale: 'sk', strength: 1 } }
+  { collation: { locale: 'sk', strength: 1 } },
 );
 
 schema.index({ text: 1 });

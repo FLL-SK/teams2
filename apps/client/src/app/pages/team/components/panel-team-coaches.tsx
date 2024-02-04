@@ -8,7 +8,7 @@ import {
   TeamFragmentFragment,
   useAddCoachToTeamMutation,
   useRemoveCoachFromTeamMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { CoachList } from './coach-list';
 
 interface PanelTeamCoachesProps {

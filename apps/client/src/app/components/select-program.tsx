@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useEffect, useState } from 'react';
-import { ProgramListFragmentFragment, useGetProgramsQuery } from '../generated/graphql';
+import { ProgramListFragmentFragment, useGetProgramsQuery } from '../_generated/graphql';
 
 interface SelectProgramProps {
   onSelect: (data: ProgramListFragmentFragment) => void;

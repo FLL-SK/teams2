@@ -1,5 +1,5 @@
 import { FileData } from '../../models';
-import { File } from '../../generated/graphql';
+import { File } from '../../_generated/graphql';
 
 export const FileMapper = {
   toFile(file: FileData | null | undefined): File | null {

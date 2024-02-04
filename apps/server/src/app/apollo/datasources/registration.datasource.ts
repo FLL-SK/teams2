@@ -13,7 +13,7 @@ import {
   RegistrationFilter,
   RegistrationInput,
   TeamSizeInput,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';

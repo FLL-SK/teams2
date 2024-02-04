@@ -5,7 +5,7 @@ import {
   UpdateUserInput,
   useDeclineGdprMutation,
   useUpdateUserMutation,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { useAppUser } from '../app-user/use-app-user';
 import { EditUserDialog, EditUserDialogFields } from './edit-user-dialog';
 import { useAuthenticate } from '@teams2/auth-react';

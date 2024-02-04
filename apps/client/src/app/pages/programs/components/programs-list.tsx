@@ -6,7 +6,7 @@ import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { ListRow2 } from '../../../components/list-row';
 import { TextStriked } from '../../../components/text-striked';
-import { ProgramListFragmentFragment } from '../../../generated/graphql';
+import { ProgramListFragmentFragment } from '../../../_generated/graphql';
 import { constructRegistrationsSearchParams } from '../../registrations/components/registration-list-params';
 
 interface ProgramsListProps {

@@ -1,4 +1,4 @@
-import { Note } from '../../generated/graphql';
+import { Note } from '../../_generated/graphql';
 import { NoteData } from '../../models';
 
 export const NoteMapper = {

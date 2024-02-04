@@ -10,7 +10,7 @@ import {
   useGetEventLazyQuery,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 
 import { useParams } from 'react-router-dom';
 

@@ -10,7 +10,7 @@ import {
   User,
   Event,
   ProgramFilterInput,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { UpdateQuery } from 'mongoose';
 import { logger } from '@teams2/logger';

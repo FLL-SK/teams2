@@ -11,7 +11,7 @@ import {
   useGetRegistrationLazyQuery,
   useGetNotesLazyQuery,
   useRemoveTagsFromTeamMutation,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { LabelValueGroup } from '../../components/label-value-group';
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';

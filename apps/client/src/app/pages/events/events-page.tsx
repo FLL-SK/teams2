@@ -2,7 +2,7 @@ import { Box, Paragraph } from 'grommet';
 import React from 'react';
 import { BasePage } from '../../components/base-page';
 import { EventList } from '../../components/event-list';
-import { useGetEventsQuery } from '../../generated/graphql';
+import { useGetEventsQuery } from '../../_generated/graphql';
 
 interface EventsPageProps {
   responsiveSize?: string;

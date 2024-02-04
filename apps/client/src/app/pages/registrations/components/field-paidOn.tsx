@@ -7,7 +7,7 @@ import {
   Registration,
   useRegistrationClearPaidMutation,
   useRegistrationSetPaidMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldPaidOn = (props: {

@@ -1,6 +1,6 @@
 import { BaseDataSource } from './_base.datasource';
 import { TagData, tagRepository } from '../../models';
-import { Tag, TagInput } from '../../generated/graphql';
+import { Tag, TagInput } from '../../_generated/graphql';
 import { TagMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
@@ -72,7 +72,7 @@ export class TagDataSource extends BaseDataSource {
       .findByIdAndUpdate(
         id,
         { deletedOn: new Date(), deletedBy: this.context.user._id },
-        { new: true }
+        { new: true },
       )
       .exec();
     return TagMapper.toTag(tag);

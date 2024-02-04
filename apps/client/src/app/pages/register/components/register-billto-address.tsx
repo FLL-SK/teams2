@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Form, Text } from 'grommet';
 
 import { AddressForm } from './address-form';
-import { AddressInput } from '../../../generated/graphql';
+import { AddressInput } from '../../../_generated/graphql';
 
 interface RegisterBillToAddressProps {
   address?: AddressInput | null;
@@ -32,7 +32,7 @@ export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
   const { address, onSubmit, nextStep, prevStep, cancel } = props;
 
   const [formData, setFormData] = useState<FormDataType>(
-    address ? { ...emptyForm, ...address } : emptyForm
+    address ? { ...emptyForm, ...address } : emptyForm,
   );
 
   return (

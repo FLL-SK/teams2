@@ -4,7 +4,7 @@ import { Box, Button, CheckBox, Form, FormField, Paragraph, Text } from 'grommet
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useGetSettingsQuery } from '../../generated/graphql';
+import { useGetSettingsQuery } from '../../_generated/graphql';
 import { validateEmail, validatePhone } from '@teams2/common';
 import { AuthSignupData, useAuthenticate } from '@teams2/auth-react';
 

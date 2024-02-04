@@ -7,7 +7,7 @@ import {
   Registration,
   useRegistrationClearShippedMutation,
   useRegistrationSetShippedMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldShippedOn = (props: {
@@ -19,7 +19,7 @@ export const FieldShippedOn = (props: {
   const { notify } = useNotification();
   const onError = useCallback(
     () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
-    [notify]
+    [notify],
   );
 
   const [setShipped] = useRegistrationSetShippedMutation({ onError });

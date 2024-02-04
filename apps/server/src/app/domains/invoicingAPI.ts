@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { InvoiceItem } from '../generated/graphql';
+import { InvoiceItem } from '../_generated/graphql';
 import { AddressData, InvoiceItemData } from '../models';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +49,7 @@ export class InvoicingAPI {
     shipTo: AddressData | undefined,
     items: InvoiceItemData[],
     note: string,
-    issuedBy: InvoiceIssuedBy
+    issuedBy: InvoiceIssuedBy,
   ) {
     return 'invoice';
   }

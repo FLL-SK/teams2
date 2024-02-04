@@ -4,7 +4,7 @@ import { Box, Button, Text, Tip } from 'grommet';
 import { Calendar, Close, Group } from 'grommet-icons';
 import { BorderType } from 'grommet/utils';
 
-import { EventListFragmentFragment } from '../generated/graphql';
+import { EventListFragmentFragment } from '../_generated/graphql';
 import { getColor } from '../theme';
 import { ListRow2 } from './list-row';
 

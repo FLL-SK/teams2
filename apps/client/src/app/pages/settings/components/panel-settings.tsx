@@ -5,7 +5,7 @@ import { InplaceTextEdit } from '../../../components/editors/inplace-text';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { useNotification } from '../../../components/notifications/notification-provider';
-import { SettingsFragmentFragment, useUpdateSettingsMutation } from '../../../generated/graphql';
+import { SettingsFragmentFragment, useUpdateSettingsMutation } from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
 interface PanelSettingsProps {

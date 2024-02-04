@@ -13,7 +13,7 @@ import {
   useCreateNoteMutation,
   useGetNotesLazyQuery,
   useRemoveTagsFromTeamMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { CoachList } from '../../team/components/coach-list';
 

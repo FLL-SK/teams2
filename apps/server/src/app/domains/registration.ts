@@ -5,7 +5,7 @@ import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
 import { InvoicingAPISuperfaktura } from './invoicingAPI-superfaktura';
 
 import { logger } from '@teams2/logger';
-import { File, RegistrationPayload } from '../generated/graphql';
+import { File, RegistrationPayload } from '../_generated/graphql';
 import { RegistrationMapper } from '../apollo/mappers';
 import { invoiceItemRepository, registrationRepository, teamRepository } from '../models';
 import { getAppSettings } from '../utils/settings';

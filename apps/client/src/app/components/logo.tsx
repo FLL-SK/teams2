@@ -1,6 +1,6 @@
 import { Box } from 'grommet';
 import React from 'react';
-import { useGetSettingsQuery } from '../generated/graphql';
+import { useGetSettingsQuery } from '../_generated/graphql';
 
 interface LogoProps {
   width?: string;

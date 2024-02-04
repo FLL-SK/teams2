@@ -1,5 +1,5 @@
 import { AddressData } from '../../models';
-import { Address } from '../../generated/graphql';
+import { Address } from '../../_generated/graphql';
 
 export const AddressMapper = {
   toAddress(address: AddressData | null | undefined): Address | null {

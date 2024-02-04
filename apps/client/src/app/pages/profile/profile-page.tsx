@@ -17,7 +17,7 @@ import {
   useSetAdminMutation,
   useUndeleteUserMutation,
   useUpdateUserMutation,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { LabelValueGroup } from '../../components/label-value-group';

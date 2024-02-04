@@ -6,7 +6,7 @@ import {
   TagFragmentFragment,
   useCreateTagMutation,
   useGetTagsQuery,
-} from '../generated/graphql';
+} from '../_generated/graphql';
 
 interface SelectTagProps {
   selected?: string[]; // already selected tags ids

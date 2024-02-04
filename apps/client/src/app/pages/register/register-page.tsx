@@ -13,7 +13,7 @@ import {
   useCreateRegistrationMutation,
   useGetTeamLazyQuery,
   useUpdateTeamMutation,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { RegisterBillToAddress } from './components/register-billto-address';
 import { RegisterIntro } from './components/register-intro';
 import { RegisterReview } from './components/register-review';

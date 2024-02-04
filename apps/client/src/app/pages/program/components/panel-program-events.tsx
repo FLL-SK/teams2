@@ -9,7 +9,7 @@ import {
   ProgramFragmentFragment,
   useCreateEventMutation,
   useDeleteEventMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 
 interface PanelProgramEventsProps {
   program: ProgramFragmentFragment;
@@ -34,7 +34,7 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
 
   const events = useMemo(
     () => (program.events ?? []).filter((event) => !event.deletedOn),
-    [program]
+    [program],
   );
 
   const handleDeleteEvent = useCallback(
@@ -45,7 +45,7 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
         alert('Nie je možné vymazať turnaj, na ktorý je prihlásený jeden alebo viac tímov.');
       }
     },
-    [deleteEvent]
+    [deleteEvent],
   );
 
   return (

@@ -5,7 +5,7 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import {
   RegistrationFragmentFragment,
   useUpdateRegistrationMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { FieldShipmentGroup } from '../../registrations/components/field-shipmentGroup';
 import { FieldShippedOn } from '../../registrations/components/field-shippedOn';
 import { fullAddress } from '../../../utils/format-address';

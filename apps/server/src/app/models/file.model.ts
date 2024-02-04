@@ -1,6 +1,6 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { FileType } from '../generated/graphql';
+import { FileType } from '../_generated/graphql';
 
 const Types = Schema.Types;
 
@@ -31,7 +31,7 @@ const schema = new Schema<FileData, FileModel>(
     contentType: { type: Types.String, required: true },
     updatedOn: { type: Types.Date, required: true },
   },
-  { collation: { locale: 'sk', strength: 1 } }
+  { collation: { locale: 'sk', strength: 1 } },
 );
 
 schema.index({ ttype: 1, ref: 1 });

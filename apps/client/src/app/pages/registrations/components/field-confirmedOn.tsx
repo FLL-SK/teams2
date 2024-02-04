@@ -7,7 +7,7 @@ import {
   Registration,
   useRegistrationClearConfirmedMutation,
   useRegistrationSetConfirmedMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldConfirmedOn = (props: {

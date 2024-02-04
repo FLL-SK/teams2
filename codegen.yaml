@@ -1,17 +1,14 @@
-overwrite: true
 schema: './dist/schema.graphql'
-hooks:
-  afterOneFileWrite:
-    - eslint --fix
-    - prettier --write
+#hooks:
+#  afterOneFileWrite:
+#    - eslint --fix
+#    - prettier --write
 generates:
-  apps/server/src/app/generated/graphql.ts:
+  apps/server/src/app/_generated/graphql.ts:
     plugins:
       - 'typescript'
       - 'typescript-resolvers':
           avoidOptionals: false
-          mappers:
-            Project: Project
       - add:
           content: |
             /* eslint @typescript-eslint/no-unused-vars: "off"*/
@@ -27,7 +24,8 @@ generates:
       enumsAsTypes: true
       useIndexSignature: true
       contextType: ../apollo/apollo-context#ApolloContext
-  apps/client/src/app/generated/graphql.tsx:
+
+  apps/client/src/app/_generated/graphql.tsx:
     documents: 'apps/client/**/*.graphql'
     plugins:
       - 'typescript'
@@ -46,7 +44,6 @@ generates:
         Email: string
         ID: string
       enumsAsTypes: true
-      avoidOptionals: false
   ./graphql.schema.json:
     plugins:
       - 'introspection'

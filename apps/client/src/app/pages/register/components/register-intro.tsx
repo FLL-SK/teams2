@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Paragraph, Text } from 'grommet';
-import { TeamFragmentFragment } from '../../../generated/graphql';
+import { TeamFragmentFragment } from '../../../_generated/graphql';
 
 interface RegisterIntroProps {
   team: TeamFragmentFragment;

@@ -19,7 +19,7 @@ import {
   useRemoveTagsFromTeamMutation,
   useGetTeamLazyQuery,
   useGetNotesLazyQuery,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { LabelValueGroup } from '../../components/label-value-group';

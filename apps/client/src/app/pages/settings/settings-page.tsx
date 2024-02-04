@@ -1,6 +1,6 @@
 import React from 'react';
 import { BasePage } from '../../components/base-page';
-import { useGetSettingsQuery } from '../../generated/graphql';
+import { useGetSettingsQuery } from '../../_generated/graphql';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { PanelSettings } from './components/panel-settings';

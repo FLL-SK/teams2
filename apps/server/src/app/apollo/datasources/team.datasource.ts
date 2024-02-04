@@ -9,7 +9,7 @@ import {
   Registration,
   Tag,
   TeamFilterInput,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import Dataloader from 'dataloader';

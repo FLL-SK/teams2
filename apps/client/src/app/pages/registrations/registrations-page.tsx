@@ -9,7 +9,7 @@ import {
   useGetProgramLazyQuery,
   useGetProgramRegistrationsLazyQuery,
   useRemoveTagsFromTeamMutation,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { RegistrationList } from './components/registration-list';
 import { Close, Download, Filter, Tag } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';

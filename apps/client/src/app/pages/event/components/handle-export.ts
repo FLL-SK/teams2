@@ -1,4 +1,4 @@
-import { RegisteredTeamFragmentFragment } from '../../../generated/graphql';
+import { RegisteredTeamFragmentFragment } from '../../../_generated/graphql';
 import { formatFullName } from '../../../utils/format-fullname';
 import { exportRegistrations as exportRegisteredTeams } from '../../../utils/export-registrations';
 
@@ -11,7 +11,7 @@ interface CoachType {
 export const handleExportRegisteredTeams = (
   programName: string,
   eventName: string,
-  regs: RegisteredTeamFragmentFragment[]
+  regs: RegisteredTeamFragmentFragment[],
 ) => {
   const teams = regs.map((r) => {
     const cc: { coach1?: CoachType; coach2?: CoachType; coach3?: CoachType } = {};

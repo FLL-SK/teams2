@@ -1,6 +1,6 @@
 import { BaseDataSource } from './_base.datasource';
 import { NoteData, noteRepository } from '../../models';
-import { Note, NoteCreateInput, NoteType, NoteUpdateInput } from '../../generated/graphql';
+import { Note, NoteCreateInput, NoteType, NoteUpdateInput } from '../../_generated/graphql';
 import { NoteMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
@@ -10,7 +10,6 @@ import { FilterQuery } from 'mongoose';
 const logBase = logger('DS:Note');
 
 export class NoteDataSource extends BaseDataSource {
-
   async getNote(id: ObjectId): Promise<Note> {
     if (!id) return null;
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get note');

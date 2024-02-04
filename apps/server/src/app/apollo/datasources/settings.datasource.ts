@@ -1,6 +1,6 @@
 import { BaseDataSource } from './_base.datasource';
 import { settingsRepository } from '../../models';
-import { Settings, UpdateSettingsInput } from '../../generated/graphql';
+import { Settings, UpdateSettingsInput } from '../../_generated/graphql';
 
 import { logger } from '@teams2/logger';
 import { SettingsMapper } from '../mappers/settings.mapper';
@@ -8,7 +8,6 @@ import { SettingsMapper } from '../mappers/settings.mapper';
 const logBase = logger('DS:Settings');
 
 export class SettingsDataSource extends BaseDataSource {
-
   async get(): Promise<Settings> {
     const s = await settingsRepository.get();
     return SettingsMapper.toSettings(s);

@@ -1,4 +1,4 @@
-import { Resolvers } from '../../generated/graphql';
+import { Resolvers } from '../../_generated/graphql';
 import { ApolloContext } from '../apollo-context';
 
 import * as User from './user.resolvers';

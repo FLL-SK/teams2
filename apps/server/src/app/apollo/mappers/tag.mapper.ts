@@ -1,4 +1,4 @@
-import { Tag } from '../../generated/graphql';
+import { Tag } from '../../_generated/graphql';
 import { TagData } from '../../models';
 
 export const TagMapper = {

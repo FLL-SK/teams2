@@ -5,7 +5,7 @@ import { ProgramsList } from './components/programs-list';
 import { Add } from 'grommet-icons';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
-import { useCreateProgramMutation, useGetProgramsQuery } from '../../generated/graphql';
+import { useCreateProgramMutation, useGetProgramsQuery } from '../../_generated/graphql';
 
 interface ProgramsPageProps {
   responsiveSize?: string;

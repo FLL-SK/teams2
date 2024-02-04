@@ -3,7 +3,7 @@ import { Box, Text, ResponsiveContext, Spinner, Grid } from 'grommet';
 import { MainMenu } from './main-menu';
 import styled from 'styled-components';
 import { ForceGdprDialog } from './dialogs/force-gdpr';
-import { useGetRegistrationsCountQuery } from '../generated/graphql';
+import { useGetRegistrationsCountQuery } from '../_generated/graphql';
 
 interface BasePageProps {
   title?: string;

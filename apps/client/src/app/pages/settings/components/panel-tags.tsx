@@ -9,7 +9,7 @@ import {
   useGetTagsQuery,
   useRestoreTagMutation,
   useUpdateTagMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 
 export function PanelTags() {
   const { notify } = useNotification();

@@ -1,4 +1,4 @@
-import { Settings } from '../../generated/graphql';
+import { Settings } from '../../_generated/graphql';
 import { SettingsData } from '../../models';
 import { AddressMapper } from './address.mapper';
 

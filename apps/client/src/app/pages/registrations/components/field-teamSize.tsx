@@ -4,7 +4,7 @@ import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
-import { Registration, useRegistrationSetTeamSizeMutation } from '../../../generated/graphql';
+import { Registration, useRegistrationSetTeamSizeMutation } from '../../../_generated/graphql';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 
 export const FieldTeamSize = (props: {
@@ -16,7 +16,7 @@ export const FieldTeamSize = (props: {
   const { notify } = useNotification();
   const onError = useCallback(
     () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
-    [notify]
+    [notify],
   );
 
   const [showDialog, setShowDialog] = React.useState(false);

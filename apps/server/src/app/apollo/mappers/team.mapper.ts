@@ -1,5 +1,5 @@
 import { TeamData } from '../../models';
-import { Team } from '../../generated/graphql';
+import { Team } from '../../_generated/graphql';
 import { AddressMapper } from './address.mapper';
 
 export const TeamMapper = {

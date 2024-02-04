@@ -6,7 +6,7 @@ import {
   TeamFragmentFragment,
   useGetEventLazyQuery,
   useGetProgramLazyQuery,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { RegisterDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { LabelValueGroup } from '../../../components/label-value-group';

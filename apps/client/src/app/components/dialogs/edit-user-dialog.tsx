@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, CheckBox, Form, FormField, Paragraph } from 'grommet';
 import { Modal } from '../modal';
-import { useGetSettingsQuery } from '../../generated/graphql';
+import { useGetSettingsQuery } from '../../_generated/graphql';
 import { validateEmail, validatePhone } from '@teams2/common';
 
 interface EditUserDialogProps {

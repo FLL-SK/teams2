@@ -1,6 +1,6 @@
 import React from 'react';
 import { TagList } from '../../../components/tag-list';
-import { TagFragmentFragment } from '../../../generated/graphql';
+import { TagFragmentFragment } from '../../../_generated/graphql';
 import { Box, Button } from 'grommet';
 
 interface MultitagPanelProps {

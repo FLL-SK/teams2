@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Paragraph } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
-import { TeamFragmentFragment } from '../../../generated/graphql';
+import { TeamFragmentFragment } from '../../../_generated/graphql';
 import { RegisterDetails } from './types';
 import { LabelValueGroup } from '../../../components/label-value-group';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Form, FormField, Grid } from 'grommet';
 import { Modal } from '../modal';
-import { CreateTeamInput, TeamListFragmentFragment } from '../../generated/graphql';
+import { CreateTeamInput, TeamListFragmentFragment } from '../../_generated/graphql';
 
 interface EditTeamDialogProps {
   team?: TeamListFragmentFragment;

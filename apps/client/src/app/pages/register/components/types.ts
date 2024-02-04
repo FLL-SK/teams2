@@ -4,7 +4,7 @@ import {
   EventListFragmentFragment,
   ProgramListFragmentFragment,
   RegistrationType,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 
 export type Address = AddressGQL;
 

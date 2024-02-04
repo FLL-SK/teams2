@@ -17,7 +17,7 @@ import {
 } from '../utils/emails';
 
 import { logger } from '@teams2/logger';
-import { Registration, RegistrationInput, RegistrationPayload } from '../generated/graphql';
+import { Registration, RegistrationInput, RegistrationPayload } from '../_generated/graphql';
 
 const logLib = logger('domain:Event');
 

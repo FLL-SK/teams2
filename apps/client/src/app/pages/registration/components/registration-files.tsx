@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'grommet';
 import { FileTile } from '../../../components/file-tile';
-import { useGetRegistrationFilesQuery } from '../../../generated/graphql';
+import { useGetRegistrationFilesQuery } from '../../../_generated/graphql';
 
 interface RegistrationFilesPanelProps {
   registrationId: string;

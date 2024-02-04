@@ -1,6 +1,6 @@
 import { BaseDataSource } from './_base.datasource';
 import { FileData, fileRepository } from '../../models';
-import { File, FileUploadInput } from '../../generated/graphql';
+import { File, FileUploadInput } from '../../_generated/graphql';
 import { FileMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 

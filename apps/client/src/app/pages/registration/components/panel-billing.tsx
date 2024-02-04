@@ -15,7 +15,7 @@ import {
   useCreateRegistrationInvoiceMutation,
   useEmailRegistrationInvoiceMutation,
   useUpdateRegistrationMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { FieldInvoiceIssuedOn } from '../../registrations/components/field-invoiceIssuedOn';
 import { FieldPaidOn } from '../../registrations/components/field-paidOn';
@@ -147,8 +147,8 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                           'Nepodarilo sa vytvoriť faktúru.',
                           (data.createRegistrationInvoice.errors ?? []).reduce(
                             (t, e) => t + '\n' + e.code,
-                            ''
-                          )
+                            '',
+                          ),
                         );
                       } else {
                         notify.info('Faktúra bola vytvorená.');

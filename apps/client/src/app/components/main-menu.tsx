@@ -2,7 +2,7 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { Nav, Sidebar, Button, Box, Text } from 'grommet';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
-import { UserFragmentFragment } from '../generated/graphql';
+import { UserFragmentFragment } from '../_generated/graphql';
 import { Logo } from './logo';
 import { useAppUser } from './app-user/use-app-user';
 import { getColor } from '../theme';

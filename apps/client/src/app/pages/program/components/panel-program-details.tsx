@@ -8,7 +8,7 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import { Modal } from '../../../components/modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
-import { ProgramFragmentFragment, useUpdateProgramMutation } from '../../../generated/graphql';
+import { ProgramFragmentFragment, useUpdateProgramMutation } from '../../../_generated/graphql';
 
 interface PanelProgramDetailsProps {
   program: ProgramFragmentFragment;

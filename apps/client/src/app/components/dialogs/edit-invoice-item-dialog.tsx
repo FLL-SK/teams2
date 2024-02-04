@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box, Button, CheckBox, Form, FormField, Grid, TextInput } from 'grommet';
 import { useState } from 'react';
 
-import { InvoiceItemFragmentFragment } from '../../generated/graphql';
+import { InvoiceItemFragmentFragment } from '../../_generated/graphql';
 import { Modal } from '../modal';
 
 interface EditInvoiceItemDialogProps {

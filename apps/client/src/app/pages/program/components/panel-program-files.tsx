@@ -11,7 +11,7 @@ import {
   useGetProgramFilesQuery,
   useGetProgramFileUploadUrlLazyQuery,
   useRemoveFileMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { uploadS3XHR } from '../../../utils/upload-s3-xhr';
 
 interface PanelProgramFilesProps {

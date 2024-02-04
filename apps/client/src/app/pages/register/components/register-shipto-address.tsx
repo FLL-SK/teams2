@@ -3,7 +3,7 @@ import { Box, Button, CheckBox, Form, Text } from 'grommet';
 import { RegisterDetails } from './types';
 
 import { AddressForm } from './address-form';
-import { AddressInput } from '../../../generated/graphql';
+import { AddressInput } from '../../../_generated/graphql';
 
 interface RegisterShipToAddressProps {
   details: RegisterDetails;

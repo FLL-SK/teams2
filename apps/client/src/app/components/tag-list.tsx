@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
-import { TagColorType, TagFragmentFragment } from '../generated/graphql';
+import { TagColorType, TagFragmentFragment } from '../_generated/graphql';
 import { SelectTag } from './select-tag';
 import { TagPill } from './tag-pill';
 

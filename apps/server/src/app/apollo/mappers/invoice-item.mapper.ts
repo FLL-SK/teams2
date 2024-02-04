@@ -1,5 +1,5 @@
 import { InvoiceItemData } from '../../models';
-import { InvoiceItem } from '../../generated/graphql';
+import { InvoiceItem } from '../../_generated/graphql';
 
 export const InvoiceItemMapper = {
   toInvoiceItem(item: InvoiceItemData | null | undefined): InvoiceItem | null {

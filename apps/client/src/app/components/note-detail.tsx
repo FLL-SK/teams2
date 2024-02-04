@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Markdown, TextArea, Text } from 'grommet';
 import styled from 'styled-components';
-import { Note } from '../generated/graphql';
+import { Note } from '../_generated/graphql';
 import { useAppUser } from './app-user/use-app-user';
 import { formatDate, formatDateTimeRelative, toZonedDateTime } from '@teams2/dateutils';
 import { Edit, Trash } from 'grommet-icons';

@@ -3,7 +3,7 @@ import { Box, Text, Button } from 'grommet';
 import { Close } from 'grommet-icons';
 import styled from 'styled-components';
 import { getTagColor } from '../theme';
-import { TagColorType } from '../generated/graphql';
+import { TagColorType } from '../_generated/graphql';
 
 interface TagProps {
   value: string;

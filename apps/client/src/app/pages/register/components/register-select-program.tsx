@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { ProgramTile } from '../../../components/program-tile';
-import { ProgramListFragmentFragment, useGetProgramsQuery } from '../../../generated/graphql';
+import { ProgramListFragmentFragment, useGetProgramsQuery } from '../../../_generated/graphql';
 import { RegisterDetails } from './types';
 
 interface RegisterSelectProgramProps {

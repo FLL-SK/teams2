@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from 'grommet';
-import { TeamRegistrationFragmentFragment } from '../../../generated/graphql';
+import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
 import { TeamRegistrationTile } from './team-registration-tile';
 
 interface TeamRegistrationsListProps {

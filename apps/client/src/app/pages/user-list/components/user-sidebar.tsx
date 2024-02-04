@@ -3,7 +3,7 @@ import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
-import { UserListFragmentFragment } from '../../../generated/graphql';
+import { UserListFragmentFragment } from '../../../_generated/graphql';
 
 interface UserSidebarProps {
   user?: UserListFragmentFragment;

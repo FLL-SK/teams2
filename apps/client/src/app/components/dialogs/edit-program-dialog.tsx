@@ -11,7 +11,7 @@ import {
   TextInput,
 } from 'grommet';
 import { useState } from 'react';
-import { ProgramListFragmentFragment } from '../../generated/graphql';
+import { ProgramListFragmentFragment } from '../../_generated/graphql';
 import { Modal } from '../modal';
 import { toUtcDateString, toZonedDateString } from '@teams2/dateutils';
 

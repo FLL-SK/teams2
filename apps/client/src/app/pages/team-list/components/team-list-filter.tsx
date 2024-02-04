@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
-import { useGetTagsQuery } from '../../../generated/graphql';
+import { useGetTagsQuery } from '../../../_generated/graphql';
 
 export interface TeamListFilterValues {
   tags?: string[];
@@ -31,7 +31,7 @@ export function TeamListFilter(props: TeamListFilterProps) {
         onChange({ ...values, tags });
       }
     },
-    [filterTags, onChange, values]
+    [filterTags, onChange, values],
   );
 
   const removeTagFromFilter = useCallback(
@@ -46,7 +46,7 @@ export function TeamListFilter(props: TeamListFilterProps) {
         onChange({ ...values, tags });
       }
     },
-    [filterTags, onChange, values]
+    [filterTags, onChange, values],
   );
 
   return (

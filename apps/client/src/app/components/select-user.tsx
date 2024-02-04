@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
-import { useGetUsersQuery } from '../generated/graphql';
+import { useGetUsersQuery } from '../_generated/graphql';
 import { formatFullName } from '../utils/format-fullname';
 
 interface UserOption {

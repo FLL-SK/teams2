@@ -1,6 +1,6 @@
 import { Schema, model, Model, Document } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
-import { NoteType } from '../generated/graphql';
+import { NoteType } from '../_generated/graphql';
 
 const Types = Schema.Types;
 

@@ -1,6 +1,6 @@
 import { BaseDataSource } from './_base.datasource';
 import { UserData, userRepository } from '../../models';
-import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../generated/graphql';
+import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../_generated/graphql';
 import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
@@ -78,7 +78,7 @@ export class UserDataSource extends BaseDataSource {
       .findByIdAndUpdate(
         id,
         { deletedOn: new Date(), deletedBy: this.context.user._id },
-        { new: true }
+        { new: true },
       )
       .lean()
       .exec();
@@ -114,7 +114,7 @@ export class UserDataSource extends BaseDataSource {
       .findOneAndUpdate(
         { _id: id, gdprDeclinedOn: null },
         { gdprDeclinedOn: new Date() },
-        { new: true }
+        { new: true },
       )
       .lean()
       .exec();

@@ -15,7 +15,7 @@ import {
   useGetNotesLazyQuery,
   useGetRegistrationLazyQuery,
   useRemoveTagsFromTeamMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
 import { FieldInvoiceIssuedOn } from './field-invoiceIssuedOn';

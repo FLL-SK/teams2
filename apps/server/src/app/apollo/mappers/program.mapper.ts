@@ -1,5 +1,5 @@
 import { ProgramData } from '../../models';
-import { Program } from '../../generated/graphql';
+import { Program } from '../../_generated/graphql';
 
 export const ProgramMapper = {
   toProgram(program: ProgramData | null | undefined): Program | null {

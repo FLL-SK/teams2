@@ -1,4 +1,4 @@
-import { User } from '../../generated/graphql';
+import { User } from '../../_generated/graphql';
 import { UserData } from '../../models';
 
 export const UserMapper = {

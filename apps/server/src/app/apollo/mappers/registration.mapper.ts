@@ -1,5 +1,5 @@
 import { RegistrationData } from '../../models';
-import { Registration } from '../../generated/graphql';
+import { Registration } from '../../_generated/graphql';
 import { AddressMapper } from './address.mapper';
 
 export const RegistrationMapper = {

@@ -14,7 +14,7 @@ import {
   EventFilterInput,
   UpdateEventInput,
   UpdateEventPayload,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';

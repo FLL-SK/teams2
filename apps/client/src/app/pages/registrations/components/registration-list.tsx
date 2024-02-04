@@ -3,7 +3,7 @@ import { Box, CheckBox, Text, Tip } from 'grommet';
 import { Checkmark, Cube, Cubes, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
-import { RegistrationListFragmentFragment } from '../../../generated/graphql';
+import { RegistrationListFragmentFragment } from '../../../_generated/graphql';
 import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';

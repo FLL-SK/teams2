@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
-import { TeamRegistrationFragmentFragment } from '../../../generated/graphql';
+import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { LabelValue } from '../../../components/label-value';
 import { FieldTeamSize } from '../../registrations/components/field-teamSize';

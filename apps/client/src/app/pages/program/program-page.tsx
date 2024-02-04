@@ -5,7 +5,7 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { PanelGroup } from '../../components/panel';
 
-import { useGetProgramLazyQuery } from '../../generated/graphql';
+import { useGetProgramLazyQuery } from '../../_generated/graphql';
 import { ErrorPage } from '../../components/error-page';
 import { useParams } from 'react-router-dom';
 

@@ -4,7 +4,7 @@ import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditShipmentGroupDialog } from '../../../components/dialogs/edit-shipment-group-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
-import { Registration, useRegistrationSetShipmentGroupMutation } from '../../../generated/graphql';
+import { Registration, useRegistrationSetShipmentGroupMutation } from '../../../_generated/graphql';
 
 export const FieldShipmentGroup = (props: {
   registration: Pick<Registration, 'id' | 'shipmentGroup' | 'shippedOn'>;
@@ -16,7 +16,7 @@ export const FieldShipmentGroup = (props: {
   const { notify } = useNotification();
   const onError = useCallback(
     () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
-    [notify]
+    [notify],
   );
 
   const [showDialog, setShowDialog] = React.useState(false);

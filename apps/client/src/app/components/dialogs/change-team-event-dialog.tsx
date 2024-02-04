@@ -7,7 +7,7 @@ import {
   EventListFragmentFragment,
   TeamBasicFragmentFragment,
   useGetEventsQuery,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { Modal } from '../modal';
 import { LabelValue } from '../label-value';
 

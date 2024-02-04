@@ -7,7 +7,7 @@ import {
   ProgramFragmentFragment,
   useAddProgramManagerMutation,
   useRemoveProgramManagerMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 
 interface PanelProgramManagersProps {
   program: ProgramFragmentFragment;

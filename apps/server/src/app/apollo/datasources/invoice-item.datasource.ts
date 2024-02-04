@@ -1,6 +1,6 @@
 import { BaseDataSource } from './_base.datasource';
 import { InvoiceItemData, invoiceItemRepository } from '../../models';
-import { InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../generated/graphql';
+import { InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../_generated/graphql';
 import { InvoiceItemMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 

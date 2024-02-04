@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Form, FormField } from 'grommet';
 import { Modal } from '../modal';
-import { TagColorType } from '../../generated/graphql';
+import { TagColorType } from '../../_generated/graphql';
 import { TagColorPicker } from '../tag-color-picker';
 
 interface EditTagProps {

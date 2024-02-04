@@ -1,5 +1,5 @@
 import { EventData } from '../../models';
-import { Event } from '../../generated/graphql';
+import { Event } from '../../_generated/graphql';
 
 export const EventMapper = {
   toEvent(event: EventData | null | undefined): Event | null {

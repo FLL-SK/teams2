@@ -5,7 +5,7 @@ import { SelectProgram } from '../../../components/select-program';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
-import { useGetTagsQuery } from '../../../generated/graphql';
+import { useGetTagsQuery } from '../../../_generated/graphql';
 
 export interface RegistrationListFilterValues {
   tags?: string[];

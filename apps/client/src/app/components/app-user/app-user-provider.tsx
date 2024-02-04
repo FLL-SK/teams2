@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import React, { createContext, useCallback, useEffect } from 'react';
-import { useGetUserLazyQuery, UserFragmentFragment } from '../../generated/graphql';
+import { useGetUserLazyQuery, UserFragmentFragment } from '../../_generated/graphql';
 import { useAuthenticate } from '@teams2/auth-react';
 
 type AppUser = UserFragmentFragment;

@@ -6,7 +6,7 @@ import {
   TeamFilterInput,
   TeamListFragmentFragment,
   useGetTeamsLazyQuery,
-} from '../../generated/graphql';
+} from '../../_generated/graphql';
 import { TeamList } from './components/team-list';
 import { Close, Filter } from 'grommet-icons';
 import TeamSidebar from './components/team-sidebar';
@@ -55,7 +55,7 @@ export function TeamListPage() {
       const sp = constructTeamListSearchParams(filter);
       setSearchParams(new URLSearchParams(sp));
     },
-    [setSearchParams]
+    [setSearchParams],
   );
 
   const searchList = useMemo(
@@ -64,7 +64,7 @@ export function TeamListPage() {
         text: `${t.name.toLocaleLowerCase()} ${t.address.city.toLocaleLowerCase()}`,
         value: t,
       })),
-    [teamsData?.getTeams]
+    [teamsData?.getTeams],
   );
 
   useEffect(() => {

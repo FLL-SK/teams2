@@ -8,7 +8,7 @@ import {
   RegistrationFragmentFragment,
   useCancelRegistrationMutation,
   useChangeRegisteredEventMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
 import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm-team-unregister';

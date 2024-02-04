@@ -1,4 +1,4 @@
-import { QueryResolvers, MutationResolvers, Note } from '../../generated/graphql';
+import { QueryResolvers, MutationResolvers, Note } from '../../_generated/graphql';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
 

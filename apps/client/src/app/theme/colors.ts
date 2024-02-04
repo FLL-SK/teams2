@@ -1,5 +1,5 @@
 import { ColorType } from 'grommet/utils';
-import { TagColorType } from '../generated/graphql';
+import { TagColorType } from '../_generated/graphql';
 
 const brandColor = '#4E96D9';
 

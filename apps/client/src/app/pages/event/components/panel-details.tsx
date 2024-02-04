@@ -13,7 +13,7 @@ import {
   EventFragmentFragment,
   useDeleteEventMutation,
   useUpdateEventMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 
 interface PanelEventDetailsProps {
   event: EventFragmentFragment;

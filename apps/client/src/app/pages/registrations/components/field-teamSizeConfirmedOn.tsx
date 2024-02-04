@@ -7,7 +7,7 @@ import {
   Registration,
   useRegistrationClearTeamSizeConfirmedMutation,
   useRegistrationSetTeamSizeConfirmedMutation,
-} from '../../../generated/graphql';
+} from '../../../_generated/graphql';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldTeamSizeConfirmedOn = (props: {
@@ -20,7 +20,7 @@ export const FieldTeamSizeConfirmedOn = (props: {
   const { notify } = useNotification();
   const onError = useCallback(
     () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
-    [notify]
+    [notify],
   );
 
   const [setSizeConfirmed] = useRegistrationSetTeamSizeConfirmedMutation({ onError });

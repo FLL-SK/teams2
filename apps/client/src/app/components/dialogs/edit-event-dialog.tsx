@@ -13,7 +13,7 @@ import {
 } from 'grommet';
 import { useState } from 'react';
 
-import { EventListFragmentFragment } from '../../generated/graphql';
+import { EventListFragmentFragment } from '../../_generated/graphql';
 import { Modal } from '../modal';
 import { useAppUser } from '../app-user/use-app-user';
 

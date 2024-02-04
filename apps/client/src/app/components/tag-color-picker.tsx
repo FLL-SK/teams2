@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from 'grommet';
 import styled from 'styled-components';
-import { TagColorType } from '../generated/graphql';
+import { TagColorType } from '../_generated/graphql';
 import { getColor, getTagColor, getTagColorCodes } from '../theme';
 
 const ColorBox = styled(Box)<{ color: TagColorType; selected: boolean }>`

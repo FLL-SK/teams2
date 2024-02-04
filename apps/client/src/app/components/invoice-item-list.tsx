@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Text } from 'grommet';
-import { InvoiceItemFragmentFragment } from '../generated/graphql';
+import { InvoiceItemFragmentFragment } from '../_generated/graphql';
 import { JustifiedText } from './justified-text';
 import { ListHeader2, ListRow2 } from './list-row';
 import { Close, FormView } from 'grommet-icons';

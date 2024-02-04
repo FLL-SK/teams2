@@ -3,7 +3,7 @@ import { Group } from 'grommet-icons';
 import React, { useMemo, useState } from 'react';
 import { ListRow2 } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
-import { EventFragmentFragment, useGetRegisteredTeamsQuery } from '../../../generated/graphql';
+import { EventFragmentFragment, useGetRegisteredTeamsQuery } from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 import { handleExportRegisteredTeams } from './handle-export';
@@ -37,7 +37,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
             return [...t, ...c];
           }, [])
         : [],
-    [event, regs]
+    [event, regs],
   );
 
   if (!event) {
