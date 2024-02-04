@@ -147,7 +147,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
       <Tip content={`počet tímov/setov`}>
         <Box direction="row" gap="xsmall" onClick={navigateRegs}>
           <Cubes />
-          <Text size="small" color={maxColor}>
+          <Text size="small">
             {program.teamsInvolved}/{program.regSetCount}
           </Text>
         </Box>
