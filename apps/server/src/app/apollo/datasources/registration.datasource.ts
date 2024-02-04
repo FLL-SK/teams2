@@ -42,9 +42,12 @@ export class RegistrationDataSource extends BaseDataSource {
     return reg;
   }
 
-  async getRegistrationsCount(filter: RegistrationFilter): Promise<number> {
+  async getRegistrationsCount(
+    filter: RegistrationFilter,
+    type: 'set' | 'team' = 'team',
+  ): Promise<number> {
     // TODO: candidate for dataloader
-    const regsCount = await registrationRepository.countRegistrations(filter);
+    const regsCount = await registrationRepository.countRegistrations(filter, type);
     return regsCount;
   }
 

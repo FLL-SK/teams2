@@ -31,6 +31,7 @@ fragment ProgramListFragment on Program {
   regNotInvoiced
   regUnpaid
   regNotShipped
+  regSetCount
   ...ProgramBasicFragment
 }
 

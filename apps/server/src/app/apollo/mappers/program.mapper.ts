@@ -41,6 +41,7 @@ export const ProgramMapper = {
       regNotInvoiced: 0,
       regUnpaid: 0,
       regNotShipped: 0,
+      regSetCount: 0,
     };
     return u;
   },

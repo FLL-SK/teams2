@@ -60,7 +60,7 @@ interface CountRegistrationsFilter {
 }
 
 export interface RegistrationModel extends Model<RegistrationData> {
-  countRegistrations(filter: CountRegistrationsFilter): Promise<number>; //
+  countRegistrations(filter: CountRegistrationsFilter, type?: 'team' | 'set'): Promise<number>; //
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
@@ -100,7 +100,7 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   type: { type: Types.String, enum: ['NORMAL', 'CLASS_PACK'], required: true },
   teamsImpacted: { type: Types.Number },
   childrenImpacted: { type: Types.Number },
-  setCount: { type: Types.Number },
+  setCount: { type: Types.Number, default: 1 },
 });
 
 schema.index({ eventId: 1, teamId: 1 });
@@ -113,7 +113,10 @@ schema.static('clean', function (): Promise<DeleteResult> {
 
 schema.static(
   'countRegistrations',
-  async function getRegistrationsCount(filter: CountRegistrationsFilter): Promise<number> {
+  async function (
+    filter: CountRegistrationsFilter,
+    type: 'team' | 'set' = 'team',
+  ): Promise<number> {
     const q: FilterQuery<RegistrationData> = {};
     if (typeof filter.active === 'boolean') {
       if (filter.active) {
@@ -158,14 +161,12 @@ schema.static(
         {
           $group: {
             _id: '$teamId',
+            setCount: { $sum: '$setCount' },
           },
-        },
-        {
-          $count: 'count',
         },
       ])
       .exec();
-    return regsCount[0]?.count ?? 0;
+    return type == 'team' ? regsCount.length : regsCount.reduce((t, e) => e.setCount + t, 0);
   },
 );
 

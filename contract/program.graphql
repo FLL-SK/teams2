@@ -36,6 +36,7 @@ type Program implements INode {
   regNotInvoiced: Int!
   regUnpaid: Int!
   regNotShipped: Int!
+  regSetCount: Int!
 }
 
 input CreateProgramInput {

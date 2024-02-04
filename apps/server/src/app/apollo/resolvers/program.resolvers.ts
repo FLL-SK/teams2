@@ -25,6 +25,8 @@ export const typeResolver: Resolver<Program> = {
     dataSources.registration.getRegistrationsCount({ programId: id, onlyUnpaid: true }),
   regNotShipped: async ({ id }, _args, { dataSources }) =>
     dataSources.registration.getRegistrationsCount({ programId: id, onlyNotShipped: true }),
+  regSetCount: async ({ id }, _args, { dataSources }) =>
+    dataSources.registration.getRegistrationsCount({ programId: id }, 'set'),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
