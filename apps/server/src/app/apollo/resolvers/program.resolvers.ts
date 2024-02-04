@@ -41,7 +41,6 @@ export const typeResolver: Resolver<Program> = {
   },
   teamsInvolved: async ({ id }, _args, { dataSources }) => {
     const r = await dataSources.registration.getRegistrationGroups({ programId: id });
-    console.log('teamsInvolved', id, r);
     return r.reduce((acc, g) => acc + g.teamCount, 0);
   },
 };

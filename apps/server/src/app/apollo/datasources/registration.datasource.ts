@@ -156,7 +156,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getEventRegistrationsCount(eventId: ObjectId): Promise<number> {
-    const count = await registrationRepository.count({ eventId, canceledOn: null }).exec();
+    const count = await registrationRepository.countDocuments({ eventId, canceledOn: null }).exec();
     return count;
   }
 
@@ -169,7 +169,9 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getProgramRegistrationsCount(programId: ObjectId): Promise<number> {
-    const count = await registrationRepository.count({ programId, canceledOn: null }).exec();
+    const count = await registrationRepository
+      .countDocuments({ programId, canceledOn: null })
+      .exec();
     return count;
   }
 
