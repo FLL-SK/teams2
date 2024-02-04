@@ -1,4 +1,4 @@
-import flatten from 'flat';
+import { flatten } from 'flat';
 import { ArrayOfArraysOfAny } from './save-xlsx';
 
 export interface Json2AoaInputType<T> {
