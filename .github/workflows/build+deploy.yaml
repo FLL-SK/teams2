@@ -22,7 +22,7 @@ jobs:
         run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_OUTPUT
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'yarn'
@@ -67,7 +67,7 @@ jobs:
 
       - name: Copy docker-compose.yaml to production server
         # made by a random appleboy to copy specified file to target server
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.DEPLOY_HOST }}
           username: ${{ vars.DEPLOY_HOST_USERNAME }}
@@ -76,7 +76,7 @@ jobs:
           target: '~/.deploy/'
 
       - name: Run docker-compose up on production server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ vars.DEPLOY_HOST }}
           username: ${{ vars.DEPLOY_HOST_USERNAME }}
