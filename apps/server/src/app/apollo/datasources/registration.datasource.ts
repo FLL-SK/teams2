@@ -94,6 +94,8 @@ export class RegistrationDataSource extends BaseDataSource {
       shipTo: team.shipTo,
       billTo: team.billTo,
       type: input.type,
+      teamsImpacted: 1,
+      setCount: 1,
     };
 
     if (input.type === 'CLASS_PACK') {
@@ -239,53 +241,56 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setTeamSize(id: ObjectId, input: TeamSizeInput): Promise<Registration> {
-    const registration = await registrationRepository.findById(id).exec();
+    const r = await registrationRepository.findById(id).exec();
+
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
+      this.userGuard.isCoach(r.teamId) ||
       this.userGuard.notAuthorized('Set team size');
-    registration.girlCount = input.girlCount;
-    registration.boyCount = input.boyCount;
-    registration.coachCount = input.coachCount;
-    await registration.save();
-    return RegistrationMapper.toRegistration(registration);
+
+    r.girlCount = input.girlCount;
+    r.boyCount = input.boyCount;
+    r.coachCount = input.coachCount;
+
+    const c = r.girlCount + r.boyCount;
+    if (!r.childrenImpacted || r.childrenImpacted < c) {
+      r.childrenImpacted = c;
+    }
+    await r.save();
+    return RegistrationMapper.toRegistration(r);
   }
 
   async setTeamSizeConfirmedOn(id: ObjectId, date: Date): Promise<Registration> {
-    const registration = await registrationRepository.findById(id).exec();
+    const r = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
+      this.userGuard.isCoach(r.teamId) ||
       this.userGuard.notAuthorized('Set team size confirmed on');
-    registration.sizeConfirmedOn = date;
-    await registration.save();
+    r.sizeConfirmedOn = date;
+    await r.save();
 
-    emailTeamSizeConfirmed(registration.eventId, registration.teamId, this.context.user.username);
+    emailTeamSizeConfirmed(r.eventId, r.teamId, this.context.user.username);
 
-    return RegistrationMapper.toRegistration(registration);
+    return RegistrationMapper.toRegistration(r);
   }
 
   async clearTeamSizeConfirmedOn(id: ObjectId): Promise<Registration> {
-    const registration = await registrationRepository.findById(id).exec();
+    const r = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
+      this.userGuard.isCoach(r.teamId) ||
       this.userGuard.notAuthorized('Clear team size confirmed on');
-    registration.sizeConfirmedOn = null;
-    await registration.save();
-    return RegistrationMapper.toRegistration(registration);
+    r.sizeConfirmedOn = null;
+    await r.save();
+    return RegistrationMapper.toRegistration(r);
   }
 
   async setConfirmedOn(id: ObjectId, confirmedOn: Date): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set confirmed on');
 
-    const registration = await registrationRepository
+    const r = await registrationRepository
       .findByIdAndUpdate(id, { confirmedOn }, { new: true })
       .exec();
 
-    emailRegistrationConfirmed(
-      registration.eventId,
-      registration.teamId,
-      this.context.user.username,
-    );
-    return RegistrationMapper.toRegistration(registration);
+    emailRegistrationConfirmed(r.eventId, r.teamId, this.context.user.username);
+    return RegistrationMapper.toRegistration(r);
   }
 
   async clearConfirmedOn(id: ObjectId): Promise<Registration> {

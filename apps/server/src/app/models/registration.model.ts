@@ -39,9 +39,9 @@ export interface RegistrationData {
   sizeConfirmedOn?: Date;
 
   type: RegistrtionType;
-  teamsImpacted?: number;
+  teamsImpacted: number;
   childrenImpacted?: number;
-  setCount?: number;
+  setCount: number;
 }
 
 export type RegistrationDocument =
@@ -98,7 +98,7 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   sizeConfirmedOn: { type: Types.Date },
 
   type: { type: Types.String, enum: ['NORMAL', 'CLASS_PACK'], required: true },
-  teamsImpacted: { type: Types.Number },
+  teamsImpacted: { type: Types.Number, required: true },
   childrenImpacted: { type: Types.Number },
   setCount: { type: Types.Number, default: 1 },
 });
