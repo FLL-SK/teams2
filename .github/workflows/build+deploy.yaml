@@ -8,10 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # Setting environment variables for NX build system
-      NX_SF_API_URL: https://moja.superfaktura.sk
-      NX_API_URL: ${{ vars.NX_API_URL}}
 
     steps:
       - name: Checkout code
