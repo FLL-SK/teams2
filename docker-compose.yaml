@@ -7,9 +7,9 @@ services:
     image: fllsk/tms-server:latest
     environment:
       # the environment variables are used by a service that automaically manages letsencrypt certificates
-      - VIRTUAL_HOST=api.flltms.spv99.com
+      - VIRTUAL_HOST=${API_HOST}
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=api.flltms.spv99.com
+      - LETSENCRYPT_HOST=${API_HOST}
       - PORT=3000
 
       # following entries are used by the application and must be provided by the server administrator
@@ -52,9 +52,10 @@ services:
     depends_on:
       - server
     environment:
-      - VIRTUAL_HOST=tms.fll.sk
+      - VIRTUAL_HOST=${CLIENT_HOST}
       - VIRTUAL_PORT=80
-      - LETSENCRYPT_HOST=tms.fll.sk
+      - LETSENCRYPT_HOST=${CLIENT_HOST}
+      - NX_API_URL=https://${API_HOST}
 
     expose:
       - 80
