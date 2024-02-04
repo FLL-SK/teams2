@@ -10,7 +10,7 @@ import { AuthContext, AuthContextProvider, AuthedApolloProvider } from '@teams2/
 const ApolloWrapper = ({ children }: { children?: React.ReactNode }) => {
   const token = React.useContext(AuthContext).token;
   return (
-    <AuthedApolloProvider apiUri={`${appConfig.rootApiUrl}/graphql`} apiToken={token}>
+    <AuthedApolloProvider apiUri={`${appConfig.apiUrl}/graphql`} apiToken={token}>
       <AppUserContextProvider>
         <GlobalStyle />
         <NotificationProvider>
@@ -23,7 +23,7 @@ const ApolloWrapper = ({ children }: { children?: React.ReactNode }) => {
 
 export function App() {
   return (
-    <AuthContextProvider authApiUrl={`${appConfig.rootApiUrl}/auth`}>
+    <AuthContextProvider authApiUrl={`${appConfig.apiUrl}/auth`}>
       <BrowserRouter>
         <ApolloWrapper />
       </BrowserRouter>
