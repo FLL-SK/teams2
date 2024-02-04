@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Box, CheckBox, Text, Tip } from 'grommet';
-import { Checkmark, Cubes, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
+import { Checkmark, Cube, Cubes, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
 import { RegistrationListFragmentFragment } from '../../../generated/graphql';
@@ -143,7 +143,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       <ListCol gap="xs">
         <Tip content={`počet setov`}>
           <Box direction="row" gap="xsmall">
-            <Cubes />
+            {data.type === 'NORMAL' ? <Cube /> : <Cubes />}
             <Text alignSelf="center">{data.setCount ?? 0}</Text>
           </Box>
         </Tip>
