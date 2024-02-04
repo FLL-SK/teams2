@@ -39,6 +39,7 @@ export const seedTestRegistrationData: TestSeedData[] = [
     type: 'CLASS_PACK',
     teamsImpacted: 5,
     childrenImpacted: 20,
+    setCount: 5,
   },
   {
     event: 'Event2',
@@ -51,6 +52,7 @@ export const seedTestRegistrationData: TestSeedData[] = [
     type: 'NORMAL',
     teamsImpacted: 1,
     childrenImpacted: 5,
+    setCount: 1,
   },
   {
     event: 'Event2',
@@ -60,6 +62,7 @@ export const seedTestRegistrationData: TestSeedData[] = [
     type: 'NORMAL',
     teamsImpacted: 1,
     childrenImpacted: 5,
+    setCount: 1,
   },
   {
     event: 'Event3',
@@ -69,6 +72,7 @@ export const seedTestRegistrationData: TestSeedData[] = [
     type: 'CLASS_PACK',
     teamsImpacted: 3,
     childrenImpacted: 15,
+    setCount: 3,
   },
 ];
 
@@ -105,6 +109,7 @@ export async function seedTestRegistrations() {
       type: d.type,
       teamsImpacted: d.teamsImpacted ?? 1,
       childrenImpacted: d.childrenImpacted,
+      setCount: d.setCount ?? 1,
     };
     const r = await registrationRepository.create(et);
 
