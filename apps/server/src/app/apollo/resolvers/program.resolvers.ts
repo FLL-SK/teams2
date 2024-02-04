@@ -15,18 +15,35 @@ export const typeResolver: Resolver<Program> = {
     dataSources.invoice.getProgramInvoiceItems(id),
   registrations: async ({ id }, _args, { dataSources }) =>
     dataSources.registration.getProgramRegistrations(id),
-  regCount: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount({ programId: id }),
-  regUnconfirmed: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount({ programId: id, onlyUnconfirmed: true }),
+  regCount: async ({ id }, _args, { dataSources }) => {
+    const r = await dataSources.registration.getRegistrationGroups({ programId: id });
+    return r.length;
+  },
+  regUnconfirmed: async ({ id }, _args, { dataSources }) => {
+    const r = await dataSources.registration.getRegistrationGroups({
+      programId: id,
+      onlyUnconfirmed: true,
+    });
+    return r.length;
+  },
   regNotInvoiced: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount({ programId: id, onlyNotInvoiced: true }),
+    (await dataSources.registration.getRegistrationGroups({ programId: id, onlyNotInvoiced: true }))
+      .length,
   regUnpaid: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount({ programId: id, onlyUnpaid: true }),
+    (await dataSources.registration.getRegistrationGroups({ programId: id, onlyUnpaid: true }))
+      .length,
   regNotShipped: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount({ programId: id, onlyNotShipped: true }),
-  regSetCount: async ({ id }, _args, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount({ programId: id }, 'set'),
+    (await dataSources.registration.getRegistrationGroups({ programId: id, onlyNotShipped: true }))
+      .length,
+  regSetCount: async ({ id }, _args, { dataSources }) => {
+    const r = await dataSources.registration.getRegistrationGroups({ programId: id });
+    return r.reduce((acc, g) => acc + g.setCount, 0);
+  },
+  teamsInvolved: async ({ id }, _args, { dataSources }) => {
+    const r = await dataSources.registration.getRegistrationGroups({ programId: id });
+    console.log('teamsInvolved', id, r);
+    return r.reduce((acc, g) => acc + g.teamCount, 0);
+  },
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

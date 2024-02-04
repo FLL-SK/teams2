@@ -141,10 +141,12 @@ function RegistrationListRow(props: RegistrationListRowProps) {
       />
 
       <ListCol gap="xs">
-        <Tip content={`počet setov`}>
+        <Tip content={`počet tímov/setov`}>
           <Box direction="row" gap="xsmall">
             {data.type === 'NORMAL' ? <Cube /> : <Cubes />}
-            <Text alignSelf="center">{data.setCount ?? 0}</Text>
+            <Text alignSelf="center">
+              {data.impactedTeamCount ?? 0}/{data.setCount ?? 0}
+            </Text>
           </Box>
         </Tip>
       </ListCol>
@@ -170,7 +172,7 @@ export function RegistrationList(props: RegistrationListProps) {
   const getHeight = ({ index }: Index) =>
     (rowGetter(index)?.team?.tags.length ?? 0) > 0 ? 100 : 50;
 
-  let cols = '350px 30px 30px 30px 30px 80px 30px 50px 30px 50px auto';
+  let cols = '350px 30px 30px 30px 30px 80px 30px 50px 30px 80px auto';
   if (selectTeams?.show) {
     cols = '30px ' + cols;
   }

@@ -42,6 +42,7 @@ export const ProgramMapper = {
       regUnpaid: 0,
       regNotShipped: 0,
       regSetCount: 0,
+      teamsInvolved: 0,
     };
     return u;
   },

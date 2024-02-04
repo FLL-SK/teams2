@@ -17,7 +17,7 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
     dataSources.registration.getRegistration(id),
 
   getRegistrationsCount: async (_parent, { filter }, { dataSources }) =>
-    dataSources.registration.getRegistrationsCount(filter),
+    (await dataSources.registration.getRegistrationGroups(filter)).length,
 
   getEventRegistrations: async (_parent, { eventId }, { dataSources }) =>
     dataSources.registration.getEventRegistrations(eventId),

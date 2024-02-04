@@ -2,6 +2,7 @@ import { BaseDataSource } from './_base.datasource';
 import {
   eventRepository,
   RegistrationData,
+  RegistrationGroup,
   registrationRepository,
   teamRepository,
   userRepository,
@@ -42,12 +43,9 @@ export class RegistrationDataSource extends BaseDataSource {
     return reg;
   }
 
-  async getRegistrationsCount(
-    filter: RegistrationFilter,
-    type: 'set' | 'team' = 'team',
-  ): Promise<number> {
+  async getRegistrationGroups(filter: RegistrationFilter): Promise<RegistrationGroup[]> {
     // TODO: candidate for dataloader
-    const regsCount = await registrationRepository.countRegistrations(filter, type);
+    const regsCount = await registrationRepository.groupRegistrations(filter);
     return regsCount;
   }
 
@@ -62,9 +60,9 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.notAuthorized('Create registration');
 
     // check if team is not already registered
-    const r = await registrationRepository.countRegistrations({ eventId, teamId, active: true });
+    const r = await registrationRepository.groupRegistrations({ eventId, teamId, active: true });
     log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
-    if (r > 0) {
+    if (r.length > 0) {
       throw { name: 'team_already_registered' };
     }
 
@@ -76,7 +74,8 @@ export class RegistrationDataSource extends BaseDataSource {
 
     if (
       event.maxTeams &&
-      (await registrationRepository.countRegistrations({ eventId, active: true })) >= event.maxTeams
+      (await registrationRepository.groupRegistrations({ eventId, active: true })).length >=
+        event.maxTeams
     ) {
       throw { name: 'event_full' };
     }

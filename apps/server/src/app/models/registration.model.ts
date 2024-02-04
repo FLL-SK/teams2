@@ -60,7 +60,7 @@ interface CountRegistrationsFilter {
 }
 
 export interface RegistrationModel extends Model<RegistrationData> {
-  countRegistrations(filter: CountRegistrationsFilter, type?: 'team' | 'set'): Promise<number>; //
+  groupRegistrations(filter: CountRegistrationsFilter): Promise<RegistrationGroup[]>; //
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
@@ -111,64 +111,69 @@ schema.static('clean', function (): Promise<DeleteResult> {
   return this.deleteMany().exec();
 });
 
-schema.static(
-  'countRegistrations',
-  async function (
-    filter: CountRegistrationsFilter,
-    type: 'team' | 'set' = 'team',
-  ): Promise<number> {
-    const q: FilterQuery<RegistrationData> = {};
-    if (typeof filter.active === 'boolean') {
-      if (filter.active) {
-        q.canceledOn = null;
-      } else {
-        q.canceledOn = { $ne: null };
-      }
-    } else {
+export interface RegistrationGroup {
+  _id: ObjectId;
+  setCount: number;
+  teamCount: number;
+  childrenCount: number;
+}
+
+schema.static('groupRegistrations', async function (filter: CountRegistrationsFilter): Promise<
+  RegistrationGroup[]
+> {
+  const q: FilterQuery<RegistrationData> = {};
+  if (typeof filter.active === 'boolean') {
+    if (filter.active) {
       q.canceledOn = null;
+    } else {
+      q.canceledOn = { $ne: null };
     }
+  } else {
+    q.canceledOn = null;
+  }
 
-    if (filter.programId) {
-      q.programId = filter.programId;
-    }
-    if (filter.onlyUnconfirmed) {
-      q.confirmedOn = null;
-    }
-    if (filter.onlyUnpaid) {
-      q.paidOn = null;
-      q.invoiceIssuedOn = { $ne: null };
-    }
-    if (filter.onlyNotInvoiced) {
-      q.invoiceIssuedOn = null;
-      q.confirmedOn = { $ne: null };
-    }
-    if (filter.onlyNotShipped) {
-      q.shippedOn = null;
-      q.confirmedOn = { $ne: null };
-    }
-    if (filter.eventId) {
-      q.eventId = filter.eventId;
-    }
-    if (filter.teamId) {
-      q.teamId = filter.teamId;
-    }
+  if (filter.programId) {
+    q.programId = filter.programId;
+  }
+  if (filter.onlyUnconfirmed) {
+    q.confirmedOn = null;
+  }
+  if (filter.onlyUnpaid) {
+    q.paidOn = null;
+    q.invoiceIssuedOn = { $ne: null };
+  }
+  if (filter.onlyNotInvoiced) {
+    q.invoiceIssuedOn = null;
+    q.confirmedOn = { $ne: null };
+  }
+  if (filter.onlyNotShipped) {
+    q.shippedOn = null;
+    q.confirmedOn = { $ne: null };
+  }
+  if (filter.eventId) {
+    q.eventId = filter.eventId;
+  }
+  if (filter.teamId) {
+    q.teamId = filter.teamId;
+  }
 
-    const regsCount = await registrationRepository
-      .aggregate([
-        {
-          $match: q,
+  const regs = await registrationRepository
+    .aggregate<RegistrationGroup>([
+      {
+        $match: q,
+      },
+      {
+        $group: {
+          _id: '$teamId',
+          setCount: { $sum: '$setCount' },
+          teamCount: { $sum: '$teamsImpacted' },
+          childrenCount: { $sum: '$childrenImpacted' },
         },
-        {
-          $group: {
-            _id: '$teamId',
-            setCount: { $sum: '$setCount' },
-          },
-        },
-      ])
-      .exec();
-    return type == 'team' ? regsCount.length : regsCount.reduce((t, e) => e.setCount + t, 0);
-  },
-);
+      },
+    ])
+    .exec();
+  return regs;
+});
 
 export const registrationRepository = model<RegistrationData, RegistrationModel>(
   'Registration',
