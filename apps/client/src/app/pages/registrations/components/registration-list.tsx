@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Box, CheckBox, Text, Tip } from 'grommet';
-import { Checkmark, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
+import { Checkmark, Cubes, Deliver, Document, Group, Halt, Icon, Money } from 'grommet-icons';
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
 import { RegistrationListFragmentFragment } from '../../../generated/graphql';
@@ -140,6 +140,15 @@ function RegistrationListRow(props: RegistrationListRowProps) {
         SIcon={Group}
       />
 
+      <ListCol gap="xs">
+        <Tip content={`počet setov`}>
+          <Box direction="row" gap="xsmall">
+            <Cubes />
+            <Text alignSelf="center">{data.setCount ?? 0}</Text>
+          </Box>
+        </Tip>
+      </ListCol>
+
       <ListCol>
         <Text color="dark-5" truncate="tip">
           {data.event.name}
@@ -161,7 +170,7 @@ export function RegistrationList(props: RegistrationListProps) {
   const getHeight = ({ index }: Index) =>
     (rowGetter(index)?.team?.tags.length ?? 0) > 0 ? 100 : 50;
 
-  let cols = '350px 30px 30px 30px 30px 80px 30px 50px 30px auto';
+  let cols = '350px 30px 30px 30px 30px 80px 30px 50px 30px 50px auto';
   if (selectTeams?.show) {
     cols = '30px ' + cols;
   }
