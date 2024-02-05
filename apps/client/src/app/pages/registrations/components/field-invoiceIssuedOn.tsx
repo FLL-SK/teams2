@@ -9,7 +9,9 @@ import {
   useRegistrationSetInvoicedMutation,
 } from '../../../_generated/graphql';
 import { SetClearDate } from './set-clear-date';
-import { appPath } from '@teams2/common';
+import { getAppConfig } from '../../../app-config';
+
+const sfPath = (id = '') => `${getAppConfig().sfAPIUrl}/invoices/view/${id}`;
 
 export const FieldInvoiceIssuedOn = (props: {
   registration: Pick<Registration, 'id' | 'invoiceIssuedOn' | 'invoiceRef'>;
@@ -38,8 +40,7 @@ export const FieldInvoiceIssuedOn = (props: {
           hide: !registration.invoiceRef,
           label: 'Otvoriť',
           onClick: () =>
-            registration.invoiceRef &&
-            window.open(appPath.sfShowInvoice(registration.invoiceRef), '_blank'),
+            registration.invoiceRef && window.open(sfPath(registration.invoiceRef), '_blank'),
         }}
       />
     </LabelValue>

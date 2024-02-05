@@ -1,5 +1,5 @@
 import React from 'react';
-import { appPath } from '@teams2/common';
+
 import { Route, Routes } from 'react-router-dom';
 import { LoginPage } from './pages/auth/login-page';
 import { ForgotPasswordPage } from './pages/auth/forgot-password-page';
@@ -19,6 +19,7 @@ import { RegistrationPage } from './pages/registration/registration-page';
 import { EventsPage } from './pages/events/events-page';
 import { ProgramsPage } from './pages/programs/programs-page';
 import { RequireAuth } from '@teams2/auth-react';
+import { appPath } from '@teams2/common';
 
 export function AppRouter() {
   return (
@@ -34,7 +35,7 @@ export function AppRouter() {
       <Route
         path={appPath.profile(':id')}
         element={
-<RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
             <ProfilePage />
           </RequireAuth>
         }

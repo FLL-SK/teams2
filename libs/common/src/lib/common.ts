@@ -22,7 +22,6 @@ export const appPath = {
   page404: '/404',
   registrations: '/registrations',
   registration: (id = '') => `/registration/${id}`,
-  sfShowInvoice: (id = '') => `${process.env.NX_SF_API_URL}/invoices/view/${id}`,
 };
 
 export const validateEmail = (email: string): boolean => {
@@ -63,7 +62,7 @@ type Prev = [
   18,
   19,
   20,
-  ...0[]
+  ...0[],
 ];
 
 type Join<K, P> = K extends string | number
@@ -75,16 +74,18 @@ type Join<K, P> = K extends string | number
 type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
-  ? {
-      [K in keyof T]-?: K extends string | number ? `${K}` | Join<K, Paths<T[K], Prev[D]>> : never;
-    }[keyof T]
-  : '';
+    ? {
+        [K in keyof T]-?: K extends string | number
+          ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+          : never;
+      }[keyof T]
+    : '';
 
 type Leaves<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
-  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
-  : '';
+    ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+    : '';
 
 export type NestedObjectPaths<T> = Paths<T>;
 // type NestedObjectPaths = "a" | "b" | "nest" | "otherNest" | "nest.c" | "otherNest.c"

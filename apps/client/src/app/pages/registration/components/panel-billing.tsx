@@ -1,4 +1,3 @@
-import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Paragraph, Spinner, Text } from 'grommet';
 import React, { useState } from 'react';
@@ -19,6 +18,7 @@ import {
 import { fullAddress } from '../../../utils/format-address';
 import { FieldInvoiceIssuedOn } from '../../registrations/components/field-invoiceIssuedOn';
 import { FieldPaidOn } from '../../registrations/components/field-paidOn';
+import { appPath } from '@teams2/common';
 
 interface PanelRegistrationBillingProps {
   registration: RegistrationFragmentFragment;
@@ -106,6 +106,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                 <Spinner />
               </LabelValue>
             )}
+            {/*
             {reg.invoiceRef && (
               <LabelValue label="">
                 <Anchor
@@ -117,6 +118,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                 />
               </LabelValue>
             )}
+            */}
 
             <LabelValue label="Odoslaná">
               {invoiceBeingSent && <Spinner />}

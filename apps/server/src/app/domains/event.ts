@@ -1,4 +1,3 @@
-import { appPath } from '@teams2/common';
 import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
@@ -18,6 +17,7 @@ import {
 
 import { logger } from '@teams2/logger';
 import { Registration, RegistrationInput, RegistrationPayload } from '../_generated/graphql';
+import { appPath } from '@teams2/common';
 
 const logLib = logger('domain:Event');
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Script to write NX_ environment variables to a file
+# Script to write APP_ environment variables to a file
 # and replace the reference in index.html
 # Script assumes index.html loads file variables.js
 
@@ -25,7 +25,7 @@ echo "" > $VARIABLES_FULL_PATH
 env | while IFS= read -r line; do
   value=${line#*=}
   name=${line%%=*}
-  if [[ $name == NX_* ]] ;
+  if [[ $name == APP_* ]] ;
   then
     echo "window.$name = '$value';" >> $VARIABLES_FULL_PATH
   fi
