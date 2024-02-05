@@ -2,17 +2,19 @@ export function getServerConfig() {
   const clientRootUrls = (process.env.APP_CLIENT_ROOT_URL ?? 'http://localhost:4200')
     .split(',')
     .map((u) => u.trim());
+
+  // NODE_ENV has to be adressed in this way to be able to use it in the nx workspacem see:
+  // https://stackoverflow.com/questions/58090082/process-env-node-env-always-development-when-building-nestjs-app-with-nrwl-nx
+  const nodeEnv = process.env['NODE_ENV'] ?? 'development';
+
   return {
-    // https://stackoverflow.com/questions/58090082/process-env-node-env-always-development-when-building-nestjs-app-with-nrwl-nx
-    nodeEnv: process.env['NODE_ENV'] || 'development',
-    //skipAuthentication: process.env.APP_SKIP_AUTHENTICATION === 'true',
+    nodeEnv,
     host: process.env.APP_HOST ?? 'localhost',
-    // Heroku is using PORT env to specify the port
     port: process.env.PORT ? Number(process.env.PORT) ?? 5000 : 5000,
 
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
 
-    graphQLSchemaPath: process.env.APP_GRAPHQL_SCHEMA_PATH ?? './dist/schema.graphql',
+    graphQLSchemaPath: nodeEnv === 'development' ? './dist/schema.graphql' : './schema.graphql',
     email: {
       from: process.env.APP_EMAIL_FROM,
     },

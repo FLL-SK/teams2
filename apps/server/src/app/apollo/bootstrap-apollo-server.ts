@@ -20,7 +20,7 @@ import { errorFormatter } from './error-formatter';
 export async function bootstrapApolloServer(app: Application) {
   const httpServer = createServer(app);
   const appConfig = getServerConfig();
-  const sources = await loadTypedefs(appConfig.graphQLSchemaPath, {
+  const sources = await loadTypedefs(appConfig.graphQLSchemaPath ?? './schema.graphql', {
     // load from a single schema file
     loaders: [new GraphQLFileLoader()],
   });
@@ -46,5 +46,4 @@ export async function bootstrapApolloServer(app: Application) {
   return expressMiddleware(apolloServer, {
     context: initApolloContext,
   });
-
 }
