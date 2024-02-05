@@ -1,6 +1,7 @@
 import { SendEmailCommand, SendEmailCommandInput, SESClient } from '@aws-sdk/client-ses';
 import { getServerConfig } from '../../server-config';
 import { debugLib } from './debug';
+import { getAppSettings } from './settings';
 
 const debug = debugLib.extend('mailer');
 
@@ -66,16 +67,9 @@ const createSendEmailCommand = (options: SendEmailOptions) => {
 };
 
 export async function sendEmail(options: SendEmailOptions) {
-  const cfg = getServerConfig();
-  const sendEmailCommand = createSendEmailCommand({
-    from: cfg.email.from,
-    ...options,
-  });
-  debug('Sending email. from=%o options=%o', cfg.email.from, options);
-  try {
-    return await sesClient.send(sendEmailCommand);
-  } catch (e) {
-    debug('Failed to send email. %o', e);
-    return e;
-  }
+  const settings = await getAppSettings();
+  const from = settings.emailFrom;
+  const sendEmailCommand = createSendEmailCommand({ from, ...options });
+  debug('Sending email. from=%o options=%o', from, options);
+  return await sesClient.send(sendEmailCommand);
 }

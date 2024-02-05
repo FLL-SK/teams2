@@ -3,3 +3,7 @@ mutation updateSettings($input: UpdateSettingsInput!) {
     ...SettingsFragment
   }
 }
+
+mutation sendTestEmail($to: String!, $cc: String) {
+  sendTestEmail(to: $to, cc: $cc)
+}

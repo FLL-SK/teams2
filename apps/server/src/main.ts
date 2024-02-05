@@ -13,6 +13,7 @@ import { logger } from '@teams2/logger';
 import { buildRootRouter } from './app/routes';
 import passport from 'passport';
 import express from 'express';
+import { initSettingsLoader } from './app/utils/settings';
 
 const log = logger('main');
 
@@ -67,6 +68,9 @@ async function server() {
 
   const assetsPath = __dirname + '/assets';
   app.use(express.static(assetsPath));
+
+  // initialize system loaders
+  initSettingsLoader();
 
   // app.get('*', function (request, response) {
   //   response.sendFile(resolve(assetsPath, 'index.html'));

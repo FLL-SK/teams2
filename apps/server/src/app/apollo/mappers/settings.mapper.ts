@@ -12,6 +12,7 @@ export const SettingsMapper = {
       appLogoUrl: data.appLogoUrl,
       organization: AddressMapper.toAddress(data.organization),
       sysEmail: data.sysEmail,
+      emailFrom: data.emailFrom,
       billingEmail: data.billingEmail,
       privacyPolicyUrl: data.privacyPolicyUrl,
     };

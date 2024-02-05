@@ -16,29 +16,52 @@ import { sendEmail } from './mailer';
 
 const logLib = logger('domain:email');
 
-export function emailMessage(to: string, subject: string, title: string, message: string) {
-  msgFromTemplate(title, message).then((html) => sendEmail({ to, subject, html }));
+interface EmailMessageProps {
+  to: string;
+  cc?: string;
+  title: string;
+  subject: string;
+  html?: string;
+  text?: string;
+}
+
+export function emailMessage({ to, subject, title, text, cc }: EmailMessageProps) {
+  msgFromTemplate(title, text).then((html) =>
+    sendEmail({ to, subject, html, cc })
+      .then(() => {
+        logLib.debug('emailMessage: email sent');
+      })
+      .catch((e) => {
+        logLib.error('emailMessage: error sending email', e);
+      }),
+  );
 }
 
 export function emailPasswordReset(email: string, token: string) {
   // send email
   msgPasswordReset(email, token).then((html) =>
-    sendEmail({ to: email, subject: 'Password reset', html }),
+    sendEmail({ to: email, subject: 'Password reset', html })
+      .then(() => {
+        logLib.debug('emailPasswordReset: email sent');
+      })
+      .catch((e) => {
+        logLib.error('emailPasswordReset: error sending email', e);
+      }),
   );
 }
 
-export function emailUserSignupToUser(userEmail: string) {
+export function emailUserSignupToUser(to: string) {
   const subject = 'Účet bol vytvorený';
   const title = subject;
-  const msg = `Účet pre email ${userEmail} bol vytvorený.`;
-  emailMessage(userEmail, subject, title, msg);
+  const text = `Účet pre email ${to} bol vytvorený.`;
+  emailMessage({ to, subject, title, text });
 }
 
-export function emailUserSignupToAdmin(userEmail: string) {
-  const subject = `Nový účet ${userEmail}`;
+export function emailUserSignupToAdmin(to: string) {
+  const subject = `Nový účet ${to}`;
   const title = subject;
-  const msg = `Účet pre email ${userEmail} bol vytvorený.`;
-  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+  const text = `Účet pre email ${to} bol vytvorený.`;
+  getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
 }
 
 export function emailEventChangedToCoach(
@@ -50,8 +73,8 @@ export function emailEventChangedToCoach(
 ) {
   const subject = `Zmena na turnaji ${eventName}`;
   const title = subject;
-  const msg = `Turnaj ${eventName} programu ${programName}, na ktorý je váš tím ${teamName} regitrovaný, bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((m) => emailMessage(m, subject, title, msg));
+  const text = `Turnaj ${eventName} programu ${programName}, na ktorý je váš tím ${teamName} regitrovaný, bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
 export function emailEventChangedToEventManagers(
@@ -62,8 +85,8 @@ export function emailEventChangedToEventManagers(
 ) {
   const subject = `Zmena turnaja ${eventName}`;
   const title = subject;
-  const msg = `Turnaj turnaj ${eventName} programu ${programName} bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((m) => emailMessage(m, subject, title, msg));
+  const text = `Turnaj turnaj ${eventName} programu ${programName} bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
 export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId) {
@@ -73,17 +96,17 @@ export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId
   const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(eventId.toHexString());
   const subject = `Pridaný manažér pre turnaj ${ev.name}`;
   const title = subject;
-  const msg = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér turnaja ${ev.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér turnaja ${ev.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
 
   // send to admin
-  getAppSettings().then((s) => emailMessage(s.sysEmail, subject, title, msg));
+  getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
 
   // send to event managers
   const eventManagers = await userRepository
     .find({ _id: { $in: ev.managersIds } })
     .lean()
     .exec();
-  eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  eventManagers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
 }
 
 export async function emailProgramManagerAdded(programId: ObjectId, userId: ObjectId) {
@@ -93,12 +116,12 @@ export async function emailProgramManagerAdded(programId: ObjectId, userId: Obje
   const url = getServerConfig().clientAppRootUrl + appPath.program(programId.toHexString());
   const subject = `Pridaný manažér pre program ${prg.name}`;
   const title = subject;
-  const msg = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}. Viac informácií o programe nájdete tu ${url}`;
+  const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}. Viac informácií o programe nájdete tu ${url}`;
 
   // send to admin
   getAppSettings().then((s) => {
     if (s.sysEmail) {
-      emailMessage(s.sysEmail, subject, title, msg);
+      emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
       logLib.error('emailProgramManagerAdded: no sysEmail in settings');
     }
@@ -109,16 +132,16 @@ export async function emailProgramManagerAdded(programId: ObjectId, userId: Obje
     .find({ _id: { $in: prg.managersIds } })
     .lean()
     .exec();
-  managers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  managers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
 }
 
 export function emailUserAcceptedGdprToAdmin(userEmail: string) {
   const subject = `Akceptované GDPR ${userEmail}`;
   const title = subject;
-  const msg = `Používateľ ${userEmail} akceptoval GDPR.`;
+  const text = `Používateľ ${userEmail} akceptoval GDPR.`;
   getAppSettings().then((s) => {
     if (s.sysEmail) {
-      emailMessage(s.sysEmail, subject, title, msg);
+      emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
       logLib.error('emailUserAcceptedGdprToAdmin: no sysEmail in settings');
     }
@@ -128,10 +151,10 @@ export function emailUserAcceptedGdprToAdmin(userEmail: string) {
 export function emailUserRejectedGdprToAdmin(userEmail: string) {
   const subject = `Odmietnuté GDPR ${userEmail}`;
   const title = subject;
-  const msg = `Používateľ ${userEmail} odmietol GDPR.`;
+  const text = `Používateľ ${userEmail} odmietol GDPR.`;
   getAppSettings().then((s) => {
     if (s.sysEmail) {
-      emailMessage(s.sysEmail, subject, title, msg);
+      emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
       logLib.error('emailUserRejectedGdprToAdmin: no sysEmail in settings');
     }
@@ -148,12 +171,12 @@ export async function emailTeamSizeConfirmed(
 
   const subject = `Veľkosť tímu potvrdená - ${team.name}`;
   const title = subject;
-  const msg = `Používateľ ${confirmedBy} potvrdil veľkosť tímu ${team.name}. ${teamUrl}`;
+  const text = `Používateľ ${confirmedBy} potvrdil veľkosť tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
   getAppSettings().then((s) => {
     if (s.sysEmail) {
-      emailMessage(s.sysEmail, subject, title, msg);
+      emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
       logLib.error('emailTeamSizeConfirmed: no sysEmail in settings');
     }
@@ -165,7 +188,7 @@ export async function emailTeamSizeConfirmed(
     .find({ _id: { $in: event.managersIds } })
     .lean()
     .exec();
-  eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  eventManagers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
 }
 
 export async function emailRegistrationConfirmed(
@@ -179,7 +202,7 @@ export async function emailRegistrationConfirmed(
 
   const subject = `Registrácia tímu potvrdená - ${team.name}`;
   const title = subject;
-  const msg = `Organizátor súťaže potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+  const text = `Organizátor súťaže potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
 
@@ -188,7 +211,7 @@ export async function emailRegistrationConfirmed(
       log.error('emailRegistrationConfirmed: no sysEmail in settings');
       return;
     }
-    emailMessage(s.sysEmail, subject, title, msg + '\n\n Potvrdené:' + confirmedBy);
+    emailMessage({ to: s.sysEmail, subject, title, text: text + '\n\n Potvrdené:' + confirmedBy });
     log.debug('email sent to admin %s', s.sysEmail);
   });
 
@@ -198,7 +221,7 @@ export async function emailRegistrationConfirmed(
     .find({ _id: { $in: event.managersIds } }, { username: 1 })
     .lean()
     .exec();
-  eventManagers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  eventManagers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
   log.debug(
     'email sent to event managers %s',
     eventManagers.map((m) => m.username),
@@ -209,7 +232,7 @@ export async function emailRegistrationConfirmed(
     .find({ _id: { $in: team.coachesIds } }, { username: 1 })
     .lean()
     .exec();
-  coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
+  coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
 }
 
 export async function emailTeamRegistered(registrationId: ObjectId) {
@@ -243,15 +266,15 @@ export async function emailTeamRegistered(registrationId: ObjectId) {
 
   const subject = `Registrácia tímu ${team.name} na turnaj ${event.name}`;
   const title = subject;
-  const msg = `Tím ${team.name} bol úspešne zaregistrovaný na turnaj ${event.name} programu ${program.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Tím ${team.name} bol úspešne zaregistrovaný na turnaj ${event.name} programu ${program.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
 
-  coaches.forEach((m) => emailMessage(m.username, subject, title, msg));
+  coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
   log.debug(
     'email sent to coaches %o',
     coaches.map((m) => m.username),
   );
 
-  managers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  managers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
   log.debug(
     'email sent to managers %o',
     managers.map((m) => m.username),
@@ -290,15 +313,15 @@ export async function emailTeamUnregistered(registrationId: ObjectId) {
 
   const subject = `Zrušenie registrácia tímu ${team.name}`;
   const title = subject;
-  const msg = `Registrácia tímu ${team.name} turnaj ${event.name} programu ${program.name} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Registrácia tímu ${team.name} turnaj ${event.name} programu ${program.name} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
 
-  coachEmails.forEach((m) => emailMessage(m, subject, title, msg));
+  coachEmails.forEach((to) => emailMessage({ to, subject, title, text }));
   log.debug(
     'email sent to coaches %o',
     coaches.map((m) => m.username),
   );
 
-  managers.forEach((m) => emailMessage(m.username, subject, title, msg));
+  managers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
   log.debug(
     'email sent to managers %o',
     managers.map((m) => m.username),

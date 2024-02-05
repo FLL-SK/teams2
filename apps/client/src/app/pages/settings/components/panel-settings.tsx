@@ -1,11 +1,15 @@
-import { Anchor, Box, Image, Spinner, Text } from 'grommet';
+import { Anchor, Box, Button, Image, Spinner, Text } from 'grommet';
 import React from 'react';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
 import { InplaceTextEdit } from '../../../components/editors/inplace-text';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { useNotification } from '../../../components/notifications/notification-provider';
-import { SettingsFragmentFragment, useUpdateSettingsMutation } from '../../../_generated/graphql';
+import {
+  SettingsFragmentFragment,
+  useSendTestEmailMutation,
+  useUpdateSettingsMutation,
+} from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 
 interface PanelSettingsProps {
@@ -20,6 +24,12 @@ export function PanelSettings(props: PanelSettingsProps) {
   const [updateSettings] = useUpdateSettingsMutation({
     onError: (e) => notify.error('Nepodarilo sa uložiť nastavenia.', e.message),
   });
+
+  const [sendTestEmail] = useSendTestEmailMutation({
+    onError: (e) => notify.error('Nepodarilo sa odoslať testovací email.', e.message),
+  });
+
+  console.log('billingEmail', settings?.billingEmail);
 
   return (
     <>
@@ -36,7 +46,7 @@ export function PanelSettings(props: PanelSettingsProps) {
               }
             />
           </LabelValue>
-          <LabelValue label="Logo">
+          <LabelValue label="URL adresa loga">
             <Box width="100%" pad={{ bottom: 'small' }} gap="small">
               <InplaceTextEdit
                 value={settings.appLogoUrl}
@@ -46,7 +56,7 @@ export function PanelSettings(props: PanelSettingsProps) {
               <Image src={settings.appLogoUrl ?? ''} width="200px" alt="logo" />
             </Box>
           </LabelValue>
-          <LabelValue label="Adresa">
+          <LabelValue label="Adresa organizácie">
             <Box gap="small" width="100%">
               <Text>{fullAddress(settings.organization)}</Text>
               <Box alignSelf="end">
@@ -54,18 +64,44 @@ export function PanelSettings(props: PanelSettingsProps) {
               </Box>
             </Box>
           </LabelValue>
-
-          <LabelValue label="Email pre systémové notifikácie">
+          <LabelValue label="Email adresa, z ktorej sa budú posielať emaily">
             <InplaceTextEdit
-              value={settings.sysEmail}
-              onChange={(v) => updateSettings({ variables: { input: { sysEmail: v } } })}
+              value={settings.emailFrom}
+              onChange={(emailFrom) => updateSettings({ variables: { input: { emailFrom } } })}
             />
           </LabelValue>
-          <LabelValue label="Email pre fakúry">
-            <InplaceTextEdit
-              value={settings.billingEmail}
-              onChange={(v) => updateSettings({ variables: { input: { billingEmail: v } } })}
-            />
+
+          <LabelValue label="Email kam posielať systémové notifikácie">
+            <Box gap="small" width="100%">
+              <InplaceTextEdit
+                value={settings.sysEmail}
+                onChange={(sysEmail) => updateSettings({ variables: { input: { sysEmail } } })}
+              />
+              <Box alignSelf="end">
+                <Anchor
+                  size="small"
+                  label="Test"
+                  onClick={() => sendTestEmail({ variables: { to: settings.sysEmail ?? '' } })}
+                />
+              </Box>
+            </Box>
+          </LabelValue>
+          <LabelValue label="Email kam posielať kópie faktúr">
+            <Box gap="small" width="100%">
+              <InplaceTextEdit
+                value={settings.billingEmail}
+                onChange={(billingEmail) =>
+                  updateSettings({ variables: { input: { billingEmail } } })
+                }
+              />
+              <Box alignSelf="end">
+                <Anchor
+                  size="small"
+                  label="Test"
+                  onClick={() => sendTestEmail({ variables: { to: settings.billingEmail ?? '' } })}
+                />
+              </Box>
+            </Box>
           </LabelValue>
           <LabelValue label="Link na pravidlá pre ochranu osobných údajov">
             <InplaceTextEdit

@@ -3,6 +3,7 @@ fragment SettingsFragment on Settings {
   organization {
     ...AddressFragment
   }
+  emailFrom
   sysEmail
   billingEmail
   privacyPolicyUrl
