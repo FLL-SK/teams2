@@ -15,16 +15,13 @@ services:
       # following entries are used by the application and must be provided by the server administrator
       # e.g. by using a .env file directly on the server
       - APP_CLIENT_ROOT_URL=${APP_CLIENT_ROOT_URL}
-      - APP_EMAIL_FROM=${APP_EMAIL_FROM}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
-      - APP_LOGO_URL=${APP_LOGO_URL}
       - APP_MONGODB=${APP_MONGODB}
-      - APP_GRAPHQL_SCHEMA_PATH=${APP_GRAPHQL_SCHEMA_PATH}
 
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_BUCKET=${AWS_BUCKET}
       - AWS_REGION=${AWS_REGION}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
       - DEBUG=${DEBUG}
 
