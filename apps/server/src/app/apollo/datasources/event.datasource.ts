@@ -51,10 +51,9 @@ export class EventDataSource extends BaseDataSource {
       q.programId = filter.programId;
     }
     if (filter.isActive) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-      q.date = { $not: { $lt: tomorrow } };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      q.date = { $not: { $lt: today } };
       q.deletedOn = null;
     }
     log.debug('filter=%o', q);
