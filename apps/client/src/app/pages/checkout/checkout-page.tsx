@@ -60,7 +60,7 @@ export function CheckoutPage() {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
-  const canRegister = isAdmin() || isTeamCoach(teamId);
+  const canShop = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
 
   React.useEffect(() => {
@@ -118,7 +118,7 @@ export function CheckoutPage() {
     [notify, registerTeam, teamId],
   );
 
-  if (!canRegister) {
+  if (!canShop) {
     return <ErrorPage title={`Nemáte oprávnenie na registráciu tímu na turnaj.`} />;
   }
 

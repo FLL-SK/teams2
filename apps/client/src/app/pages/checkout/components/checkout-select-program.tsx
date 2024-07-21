@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
-import { ProgramTile } from '../../../components/program-tile';
+import { ProgramTile } from './program-tile';
 import { ProgramListFragmentFragment, useGetProgramsQuery } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';
 
