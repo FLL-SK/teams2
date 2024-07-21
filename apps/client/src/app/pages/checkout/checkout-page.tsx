@@ -14,20 +14,20 @@ import {
   useGetTeamLazyQuery,
   useUpdateTeamMutation,
 } from '../../_generated/graphql';
-import { RegisterBillToAddress } from './components/register-billto-address';
-import { RegisterIntro } from './components/register-intro';
-import { RegisterReview } from './components/register-review';
-import { RegisterSelectEvent } from './components/register-select-event';
-import { RegisterSelectProgram } from './components/register-select-program';
-import { RegisterShipToAddress } from './components/register-shipto-address';
+import { RegisterBillToAddress } from './components/checkout-billto-address';
+import { RegisterIntro } from './components/checkout-intro';
+import { RegisterReview } from './components/checkout-review';
+import { RegisterSelectEvent } from './components/checkout-select-event';
+import { RegisterSelectProgram } from './components/checkout-select-program';
+import { RegisterShipToAddress } from './components/checkout-shipto-address';
 import { RegisterDetails } from './components/types';
-import { RegisterSuccess } from './components/register-success';
-import { RegisterError } from './components/register-error';
+import { RegisterSuccess } from './components/checkout-success';
+import { RegisterError } from './components/checkout-error';
 import { useNotification } from '../../components/notifications/notification-provider';
-import { RegisterConfirmBillToContact } from './components/register-confirm-billto-contact';
+import { RegisterConfirmBillToContact } from './components/checkout-confirm-billto-contact';
 import { formatFullName } from '../../utils/format-fullname';
 import { handleMutationErrors } from '../../utils/handle_mutation_error';
-import { RegisterSelectType } from './components/register-select-type';
+import { RegisterSelectType } from './components/checkout-select-type';
 
 type RegistrationStep =
   | 'intro'
