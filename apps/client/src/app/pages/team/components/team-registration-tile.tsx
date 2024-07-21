@@ -24,20 +24,27 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
       <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'} wrap>
         <Box width="60%">
           <LabelValueGroup labelWidth="150px" direction="row" gap="small">
-            <LabelValue label="Turnaj">
-              <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
-            </LabelValue>
+            {registration.event && (
+              <LabelValue label="Turnaj">
+                <Anchor
+                  label={registration.event.name}
+                  href={appPath.event(registration.event.id)}
+                />
+              </LabelValue>
+            )}
             <LabelValue label="Program">
               <Anchor
                 label={registration.program.name}
                 href={appPath.program(registration.program.id)}
               />
             </LabelValue>
-            <LabelValue label="Dátum turnaja">
-              <Text>
-                {registration.event.date ? formatDate(registration.event.date) : 'neurčený'}
-              </Text>
-            </LabelValue>
+            {registration.event && (
+              <LabelValue label="Dátum turnaja">
+                <Text>
+                  {registration.event.date ? formatDate(registration.event.date) : 'neurčený'}
+                </Text>
+              </LabelValue>
+            )}
             <LabelValue label="Typ registrácie">
               <Text>{registration.type}</Text>
             </LabelValue>

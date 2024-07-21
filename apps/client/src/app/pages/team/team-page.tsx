@@ -75,7 +75,7 @@ export function TeamPage() {
       (team?.registrations ?? []).filter(
         (reg) =>
           !reg.canceledOn &&
-          (!reg.event.date ||
+          (!reg.event?.date ||
             showInactiveEvents ||
             (reg.event.date ?? '').substring(0, 10) >= today),
       ),
@@ -151,8 +151,13 @@ export function TeamPage() {
             <Panel title="Registrácie" gap="small">
               <Box direction="row" justify="between">
                 <Button
-                  label="Registrovať tím"
+                  label="Registrovať tím na turnaj"
                   onClick={() => navigate(appPath.register(id))}
+                  disabled={registrations.length > 0 || isDeleted}
+                />
+                <Button
+                  label="Registrovať tím do programu"
+                  onClick={() => navigate(appPath.registerProgram(id))}
                   disabled={registrations.length > 0 || isDeleted}
                 />
                 <CheckBox

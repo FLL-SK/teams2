@@ -9,7 +9,7 @@ export type RegistrtionType = 'NORMAL' | 'CLASS_PACK';
 export interface RegistrationData {
   _id?: ObjectId;
   programId: ObjectId;
-  eventId: ObjectId;
+  eventId?: ObjectId;
   teamId: ObjectId;
 
   billTo: AddressData;
@@ -66,7 +66,7 @@ export interface RegistrationModel extends Model<RegistrationData> {
 
 const schema = new Schema<RegistrationData, RegistrationModel>({
   programId: { type: Types.ObjectId, ref: 'Program', required: true },
-  eventId: { type: Types.ObjectId, ref: 'Event', required: true },
+  eventId: { type: Types.ObjectId, ref: 'Event' },
   teamId: { type: Types.ObjectId, ref: 'Team', required: true },
 
   billTo: { type: addressSchema, required: true },

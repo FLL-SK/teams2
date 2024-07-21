@@ -10,6 +10,7 @@ export const appPath = {
   logout: '/logout',
   profile: (id = '') => `/profile/${id}`,
   register: (team = '') => `/register/${team}`,
+  registerProgram: (team = '') => `/register-program/${team}`,
   signup: '/signup',
   forgotPassword: '/forgot-password',
   team: (id = '') => `/team/${id}`,

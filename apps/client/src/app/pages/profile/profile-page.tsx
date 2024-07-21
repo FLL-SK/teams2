@@ -68,7 +68,11 @@ export function ProfilePage() {
         return {
           ...t,
           registrations: t.registrations.filter(
-            (r) => !r.canceledOn && (!r.event.date || new Date(r.event.date) > new Date()),
+            (r) =>
+              !r.canceledOn &&
+              (r.event
+                ? !r.event.date || new Date(r.event.date) > new Date()
+                : !r.program.endDate || new Date(r.program.endDate) > new Date()),
           ),
           hasFiles: t.registrations.some((r) => r.files.length > 0),
         };

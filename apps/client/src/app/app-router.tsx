@@ -59,6 +59,14 @@ export function AppRouter() {
           </RequireAuth>
         }
       />
+      <Route
+        path={appPath.registerProgram(':id')}
+        element={
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+            <RegisterPage />
+          </RequireAuth>
+        }
+      />
       <Route path={appPath.login} element={<LoginPage />} />
       <Route path={appPath.forgotPassword} element={<ForgotPasswordPage />} />
       <Route path={appPath.passwordReset} element={<ResetPasswordPage />} />

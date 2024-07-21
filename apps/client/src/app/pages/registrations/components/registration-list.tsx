@@ -153,7 +153,7 @@ function RegistrationListRow(props: RegistrationListRowProps) {
 
       <ListCol>
         <Text color="dark-5" truncate="tip">
-          {data.event.name}
+          {data.event?.name}
         </Text>
       </ListCol>
     </>

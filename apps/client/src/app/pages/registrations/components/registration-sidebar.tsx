@@ -71,9 +71,11 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
     >
       <SidebarPanel>
         <LabelValueGroup direction="column" gap="small">
-          <LabelValue label="Turnaj">
-            <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
-          </LabelValue>
+          {registration.event && (
+            <LabelValue label="Turnaj">
+              <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
+            </LabelValue>
+          )}
           <LabelValue label="Tím">
             <Box direction="row" gap="small" width="100%">
               <Anchor href={appPath.team(registration.team.id)} label={registration.team.name} />

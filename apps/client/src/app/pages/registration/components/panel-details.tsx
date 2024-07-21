@@ -46,9 +46,11 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
             <LabelValue label="Tím">
               <Anchor label={reg.team.name} href={appPath.team(reg.team.id)} />
             </LabelValue>
-            <LabelValue label="Turnaj">
-              <Anchor label={reg.event.name} href={appPath.event(reg.event.id)} />
-            </LabelValue>
+            {reg.event && (
+              <LabelValue label="Turnaj">
+                <Anchor label={reg.event.name} href={appPath.event(reg.event.id)} />
+              </LabelValue>
+            )}
             <LabelValue label="Program">
               <Anchor label={reg.program.name} href={appPath.program(reg.program.id)} />
             </LabelValue>

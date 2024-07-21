@@ -16,7 +16,7 @@ enum RegistrationType {
 type Registration implements INode {
   id: ID!
   programId: ID!
-  eventId: ID!
+  eventId: ID
   teamId: ID!
 
   createdOn: DateTime!
@@ -52,7 +52,7 @@ type Registration implements INode {
   impactedChildrenCount: Int!
   setCount: Int!
 
-  event: Event!
+  event: Event
   team: Team!
   program: Program!
   createdByUser: User!
