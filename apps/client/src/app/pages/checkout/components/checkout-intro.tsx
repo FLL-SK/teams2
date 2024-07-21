@@ -2,13 +2,13 @@ import React from 'react';
 import { Box, Button, Paragraph, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../_generated/graphql';
 
-interface RegisterIntroProps {
+interface CheckoutIntroProps {
   team: TeamFragmentFragment;
   nextStep: () => void;
   prevStep: () => void;
 }
 
-export function RegisterIntro(props: RegisterIntroProps) {
+export function CheckoutIntro(props: CheckoutIntroProps) {
   const { team, nextStep, prevStep } = props;
   if (!team) {
     return null;

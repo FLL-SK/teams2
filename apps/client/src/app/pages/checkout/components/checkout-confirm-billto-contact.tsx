@@ -1,21 +1,21 @@
 import React from 'react';
 import { Box, Button, Paragraph } from 'grommet';
 
-import { Contact, RegisterDetails } from './types';
+import { Contact, CheckoutDetails } from './types';
 
 import { appPath } from '@teams2/common';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 
-interface RegisterConfirmBillToContactProps {
-  details: RegisterDetails;
+interface CheckoutConfirmBillToContactProps {
+  details: CheckoutDetails;
   contact: Contact;
-  nextStep: (details: RegisterDetails) => void;
+  nextStep: (details: CheckoutDetails) => void;
   prevStep: () => void;
   cancel: () => void;
 }
 
-export function RegisterConfirmBillToContact(props: RegisterConfirmBillToContactProps) {
+export function CheckoutConfirmBillToContact(props: CheckoutConfirmBillToContactProps) {
   const { details, nextStep, prevStep, cancel, contact } = props;
 
   return (
@@ -24,8 +24,7 @@ export function RegisterConfirmBillToContact(props: RegisterConfirmBillToContact
         Potvrďte vaše kontaktné údaje.
         <br />
         <br />
-        Ak turnaj, na ktorý sa registrujete, vyžaduje zaplatenie poplatku, tak na váš email bude
-        zaslaná faktúra.
+        Ak je vyžadovaná platba, tak na váš email bude zaslaná faktúra.
         <br />
         <br />
         Prípadnú zmenu kontaktových údajov môžete vykonať v časti{' '}

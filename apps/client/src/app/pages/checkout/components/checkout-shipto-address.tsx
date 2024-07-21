@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Button, CheckBox, Form, Text } from 'grommet';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 
 import { AddressForm } from './address-form';
 import { AddressInput } from '../../../_generated/graphql';
 
-interface RegisterShipToAddressProps {
-  details: RegisterDetails;
+interface CheckoutShipToAddressProps {
+  details: CheckoutDetails;
   onSubmit: (a: AddressInput | undefined, useBillTo: boolean) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -26,7 +26,7 @@ const emptyForm: FormDataType = {
   phone: '',
 };
 
-export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
+export function CheckoutShipToAddress(props: CheckoutShipToAddressProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
 
   const [formData, setFormData] = useState<FormDataType>(details.shipTo ?? emptyForm);

@@ -7,13 +7,13 @@ import {
   useGetEventLazyQuery,
   useGetProgramLazyQuery,
 } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { LabelValueGroup } from '../../../components/label-value-group';
 
-interface RegisterReviewProps {
+interface CheckoutReviewProps {
   team: TeamFragmentFragment;
-  details: RegisterDetails;
+  details: CheckoutDetails;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
@@ -21,7 +21,7 @@ interface RegisterReviewProps {
 
 const labelWidth = '180px';
 
-export function RegisterReview(props: RegisterReviewProps) {
+export function CheckoutReview(props: CheckoutReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
 
   const [fetchProgram, { data: programData, loading: programLoading }] = useGetProgramLazyQuery();

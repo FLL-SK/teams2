@@ -14,22 +14,22 @@ import {
   useGetTeamLazyQuery,
   useUpdateTeamMutation,
 } from '../../_generated/graphql';
-import { RegisterBillToAddress } from './components/checkout-billto-address';
-import { RegisterIntro } from './components/checkout-intro';
-import { RegisterReview } from './components/checkout-review';
-import { RegisterSelectEvent } from './components/checkout-select-event';
-import { RegisterSelectProgram } from './components/checkout-select-program';
-import { RegisterShipToAddress } from './components/checkout-shipto-address';
-import { RegisterDetails } from './components/types';
-import { RegisterSuccess } from './components/checkout-success';
-import { RegisterError } from './components/checkout-error';
+import { CheckoutBillToAddress } from './components/checkout-billto-address';
+import { CheckoutIntro } from './components/checkout-intro';
+import { CheckoutReview } from './components/checkout-review';
+import { CheckoutSelectEvent } from './components/checkout-select-event';
+import { CheckoutSelectProgram } from './components/checkout-select-program';
+import { CheckoutShipToAddress } from './components/checkout-shipto-address';
+import { CheckoutDetails } from './components/types';
+import { CheckoutSuccess } from './components/checkout-success';
+import { CheckoutError } from './components/checkout-error';
 import { useNotification } from '../../components/notifications/notification-provider';
-import { RegisterConfirmBillToContact } from './components/checkout-confirm-billto-contact';
+import { CheckoutConfirmBillToContact } from './components/checkout-confirm-billto-contact';
 import { formatFullName } from '../../utils/format-fullname';
 import { handleMutationErrors } from '../../utils/handle_mutation_error';
-import { RegisterSelectType } from './components/checkout-select-type';
+import { CheckoutSelectType } from './components/checkout-select-type';
 
-type RegistrationStep =
+type CheckoutStep =
   | 'intro'
   | 'confirm-billto-contact'
   | 'select-event'
@@ -41,13 +41,13 @@ type RegistrationStep =
   | 'success'
   | 'error';
 
-export function RegisterPage() {
+export function CheckoutPage() {
   const { id: teamId } = useParams();
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isTeamCoach, user } = useAppUser();
-  const [step, setStep] = useState<RegistrationStep>('intro');
-  const [registerDetails, setRegisterDetails] = useState<RegisterDetails>({ type: 'NORMAL' });
+  const [step, setStep] = useState<CheckoutStep>('intro');
+  const [checkoutDetails, setCheckoutDetails] = useState<CheckoutDetails>({ type: 'NORMAL' });
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
     useGetTeamLazyQuery();
@@ -73,8 +73,8 @@ export function RegisterPage() {
 
   const cancel = useCallback(() => navigate(appPath.team(teamId)), [navigate, teamId]);
 
-  const doRegister = useCallback(
-    async (data: RegisterDetails) => {
+  const doCheckout = useCallback(
+    async (data: CheckoutDetails) => {
       if (teamId && data.event && data.event.id) {
         if (!data.billTo) {
           notify.error('Fakturačná adresa nie je vyplnená.');
@@ -133,68 +133,68 @@ export function RegisterPage() {
       ) : (
         <Box>
           {step === 'intro' && (
-            <RegisterIntro
+            <CheckoutIntro
               team={team}
               nextStep={() => setStep('confirm-billto-contact')}
               prevStep={cancel}
             />
           )}
           {step === 'confirm-billto-contact' && (
-            <RegisterConfirmBillToContact
+            <CheckoutConfirmBillToContact
               contact={{
                 id: user.id,
                 name: formatFullName(user.firstName, user.lastName),
                 email: user.username,
                 phone: user.phone,
               }}
-              details={registerDetails}
+              details={checkoutDetails}
               nextStep={(data) => {
                 setStep('select-program');
-                setRegisterDetails(data);
+                setCheckoutDetails(data);
               }}
               prevStep={() => setStep('intro')}
               cancel={cancel}
             />
           )}
           {step === 'select-program' && (
-            <RegisterSelectProgram
-              details={registerDetails}
-              onSubmit={(p) => setRegisterDetails({ ...registerDetails, program: p })}
+            <CheckoutSelectProgram
+              details={checkoutDetails}
+              onSubmit={(p) => setCheckoutDetails({ ...checkoutDetails, program: p })}
               nextStep={() => setStep('select-event')}
               prevStep={() => setStep('confirm-billto-contact')}
               cancel={cancel}
             />
           )}
           {step === 'select-event' && (
-            <RegisterSelectEvent
-              details={registerDetails}
-              onSubmit={(e) => setRegisterDetails({ ...registerDetails, event: e })}
+            <CheckoutSelectEvent
+              details={checkoutDetails}
+              onSubmit={(e) => setCheckoutDetails({ ...checkoutDetails, event: e })}
               nextStep={() => setStep('select-type')}
               prevStep={() => setStep('select-program')}
               cancel={cancel}
             />
           )}
           {step === 'select-type' && (
-            <RegisterSelectType
-              details={registerDetails}
-              onSubmit={setRegisterDetails}
+            <CheckoutSelectType
+              details={checkoutDetails}
+              onSubmit={setCheckoutDetails}
               nextStep={() => setStep('billto')}
               prevStep={() => setStep('select-event')}
               cancel={cancel}
             />
           )}
           {step === 'billto' && (
-            <RegisterBillToAddress
-              address={registerDetails.billTo ?? team.billTo}
+            <CheckoutBillToAddress
+              address={checkoutDetails.billTo ?? team.billTo}
               onSubmit={async (a) => {
                 const aa: AddressInput = {
                   ...a,
-                  contactName: registerDetails.billToContact?.name ?? '',
-                  email: registerDetails.billToContact?.email ?? '',
-                  phone: registerDetails.billToContact?.phone ?? '',
+                  contactName: checkoutDetails.billToContact?.name ?? '',
+                  email: checkoutDetails.billToContact?.email ?? '',
+                  phone: checkoutDetails.billToContact?.phone ?? '',
                 };
                 await updateTeam({ variables: { id: teamId, input: { billTo: aa } } });
-                setRegisterDetails({ ...registerDetails, billTo: aa });
+                setCheckoutDetails({ ...checkoutDetails, billTo: aa });
               }}
               nextStep={() => setStep('shipto')}
               prevStep={() => setStep('select-type')}
@@ -202,19 +202,19 @@ export function RegisterPage() {
             />
           )}
           {step === 'shipto' && (
-            <RegisterShipToAddress
-              details={registerDetails}
+            <CheckoutShipToAddress
+              details={checkoutDetails}
               onSubmit={async (a, ub) => {
                 const u: UpdateTeamInput = { useBillTo: ub };
                 if (a) {
                   u.shipTo = a;
                 }
                 if (ub) {
-                  u.shipTo = registerDetails.billTo;
+                  u.shipTo = checkoutDetails.billTo;
                 }
                 await updateTeam({ variables: { id: teamId, input: u } });
-                setRegisterDetails({
-                  ...registerDetails,
+                setCheckoutDetails({
+                  ...checkoutDetails,
                   shipTo: a ? { ...a } : undefined,
                   useBillTo: ub,
                 });
@@ -225,25 +225,25 @@ export function RegisterPage() {
             />
           )}
           {step === 'review' && (
-            <RegisterReview
+            <CheckoutReview
               team={team}
-              details={registerDetails}
+              details={checkoutDetails}
               prevStep={() => setStep('shipto')}
-              nextStep={() => doRegister(registerDetails)}
+              nextStep={() => doCheckout(checkoutDetails)}
               cancel={cancel}
             />
           )}
           {step === 'success' && (
-            <RegisterSuccess
+            <CheckoutSuccess
               team={team}
-              details={registerDetails}
+              details={checkoutDetails}
               nextStep={() => navigate(appPath.team(teamId))}
             />
           )}
           {step === 'error' && (
-            <RegisterError
+            <CheckoutError
               team={team}
-              details={registerDetails}
+              details={checkoutDetails}
               nextStep={() => navigate(appPath.team(teamId))}
             />
           )}

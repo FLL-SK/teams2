@@ -11,7 +11,7 @@ import { EventPage } from './pages/event/event-page';
 import { Page404 } from './pages/404/404-page';
 import { SettingsPage } from './pages/settings/settings-page';
 import { ProgramPage } from './pages/program/program-page';
-import { RegisterPage } from './pages/checkout/checkout-page';
+import { CheckoutPage } from './pages/checkout/checkout-page';
 import { TeamPage } from './pages/team/team-page';
 import { UserListPage } from './pages/user-list/user-list-page';
 import { RegistrationsPage } from './pages/registrations/registrations-page';
@@ -55,7 +55,7 @@ export function AppRouter() {
         path={appPath.register(':id')}
         element={
           <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
-            <RegisterPage />
+            <CheckoutPage />
           </RequireAuth>
         }
       />
@@ -63,7 +63,7 @@ export function AppRouter() {
         path={appPath.registerProgram(':id')}
         element={
           <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
-            <RegisterPage />
+            <CheckoutPage />
           </RequireAuth>
         }
       />

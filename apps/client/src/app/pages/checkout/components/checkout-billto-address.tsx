@@ -4,7 +4,7 @@ import { Box, Button, Form, Text } from 'grommet';
 import { AddressForm } from './address-form';
 import { AddressInput } from '../../../_generated/graphql';
 
-interface RegisterBillToAddressProps {
+interface CheckoutBillToAddressProps {
   address?: AddressInput | null;
   onSubmit: (a: AddressInput) => void;
   nextStep: () => void;
@@ -28,7 +28,7 @@ const emptyForm: FormDataType = {
   vatNumber: '',
 };
 
-export function RegisterBillToAddress(props: RegisterBillToAddressProps) {
+export function CheckoutBillToAddress(props: CheckoutBillToAddressProps) {
   const { address, onSubmit, nextStep, prevStep, cancel } = props;
 
   const [formData, setFormData] = useState<FormDataType>(

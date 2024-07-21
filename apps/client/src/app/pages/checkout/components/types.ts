@@ -8,7 +8,7 @@ import {
 
 export type Address = AddressGQL;
 
-export interface RegisterDetails {
+export interface CheckoutDetails {
   program?: ProgramListFragmentFragment;
   event?: EventListFragmentFragment;
   shipTo?: AddressInput;
