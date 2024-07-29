@@ -58,3 +58,6 @@ graphql.schema.json
 
 # NX cache
 .nx/cache
+.nx/workspace-data
+migrations.json
+
