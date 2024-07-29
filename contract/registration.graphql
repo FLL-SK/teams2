@@ -115,6 +115,9 @@ type UnregisterTeamPayload {
 
 input RegistrationFilter {
   programId: ID
+  teamId: ID
+  eventId: ID
+  active: Boolean
   onlyUnconfirmed: Boolean
   onlyUnpaid: Boolean
   onlyNotInvoiced: Boolean

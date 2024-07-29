@@ -1,0 +1,24 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+# import * from "./team.graphql"
+# import * from "./user.graphql"
+
+enum ProductType {
+  PROGRAM
+  EVENT
+  OTHER
+}
+
+type Product implements INode {
+  id: ID!
+  type: ProductType!
+  group: String!
+  name: String!
+  note: String
+  price: Float!
+}
+
+extend type Query {
+  getProducts(teamId: ID!): [Product!]!
+}

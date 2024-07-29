@@ -10,9 +10,9 @@ export interface AppUserContextData {
   user?: AppUser;
   userError?: ApolloError;
   refresh: () => Promise<void>;
-  isTeamCoach: (teamId?: string) => boolean;
-  isEventManager: (eventId?: string) => boolean;
-  isProgramManager: (programId?: string) => boolean;
+  isTeamCoach: (teamId?: string | null) => boolean;
+  isEventManager: (eventId?: string | null) => boolean;
+  isProgramManager: (programId?: string | null) => boolean;
   isAdmin: () => boolean;
   isSuperAdmin: () => boolean;
   isUser: (userId: string) => boolean;
@@ -93,7 +93,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
   );
 
   const isTeamCoach = useCallback(
-    (teamId?: string): boolean => {
+    (teamId?: string | null): boolean => {
       if (teamId && data) {
         return (data?.getUser?.coachingTeams ?? []).findIndex((e) => e.id === teamId) > -1;
       }
@@ -103,7 +103,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
   );
 
   const isEventManager = useCallback(
-    (eventId?: string): boolean => {
+    (eventId?: string | null): boolean => {
       if (eventId && data) {
         return (data?.getUser?.managingEvents ?? []).findIndex((e) => e.id === eventId) > -1;
       }
@@ -113,7 +113,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
   );
 
   const isProgramManager = useCallback(
-    (programId?: string): boolean => {
+    (programId?: string | null): boolean => {
       if (programId && data) {
         return (data?.getUser?.managingPrograms ?? []).findIndex((p) => p.id === programId) > -1;
       }

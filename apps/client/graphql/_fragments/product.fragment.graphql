@@ -1,0 +1,8 @@
+fragment Product on Product {
+  id
+  type
+  group
+  name
+  note
+  price
+}

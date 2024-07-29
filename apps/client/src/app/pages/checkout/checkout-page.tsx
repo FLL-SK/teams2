@@ -2,7 +2,7 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Spinner } from 'grommet';
 import { useCallback, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
@@ -32,8 +32,7 @@ import { CheckoutSelectType } from './components/checkout-select-type';
 type CheckoutStep =
   | 'intro'
   | 'confirm-billto-contact'
-  | 'select-event'
-  | 'select-program'
+  | 'select-item'
   | 'select-type'
   | 'review'
   | 'billto'
@@ -42,7 +41,9 @@ type CheckoutStep =
   | 'error';
 
 export function CheckoutPage() {
-  const { id: teamId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [teamId, setTeamId] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isTeamCoach, user } = useAppUser();
@@ -62,6 +63,10 @@ export function CheckoutPage() {
 
   const canShop = isAdmin() || isTeamCoach(teamId);
   const team = teamData?.getTeam;
+
+  React.useEffect(() => {
+    setTeamId(searchParams.get('teamId'));
+  }, [searchParams]);
 
   React.useEffect(() => {
     if (teamId) {
@@ -149,28 +154,19 @@ export function CheckoutPage() {
               }}
               details={checkoutDetails}
               nextStep={(data) => {
-                setStep('select-program');
+                setStep('select-item');
                 setCheckoutDetails(data);
               }}
               prevStep={() => setStep('intro')}
               cancel={cancel}
             />
           )}
-          {step === 'select-program' && (
+          {step === 'select-item' && (
             <CheckoutSelectProgram
               details={checkoutDetails}
               onSubmit={(p) => setCheckoutDetails({ ...checkoutDetails, program: p })}
-              nextStep={() => setStep('select-event')}
-              prevStep={() => setStep('confirm-billto-contact')}
-              cancel={cancel}
-            />
-          )}
-          {step === 'select-event' && (
-            <CheckoutSelectEvent
-              details={checkoutDetails}
-              onSubmit={(e) => setCheckoutDetails({ ...checkoutDetails, event: e })}
               nextStep={() => setStep('select-type')}
-              prevStep={() => setStep('select-program')}
+              prevStep={() => setStep('confirm-billto-contact')}
               cancel={cancel}
             />
           )}
@@ -179,7 +175,7 @@ export function CheckoutPage() {
               details={checkoutDetails}
               onSubmit={setCheckoutDetails}
               nextStep={() => setStep('billto')}
-              prevStep={() => setStep('select-event')}
+              prevStep={() => setStep('select-item')}
               cancel={cancel}
             />
           )}

@@ -19,7 +19,7 @@ import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import Dataloader from 'dataloader';
 import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
-import { UpdateQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery } from 'mongoose';
 
 const logBase = logger('DS:Registration');
 
@@ -41,6 +41,24 @@ export class RegistrationDataSource extends BaseDataSource {
     if (!id) return null;
     const reg = this.loader.load(id.toString());
     return reg;
+  }
+
+  async getRegistrations(filter: RegistrationFilter): Promise<Registration[]> {
+    const q: FilterQuery<RegistrationData> = {};
+    if (filter.active) {
+      q.canceledOn = null;
+    }
+    if (filter.programId) {
+      q.programId = filter.programId;
+    }
+    if (filter.eventId) {
+      q.eventId = filter.eventId;
+    }
+    if (filter.teamId) {
+      q.teamId = filter.teamId;
+    }
+    const regs = await registrationRepository.find(q).exec();
+    return regs.map(RegistrationMapper.toRegistration);
   }
 
   async getRegistrationGroups(filter: RegistrationFilter): Promise<RegistrationGroup[]> {

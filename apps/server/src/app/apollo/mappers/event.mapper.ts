@@ -1,5 +1,5 @@
 import { EventData } from '../../models';
-import { Event } from '../../_generated/graphql';
+import { Event, Product } from '../../_generated/graphql';
 
 export const EventMapper = {
   toEvent(event: EventData | null | undefined): Event | null {
@@ -26,6 +26,20 @@ export const EventMapper = {
       managers: [],
       program: null,
       registrationsCount: 0,
+    };
+    return u;
+  },
+  toProduct(event: EventData | null | undefined): Product | null {
+    if (!event) {
+      return null;
+    }
+    const u: Omit<Required<Product>, '__typename'> = {
+      id: event._id,
+      type: 'EVENT',
+      name: event.name,
+      group: event.programId.toString(),
+      note: null,
+      price: 0,
     };
     return u;
   },
