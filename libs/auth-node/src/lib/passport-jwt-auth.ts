@@ -86,12 +86,11 @@ const passportJwtAuthStrategy = () => {
 
         if (!user) {
           debug('JWT: User not found.');
-          console.log('JWT: User not found.')
+          console.warn('JWT: User not found.');
           return cb(null, false);
         }
 
         debug('JWT: Authenticated OK');
-        console.log('JWT: Authenticated OK')
 
         return cb(null, user);
       } catch (e) {
