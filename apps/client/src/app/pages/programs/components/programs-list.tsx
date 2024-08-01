@@ -54,7 +54,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
         notInvoiced,
       });
 
-      navigate(`${appPath.registrations}?${p.toString()}`);
+      navigate(`${appPath.registrations()}?${p.toString()}`);
     },
     [navigate, program.id],
   );

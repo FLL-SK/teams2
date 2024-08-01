@@ -18,7 +18,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '@teams2/auth-react';
 
-
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,7 +28,7 @@ export function LoginPage() {
   const handleLogin = async ({ value }: { value: { username: string; password: string } }) => {
     const resp = await login(value.username, value.password);
     if (resp.user) {
-      const l = (location.state as { from?: string })?.from ?? appPath.home;
+      const l = (location.state as { from?: string })?.from ?? appPath.home();
       navigate(l);
       return;
     } else {
@@ -61,8 +60,8 @@ export function LoginPage() {
             </Box>
           </CardBody>
           <CardFooter pad={'medium'} background="light-2" justify="center">
-            <Anchor onClick={() => navigate(appPath.forgotPassword)}>Zabudli ste heslo?</Anchor>
-            <Anchor onClick={() => navigate(appPath.signup)}>Vytvoriť nový účet?</Anchor>
+            <Anchor onClick={() => navigate(appPath.forgotPassword())}>Zabudli ste heslo?</Anchor>
+            <Anchor onClick={() => navigate(appPath.signup())}>Vytvoriť nový účet?</Anchor>
           </CardFooter>
         </Card>
       </Layer>

@@ -35,7 +35,7 @@ export async function msgFromTemplate(title: string, message: string): Promise<s
 }
 
 export async function msgPasswordReset(email: string, token: string): Promise<string | null> {
-  const url = new URL(path.join(getServerConfig().clientAppRootUrl, appPath.passwordReset));
+  const url = new URL(path.join(getServerConfig().clientAppRootUrl, appPath.passwordReset()));
   url.searchParams.set('token', token);
   const link = url.toString();
 
