@@ -52,7 +52,7 @@ export function AppRouter() {
       <Route path={appPath.program(':id')} element={<ProgramPage />} />
       <Route path={appPath.registration(':id')} element={<RegistrationPage />} />
       <Route
-        path={appPath.register(':id')}
+        path={appPath.register()}
         element={
           <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <CheckoutPage />
@@ -60,7 +60,7 @@ export function AppRouter() {
         }
       />
       <Route
-        path={appPath.registerProgram(':id')}
+        path={appPath.registerProgram()}
         element={
           <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <CheckoutPage />
