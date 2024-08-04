@@ -24,6 +24,13 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
       <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'} wrap>
         <Box width="60%">
           <LabelValueGroup labelWidth="150px" direction="row" gap="small">
+            <LabelValue label="Registrácia">
+              <Anchor
+                label="Otvor detaily registrácie"
+                href={appPath.registration(registration.id)}
+              />
+            </LabelValue>
+
             {registration.event && (
               <LabelValue label="Turnaj">
                 <Anchor
@@ -45,9 +52,11 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
                 </Text>
               </LabelValue>
             )}
-            <LabelValue label="Typ registrácie">
-              <Text>{registration.type}</Text>
-            </LabelValue>
+            {!registration.event && (
+              <LabelValue label="Typ registrácie">
+                <Text>{registration.type}</Text>
+              </LabelValue>
+            )}
           </LabelValueGroup>
         </Box>
 
@@ -72,7 +81,6 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
               readOnly={!!registration.canceledOn}
             />
           </LabelValueGroup>
-          <Anchor href={appPath.registration(registration.id)} label="Detaily registrácie" />
         </Box>
       </Box>
       <Box background={'light-2'} pad="small">

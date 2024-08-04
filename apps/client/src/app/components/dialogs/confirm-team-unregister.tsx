@@ -3,19 +3,21 @@ import React from 'react';
 import { Modal } from '../modal';
 
 interface ConfirmTeamUnregisterDialogProps {
+  type: 'EVENT' | 'PROGRAM';
   teamName: string;
   onClose: () => void;
   onUnregister: () => Promise<unknown>;
 }
 
 export function ConfirmTeamUnregisterDialog(props: ConfirmTeamUnregisterDialogProps) {
-  const { teamName, onClose, onUnregister } = props;
+  const { teamName, onClose, onUnregister, type } = props;
 
   return (
     <Modal width="medium" onClose={onClose} title="Potvrdenie">
       <Box pad="medium">
         <Paragraph>
-          Naozaj chcete zrušiť registrciu tímu <strong>{teamName}</strong> na turnaji?
+          Naozaj chcete zrušiť registrciu tímu <strong>{teamName}</strong>{' '}
+          {type === 'EVENT' ? 'na turnaji' : 'v programe'}?
           <br />
           <br />
           Pokiaľ nie ste administrátor, tak registráciu môžete zrušiť len ak nebola ešte vystavená

@@ -10,7 +10,8 @@ import {
   AddressInput,
   RegistrationInput,
   UpdateTeamInput,
-  useCreateRegistrationMutation,
+  useCreateEventRegistrationMutation,
+  useCreateProgramRegistrationMutation,
   useGetTeamLazyQuery,
   useUpdateTeamMutation,
 } from '../../_generated/graphql';
@@ -26,8 +27,9 @@ import { CheckoutError } from './components/checkout-error';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { CheckoutConfirmBillToContact } from './components/checkout-confirm-billto-contact';
 import { formatFullName } from '../../utils/format-fullname';
-import { handleMutationErrors } from '../../utils/handle_mutation_error';
+import { handleMutationErrors, MutationData } from '../../utils/handle_mutation_error';
 import { CheckoutSelectType } from './components/checkout-select-type';
+import { CheckoutSelectProduct } from './components/checkout-select-item';
 
 type CheckoutStep =
   | 'intro'
@@ -43,6 +45,7 @@ type CheckoutStep =
 export function CheckoutPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [teamId, setTeamId] = useState<string | null>(null);
+  const [programId, setProgramId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { notify } = useNotification();
@@ -57,7 +60,11 @@ export function CheckoutPage() {
     onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
   });
 
-  const [registerTeam] = useCreateRegistrationMutation({
+  const [registerTeam4Event] = useCreateEventRegistrationMutation({
+    onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
+  });
+
+  const [registerTeam4Program] = useCreateProgramRegistrationMutation({
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
@@ -66,6 +73,7 @@ export function CheckoutPage() {
 
   React.useEffect(() => {
     setTeamId(searchParams.get('teamId'));
+    setProgramId(searchParams.get('programId'));
   }, [searchParams]);
 
   React.useEffect(() => {
@@ -80,47 +88,63 @@ export function CheckoutPage() {
 
   const doCheckout = useCallback(
     async (data: CheckoutDetails) => {
-      if (teamId && data.event && data.event.id) {
-        if (!data.billTo) {
-          notify.error('Fakturačná adresa nie je vyplnená.');
-          return;
-        }
-        if (!data.shipTo) {
-          notify.error('Doručovacia adresa nie je vyplnená.');
-          return;
-        }
-        const input: RegistrationInput = {
-          type: data.type,
-          billTo: data.billTo,
-          shipTo: data.shipTo,
-        };
-        if (input.type === 'CLASS_PACK') {
-          input.impactedTeamCount = Number(data.teamsImpacted) ?? 1;
-          input.impactedChildrenCount = Number(data.childrenImpacted) ?? 1;
-          input.setCount = Number(data.setCount) ?? 1;
-        }
+      console.log('doCheckout', data);
 
-        const r1 = await registerTeam({
+      if (!teamId) {
+        notify.error('Tím nie je špecifikovaný.');
+        return;
+      }
+      if (!data.billTo) {
+        notify.error('Fakturačná adresa nie je vyplnená.');
+        return;
+      }
+      if (!data.shipTo) {
+        notify.error('Doručovacia adresa nie je vyplnená.');
+        return;
+      }
+      const input: RegistrationInput = {
+        type: data.type,
+        billTo: data.billTo,
+        shipTo: data.shipTo,
+      };
+      if (input.type === 'CLASS_PACK') {
+        input.impactedTeamCount = Number(data.teamsImpacted) ?? 1;
+        input.impactedChildrenCount = Number(data.childrenImpacted) ?? 1;
+        input.setCount = Number(data.setCount) ?? 1;
+      }
+
+      let resultData: MutationData;
+
+      if (programId && data.event) {
+        const r1 = await registerTeam4Event({
           variables: {
             teamId,
             eventId: data.event.id,
             input,
           },
         });
-
-        if (
-          handleMutationErrors(
-            r1.data?.createRegistration,
-            'Nepodarilo sa registrovať tím.',
-            notify.error,
-          )
-        ) {
-          return;
-        }
-        setStep('success');
+        resultData = r1.data?.createEventRegistration;
+      } else if (data.program) {
+        const r2 = await registerTeam4Program({
+          variables: {
+            teamId,
+            programId: data.program.id,
+            input,
+          },
+        });
+        resultData = r2.data?.createProgramRegistration;
+      } else {
+        notify.error('Nepodarilo sa registrovať tím. Nebol určený program alebo turnaj.');
+        return;
       }
+
+      if (handleMutationErrors(resultData, 'Nepodarilo sa registrovať tím.', notify.error)) {
+        return;
+      }
+
+      setStep('success');
     },
-    [notify, registerTeam, teamId],
+    [notify, registerTeam4Event, teamId],
   );
 
   if (!canShop) {
@@ -140,6 +164,7 @@ export function CheckoutPage() {
           {step === 'intro' && (
             <CheckoutIntro
               team={team}
+              regType={programId ? 'EVENT' : 'PROGRAM'}
               nextStep={() => setStep('confirm-billto-contact')}
               prevStep={cancel}
             />
@@ -161,7 +186,7 @@ export function CheckoutPage() {
               cancel={cancel}
             />
           )}
-          {step === 'select-item' && (
+          {step === 'select-item' && !programId && (
             <CheckoutSelectProgram
               details={checkoutDetails}
               onSubmit={(p) => setCheckoutDetails({ ...checkoutDetails, program: p })}
@@ -170,6 +195,16 @@ export function CheckoutPage() {
               cancel={cancel}
             />
           )}
+          {step === 'select-item' && programId && (
+            <CheckoutSelectEvent
+              details={checkoutDetails}
+              onSubmit={(e) => setCheckoutDetails({ ...checkoutDetails, event: e })}
+              nextStep={() => setStep('select-type')}
+              prevStep={() => setStep('confirm-billto-contact')}
+              cancel={cancel}
+            />
+          )}
+
           {step === 'select-type' && (
             <CheckoutSelectType
               details={checkoutDetails}

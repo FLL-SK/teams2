@@ -24,7 +24,7 @@ export function CheckoutSelectProgram(props: CheckoutSelectProgramProps) {
 
   return (
     <Box gap="medium">
-      <Text>Vyberte program v rámci, ktorého sa chcete prihlásiť na turnaj:</Text>
+      <Text>Vyberte program, do ktorého sa chcete prihlásiť:</Text>
 
       {programs.map((program) => (
         <ProgramTile

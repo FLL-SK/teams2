@@ -29,18 +29,19 @@ export const EventMapper = {
     };
     return u;
   },
-  toProduct(event: EventData | null | undefined): Product | null {
+  toProduct(event: Event | null | undefined): Product | null {
     if (!event) {
       return null;
     }
     const u: Omit<Required<Product>, '__typename'> = {
-      id: event._id,
+      id: event.id,
       type: 'EVENT',
       name: event.name,
       group: event.programId.toString(),
       note: null,
       price: 0,
     };
+    console.log('E2P', u);
     return u;
   },
 };

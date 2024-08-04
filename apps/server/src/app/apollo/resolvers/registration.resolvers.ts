@@ -5,12 +5,11 @@ import {
   emailRegistrationInvoice,
   createRegistrationInvoice,
   getRegistrationFiles,
-} from '../../domains/registration';
-import {
-  cancelRegistration,
   registerTeamToEvent,
-  changeRegisteredEvent,
-} from '../../domains/event';
+  cancelRegistration,
+  registerTeamToProgram,
+} from '../../domains/registration';
+import { changeRegisteredEvent } from '../../domains/event';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
@@ -44,8 +43,10 @@ export const typeResolver: Resolver<Registration> = {
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
-  createRegistration: (_parent, { eventId, teamId, input }, context) =>
+  createEventRegistration: (_parent, { eventId, teamId, input }, context) =>
     registerTeamToEvent(teamId, eventId, input, context),
+  createProgramRegistration: (_parent, { programId, teamId, input }, context) =>
+    registerTeamToProgram(teamId, programId, input, context),
 
   cancelRegistration: async (_parent, { id }, context) => cancelRegistration(id, context),
 

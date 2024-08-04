@@ -30,10 +30,12 @@ export function CheckoutReview(props: CheckoutReviewProps) {
   const [acceptedProgramTC, setAcceptedProgramTC] = useState<boolean>(false);
   const [acceptedEventTC, setAcceptedEventTC] = useState<boolean>(false);
 
+  console.log('details', details);
+
   React.useEffect(() => {
     if (details.program) {
       fetchProgram({
-        variables: { id: details.program.id },
+        variables: { id: details.program.id ?? details.event?.programId },
       });
     }
   }, [details.program, fetchProgram]);
@@ -61,8 +63,8 @@ export function CheckoutReview(props: CheckoutReviewProps) {
     return <Spinner />;
   }
 
-  if (!program || !event) {
-    return null;
+  if (!program) {
+    return <Text>Program nebol nájdený</Text>;
   }
 
   const shipTo = details.shipTo;
@@ -75,7 +77,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
         <LabelValueGroup labelWidth={labelWidth} direction="row" gap="small">
           <LabelValue label="Tím" value={team.name} />
           <LabelValue label="Program" value={program.name} />
-          <LabelValue label="Turnaj" value={event.name} />
+          {event && <LabelValue label="Turnaj" value={event.name} />}
           <LabelValue
             label="Typ"
             value={
@@ -92,8 +94,8 @@ export function CheckoutReview(props: CheckoutReviewProps) {
         <InvoiceItemList items={items} />
         <Box>
           <Text>
-            Toto sú štandardné poplatky turnaja. Prípadné zľavy, napr. z dôvodu že vám bol
-            poskytnutý grant budú zohľadnené vo faktúre.
+            Toto sú štandardné poplatky. Prípadné zľavy, napr. ak vám bol poskytnutý grant budú
+            zohľadnené vo faktúre.
           </Text>
         </Box>
       </Panel>
@@ -140,24 +142,29 @@ export function CheckoutReview(props: CheckoutReviewProps) {
         ) : null}
       </Panel>
 
-      {(program.conditions || event.conditions) && (
-        <Panel title="Podmienky" gap="small">
-          {program.conditions && (
-            <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
-              <Box background="light-2" flex pad="small">
-                <Markdown>{program.conditions}</Markdown>
-              </Box>
-            </LabelValue>
-          )}
-          {event.conditions && (
-            <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
-              <Box background="light-2" flex pad="small">
-                <Markdown>{event.conditions}</Markdown>
-              </Box>
-            </LabelValue>
-          )}
-        </Panel>
-      )}
+      <Panel title="Podmienky" gap="small">
+        <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
+          <Box background="light-2" flex pad="small">
+            <Markdown>
+              {program.conditions && program.conditions.length > 0
+                ? program.conditions
+                : 'Neboli špecifikované žiadne špeciláne podmienky.'}
+            </Markdown>
+          </Box>
+        </LabelValue>
+
+        {event && (
+          <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
+            <Box background="light-2" flex pad="small">
+              <Markdown>
+                {event.conditions && event.conditions.length > 0
+                  ? event.conditions
+                  : 'Neboli špecifikované žiadne špeciláne podmienky.'}
+              </Markdown>
+            </Box>
+          </LabelValue>
+        )}
+      </Panel>
 
       <Box>
         <CheckBox
@@ -183,7 +190,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
           primary
           label="Registrovať"
           onClick={nextStep}
-          disabled={!(acceptedProgramTC && (acceptedEventTC || !event.conditions))}
+          disabled={!(acceptedProgramTC && (acceptedEventTC || !event?.conditions))}
         />
       </Box>
     </Box>

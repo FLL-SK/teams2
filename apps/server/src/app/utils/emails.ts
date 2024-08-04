@@ -191,18 +191,18 @@ export async function emailTeamSizeConfirmed(
   eventManagers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
 }
 
-export async function emailRegistrationConfirmed(
+export async function emailEventRegistrationConfirmed(
   eventId: ObjectId,
   teamId: ObjectId,
   confirmedBy: string,
 ) {
-  const log = logLib.extend('emailRegistrationConfirmed');
+  const log = logLib.extend('emailRegistrationConfirmedEvent');
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
 
-  const subject = `Registrácia tímu potvrdená - ${team.name}`;
+  const subject = `Registrácia tímu na turnaj potvrdená - ${team.name}`;
   const title = subject;
-  const text = `Organizátor súťaže potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+  const text = `Organizátor turnaja potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
 
@@ -235,8 +235,52 @@ export async function emailRegistrationConfirmed(
   coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
 }
 
-export async function emailTeamRegistered(registrationId: ObjectId) {
-  const log = logLib.extend('emailTeamRegistered');
+export async function emailProgramRegistrationConfirmed(
+  programId: ObjectId,
+  teamId: ObjectId,
+  confirmedBy: string,
+) {
+  const log = logLib.extend('emailRegistrationConfirmedProg');
+  const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
+  const team = await teamRepository.findById(teamId).lean().exec();
+
+  const subject = `Registrácia tímu do programu potvrdená - ${team.name}`;
+  const title = subject;
+  const text = `Organizátor programu potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+
+  // email to admin
+
+  getAppSettings().then((s) => {
+    if (!s.sysEmail) {
+      log.error('emailRegistrationConfirmed: no sysEmail in settings');
+      return;
+    }
+    emailMessage({ to: s.sysEmail, subject, title, text: text + '\n\n Potvrdené:' + confirmedBy });
+    log.debug('email sent to admin %s', s.sysEmail);
+  });
+
+  // email to program managers
+  const program = await programRepository.findById(programId).lean().exec();
+  const programManagers = await userRepository
+    .find({ _id: { $in: program.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+  programManagers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
+  log.debug(
+    'email sent to event managers %s',
+    programManagers.map((m) => m.username),
+  );
+
+  // email to coaches
+  const coaches = await userRepository
+    .find({ _id: { $in: team.coachesIds } }, { username: 1 })
+    .lean()
+    .exec();
+  coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
+}
+
+export async function emailTeamRegisteredForEvent(registrationId: ObjectId) {
+  const log = logLib.extend('emailTeamRegisteredEvent');
 
   const reg = await registrationRepository.findById(registrationId).lean().exec();
   const [team, event, program] = await Promise.all([
@@ -281,8 +325,48 @@ export async function emailTeamRegistered(registrationId: ObjectId) {
   );
 }
 
-export async function emailTeamUnregistered(registrationId: ObjectId) {
-  const log = logLib.extend('emailTeamUnregistered');
+export async function emailTeamRegisteredForProgram(registrationId: ObjectId) {
+  const log = logLib.extend('emailTeamRegisteredPrg');
+
+  const reg = await registrationRepository.findById(registrationId).lean().exec();
+  const [team, program] = await Promise.all([
+    teamRepository.findById(reg.teamId).lean().exec(),
+    programRepository.findById(reg.programId).lean().exec(),
+  ]);
+
+  const programUrl = getServerConfig().clientAppRootUrl + appPath.program(program._id.toString());
+
+  const coaches = await userRepository
+    .find({ _id: { $in: team.coachesIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const pm = await userRepository
+    .find({ _id: { $in: program.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const managers = pm;
+
+  const subject = `Registrácia tímu ${team.name} do programu ${program.name}`;
+  const title = subject;
+  const text = `Tím ${team.name} bol úspešne zaregistrovaný do programu ${program.name}. Viac informácií o programe nájdete tu ${programUrl}`;
+
+  coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
+  log.debug(
+    'email sent to coaches %o',
+    coaches.map((m) => m.username),
+  );
+
+  managers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
+  log.debug(
+    'email sent to managers %o',
+    managers.map((m) => m.username),
+  );
+}
+
+export async function emailTeamUnregisteredFromEvent(registrationId: ObjectId) {
+  const log = logLib.extend('emailTeamUnregisteredEvent');
 
   const reg = await registrationRepository.findById(registrationId).lean().exec();
   const [team, event, program] = await Promise.all([
@@ -314,6 +398,47 @@ export async function emailTeamUnregistered(registrationId: ObjectId) {
   const subject = `Zrušenie registrácia tímu ${team.name}`;
   const title = subject;
   const text = `Registrácia tímu ${team.name} turnaj ${event.name} programu ${program.name} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+
+  coachEmails.forEach((to) => emailMessage({ to, subject, title, text }));
+  log.debug(
+    'email sent to coaches %o',
+    coaches.map((m) => m.username),
+  );
+
+  managers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
+  log.debug(
+    'email sent to managers %o',
+    managers.map((m) => m.username),
+  );
+}
+
+export async function emailTeamUnregisteredFromProgram(registrationId: ObjectId) {
+  const log = logLib.extend('emailTeamUnregisteredPrg');
+
+  const reg = await registrationRepository.findById(registrationId).lean().exec();
+  const [team, program] = await Promise.all([
+    teamRepository.findById(reg.teamId).lean().exec(),
+    programRepository.findById(reg.programId).lean().exec(),
+  ]);
+
+  const programUrl = getServerConfig().clientAppRootUrl + appPath.program(program._id.toString());
+
+  const coaches = await userRepository
+    .find({ _id: { $in: team.coachesIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const pm = await userRepository
+    .find({ _id: { $in: program.managersIds } }, { username: 1 })
+    .lean()
+    .exec();
+
+  const managers = pm;
+  const coachEmails = coaches.map((c) => c.username);
+
+  const subject = `Zrušenie registrácia tímu ${team.name}`;
+  const title = subject;
+  const text = `Registrácia tímu ${team.name} v programe ${program.name} bola zrušená. Viac informácií o programe nájdete tu ${programUrl}`;
 
   coachEmails.forEach((to) => emailMessage({ to, subject, title, text }));
   log.debug(

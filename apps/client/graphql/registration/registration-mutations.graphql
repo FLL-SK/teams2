@@ -98,8 +98,19 @@ mutation emailRegistrationInvoice($id: ID!) {
   }
 }
 
-mutation createRegistration($eventId: ID!, $teamId: ID!, $input: RegistrationInput!) {
-  createRegistration(eventId: $eventId, teamId: $teamId, input: $input) {
+mutation createEventRegistration($eventId: ID!, $teamId: ID!, $input: RegistrationInput!) {
+  createEventRegistration(eventId: $eventId, teamId: $teamId, input: $input) {
+    registration {
+      ...RegistrationListFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
+}
+
+mutation createProgramRegistration($programId: ID!, $teamId: ID!, $input: RegistrationInput!) {
+  createProgramRegistration(programId: $programId, teamId: $teamId, input: $input) {
     registration {
       ...RegistrationListFragment
     }

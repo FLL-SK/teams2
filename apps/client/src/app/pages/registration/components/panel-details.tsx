@@ -82,16 +82,19 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
               !isAdmin() && !(isTeamCoach(reg.teamId) && !reg.invoiceIssuedOn && !reg.shippedOn)
             }
           />
-          <Button
-            label="Zmeniť turnaj"
-            onClick={() => setChangeEvent(true)}
-            disabled={!isAdmin()}
-          />
+          {reg.event && (
+            <Button
+              label="Zmeniť turnaj"
+              onClick={() => setChangeEvent(true)}
+              disabled={!isAdmin()}
+            />
+          )}
         </Box>
       )}
 
       {askUnregisterTeam && (
         <ConfirmTeamUnregisterDialog
+          type={reg.event ? 'EVENT' : 'PROGRAM'}
           teamName={reg.team.name}
           onClose={() => setAskUnregisterTeam(false)}
           onUnregister={() => unregisterTeam({ variables: { id: reg.id } })}

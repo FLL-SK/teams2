@@ -2,119 +2,14 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 
-import {
-  eventRepository,
-  InvoiceItemData,
-  invoiceItemRepository,
-  registrationRepository,
-} from '../models';
-import {
-  emailEventChangedToCoach,
-  emailEventChangedToEventManagers,
-  emailTeamRegistered,
-  emailTeamUnregistered,
-} from '../utils/emails';
+import { eventRepository } from '../models';
+import { emailEventChangedToCoach, emailEventChangedToEventManagers } from '../utils/emails';
 
 import { logger } from '@teams2/logger';
-import { Registration, RegistrationInput, RegistrationPayload } from '../_generated/graphql';
+import { RegistrationPayload } from '../_generated/graphql';
 import { appPath } from '@teams2/common';
 
 const logLib = logger('domain:Event');
-
-async function copyInvoiceItemsToRegistration(registrationId: ObjectId) {
-  const reg = await registrationRepository.findById(registrationId).lean().exec();
-
-  let items = await invoiceItemRepository.find({ eventId: reg.eventId }).lean().exec();
-  if (items.length === 0) {
-    items = await invoiceItemRepository.find({ programId: reg.programId }).lean().exec();
-  }
-
-  for (const item of items) {
-    const ri: InvoiceItemData = {
-      registrationId,
-      lineNo: item.lineNo,
-      text: item.text,
-      note: item.note,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-    };
-    await invoiceItemRepository.create(ri);
-  }
-}
-
-export async function registerTeamToEvent(
-  teamId: ObjectId,
-  eventId: ObjectId,
-  input: RegistrationInput,
-  ctx: ApolloContext,
-): Promise<RegistrationPayload> {
-  const log = logLib.extend('registerTeam');
-  log.info('Registering team %s to event %s', teamId, eventId);
-  const { userGuard, dataSources } = ctx;
-
-  if (!userGuard.isAdmin() && !(await userGuard.isCoach(teamId))) {
-    log.error('Not authorized to register');
-    return { errors: [{ code: 'not_authorized' }] };
-  }
-
-  let registration: Registration;
-  try {
-    // register team to event
-    registration = await dataSources.registration.createRegistration(eventId, teamId, input);
-
-    if (!registration) {
-      return { errors: [{ code: 'registration_failed' }] };
-    }
-  } catch (e) {
-    return { errors: [{ code: 'registration_failed' }, { code: e.name }] };
-  }
-
-  try {
-    // copy invoice items to registration
-    await copyInvoiceItemsToRegistration(registration.id);
-  } catch (e) {
-    log.error('Failed to copy invoice items to registration %s', registration.id);
-    return { errors: [{ code: 'registration_failed_to_copy_items' }, { code: e.name }] };
-  }
-
-  try {
-    // email notifications
-    emailTeamRegistered(registration.id);
-  } catch (e) {
-    log.error('Failed to send email to team %s', teamId);
-    return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
-  }
-
-  return { registration };
-}
-
-export async function cancelRegistration(
-  id: ObjectId,
-  ctx: ApolloContext,
-): Promise<RegistrationPayload> {
-  const { dataSources, userGuard } = ctx;
-  const log = logLib.extend('registerTeam');
-  const reg = await dataSources.registration.getRegistration(id);
-
-  if (
-    !userGuard.isAdmin() &&
-    !((await userGuard.isCoach(reg.teamId)) && !reg.invoiceIssuedOn && !reg.shippedOn)
-  ) {
-    log.debug('Not authorized to cancel registration %s', id);
-    return { errors: [{ code: 'not_authorized' }] };
-  }
-
-  const registration = await dataSources.registration.cancelRegistration(id);
-
-  if (!registration) {
-    return null;
-  }
-
-  // email notifications
-  emailTeamUnregistered(registration.id);
-
-  return { registration };
-}
 
 export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloContext) {
   const { dataSources } = ctx;

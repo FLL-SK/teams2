@@ -81,22 +81,24 @@ export function RegistrationPage() {
                 readOnly={!!reg.canceledOn}
               />
 
-              <Panel title="Účasť" wrap direction="row" gap="small">
-                <Box width={columnWidth}>
-                  <LabelValueGroup labelWidth="250px" gap="small" direction="row">
-                    <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
-                    {reg.program.maxTeamSize &&
-                      reg.girlCount + reg.boyCount > reg.program.maxTeamSize && (
-                        <Paragraph color="status-critical">
-                          Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna
-                          veľkosť tímu je {reg.program.maxTeamSize}. Na turnaji sa môže súťažne
-                          zúčastniť iba povolený počet detí. Ostatní sa môžu zúčastniť ako diváci.
-                        </Paragraph>
-                      )}
-                    <FieldTeamSizeConfirmedOn registration={reg} readOnly={!!reg.canceledOn} />
-                  </LabelValueGroup>
-                </Box>
-              </Panel>
+              {reg.event && (
+                <Panel title="Účasť" wrap direction="row" gap="small">
+                  <Box width={columnWidth}>
+                    <LabelValueGroup labelWidth="250px" gap="small" direction="row">
+                      <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
+                      {reg.program.maxTeamSize &&
+                        reg.girlCount + reg.boyCount > reg.program.maxTeamSize && (
+                          <Paragraph color="status-critical">
+                            Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna
+                            veľkosť tímu je {reg.program.maxTeamSize}. Na turnaji sa môže súťažne
+                            zúčastniť iba povolený počet detí. Ostatní sa môžu zúčastniť ako diváci.
+                          </Paragraph>
+                        )}
+                      <FieldTeamSizeConfirmedOn registration={reg} readOnly={!!reg.canceledOn} />
+                    </LabelValueGroup>
+                  </Box>
+                </Panel>
+              )}
 
               <Panel title="Súbory" gap="small">
                 <RegistrationFilesPanel registrationId={reg.id} regConfirmed={!!reg.confirmedOn} />

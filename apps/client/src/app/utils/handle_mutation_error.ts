@@ -2,7 +2,7 @@ import { NotificationMethod } from '../components/notifications/notification-pro
 import { MutationError } from '../_generated/graphql';
 import { errorCodeToMessage } from '@teams2/common';
 
-type MutationData = { errors?: MutationError[] | null } | undefined | null;
+export type MutationData = { errors?: MutationError[] | null } | undefined | null;
 
 export const handleMutationErrors = (
   data: MutationData,

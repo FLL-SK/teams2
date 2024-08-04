@@ -2,6 +2,7 @@ import {
   Address as AddressGQL,
   AddressInput,
   EventListFragmentFragment,
+  ProductFragment,
   ProgramListFragmentFragment,
   RegistrationType,
 } from '../../../_generated/graphql';
@@ -9,6 +10,7 @@ import {
 export type Address = AddressGQL;
 
 export interface CheckoutDetails {
+  item?: ProductFragment;
   program?: ProgramListFragmentFragment;
   event?: EventListFragmentFragment;
   shipTo?: AddressInput;

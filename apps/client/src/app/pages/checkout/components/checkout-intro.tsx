@@ -4,12 +4,13 @@ import { TeamFragmentFragment } from '../../../_generated/graphql';
 
 interface CheckoutIntroProps {
   team: TeamFragmentFragment;
+  regType: 'EVENT' | 'PROGRAM';
   nextStep: () => void;
   prevStep: () => void;
 }
 
 export function CheckoutIntro(props: CheckoutIntroProps) {
-  const { team, nextStep, prevStep } = props;
+  const { team, nextStep, prevStep, regType } = props;
   if (!team) {
     return null;
   }
@@ -17,11 +18,11 @@ export function CheckoutIntro(props: CheckoutIntroProps) {
     <Box gap="medium">
       <Paragraph style={{ maxWidth: '100%' }}>
         Začínate registráciu tímu <Text weight="bold">{team.name} </Text>
-        na turnaj. <br />
         <br />
-        Registrácia má nieľkoľko krokov v rámci ktorých si vyberiete program, turnaj a určíte
-        fakturačnú a adresu na dodanie materiálov. Pred odoslaním požiadavky na registráciu budete
-        môcť všetky údaje skontrolovať a upraviť.
+        Registrácia má nieľkoľko krokov v rámci ktorých si vyberiete
+        {regType === 'PROGRAM' ? ' program' : ' turnaj'} a určíte fakturačnú a adresu na dodanie
+        materiálov. Pred odoslaním požiadavky na registráciu budete môcť všetky údaje skontrolovať a
+        upraviť.
       </Paragraph>
       <Box justify="between" direction="row">
         <Button label="Späť" onClick={prevStep} />

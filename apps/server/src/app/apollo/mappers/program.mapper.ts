@@ -46,18 +46,19 @@ export const ProgramMapper = {
     };
     return u;
   },
-  toProduct(program: ProgramData | null | undefined): Product | null {
+  toProduct(program: Program | null | undefined): Product | null {
     if (!program) {
       return null;
     }
     const u: Omit<Required<Product>, '__typename'> = {
-      id: program._id,
+      id: program.id,
       type: 'PROGRAM',
       name: program.name,
       group: program.group,
       note: null,
       price: 0,
     };
+    console.log('toProduct', u);
     return u;
   },
 };
