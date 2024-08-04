@@ -54,6 +54,7 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
     columnGap: gap,
     onRowSelect,
     actionsJustifyContent,
+    key,
     ...listProps
   } = props;
 
@@ -73,6 +74,7 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
         gap={gap}
         value={data}
         onSelect={onRowSelect}
+        key={props.key}
       >
         {renderRow(data)}
       </ListRow>

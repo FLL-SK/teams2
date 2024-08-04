@@ -1,5 +1,5 @@
 import { ProgramData } from '../../models';
-import { Program } from '../../_generated/graphql';
+import { Product, Program } from '../../_generated/graphql';
 
 export const ProgramMapper = {
   toProgram(program: ProgramData | null | undefined): Program | null {
@@ -43,6 +43,20 @@ export const ProgramMapper = {
       regNotShipped: 0,
       regSetCount: 0,
       teamsInvolved: 0,
+    };
+    return u;
+  },
+  toProduct(program: Program | null | undefined): Product | null {
+    if (!program) {
+      return null;
+    }
+    const u: Omit<Required<Product>, '__typename'> = {
+      id: program.id,
+      type: 'PROGRAM',
+      name: program.name,
+      group: program.group,
+      note: null,
+      price: 0,
     };
     return u;
   },

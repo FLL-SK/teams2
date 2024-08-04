@@ -12,12 +12,12 @@ import {
 } from 'grommet';
 
 import { Registration, RegistrationInput, RegistrationType } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 import styled from 'styled-components';
 
-interface RegisterSelectTypeProps {
-  details: RegisterDetails;
-  onSubmit: (details: RegisterDetails) => void;
+interface CheckoutSelectTypeProps {
+  details: CheckoutDetails;
+  onSubmit: (details: CheckoutDetails) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
@@ -29,7 +29,7 @@ interface FormDataType {
   setCount: number;
 }
 
-const getEmptyForm = (details: RegisterDetails): FormDataType => ({
+const getEmptyForm = (details: CheckoutDetails): FormDataType => ({
   teams: details.teamsImpacted ?? 0,
   children: details.childrenImpacted ?? 0,
   setCount: details.setCount ?? 0,
@@ -39,7 +39,7 @@ const GridFormField = styled(FormField)<{ area?: string }>`
   grid-area: ${(props) => props.area};
 `;
 
-export function RegisterSelectType(props: RegisterSelectTypeProps) {
+export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const [regType, setRegType] = React.useState<RegistrationType>('NORMAL');
   const [formData, setFormData] = React.useState<FormDataType>(getEmptyForm(details));
@@ -69,7 +69,7 @@ export function RegisterSelectType(props: RegisterSelectTypeProps) {
         onChange={setFormData}
         onReset={() => setFormData(getEmptyForm(details))}
         onSubmit={({ value }) => {
-          const input: RegisterDetails = { ...details, type: regType };
+          const input: CheckoutDetails = { ...details, type: regType };
           if (regType === 'CLASS_PACK') {
             input.teamsImpacted = value.teams;
             input.childrenImpacted = value.children;

@@ -2,13 +2,15 @@ import {
   Address as AddressGQL,
   AddressInput,
   EventListFragmentFragment,
+  ProductFragment,
   ProgramListFragmentFragment,
   RegistrationType,
 } from '../../../_generated/graphql';
 
 export type Address = AddressGQL;
 
-export interface RegisterDetails {
+export interface CheckoutDetails {
+  item?: ProductFragment;
   program?: ProgramListFragmentFragment;
   event?: EventListFragmentFragment;
   shipTo?: AddressInput;

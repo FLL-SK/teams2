@@ -7,13 +7,13 @@ import {
   useGetEventLazyQuery,
   useGetProgramLazyQuery,
 } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { LabelValueGroup } from '../../../components/label-value-group';
 
-interface RegisterReviewProps {
+interface CheckoutReviewProps {
   team: TeamFragmentFragment;
-  details: RegisterDetails;
+  details: CheckoutDetails;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
@@ -21,7 +21,7 @@ interface RegisterReviewProps {
 
 const labelWidth = '180px';
 
-export function RegisterReview(props: RegisterReviewProps) {
+export function CheckoutReview(props: CheckoutReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
 
   const [fetchProgram, { data: programData, loading: programLoading }] = useGetProgramLazyQuery();
@@ -33,7 +33,7 @@ export function RegisterReview(props: RegisterReviewProps) {
   React.useEffect(() => {
     if (details.program) {
       fetchProgram({
-        variables: { id: details.program.id },
+        variables: { id: details.program.id ?? details.event?.programId },
       });
     }
   }, [details.program, fetchProgram]);
@@ -61,8 +61,8 @@ export function RegisterReview(props: RegisterReviewProps) {
     return <Spinner />;
   }
 
-  if (!program || !event) {
-    return null;
+  if (!program) {
+    return <Text>Program nebol nájdený</Text>;
   }
 
   const shipTo = details.shipTo;
@@ -75,16 +75,18 @@ export function RegisterReview(props: RegisterReviewProps) {
         <LabelValueGroup labelWidth={labelWidth} direction="row" gap="small">
           <LabelValue label="Tím" value={team.name} />
           <LabelValue label="Program" value={program.name} />
-          <LabelValue label="Turnaj" value={event.name} />
-          <LabelValue
-            label="Typ"
-            value={
-              `${details.type} ` +
-              (details.type === 'CLASS_PACK'
-                ? `T:${details.teamsImpacted} D:${details.childrenImpacted} S:${details.setCount}`
-                : '')
-            }
-          />
+          {event && <LabelValue label="Turnaj" value={event.name} />}
+          {!event && (
+            <LabelValue
+              label="Typ"
+              value={
+                `${details.type} ` +
+                (details.type === 'CLASS_PACK'
+                  ? `T:${details.teamsImpacted} D:${details.childrenImpacted} S:${details.setCount}`
+                  : '')
+              }
+            />
+          )}
         </LabelValueGroup>
       </Panel>
 
@@ -92,8 +94,8 @@ export function RegisterReview(props: RegisterReviewProps) {
         <InvoiceItemList items={items} />
         <Box>
           <Text>
-            Toto sú štandardné poplatky turnaja. Prípadné zľavy, napr. z dôvodu že vám bol
-            poskytnutý grant budú zohľadnené vo faktúre.
+            Toto sú štandardné poplatky. Prípadné zľavy, napr. ak vám bol poskytnutý grant budú
+            zohľadnené vo faktúre.
           </Text>
         </Box>
       </Panel>
@@ -140,32 +142,39 @@ export function RegisterReview(props: RegisterReviewProps) {
         ) : null}
       </Panel>
 
-      {(program.conditions || event.conditions) && (
-        <Panel title="Podmienky" gap="small">
-          {program.conditions && (
-            <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
-              <Box background="light-2" flex pad="small">
-                <Markdown>{program.conditions}</Markdown>
-              </Box>
-            </LabelValue>
-          )}
-          {event.conditions && (
-            <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
-              <Box background="light-2" flex pad="small">
-                <Markdown>{event.conditions}</Markdown>
-              </Box>
-            </LabelValue>
-          )}
-        </Panel>
-      )}
+      <Panel title="Podmienky" gap="small">
+        <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
+          <Box background="light-2" flex pad="small">
+            <Markdown>
+              {program.conditions && program.conditions.length > 0
+                ? program.conditions
+                : 'Neboli špecifikované žiadne podmienky.'}
+            </Markdown>
+          </Box>
+        </LabelValue>
+
+        {event && (
+          <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
+            <Box background="light-2" flex pad="small">
+              <Markdown>
+                {event.conditions && event.conditions.length > 0
+                  ? event.conditions
+                  : 'Neboli špecifikované žiadne podmienky.'}
+              </Markdown>
+            </Box>
+          </LabelValue>
+        )}
+      </Panel>
 
       <Box>
-        <CheckBox
-          toggle
-          label="Akceptujem podmienky programu"
-          checked={acceptedProgramTC}
-          onChange={({ target }) => setAcceptedProgramTC(target.checked)}
-        />
+        {program.conditions && (
+          <CheckBox
+            toggle
+            label="Akceptujem podmienky programu"
+            checked={acceptedProgramTC}
+            onChange={({ target }) => setAcceptedProgramTC(target.checked)}
+          />
+        )}
         {event?.conditions && (
           <CheckBox
             toggle
@@ -183,7 +192,9 @@ export function RegisterReview(props: RegisterReviewProps) {
           primary
           label="Registrovať"
           onClick={nextStep}
-          disabled={!(acceptedProgramTC && (acceptedEventTC || !event.conditions))}
+          disabled={
+            !((acceptedProgramTC || !program.conditions) && (acceptedEventTC || !event?.conditions))
+          }
         />
       </Box>
     </Box>

@@ -1,18 +1,18 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
-import { ProgramTile } from '../../../components/program-tile';
+import { ProgramTile } from './program-tile';
 import { ProgramListFragmentFragment, useGetProgramsQuery } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 
-interface RegisterSelectProgramProps {
-  details: RegisterDetails;
+interface CheckoutSelectProgramProps {
+  details: CheckoutDetails;
   onSubmit: (program: ProgramListFragmentFragment) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
 }
 
-export function RegisterSelectProgram(props: RegisterSelectProgramProps) {
+export function CheckoutSelectProgram(props: CheckoutSelectProgramProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const { data, loading } = useGetProgramsQuery({ variables: { filter: { isActive: true } } });
 
@@ -24,7 +24,7 @@ export function RegisterSelectProgram(props: RegisterSelectProgramProps) {
 
   return (
     <Box gap="medium">
-      <Text>Vyberte program v rámci, ktorého sa chcete prihlásiť na turnaj:</Text>
+      <Text>Vyberte program, do ktorého sa chcete prihlásiť:</Text>
 
       {programs.map((program) => (
         <ProgramTile

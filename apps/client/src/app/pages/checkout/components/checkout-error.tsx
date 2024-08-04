@@ -1,15 +1,15 @@
 import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 
-interface RegisterErrorProps {
+interface CheckoutErrorProps {
   team?: TeamFragmentFragment;
-  details: RegisterDetails;
+  details: CheckoutDetails;
   nextStep: () => void;
 }
 
-export function RegisterError(props: RegisterErrorProps) {
+export function CheckoutError(props: CheckoutErrorProps) {
   const { team, nextStep } = props;
 
   if (!team) {
@@ -18,7 +18,7 @@ export function RegisterError(props: RegisterErrorProps) {
 
   return (
     <Box gap="medium">
-      <Text>Registrácia sa nepodarila. Skúste neskôr, alebo kontaktujte podporu.</Text>
+      <Text>Nepodarilo sa odoslať vašu požiadavku. Skúste neskôr, alebo kontaktujte podporu.</Text>
 
       <Box justify="between" direction="row">
         <Button primary label="Dokončiť" onClick={nextStep} />

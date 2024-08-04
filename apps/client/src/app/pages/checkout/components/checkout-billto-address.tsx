@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Button, CheckBox, Form, Text } from 'grommet';
-import { RegisterDetails } from './types';
+import { Box, Button, Form, Text } from 'grommet';
 
 import { AddressForm } from './address-form';
 import { AddressInput } from '../../../_generated/graphql';
 
-interface RegisterShipToAddressProps {
-  details: RegisterDetails;
-  onSubmit: (a: AddressInput | undefined, useBillTo: boolean) => void;
+interface CheckoutBillToAddressProps {
+  address?: AddressInput | null;
+  onSubmit: (a: AddressInput) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
@@ -24,34 +23,32 @@ const emptyForm: FormDataType = {
   contactName: '',
   email: '',
   phone: '',
+  companyNumber: '',
+  taxNumber: '',
+  vatNumber: '',
 };
 
-export function RegisterShipToAddress(props: RegisterShipToAddressProps) {
-  const { details, onSubmit, nextStep, prevStep, cancel } = props;
+export function CheckoutBillToAddress(props: CheckoutBillToAddressProps) {
+  const { address, onSubmit, nextStep, prevStep, cancel } = props;
 
-  const [formData, setFormData] = useState<FormDataType>(details.shipTo ?? emptyForm);
-  const [useBillTo, setUseBillTo] = useState(details.useBillTo ?? false);
+  const [formData, setFormData] = useState<FormDataType>(
+    address ? { ...emptyForm, ...address } : emptyForm,
+  );
 
   return (
     <Box gap="medium">
-      <Text>Zadajte dodaciu adresu a osobu, ktorá prijme zásielku.</Text>
-      <CheckBox
-        toggle
-        label="Použiť fakturačné údaje"
-        checked={useBillTo}
-        onChange={({ target }) => setUseBillTo(target.checked)}
-      />
+      <Text>Zadajte fakturačnú adresu.</Text>
       <Form
         onChange={setFormData}
         onReset={() => setFormData(emptyForm)}
         onSubmit={({ value }) => {
-          onSubmit(value, useBillTo);
+          onSubmit(value);
           nextStep();
         }}
         value={formData}
         messages={{ required: 'Povinný údaj' }}
       >
-        {!useBillTo && <AddressForm hideOrgRegistration />}
+        <AddressForm hideContact />
 
         <Box justify="between" direction="row">
           <Button label="Späť" onClick={prevStep} />

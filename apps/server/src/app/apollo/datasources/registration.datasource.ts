@@ -18,8 +18,12 @@ import { RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import Dataloader from 'dataloader';
-import { emailTeamSizeConfirmed, emailRegistrationConfirmed } from '../../utils/emails';
-import { UpdateQuery } from 'mongoose';
+import {
+  emailTeamSizeConfirmed,
+  emailEventRegistrationConfirmed,
+  emailProgramRegistrationConfirmed,
+} from '../../utils/emails';
+import { FilterQuery, UpdateQuery } from 'mongoose';
 
 const logBase = logger('DS:Registration');
 
@@ -43,70 +47,28 @@ export class RegistrationDataSource extends BaseDataSource {
     return reg;
   }
 
+  async getRegistrations(filter: RegistrationFilter): Promise<Registration[]> {
+    const q: FilterQuery<RegistrationData> = {};
+    if (filter.active) {
+      q.canceledOn = null;
+    }
+    if (filter.programId) {
+      q.programId = filter.programId;
+    }
+    if (filter.eventId) {
+      q.eventId = filter.eventId;
+    }
+    if (filter.teamId) {
+      q.teamId = filter.teamId;
+    }
+    const regs = await registrationRepository.find(q).exec();
+    return regs.map(RegistrationMapper.toRegistration);
+  }
+
   async getRegistrationGroups(filter: RegistrationFilter): Promise<RegistrationGroup[]> {
     // TODO: candidate for dataloader
     const regsCount = await registrationRepository.groupRegistrations(filter);
     return regsCount;
-  }
-
-  async createRegistration(
-    eventId: ObjectId,
-    teamId: ObjectId,
-    input: RegistrationInput,
-  ): Promise<Registration> {
-    const log = logBase.extend('createRegistration');
-    this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(teamId) ||
-      this.userGuard.notAuthorized('Create registration');
-
-    // check if team is not already registered
-    const r = await registrationRepository.groupRegistrations({ eventId, teamId, active: true });
-    log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
-    if (r.length > 0) {
-      throw { name: 'team_already_registered' };
-    }
-
-    const event = await eventRepository.findById(eventId).exec();
-    if (!event) {
-      log.warn('Event not found teamId=%s eventId=%s', teamId.toHexString(), eventId.toHexString());
-      throw { name: 'event_not_found' };
-    }
-
-    if (
-      event.maxTeams &&
-      (await registrationRepository.groupRegistrations({ eventId, active: true })).length >=
-        event.maxTeams
-    ) {
-      throw { name: 'event_full' };
-    }
-
-    const team = await teamRepository.findById(teamId).exec();
-    if (!team) {
-      throw { name: 'team_not_found' };
-    }
-
-    const newReg: RegistrationData = {
-      programId: event.programId,
-      eventId,
-      teamId,
-      createdOn: new Date(),
-      createdBy: this.context.user._id,
-      shipTo: team.shipTo,
-      billTo: team.billTo,
-      type: input.type,
-      teamsImpacted: 1,
-      setCount: 1,
-    };
-
-    if (input.type === 'CLASS_PACK') {
-      newReg.setCount = input.setCount;
-      newReg.childrenImpacted = input.impactedChildrenCount;
-      newReg.teamsImpacted = input.impactedTeamCount;
-    }
-
-    const registration = new registrationRepository(newReg);
-    await registration.save();
-    return RegistrationMapper.toRegistration(registration);
   }
 
   async updateRegistration(id: ObjectId, input: RegistrationInput): Promise<Registration> {
@@ -291,7 +253,11 @@ export class RegistrationDataSource extends BaseDataSource {
       .findByIdAndUpdate(id, { confirmedOn }, { new: true })
       .exec();
 
-    emailRegistrationConfirmed(r.eventId, r.teamId, this.context.user.username);
+    if (r.eventId) {
+      emailEventRegistrationConfirmed(r.eventId, r.teamId, this.context.user.username);
+    } else {
+      emailProgramRegistrationConfirmed(r.programId, r.teamId, this.context.user.username);
+    }
     return RegistrationMapper.toRegistration(r);
   }
 

@@ -29,8 +29,6 @@ export function PanelSettings(props: PanelSettingsProps) {
     onError: (e) => notify.error('Nepodarilo sa odoslať testovací email.', e.message),
   });
 
-  console.log('billingEmail', settings?.billingEmail);
-
   return (
     <>
       {!settings && <Spinner />}

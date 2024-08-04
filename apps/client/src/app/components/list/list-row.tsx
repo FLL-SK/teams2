@@ -12,7 +12,7 @@ const Container = styled(Box)<{ cols: string; padding?: PadType; gap?: EdgeSizeT
   grid-auto-flow: column;
   align-items: center;
   justify-content: start;
-  grid-gap: ${(p) => (p.gap ? margins[p.gap] : margins['medium'])};
+  grid-gap: ${(p) => (p.gap ? margins[p.gap as EdgeSizeType] : margins['medium'])};
   grid-template-columns: ${(p) => p.cols};
   background-color: ${getColor('white')};
   :hover {
@@ -26,7 +26,7 @@ interface ListRowProps<T = unknown> {
   density?: Density;
   gap?: EdgeSizeType;
   pad?: PadType;
-  style?: React.CSSProperties
+  style?: React.CSSProperties;
   onSelect?: (value: T) => unknown;
   value?: T; // value to be returned onSelect
 }

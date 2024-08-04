@@ -1,0 +1,5 @@
+query getProducts($teamId: ID!) {
+  getProducts(teamId: $teamId) {
+    ...Product
+  }
+}

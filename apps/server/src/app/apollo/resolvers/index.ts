@@ -12,6 +12,7 @@ import * as File from './file.resolvers';
 import * as Tag from './tag.resolvers';
 import * as Note from './note.resolvers';
 import * as Settings from './settings.resolvers';
+import * as Product from './product.resolvers';
 
 export const resolvers: Resolvers<ApolloContext> = {
   Query: {
@@ -26,6 +27,7 @@ export const resolvers: Resolvers<ApolloContext> = {
     ...Tag.queryResolvers,
     ...Note.queryResolvers,
     ...Settings.queryResolvers,
+    ...Product.queryResolvers,
   },
   Mutation: {
     ...User.mutationResolvers,
@@ -39,6 +41,7 @@ export const resolvers: Resolvers<ApolloContext> = {
     ...Tag.mutationResolvers,
     ...Note.mutationResolvers,
     ...Settings.mutationResolvers,
+    ...Product.mutationResolvers,
   },
   User: User.typeResolver,
   Event: Event.typeResolver,
@@ -51,4 +54,5 @@ export const resolvers: Resolvers<ApolloContext> = {
   Tag: Tag.typeResolver,
   Note: Note.typeResolver,
   Settings: Settings.typeResolver,
+  Product: Product.typeResolver,
 };

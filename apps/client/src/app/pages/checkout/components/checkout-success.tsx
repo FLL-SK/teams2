@@ -3,16 +3,16 @@ import { Box, Button, Paragraph } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import { TeamFragmentFragment } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 import { LabelValueGroup } from '../../../components/label-value-group';
 
-interface RegisterSuccessProps {
+interface CheckoutSuccessProps {
   team: TeamFragmentFragment;
-  details: RegisterDetails;
+  details: CheckoutDetails;
   nextStep: () => void;
 }
 
-export function RegisterSuccess(props: RegisterSuccessProps) {
+export function CheckoutSuccess(props: CheckoutSuccessProps) {
   const { team, details, nextStep } = props;
 
   return (

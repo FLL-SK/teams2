@@ -2,17 +2,17 @@ import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
 import { EventListFragmentFragment, useGetEventsLazyQuery } from '../../../_generated/graphql';
-import { RegisterDetails } from './types';
+import { CheckoutDetails } from './types';
 
-interface RegisterSelectEventProps {
-  details: RegisterDetails;
+interface CheckoutSelectEventProps {
+  details: CheckoutDetails;
   onSubmit: (event: EventListFragmentFragment) => void;
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
 }
 
-export function RegisterSelectEvent(props: RegisterSelectEventProps) {
+export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const [fetchEvents, { data, loading }] = useGetEventsLazyQuery({
     fetchPolicy: 'network-only',

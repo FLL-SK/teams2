@@ -3,25 +3,31 @@ export function common(): string {
 }
 
 export const appPath = {
-  home: '/',
-  settings: '/settings',
-  passwordReset: '/password-reset',
-  login: '/login',
-  logout: '/logout',
-  profile: (id = '') => `/profile/${id}`,
-  register: (team = '') => `/register/${team}`,
-  signup: '/signup',
-  forgotPassword: '/forgot-password',
-  team: (id = '') => `/team/${id}`,
-  teams: '/teams',
-  users: '/users',
-  event: (id = '') => `/event/${id}`,
-  events: '/events',
-  program: (id = '') => `/program/${id}`,
-  programs: '/programs',
-  page404: '/404',
-  registrations: '/registrations',
-  registration: (id = '') => `/registration/${id}`,
+  home: () => '/',
+  settings: () => '/settings',
+  passwordReset: () => '/password-reset',
+  login: () => '/login',
+
+  profile: (id?: string | null) => `/profile/${id ? id : ''}`,
+  registerEvent: (teamId?: string | null, programId?: string | null) =>
+    '/register-event' +
+    (teamId || programId ? '?' : '') +
+    (teamId ? 'teamId=' + teamId : '') +
+    (programId ? `&programId=${programId}` : ''),
+  registerProgram: (teamId?: string | null) =>
+    `/register-program${teamId ? '?teamId=' + teamId : ''}`,
+  signup: () => '/signup',
+  forgotPassword: () => '/forgot-password',
+  team: (id?: string | null) => `/team/${id ? id : ''}`,
+  teams: () => '/teams',
+  users: () => '/users',
+  event: (id?: string | null) => `/event/${id ? id : ''}`,
+  events: () => '/events',
+  program: (id?: string | null) => `/program/${id ? id : ''}`,
+  programs: () => '/programs',
+  page404: () => '/404',
+  registrations: () => '/registrations',
+  registration: (id?: string | null) => `/registration/${id ? id : ''}`,
 };
 
 export const validateEmail = (email: string): boolean => {

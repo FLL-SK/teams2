@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Markdown, Text } from 'grommet';
 import { BorderType } from 'grommet/utils';
 import styled from 'styled-components';
-import { ProgramListFragmentFragment } from '../_generated/graphql';
-import { getColor } from '../theme';
+import { ProgramListFragmentFragment } from '../../../_generated/graphql';
+import { getColor } from '../../../theme';
 
 interface ProgramTileProps {
   program: ProgramListFragmentFragment;

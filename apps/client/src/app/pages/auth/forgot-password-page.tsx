@@ -40,7 +40,7 @@ export function ForgotPasswordPage() {
             .
           </Paragraph>
           <Paragraph>Ak ich nenájdete ani tam, tak nás kontaktujte.</Paragraph>
-        </>
+        </>,
       );
       return;
     } else {
@@ -88,7 +88,7 @@ export function ForgotPasswordPage() {
             )}
           </CardBody>
           <CardFooter pad={'medium'} background="light-2" justify="center">
-            <Anchor onClick={() => navigate(appPath.login)}>Poznáte vaše heslo?</Anchor>
+            <Anchor onClick={() => navigate(appPath.login())}>Poznáte vaše heslo?</Anchor>
           </CardFooter>
         </Card>
       </Layer>

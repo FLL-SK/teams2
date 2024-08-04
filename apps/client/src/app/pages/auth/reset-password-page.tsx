@@ -78,7 +78,7 @@ export function ResetPasswordPage() {
             )}
           </CardBody>
           <CardFooter pad={'medium'} background="light-2" justify="center">
-            <Anchor onClick={() => navigate(appPath.login)}>Poznáte vaše heslo?</Anchor>
+            <Anchor onClick={() => navigate(appPath.login())}>Poznáte vaše heslo?</Anchor>
           </CardFooter>
         </Card>
       </Layer>

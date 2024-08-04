@@ -52,6 +52,8 @@ fragment RegistrationListFragment on Registration {
     name
     maxTeamSize
     maxTeams
+    startDate
+    endDate
   }
 
   team {
@@ -86,6 +88,8 @@ fragment TeamRegistrationFragment on Registration {
     name
     maxTeamSize
     maxTeams
+    startDate
+    endDate
   }
 
   invoiceItems {

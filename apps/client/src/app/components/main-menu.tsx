@@ -117,19 +117,19 @@ function Menu(props: MenuProps) {
 
   return (
     <Nav align="center" justify="between" gap="medium">
-      {!isAuthenticated && <MenuButton path={appPath.login} title={'Prihlásiť sa'} />}
+      {!isAuthenticated && <MenuButton path={appPath.login()} title={'Prihlásiť sa'} />}
       {appUser?.isAdmin && (
         <MenuButton
-          path={appPath.registrations}
+          path={appPath.registrations()}
           title="Registrácie"
           badges={regsToBadges(props.regCount)}
         />
       )}
-      {isAuthenticated && <MenuButton path={appPath.events} title="Turnaje" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.programs} title="Programy" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.teams} title="Tímy" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.users} title="Používatelia" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.settings} title="Nastavenia" />}
+      {isAuthenticated && <MenuButton path={appPath.events()} title="Turnaje" />}
+      {appUser?.isAdmin && <MenuButton path={appPath.programs()} title="Programy" />}
+      {appUser?.isAdmin && <MenuButton path={appPath.teams()} title="Tímy" />}
+      {appUser?.isAdmin && <MenuButton path={appPath.users()} title="Používatelia" />}
+      {appUser?.isAdmin && <MenuButton path={appPath.settings()} title="Nastavenia" />}
     </Nav>
   );
 }

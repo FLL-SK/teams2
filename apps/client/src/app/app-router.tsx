@@ -11,7 +11,7 @@ import { EventPage } from './pages/event/event-page';
 import { Page404 } from './pages/404/404-page';
 import { SettingsPage } from './pages/settings/settings-page';
 import { ProgramPage } from './pages/program/program-page';
-import { RegisterPage } from './pages/register/register-page';
+import { CheckoutPage } from './pages/checkout/checkout-page';
 import { TeamPage } from './pages/team/team-page';
 import { UserListPage } from './pages/user-list/user-list-page';
 import { RegistrationsPage } from './pages/registrations/registrations-page';
@@ -27,7 +27,7 @@ export function AppRouter() {
       <Route
         path="/"
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <ProfilePage />
           </RequireAuth>
         }
@@ -35,7 +35,7 @@ export function AppRouter() {
       <Route
         path={appPath.profile(':id')}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <ProfilePage />
           </RequireAuth>
         }
@@ -43,7 +43,7 @@ export function AppRouter() {
       <Route
         path={appPath.team(':id')}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <TeamPage />
           </RequireAuth>
         }
@@ -52,62 +52,70 @@ export function AppRouter() {
       <Route path={appPath.program(':id')} element={<ProgramPage />} />
       <Route path={appPath.registration(':id')} element={<RegistrationPage />} />
       <Route
-        path={appPath.register(':id')}
+        path={appPath.registerEvent()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
-            <RegisterPage />
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
+            <CheckoutPage />
           </RequireAuth>
         }
       />
-      <Route path={appPath.login} element={<LoginPage />} />
-      <Route path={appPath.forgotPassword} element={<ForgotPasswordPage />} />
-      <Route path={appPath.passwordReset} element={<ResetPasswordPage />} />
-      <Route path={appPath.signup} element={<SignupPage />} />
-      <Route path={appPath.page404} element={<Page404 />} />
       <Route
-        path={appPath.settings}
+        path={appPath.registerProgram()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
+            <CheckoutPage />
+          </RequireAuth>
+        }
+      />
+      <Route path={appPath.login()} element={<LoginPage />} />
+      <Route path={appPath.forgotPassword()} element={<ForgotPasswordPage />} />
+      <Route path={appPath.passwordReset()} element={<ResetPasswordPage />} />
+      <Route path={appPath.signup()} element={<SignupPage />} />
+      <Route path={appPath.page404()} element={<Page404 />} />
+      <Route
+        path={appPath.settings()}
+        element={
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <SettingsPage />
           </RequireAuth>
         }
       />
       <Route
-        path={appPath.teams}
+        path={appPath.teams()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <TeamListPage />
           </RequireAuth>
         }
       />
       <Route
-        path={appPath.users}
+        path={appPath.users()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <UserListPage />
           </RequireAuth>
         }
       />
       <Route
-        path={appPath.registrations}
+        path={appPath.registrations()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <RegistrationsPage />
           </RequireAuth>
         }
       />
       <Route
-        path={appPath.events}
+        path={appPath.events()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <EventsPage />
           </RequireAuth>
         }
       />
       <Route
-        path={appPath.programs}
+        path={appPath.programs()}
         element={
-          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login}>
+          <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <ProgramsPage />
           </RequireAuth>
         }
