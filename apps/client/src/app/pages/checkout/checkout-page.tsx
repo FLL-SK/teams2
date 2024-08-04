@@ -12,6 +12,7 @@ import {
   UpdateTeamInput,
   useCreateEventRegistrationMutation,
   useCreateProgramRegistrationMutation,
+  useGetProgramLazyQuery,
   useGetTeamLazyQuery,
   useUpdateTeamMutation,
 } from '../../_generated/graphql';
@@ -30,6 +31,7 @@ import { formatFullName } from '../../utils/format-fullname';
 import { handleMutationErrors, MutationData } from '../../utils/handle_mutation_error';
 import { CheckoutSelectType } from './components/checkout-select-type';
 import { CheckoutSelectProduct } from './components/checkout-select-item';
+import { set } from 'lodash';
 
 type CheckoutStep =
   | 'intro'
@@ -52,6 +54,10 @@ export function CheckoutPage() {
   const { isAdmin, isTeamCoach, user } = useAppUser();
   const [step, setStep] = useState<CheckoutStep>('intro');
   const [checkoutDetails, setCheckoutDetails] = useState<CheckoutDetails>({ type: 'NORMAL' });
+  const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
+
+  const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
+    useGetProgramLazyQuery();
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
     useGetTeamLazyQuery();
@@ -84,12 +90,23 @@ export function CheckoutPage() {
     }
   }, [teamId, fetchTeam, user]);
 
+  React.useEffect(() => {
+    if (programId) {
+      fetchProgram({
+        variables: { id: programId },
+      }).then((r) => {
+        if (r.data?.getProgram) {
+          setCheckoutDetails({ ...checkoutDetails, program: r.data.getProgram });
+          setIsRegisteringForEvent(true);
+        }
+      });
+    }
+  }, [programId, fetchProgram]);
+
   const cancel = useCallback(() => navigate(appPath.team(teamId)), [navigate, teamId]);
 
   const doCheckout = useCallback(
     async (data: CheckoutDetails) => {
-      console.log('doCheckout', data);
-
       if (!teamId) {
         notify.error('Tím nie je špecifikovaný.');
         return;
@@ -115,7 +132,7 @@ export function CheckoutPage() {
 
       let resultData: MutationData;
 
-      if (programId && data.event) {
+      if (isRegisteringForEvent && data.event) {
         const r1 = await registerTeam4Event({
           variables: {
             teamId,
@@ -144,7 +161,7 @@ export function CheckoutPage() {
 
       setStep('success');
     },
-    [notify, registerTeam4Event, teamId],
+    [notify, registerTeam4Event, teamId, isRegisteringForEvent],
   );
 
   if (!canShop) {
@@ -164,7 +181,7 @@ export function CheckoutPage() {
           {step === 'intro' && (
             <CheckoutIntro
               team={team}
-              regType={programId ? 'EVENT' : 'PROGRAM'}
+              regType={isRegisteringForEvent ? 'EVENT' : 'PROGRAM'}
               nextStep={() => setStep('confirm-billto-contact')}
               prevStep={cancel}
             />
@@ -186,7 +203,7 @@ export function CheckoutPage() {
               cancel={cancel}
             />
           )}
-          {step === 'select-item' && !programId && (
+          {step === 'select-item' && !isRegisteringForEvent && (
             <CheckoutSelectProgram
               details={checkoutDetails}
               onSubmit={(p) => setCheckoutDetails({ ...checkoutDetails, program: p })}
@@ -195,11 +212,11 @@ export function CheckoutPage() {
               cancel={cancel}
             />
           )}
-          {step === 'select-item' && programId && (
+          {step === 'select-item' && isRegisteringForEvent && (
             <CheckoutSelectEvent
               details={checkoutDetails}
               onSubmit={(e) => setCheckoutDetails({ ...checkoutDetails, event: e })}
-              nextStep={() => setStep('select-type')}
+              nextStep={() => setStep('billto')}
               prevStep={() => setStep('confirm-billto-contact')}
               cancel={cancel}
             />
@@ -228,7 +245,7 @@ export function CheckoutPage() {
                 setCheckoutDetails({ ...checkoutDetails, billTo: aa });
               }}
               nextStep={() => setStep('shipto')}
-              prevStep={() => setStep('select-type')}
+              prevStep={() => setStep(isRegisteringForEvent ? 'select-item' : 'select-type')}
               cancel={cancel}
             />
           )}

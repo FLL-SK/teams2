@@ -52,7 +52,7 @@ export function AppRouter() {
       <Route path={appPath.program(':id')} element={<ProgramPage />} />
       <Route path={appPath.registration(':id')} element={<RegistrationPage />} />
       <Route
-        path={appPath.register()}
+        path={appPath.registerEvent()}
         element={
           <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
             <CheckoutPage />

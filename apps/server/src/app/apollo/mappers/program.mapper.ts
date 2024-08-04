@@ -58,7 +58,6 @@ export const ProgramMapper = {
       note: null,
       price: 0,
     };
-    console.log('toProduct', u);
     return u;
   },
 };

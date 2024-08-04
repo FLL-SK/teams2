@@ -28,12 +28,13 @@ import { NoteList } from '../../components/note-list';
 import { TeamRegistrationsList } from './components/team-registrations';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { PanelTeamCoaches } from './components/panel-team-coaches';
+import { testingLibraryReactVersion } from '@nx/react/src/utils/versions';
 
 export function TeamPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [showInactiveEvents, setShowInactiveEvents] = useState(false);
+  const [showInactiveRegistrations, setShowInactiveRegistrations] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   const { isAdmin, isTeamCoach } = useAppUser();
@@ -56,8 +57,6 @@ export function TeamPage() {
   const [deleteTeam] = useDeleteTeamMutation({ onError });
   const [undeleteTeam] = useUndeleteTeamMutation({ onError });
 
-  const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
-
   useEffect(() => {
     if (id) {
       fetchTeam({ variables: { id } });
@@ -69,18 +68,7 @@ export function TeamPage() {
 
   const canEdit = isAdmin() || isTeamCoach(id);
   const team = teamData?.getTeam;
-
-  const registrations = useMemo(
-    () =>
-      (team?.registrations ?? []).filter(
-        (reg) =>
-          !reg.canceledOn &&
-          (!reg.event?.date ||
-            showInactiveEvents ||
-            (reg.event.date ?? '').substring(0, 10) >= today),
-      ),
-    [showInactiveEvents, team?.registrations, today],
-  );
+  const registrations = team?.registrations ?? [];
 
   const handleSubmit = async (data: Omit<CreateTeamInput, 'email' | 'contactName' | 'phone'>) => {
     if (!id) {
@@ -151,23 +139,21 @@ export function TeamPage() {
             <Panel title="Registrácie" gap="small">
               <Box direction="row" justify="between">
                 <Button
-                  label="Registrovať tím na turnaj"
-                  onClick={() => navigate(appPath.register(id))}
-                  disabled={registrations.length > 0 || isDeleted}
-                />
-                <Button
                   label="Registrovať tím do programu"
                   onClick={() => navigate(appPath.registerProgram(id))}
-                  disabled={registrations.length > 0 || isDeleted}
+                  disabled={isDeleted}
                 />
                 <CheckBox
                   toggle
                   label="Zobraziť aj neaktívne"
-                  defaultChecked={showInactiveEvents}
-                  onChange={({ target }) => setShowInactiveEvents(target.checked)}
+                  defaultChecked={showInactiveRegistrations}
+                  onChange={({ target }) => setShowInactiveRegistrations(target.checked)}
                 />
               </Box>
-              <TeamRegistrationsList registrations={registrations} />
+              <TeamRegistrationsList
+                registrations={registrations}
+                includeInactive={showInactiveRegistrations}
+              />
             </Panel>
 
             {canEdit && <PanelTeamCoaches team={team} canEdit={canEdit && !isDeleted} />}

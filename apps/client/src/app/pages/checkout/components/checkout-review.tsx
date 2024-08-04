@@ -30,8 +30,6 @@ export function CheckoutReview(props: CheckoutReviewProps) {
   const [acceptedProgramTC, setAcceptedProgramTC] = useState<boolean>(false);
   const [acceptedEventTC, setAcceptedEventTC] = useState<boolean>(false);
 
-  console.log('details', details);
-
   React.useEffect(() => {
     if (details.program) {
       fetchProgram({
@@ -78,15 +76,17 @@ export function CheckoutReview(props: CheckoutReviewProps) {
           <LabelValue label="Tím" value={team.name} />
           <LabelValue label="Program" value={program.name} />
           {event && <LabelValue label="Turnaj" value={event.name} />}
-          <LabelValue
-            label="Typ"
-            value={
-              `${details.type} ` +
-              (details.type === 'CLASS_PACK'
-                ? `T:${details.teamsImpacted} D:${details.childrenImpacted} S:${details.setCount}`
-                : '')
-            }
-          />
+          {!event && (
+            <LabelValue
+              label="Typ"
+              value={
+                `${details.type} ` +
+                (details.type === 'CLASS_PACK'
+                  ? `T:${details.teamsImpacted} D:${details.childrenImpacted} S:${details.setCount}`
+                  : '')
+              }
+            />
+          )}
         </LabelValueGroup>
       </Panel>
 
@@ -148,7 +148,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
             <Markdown>
               {program.conditions && program.conditions.length > 0
                 ? program.conditions
-                : 'Neboli špecifikované žiadne špeciláne podmienky.'}
+                : 'Neboli špecifikované žiadne podmienky.'}
             </Markdown>
           </Box>
         </LabelValue>
@@ -159,7 +159,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
               <Markdown>
                 {event.conditions && event.conditions.length > 0
                   ? event.conditions
-                  : 'Neboli špecifikované žiadne špeciláne podmienky.'}
+                  : 'Neboli špecifikované žiadne podmienky.'}
               </Markdown>
             </Box>
           </LabelValue>
@@ -167,12 +167,14 @@ export function CheckoutReview(props: CheckoutReviewProps) {
       </Panel>
 
       <Box>
-        <CheckBox
-          toggle
-          label="Akceptujem podmienky programu"
-          checked={acceptedProgramTC}
-          onChange={({ target }) => setAcceptedProgramTC(target.checked)}
-        />
+        {program.conditions && (
+          <CheckBox
+            toggle
+            label="Akceptujem podmienky programu"
+            checked={acceptedProgramTC}
+            onChange={({ target }) => setAcceptedProgramTC(target.checked)}
+          />
+        )}
         {event?.conditions && (
           <CheckBox
             toggle
@@ -190,7 +192,9 @@ export function CheckoutReview(props: CheckoutReviewProps) {
           primary
           label="Registrovať"
           onClick={nextStep}
-          disabled={!(acceptedProgramTC && (acceptedEventTC || !event?.conditions))}
+          disabled={
+            !((acceptedProgramTC || !program.conditions) && (acceptedEventTC || !event?.conditions))
+          }
         />
       </Box>
     </Box>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
@@ -10,48 +10,45 @@ import { appPath } from '@teams2/common';
 import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { RegistrationFilesPanel } from '../../registration/components/registration-files';
+import { EventRegistrationTile } from './event-registration-tile';
+import { useNavigate } from 'react-router-dom';
 
 interface TeamRegistrationTileProps {
   registration: TeamRegistrationFragmentFragment;
+  allRegistrations: TeamRegistrationFragmentFragment[];
 }
 
 export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
-  const { registration } = props;
-  const { isAdmin } = useAppUser();
+  const { registration, allRegistrations } = props;
+
+  const navigate = useNavigate();
+
+  const eventReg = useMemo(
+    () =>
+      allRegistrations.find(
+        (r) => r.eventId && r.programId === registration.programId && !r.canceledOn,
+      ),
+    [allRegistrations, registration.programId],
+  );
 
   return (
     <Box>
       <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'} wrap>
-        <Box width="60%">
+        <Box width="40%">
           <LabelValueGroup labelWidth="150px" direction="row" gap="small">
-            <LabelValue label="Registrácia">
-              <Anchor
-                label="Otvor detaily registrácie"
-                href={appPath.registration(registration.id)}
-              />
-            </LabelValue>
-
-            {registration.event && (
-              <LabelValue label="Turnaj">
-                <Anchor
-                  label={registration.event.name}
-                  href={appPath.event(registration.event.id)}
-                />
-              </LabelValue>
-            )}
             <LabelValue label="Program">
               <Anchor
                 label={registration.program.name}
                 href={appPath.program(registration.program.id)}
               />
             </LabelValue>
-            {registration.event && (
-              <LabelValue label="Dátum turnaja">
-                <Text>
-                  {registration.event.date ? formatDate(registration.event.date) : 'neurčený'}
-                </Text>
-              </LabelValue>
-            )}
+            <LabelValue label="Registrácia">
+              <Anchor
+                label="Otvor detaily registrácie do programu"
+                href={appPath.registration(registration.id)}
+              />
+            </LabelValue>
+
             {!registration.event && (
               <LabelValue label="Typ registrácie">
                 <Text>{registration.type}</Text>
@@ -60,27 +57,19 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
           </LabelValueGroup>
         </Box>
 
-        <Box width="35%">
-          <LabelValueGroup labelWidth="150px" gap="small" direction="row">
-            <FieldConfirmedOn
-              registration={registration}
-              readOnly={!!registration.canceledOn || !isAdmin()}
-            />
-            <FieldTeamSize registration={registration} readOnly={!!registration.canceledOn} />
-            {registration.program.maxTeamSize &&
-              registration.girlCount + registration.boyCount > registration.program.maxTeamSize && (
-                <Paragraph color="status-critical">
-                  Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna veľkosť tímu
-                  je {registration.program.maxTeamSize}. Na turnaji sa môže súťažne zúčastniť iba
-                  povolený počet detí. Ostatní sa môžu zúčastniť ako diváci.
-                </Paragraph>
-              )}
-            <FieldTeamSizeConfirmedOn
-              registration={registration}
-              teamId={registration.teamId}
-              readOnly={!!registration.canceledOn}
-            />
-          </LabelValueGroup>
+        <Box width="55%">
+          {eventReg ? (
+            <EventRegistrationTile registration={eventReg} />
+          ) : (
+            <Box direction="row">
+              <Button
+                label="Registrovať na turnaj"
+                onClick={() =>
+                  navigate(appPath.registerEvent(registration.teamId, registration.programId))
+                }
+              />
+            </Box>
+          )}
         </Box>
       </Box>
       <Box background={'light-2'} pad="small">

@@ -9,8 +9,13 @@ export const appPath = {
   login: () => '/login',
 
   profile: (id?: string | null) => `/profile/${id ? id : ''}`,
-  register: (team?: string | null) => `/register${team ? '?teamId=' + team : ''}`,
-  registerProgram: (team?: string | null) => `/register-program${team ? '?teamId=' + team : ''}`,
+  registerEvent: (teamId?: string | null, programId?: string | null) =>
+    '/register-event' +
+    (teamId || programId ? '?' : '') +
+    (teamId ? 'teamId=' + teamId : '') +
+    (programId ? `&programId=${programId}` : ''),
+  registerProgram: (teamId?: string | null) =>
+    `/register-program${teamId ? '?teamId=' + teamId : ''}`,
   signup: () => '/signup',
   forgotPassword: () => '/forgot-password',
   team: (id?: string | null) => `/team/${id ? id : ''}`,

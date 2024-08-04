@@ -41,7 +41,6 @@ export const EventMapper = {
       note: null,
       price: 0,
     };
-    console.log('E2P', u);
     return u;
   },
 };
