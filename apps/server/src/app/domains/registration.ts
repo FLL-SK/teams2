@@ -166,7 +166,9 @@ export async function getRegistrationFiles(
   }
 
   const pf = await ctx.dataSources.file.getProgramFiles(registration.programId, false);
-  const ef = await ctx.dataSources.file.getEventFiles(registration.eventId, false);
+  const ef = registration.eventId
+    ? await ctx.dataSources.file.getEventFiles(registration.eventId, false)
+    : [];
   const f = pf.concat(ef).sort((a, b) => a.name.localeCompare(b.name));
 
   log.debug(`returning ${f.length} files for registration ${registrationId}`);
