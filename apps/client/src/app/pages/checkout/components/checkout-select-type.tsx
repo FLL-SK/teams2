@@ -105,7 +105,7 @@ export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
               area="auto / span 2"
             >
               <Box pad="small">
-                <RangeInput name="children" />
+                <RangeInput name="children" min={5} max={100} />
                 <Paragraph size="small" fill>
                   Počet detí, ktoré sa zapoja do FIRST LEGO League v rámci tejto registrácie.
                   Súťažne sa podujatia (turnaja/festivalu) sa môže zúčastniť iba deti jedného tímu.
@@ -120,7 +120,7 @@ export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
               area="auto / span 2"
             >
               <Box pad="small">
-                <RangeInput name="setCount" min={1} max={5} />
+                <RangeInput name="setCount" min={1} max={40} />
                 <Paragraph size="small" fill>
                   Počet súprav, ktoré si želáte zakúpiť.
                 </Paragraph>
