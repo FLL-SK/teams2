@@ -91,7 +91,7 @@ export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
               area="auto / span 2"
             >
               <Box pad="small">
-                <RangeInput name="teams" min={1} max={10} />
+                <RangeInput name="teams" min={1} max={30} />
                 <Paragraph size="small" fill>
                   Počet tímov, ktoré sa zapoja do FIRST LEGO League v rámci tejto registrácie.
                   Podujatia (turnaja/festivalu) sa môže zúčastniť jeden z týchto tímov.
