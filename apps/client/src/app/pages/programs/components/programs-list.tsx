@@ -52,6 +52,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
         notConfirmed,
         notShipped,
         notInvoiced,
+        regType: 'prog',
       });
 
       navigate(`${appPath.registrations()}?${p.toString()}`);
