@@ -82,6 +82,12 @@ export function RegistrationsPage() {
       if (filter.notConfirmedSize) {
         ok = ok && !item.sizeConfirmedOn;
       }
+      if (filter.regType === 'prog') {
+        ok = ok && !item.eventId;
+      }
+      if (filter.regType === 'event') {
+        ok = ok && !!item.eventId;
+      }
       return ok;
     },
     [filter],

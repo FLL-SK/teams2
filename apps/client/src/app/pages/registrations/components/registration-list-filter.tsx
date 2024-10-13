@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { Anchor, CheckBox, Spinner, TextInput } from 'grommet';
+import { Anchor, CheckBox, RadioButtonGroup, Spinner, TextInput } from 'grommet';
 import { SelectProgram } from '../../../components/select-program';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
@@ -17,6 +17,7 @@ export interface RegistrationListFilterValues {
   notConfirmedSize?: boolean;
   notConfirmed?: boolean;
   showInactivePrograms?: boolean;
+  regType?: 'prog' | 'event';
 }
 
 interface RegistrationListFilterProps {
@@ -73,6 +74,17 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
             onSelect={(prg) => onChange({ ...values, programId: prg.id })}
             showOnlyActive={!values.showInactivePrograms}
             value={values.programId ?? ''}
+          />
+        </SidebarPanel>
+        <SidebarPanel>
+          <RadioButtonGroup
+            name="regType"
+            options={[
+              { label: 'Registrácie do programu', value: 'prog' },
+              { label: 'Registrácie na turnaj', value: 'event' },
+            ]}
+            value={values.regType ?? 'event'}
+            onChange={(e) => onChange({ ...values, regType: e.target.value as 'prog' | 'event' })}
           />
         </SidebarPanel>
         <SidebarPanel>

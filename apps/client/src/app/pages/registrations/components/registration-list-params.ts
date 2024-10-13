@@ -31,6 +31,12 @@ export function parseRegistrationsSearchParams(
   if (searchParams.has('ip')) {
     values.showInactivePrograms = searchParams.get('ip') === 'true';
   }
+  if (searchParams.has('rt')) {
+    values.regType = searchParams.get('rt') as 'prog' | 'event';
+    if (!['prog', 'event'].includes(values.regType)) {
+      values.regType = 'event';
+    }
+  }
   return values;
 }
 
@@ -64,6 +70,9 @@ export function constructRegistrationsSearchParams(
   }
   if (values.showInactivePrograms) {
     searchParams.append('ip', 'true');
+  }
+  if (values.regType) {
+    searchParams.append('rt', values.regType);
   }
 
   return searchParams;
