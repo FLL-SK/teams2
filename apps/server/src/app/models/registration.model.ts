@@ -4,7 +4,7 @@ import { AddressData, addressSchema } from './address.model';
 
 const Types = Schema.Types;
 
-export type RegistrtionType = 'NORMAL' | 'CLASS_PACK';
+export type RegistrationType = 'NORMAL' | 'CLASS_PACK';
 
 export interface RegistrationData {
   _id?: ObjectId;
@@ -38,7 +38,7 @@ export interface RegistrationData {
   coachCount?: number;
   sizeConfirmedOn?: Date;
 
-  type: RegistrtionType;
+  type: RegistrationType;
   teamsImpacted: number;
   childrenImpacted?: number;
   setCount: number;
