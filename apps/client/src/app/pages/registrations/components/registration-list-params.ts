@@ -34,8 +34,12 @@ export function parseRegistrationsSearchParams(
   if (searchParams.has('rt')) {
     values.regType = searchParams.get('rt') as 'prog' | 'event';
     if (!['prog', 'event'].includes(values.regType)) {
-      values.regType = 'event';
+      values.regType = undefined;
     }
+  }
+  if (!searchParams.has('rt')) {
+    searchParams.append('rt', 'event');
+    values.regType = 'event';
   }
   return values;
 }
