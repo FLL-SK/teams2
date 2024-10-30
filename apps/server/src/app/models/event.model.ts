@@ -1,7 +1,6 @@
 import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { PricelistEntryData } from './pricelist.model';
-import { required } from 'yargs';
 
 const Types = Schema.Types;
 

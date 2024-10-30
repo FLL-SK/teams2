@@ -25,13 +25,11 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
   });
 
   useEffect(() => {
-    console.log('availableItems', props.availableItems);
-    console.log('orderItems', props.orderItems);
     const mergedItems = props.availableItems.map((availableItem) => {
       const existingItem = props.orderItems.find(
         (orderItem) => orderItem.productId === availableItem.id,
       );
-      console.log('existingItem', availableItem, existingItem);
+
       const mi: FormDataType['orderItems'][0] = {
         productId: availableItem.id,
         name: availableItem.n,
@@ -41,13 +39,11 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
       };
       return mi;
     });
-    console.log('mergedItems', mergedItems);
+
     setValue({ orderItems: mergedItems });
   }, [props.availableItems, props.orderItems]);
 
   const handleFormChange = (newValue: FormDataType) => {
-    console.log('newValue', newValue);
-    console.log('value', value);
     const nv: FormDataType = { ...value };
     if (newValue.orderItems) {
       const itms: FormDataType['orderItems'] = [...value.orderItems];
@@ -66,8 +62,6 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
     }
     setValue(nv);
   };
-
-  console.log('value', value);
 
   return (
     <Modal
