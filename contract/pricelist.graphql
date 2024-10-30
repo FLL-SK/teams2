@@ -1,7 +1,7 @@
 # import * from "./shared/scalars.graphql"
 # import * from "./shared/types.graphql"
 
-type PricelistEntry implements INode {
+type PricelistItem implements INode {
   id: ID!
   "Product name"
   n: String!

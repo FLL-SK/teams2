@@ -8,6 +8,7 @@ import { UserTags } from '../../components/user-tags';
 import {
   useAddEventManagerMutation,
   useGetEventLazyQuery,
+  useGetRegisteredTeamsLazyQuery,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
 } from '../../_generated/graphql';
@@ -18,6 +19,7 @@ import { PanelEventDetails } from './components/panel-details';
 import { PanelEventFees } from './components/panel-event-fees';
 import { PanelEventTeams } from './components/panel-event-teams';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { PanelEventFood } from './components/panel-event-food';
 
 export function EventPage() {
   const { id } = useParams();
@@ -26,6 +28,10 @@ export function EventPage() {
 
   const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
     useGetEventLazyQuery({ fetchPolicy: 'cache-and-network' });
+
+  const [fetchReistrations, { data: regData }] = useGetRegisteredTeamsLazyQuery({
+    fetchPolicy: 'cache-and-network',
+  });
 
   const [undeleteEvent] = useUndeleteEventMutation({
     onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
@@ -40,10 +46,14 @@ export function EventPage() {
   React.useEffect(() => {
     if (id) {
       fetchEvent({ variables: { id } });
+      fetchReistrations({
+        variables: { eventId: id, includeCoaches: canEdit },
+      });
     }
   }, [id, fetchEvent]);
 
   const event = eventData?.getEvent;
+  const regs = regData?.getRegisteredTeams ?? [];
   const canEdit = isAdmin() || isEventManager(id);
   const isDeleted = !!event?.deletedOn;
 
@@ -78,7 +88,9 @@ export function EventPage() {
             publicOnly={!canEdit}
           />
 
-          <PanelEventTeams event={event} canEdit={canEdit} />
+          <PanelEventFood event={event} registrations={regs} canEdit={canEdit} onChange={refetch} />
+
+          <PanelEventTeams event={event} canEdit={canEdit} registrations={regs} />
           {canEdit && (
             <Panel title="Manažéri">
               <Box direction="row" wrap>

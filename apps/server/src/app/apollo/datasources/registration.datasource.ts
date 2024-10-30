@@ -16,7 +16,7 @@ import {
   RegistrationPayload,
   TeamSizeInput,
 } from '../../_generated/graphql';
-import { RegistrationMapper } from '../mappers';
+import { OrderMapper, RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import Dataloader from 'dataloader';
@@ -331,6 +331,7 @@ export class RegistrationDataSource extends BaseDataSource {
           taxNumber: team.address.taxNumber,
         },
         coaches: [],
+        foodOrder: OrderMapper.toOrder(reg.foodOrder),
       };
 
       if (

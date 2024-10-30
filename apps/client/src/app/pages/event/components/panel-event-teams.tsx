@@ -1,12 +1,12 @@
 import { Box, Button, Text } from 'grommet';
-import { Group } from 'grommet-icons';
+import { Group as GroupIcon, Cafeteria as CafeteriaIcon } from 'grommet-icons';
 import React, { useMemo, useState } from 'react';
 import { ListRow2 } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
-import { EventFragmentFragment, useGetRegisteredTeamsQuery } from '../../../_generated/graphql';
+import { EventFragmentFragment, RegisteredTeamFragmentFragment } from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { formatTeamSize } from '../../../utils/format-teamsize';
-import { handleExportRegisteredTeams } from './handle-export';
+import { handleExportRegisteredTeams } from './handle-export-teams';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 import { Modal } from '../../../components/modal';
@@ -14,20 +14,15 @@ import { useAppUser } from '../../../components/app-user/use-app-user';
 
 interface PanelEventTeamsProps {
   event: EventFragmentFragment;
+  registrations?: RegisteredTeamFragmentFragment[];
   canEdit?: boolean;
 }
 
 export function PanelEventTeams(props: PanelEventTeamsProps) {
-  const { event, canEdit } = props;
+  const { event, canEdit, registrations: regs } = props;
   const navigate = useNavigate();
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);
   const { isAdmin } = useAppUser();
-
-  const { data } = useGetRegisteredTeamsQuery({
-    variables: { eventId: event.id, includeCoaches: canEdit },
-  });
-
-  const regs = data?.getRegisteredTeams;
 
   const coachesEmails: string[] = useMemo(
     () =>
@@ -50,7 +45,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
         {(regs ?? []).map((reg, idx) => (
           <ListRow2
             key={reg.id}
-            columns="50px 1fr 80px auto"
+            columns="50px 1fr 80px 80px auto"
             pad="small"
             align="center"
             onClick={isAdmin() ? () => navigate(appPath.registration(reg.id)) : undefined}
@@ -60,8 +55,9 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
               <Text>{reg.name}</Text>
               <Text size="small">{fullAddress(reg.address)}</Text>
             </Box>
+            <Box>{reg.foodOrder ? <CafeteriaIcon /> : null}</Box>
             <Box direction="row" gap="small">
-              <Group />
+              <GroupIcon />
               <Text>
                 {formatTeamSize(reg)}
                 {!reg.sizeConfirmedOn && ' ?'}

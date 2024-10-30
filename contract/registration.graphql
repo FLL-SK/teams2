@@ -102,6 +102,7 @@ type RegisteredTeamPayload {
   impactedTeamCount: Int
   impactedChildrenCount: Int
   setCount: Int
+  foodOrder: Order
 }
 
 type RegisterTeamPayload {

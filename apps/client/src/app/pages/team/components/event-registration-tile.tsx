@@ -10,7 +10,7 @@ import { FieldTeamSizeConfirmedOn } from '../../registrations/components/field-t
 import { formatDate } from '@teams2/dateutils';
 import { appPath } from '@teams2/common';
 import { useAppUser } from '../../../components/app-user/use-app-user';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FoodOrderModal } from './food-order-modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 
@@ -31,6 +31,16 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   if (!registration.event) {
     return null;
   }
+
+  const canOrderFood = useMemo(() => {
+    if (registration.canceledOn || !registration.confirmedOn || !registration.event) {
+      return false;
+    }
+    const diff = new Date(registration.event.date ?? 0).getTime() - Date.now();
+    const max = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+    return diff > max;
+  }, [registration]);
 
   const handleOrder = useCallback(
     (data: { productId: string; name: string; quantity: number }[]) => {
@@ -92,8 +102,14 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
                 : 'Objednať'
             }
             onClick={() => setShowFoodOrderModal(true)}
+            disabled={!canOrderFood}
           />
         </LabelValue>
+        {!registration.confirmedOn && (
+          <Text color="status-warning">
+            Stravovanie je možné objedať až po potvrdní registrácie.
+          </Text>
+        )}
       </LabelValueGroup>
 
       {showFoodOrderModal && (

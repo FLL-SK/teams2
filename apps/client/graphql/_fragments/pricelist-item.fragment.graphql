@@ -1,0 +1,5 @@
+fragment PricelistItemFragment on PricelistItem {
+  id
+  n
+  up
+}

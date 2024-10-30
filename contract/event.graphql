@@ -23,7 +23,7 @@ type Event implements INode {
 
   invoiceItems: [InvoiceItem!]!
 
-  foodTypes: [PricelistEntry!]!
+  foodTypes: [PricelistItem!]!
 
   deletedOn: DateTime
   deletedBy: ID

@@ -23,6 +23,7 @@ import { PanelRegistrationInvoiceItems } from './components/panel-invoice-items'
 import { PanelRegistrationDetails } from './components/panel-details';
 import { CoachList } from '../team/components/coach-list';
 import { RegistrationFilesPanel } from './components/registration-files';
+import { PanelRegistrationFoodOrder } from './components/panel-food-order';
 
 const columnWidth = '460px';
 
@@ -99,6 +100,12 @@ export function RegistrationPage() {
                   </Box>
                 </Panel>
               )}
+
+              <PanelRegistrationFoodOrder
+                foodOrder={reg.foodOrder}
+                columnWidth={columnWidth}
+                readOnly={!!reg.canceledOn}
+              />
 
               <Panel title="Súbory" gap="small">
                 <RegistrationFilesPanel registrationId={reg.id} regConfirmed={!!reg.confirmedOn} />
