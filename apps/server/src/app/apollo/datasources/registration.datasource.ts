@@ -8,10 +8,12 @@ import {
   userRepository,
 } from '../../models';
 import {
+  OrderInput,
   RegisteredTeamPayload,
   Registration,
   RegistrationFilter,
   RegistrationInput,
+  RegistrationPayload,
   TeamSizeInput,
 } from '../../_generated/graphql';
 import { RegistrationMapper } from '../mappers';
@@ -24,6 +26,7 @@ import {
   emailProgramRegistrationConfirmed,
 } from '../../utils/emails';
 import { FilterQuery, UpdateQuery } from 'mongoose';
+import { OrderData } from '../../models/order.model';
 
 const logBase = logger('DS:Registration');
 
@@ -268,6 +271,27 @@ export class RegistrationDataSource extends BaseDataSource {
       .findByIdAndUpdate(id, { confirmedOn: null }, { new: true })
       .exec();
     return RegistrationMapper.toRegistration(registration);
+  }
+
+  async updateFoodOrder(regId: ObjectId, orderData: OrderInput): Promise<RegistrationPayload> {
+    const r = await registrationRepository.findById(regId).exec();
+
+    if (!r) {
+      throw new Error('Registration not found');
+    }
+
+    this.userGuard.isAdmin() ||
+      this.userGuard.isCoach(r.teamId) ||
+      this.userGuard.notAuthorized('Update food order');
+
+    const no: OrderData = {
+      ...orderData,
+      createdOn: new Date(),
+    };
+
+    r.foodOrder = no;
+    await r.save();
+    return { registration: RegistrationMapper.toRegistration(r) };
   }
 
   async getRegisteredTeams(

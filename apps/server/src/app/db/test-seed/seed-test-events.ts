@@ -28,6 +28,10 @@ export const seedTestEventData: TestSeedData[] = [
     dateOffset: 10,
     invoiceItems: [],
     conditions: '*Event1 Program1 conditions*\n1. condition 1\n2. condtion 2\n3. condition 3',
+    foodTypes: [
+      { n: 'Food1', up: 1 },
+      { n: 'Food2', up: 2 },
+    ],
   },
   {
     name: 'Event2',
@@ -37,6 +41,10 @@ export const seedTestEventData: TestSeedData[] = [
     program: 'Program1',
     dateOffset: -2,
     invoiceItems: [],
+    foodTypes: [
+      { n: 'Food3', up: 3 },
+      { n: 'Food4', up: 4 },
+    ],
   },
   {
     name: 'Event3',
@@ -45,6 +53,10 @@ export const seedTestEventData: TestSeedData[] = [
     managers: ['devtest+progmgr1@fll.sk'],
     program: 'Program1',
     invoiceItems: [{ lineNo: 1, text: 'Item99', unitPrice: 99, quantity: 1 }],
+    foodTypes: [
+      { n: 'Food5', up: 5 },
+      { n: 'Food6', up: 6 },
+    ],
   },
 ];
 
@@ -65,6 +77,7 @@ export async function seedTestEvents() {
       managersIds: d.managersIds,
       programId: p._id,
       conditions: d.conditions,
+      foodTypes: d.foodTypes,
     };
 
     const nu = new eventRepository(e);

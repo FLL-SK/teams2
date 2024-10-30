@@ -10,6 +10,7 @@ import {
   registerTeamToProgram,
 } from '../../domains/registration';
 import { changeRegisteredEvent } from '../../domains/event';
+import { OrderMapper } from '../mappers/order.mapper';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>
@@ -90,4 +91,7 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     createRegistrationInvoice(id, context),
   emailRegistrationInvoice: async (_parent, { id }, context) =>
     emailRegistrationInvoice(id, context),
+
+  updateRegistrationFoodOrder: async (_parent, { id, order }, { dataSources }) =>
+    dataSources.registration.updateFoodOrder(id, order),
 };

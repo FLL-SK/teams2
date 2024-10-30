@@ -7,6 +7,7 @@
 # import * from "./program.graphql"
 # import * from "./invoice-item.graphql"
 # import * from "./file.graphql"
+# import * from "./order.graphql"
 
 enum RegistrationType {
   NORMAL
@@ -51,6 +52,8 @@ type Registration implements INode {
   impactedTeamCount: Int!
   impactedChildrenCount: Int!
   setCount: Int!
+
+  foodOrder: Order
 
   event: Event
   team: Team!
@@ -169,4 +172,6 @@ extend type Mutation {
 
   createRegistrationInvoice(id: ID!): RegistrationPayload!
   emailRegistrationInvoice(id: ID!): RegistrationPayload!
+
+  updateRegistrationFoodOrder(id: ID!, order: OrderInput!): RegistrationPayload!
 }

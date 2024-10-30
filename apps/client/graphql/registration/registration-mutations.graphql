@@ -141,3 +141,14 @@ mutation changeRegisteredEvent($registrationId: ID!, $newEventId: ID!) {
     }
   }
 }
+
+mutation updateRegistrationFoodOrder($id: ID!, $order: OrderInput!) {
+  updateRegistrationFoodOrder(id: $id, order: $order) {
+    registration {
+      ...RegistrationBasicFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
+}

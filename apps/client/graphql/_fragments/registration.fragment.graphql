@@ -38,6 +38,10 @@ fragment RegistrationBasicFragment on Registration {
   impactedChildrenCount
   impactedTeamCount
   setCount
+
+  foodOrder {
+    ...OrderFragment
+  }
 }
 
 fragment RegistrationListFragment on Registration {

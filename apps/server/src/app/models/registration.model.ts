@@ -1,6 +1,7 @@
 import { Schema, model, Model, Document, FilterQuery } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { AddressData, addressSchema } from './address.model';
+import { OrderData, orderSchema } from './order.model';
 
 const Types = Schema.Types;
 
@@ -42,6 +43,8 @@ export interface RegistrationData {
   teamsImpacted: number;
   childrenImpacted?: number;
   setCount: number;
+
+  foodOrder?: OrderData;
 }
 
 export type RegistrationDocument =
@@ -101,6 +104,8 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   teamsImpacted: { type: Types.Number, required: true },
   childrenImpacted: { type: Types.Number },
   setCount: { type: Types.Number, default: 1 },
+
+  foodOrder: orderSchema,
 });
 
 schema.index({ eventId: 1, teamId: 1 });

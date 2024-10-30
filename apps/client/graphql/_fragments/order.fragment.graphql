@@ -1,0 +1,12 @@
+fragment OrderFragment on Order {
+  id
+  createdOn
+  items {
+    id
+    productId
+    name
+    quantity
+    unitPrice
+    price
+  }
+}

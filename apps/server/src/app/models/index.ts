@@ -9,3 +9,5 @@ export * from './file.model';
 export * from './tag.model';
 export * from './note.model';
 export * from './settings.model';
+export * from './order.model';
+export * from './pricelist.model';

@@ -8,3 +8,6 @@ export * from './invoice-item.mapper';
 export * from './file.mapper';
 export * from './tag.mapper';
 export * from './note.mapper';
+export * from './settings.mapper';
+export * from './order.mapper';
+export * from './pricelist.mapper';

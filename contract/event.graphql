@@ -6,6 +6,7 @@
 # import * from "./program.graphql"
 # import * from "./invoice-item.graphql"
 # import * from "./registration.graphql"
+# import * from "./pricelist.graphql"
 
 type Event implements INode {
   id: ID!
@@ -21,6 +22,8 @@ type Event implements INode {
   managersIds: [ID!]!
 
   invoiceItems: [InvoiceItem!]!
+
+  foodTypes: [PricelistEntry!]!
 
   deletedOn: DateTime
   deletedBy: ID

@@ -66,7 +66,11 @@ export class EventDataSource extends BaseDataSource {
   async createEvent(input: CreateEventInput): Promise<CreateEventPayload> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create event');
     const { maxTeams, ...evtData } = input;
-    const u: EventData = { ...evtData, managersIds: [] };
+    const u: EventData = {
+      ...evtData,
+      managersIds: [],
+      foodTypes: [],
+    };
     if (maxTeams > 0) {
       u.maxTeams = maxTeams;
     }
