@@ -16,6 +16,7 @@ interface PanelEventFoodProps {
   event: EventFragmentFragment;
   registrations: RegisteredTeamFragmentFragment[];
   onChange?: () => void;
+
   canEdit?: boolean;
 }
 

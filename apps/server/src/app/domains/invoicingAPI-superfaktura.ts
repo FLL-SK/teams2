@@ -36,7 +36,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     shipTo: AddressData | undefined,
     items: InvoiceItemData[],
     note: string,
-    issuedBy: InvoiceIssuedBy
+    issuedBy: InvoiceIssuedBy,
   ): SFInvoice {
     const sfi: SFInvoice = {};
     sfi.Client = {
@@ -109,7 +109,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
 
       if (result.status != 200) {
         log.error(
-          `Failed posting invoice to Superfaktura. code=${result.status} text=${result.statusText}`
+          `Failed posting invoice to Superfaktura. code=${result.status} text=${result.statusText}`,
         );
         return { status: 'error', error: result.statusText };
       }
@@ -128,9 +128,13 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
       };
     } catch (err) {
       log.error('Error posting invoice to Superfaktura err=%o', err);
+      if (err.response) {
+        log.error('response=%o', err.response.data);
+        return { status: 'error', error: err.response.data.error_message };
+      } else {
+        return { status: 'error', error: 'unknown error ocurred posting invoice to Superfaktura' };
+      }
     }
-
-    return { status: 'error', error: 'unknown error ocurred posting invoice to Superfaktura' };
   }
 
   async emailInvoice(options: InvoiceEmailOptions): Promise<InvoiceEmailResult> {
@@ -160,13 +164,13 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
       const result = await axios.post(
         `${config.invoicing.sf.apiUrl}/invoices/send`,
         'data=' + JSON.stringify(request),
-        { headers: this.getHeaders() }
+        { headers: this.getHeaders() },
       );
       log.debug('result=%o', result);
 
       if (result.status != 200) {
         log.error(
-          `Failed sending invoice PDF via Superfaktura. code=${result.status} text=${result.statusText}`
+          `Failed sending invoice PDF via Superfaktura. code=${result.status} text=${result.statusText}`,
         );
         return { status: 'error', error: result.statusText };
       }

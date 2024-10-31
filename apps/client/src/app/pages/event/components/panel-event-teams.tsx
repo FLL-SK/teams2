@@ -16,6 +16,7 @@ interface PanelEventTeamsProps {
   event: EventFragmentFragment;
   registrations?: RegisteredTeamFragmentFragment[];
   canEdit?: boolean;
+  onIssueInvoices: () => void;
 }
 
 export function PanelEventTeams(props: PanelEventTeamsProps) {
@@ -55,7 +56,11 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
               <Text>{reg.name}</Text>
               <Text size="small">{fullAddress(reg.address)}</Text>
             </Box>
-            <Box>{reg.foodOrder ? <CafeteriaIcon /> : null}</Box>
+            <Box>
+              {reg.foodOrder ? (
+                <CafeteriaIcon color={reg.foodOrder.invoicedOn ? 'green' : undefined} />
+              ) : null}
+            </Box>
             <Box direction="row" gap="small">
               <GroupIcon />
               <Text>
@@ -77,6 +82,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
             }
           />
           <Button label="Emaily trénerov" onClick={() => setShowCoachesEmails(true)} />
+          <Button label="Vystaviť faktúry za stravovanie" onClick={() => props.onIssueInvoices()} />
         </Box>
       )}
 

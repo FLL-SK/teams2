@@ -9,6 +9,7 @@ import {
   useAddEventManagerMutation,
   useGetEventLazyQuery,
   useGetRegisteredTeamsLazyQuery,
+  useIssueEventFoodInvoicesMutation,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
 } from '../../_generated/graphql';
@@ -41,6 +42,10 @@ export function EventPage() {
   });
   const [removeManager] = useRemoveEventManagerMutation({
     onError: (e) => notify.error('Nepodarilo sa odstrániť manažéra turnaja.', e.message),
+  });
+
+  const [issueFoodInvoices] = useIssueEventFoodInvoicesMutation({
+    onError: (e) => notify.error('Nepodarilo sa vystaviť faktúry za stravovanie.', e.message),
   });
 
   React.useEffect(() => {
@@ -90,7 +95,20 @@ export function EventPage() {
 
           <PanelEventFood event={event} registrations={regs} canEdit={canEdit} onChange={refetch} />
 
-          <PanelEventTeams event={event} canEdit={canEdit} registrations={regs} />
+          <PanelEventTeams
+            event={event}
+            canEdit={canEdit}
+            registrations={regs}
+            onIssueInvoices={async () => {
+              const result = await issueFoodInvoices({ variables: { eventId: event.id } });
+              if (result.data?.issueEventFoodInvoices) {
+                notify.info(
+                  `Vystavené faktúry za stravovanie pre ${result.data?.issueEventFoodInvoices} tímov.`,
+                );
+                refetch();
+              }
+            }}
+          />
           {canEdit && (
             <Panel title="Manažéri">
               <Box direction="row" wrap>

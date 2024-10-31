@@ -154,6 +154,25 @@ export class RegistrationDataSource extends BaseDataSource {
     return RegistrationMapper.toRegistration(registration);
   }
 
+  async setFoodInvoicedOn(
+    id: ObjectId,
+    invoiceIssuedOn?: Date,
+    invoiceRef?: string,
+  ): Promise<Registration> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set invoiced on');
+
+    const q: UpdateQuery<RegistrationData> = {
+      foodOrder: {
+        invoicedOn: invoiceIssuedOn,
+        invoiceRef,
+      },
+    };
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, q, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
   async clearInvoicedOn(id: ObjectId): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear invoiced on');
 

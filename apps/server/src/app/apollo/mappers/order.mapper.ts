@@ -9,6 +9,8 @@ export const OrderMapper = {
     const u: Omit<Required<Order>, '__typename'> = {
       id: order._id,
       createdOn: order.createdOn,
+      invoicedOn: order.invoicedOn,
+      invoiceRef: order.invoiceRef,
       items: order.items.map((item) => ({
         id: item._id,
         productId: item.productId,

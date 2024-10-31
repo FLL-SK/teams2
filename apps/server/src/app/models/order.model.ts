@@ -4,6 +4,8 @@ import { Schema } from 'mongoose';
 export interface OrderData {
   _id?: ObjectId;
   createdOn: Date;
+  invoicedOn?: Date;
+  invoiceRef?: string;
   items: {
     _id?: ObjectId;
     productId: ObjectId;
@@ -20,6 +22,8 @@ const Types = Schema.Types;
 export const orderSchema = new Schema<OrderData>(
   {
     createdOn: { type: Types.Date, required: true },
+    invoicedOn: { type: Types.Date },
+    invoiceRef: { type: Types.String },
     items: [
       {
         productId: { type: Types.ObjectId, required: true },

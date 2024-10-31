@@ -80,4 +80,6 @@ extend type Mutation {
 
   addEventManager(eventId: ID!, userId: ID!): Event
   removeEventManager(eventId: ID!, userId: ID!): Event
+
+  issueEventFoodInvoices(eventId: ID!): Int!
 }

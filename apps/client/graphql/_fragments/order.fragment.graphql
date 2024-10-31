@@ -1,6 +1,8 @@
 fragment OrderFragment on Order {
   id
   createdOn
+  invoicedOn
+  invoiceRef
   items {
     id
     productId

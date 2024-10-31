@@ -8,6 +8,7 @@ import { emailEventChangedToCoach, emailEventChangedToEventManagers } from '../u
 import { logger } from '@teams2/logger';
 import { RegistrationPayload } from '../_generated/graphql';
 import { appPath } from '@teams2/common';
+import { issueFoodInvoice } from './registration';
 
 const logLib = logger('domain:Event');
 
@@ -65,4 +66,23 @@ export async function changeRegisteredEvent(
     );
     return { errors: [{ code: 'error' }] };
   }
+}
+
+export async function issueFoodInvoices(eventId: ObjectId, ctx: ApolloContext) {
+  const log = logLib.extend('issueFoodInvoices');
+  log.info('Sending food invoices for event=%s', eventId);
+  const registrations = await ctx.dataSources.registration.getEventRegistrations(eventId);
+  log.debug('Found %d registrations', registrations.length);
+  let count = 0;
+  await Promise.all(
+    registrations.map(async (r) => {
+      if (r.confirmedOn && r.foodOrder && !r.foodOrder.invoicedOn) {
+        count++;
+        log.debug('Sending food invoice for registration=%s', r.id);
+        await issueFoodInvoice(r.id, ctx);
+      }
+    }),
+  );
+  log.info('Sent %d food invoices', count);
+  return count;
 }
