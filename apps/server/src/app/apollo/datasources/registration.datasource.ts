@@ -24,6 +24,7 @@ import {
   emailTeamSizeConfirmed,
   emailEventRegistrationConfirmed,
   emailProgramRegistrationConfirmed,
+  emailFoodOrderUpdated,
 } from '../../utils/emails';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { OrderData } from '../../models/order.model';
@@ -291,6 +292,9 @@ export class RegistrationDataSource extends BaseDataSource {
 
     r.foodOrder = no;
     await r.save();
+
+    emailFoodOrderUpdated(r, this.context.user.username);
+
     return { registration: RegistrationMapper.toRegistration(r) };
   }
 
