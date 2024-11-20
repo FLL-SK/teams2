@@ -25,6 +25,7 @@ import {
 } from './components/registration-list-params';
 import { MultitagPanel } from './components/multitag-panel';
 import { Modal } from '../../components/modal';
+import { handleExportRegisteredTeams } from './components/handle-export-regs';
 
 const localStoreFilterEntry = 'registrations-filter';
 
@@ -241,8 +242,13 @@ export function RegistrationsPage() {
 
                 <Button
                   icon={<Group />}
-                  tip="Emaily trénerov"
-                  onClick={() => setShowCoachesEmails(true)}
+                  tip="Export tímov"
+                  onClick={() =>
+                    handleExportRegisteredTeams(
+                      progData?.getProgram.name ?? '',
+                      registrations ?? [],
+                    )
+                  }
                 />
 
                 <Button icon={<Tag />} tip="Tagy" onClick={() => setShowMultiTag(!showMultiTag)} />
