@@ -25,6 +25,7 @@ import {
 } from './components/registration-list-params';
 import { MultitagPanel } from './components/multitag-panel';
 import { Modal } from '../../components/modal';
+import { handleExportRegisteredTeams } from './components/handle-export-regs';
 
 const localStoreFilterEntry = 'registrations-filter';
 
@@ -32,7 +33,6 @@ export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
   const [selectedReg, setSelectedReg] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
-  const [showCoachesEmails, setShowCoachesEmails] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
@@ -52,19 +52,6 @@ export function RegistrationsPage() {
 
   const [removeTags] = useRemoveTagsFromTeamMutation();
   const [addTags] = useAddTagsToTeamMutation();
-
-  const coachesEmails: string[] = useMemo(
-    () =>
-      registrations
-        ? registrations.reduce((t: string[], reg) => {
-            const c = (reg?.team.coaches ?? [])
-              .map((c) => c.username)
-              .filter((c) => !t.includes(c));
-            return [...t, ...c];
-          }, [])
-        : [],
-    [registrations],
-  );
 
   // prepare search entries for text search
   const searchOptions = useMemo(
@@ -241,8 +228,13 @@ export function RegistrationsPage() {
 
                 <Button
                   icon={<Group />}
-                  tip="Emaily trénerov"
-                  onClick={() => setShowCoachesEmails(true)}
+                  tip="Export tímov"
+                  onClick={() =>
+                    handleExportRegisteredTeams(
+                      progData?.getProgram.name ?? '',
+                      registrations ?? [],
+                    )
+                  }
                 />
 
                 <Button icon={<Tag />} tip="Tagy" onClick={() => setShowMultiTag(!showMultiTag)} />
@@ -284,19 +276,6 @@ export function RegistrationsPage() {
         values={filter}
         onChange={handleApplyFilter}
       />
-      <Modal
-        title="Emaily trénerov"
-        show={showCoachesEmails}
-        onClose={() => setShowCoachesEmails(false)}
-        height="medium"
-        width="medium"
-      >
-        <Box overflow={{ vertical: 'auto' }}>
-          {coachesEmails.map((email, idx) => (
-            <Text key={idx}>{email}</Text>
-          ))}
-        </Box>
-      </Modal>
     </BasePage>
   );
 }
