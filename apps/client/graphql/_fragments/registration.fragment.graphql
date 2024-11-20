@@ -65,6 +65,9 @@ fragment RegistrationListFragment on Registration {
     tags {
       ...TagFragment
     }
+    coaches {
+      ...UserBasicFragment
+    }
   }
 }
 

@@ -11,7 +11,7 @@ import {
   useRemoveTagsFromTeamMutation,
 } from '../../_generated/graphql';
 import { RegistrationList } from './components/registration-list';
-import { Close, Download, Filter, Tag } from 'grommet-icons';
+import { Close, Deliver, Download, Filter, Group, Tag } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';
 import { BasePage } from '../../components/base-page';
 import RegistrationListFilter, {
@@ -24,6 +24,7 @@ import {
   parseRegistrationsSearchParams,
 } from './components/registration-list-params';
 import { MultitagPanel } from './components/multitag-panel';
+import { Modal } from '../../components/modal';
 
 const localStoreFilterEntry = 'registrations-filter';
 
@@ -31,6 +32,7 @@ export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
   const [selectedReg, setSelectedReg] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
+  const [showCoachesEmails, setShowCoachesEmails] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
@@ -50,6 +52,19 @@ export function RegistrationsPage() {
 
   const [removeTags] = useRemoveTagsFromTeamMutation();
   const [addTags] = useAddTagsToTeamMutation();
+
+  const coachesEmails: string[] = useMemo(
+    () =>
+      registrations
+        ? registrations.reduce((t: string[], reg) => {
+            const c = (reg?.team.coaches ?? [])
+              .map((c) => c.username)
+              .filter((c) => !t.includes(c));
+            return [...t, ...c];
+          }, [])
+        : [],
+    [registrations],
+  );
 
   // prepare search entries for text search
   const searchOptions = useMemo(
@@ -217,12 +232,19 @@ export function RegistrationsPage() {
                   }}
                 />
                 <Button
-                  icon={<Download />}
-                  tip="Export"
+                  icon={<Deliver />}
+                  tip="Export údajov pre doručenie"
                   onClick={() =>
                     exportRegistrationsForShipping(progData?.getProgram.name ?? '', registrations)
                   }
                 />
+
+                <Button
+                  icon={<Group />}
+                  tip="Emaily trénerov"
+                  onClick={() => setShowCoachesEmails(true)}
+                />
+
                 <Button icon={<Tag />} tip="Tagy" onClick={() => setShowMultiTag(!showMultiTag)} />
               </Box>
               {showMultiTag && (
@@ -262,6 +284,19 @@ export function RegistrationsPage() {
         values={filter}
         onChange={handleApplyFilter}
       />
+      <Modal
+        title="Emaily trénerov"
+        show={showCoachesEmails}
+        onClose={() => setShowCoachesEmails(false)}
+        height="medium"
+        width="medium"
+      >
+        <Box overflow={{ vertical: 'auto' }}>
+          {coachesEmails.map((email, idx) => (
+            <Text key={idx}>{email}</Text>
+          ))}
+        </Box>
+      </Modal>
     </BasePage>
   );
 }
