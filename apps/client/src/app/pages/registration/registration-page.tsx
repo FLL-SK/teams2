@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paragraph, Spinner, Text } from 'grommet';
+import { Box, Paragraph, Spinner, Text, TextArea } from 'grommet';
 import { useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -12,18 +12,20 @@ import {
   useGetNotesLazyQuery,
   useRemoveTagsFromTeamMutation,
 } from '../../_generated/graphql';
-import { LabelValueGroup } from '../../components/label-value-group';
+
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
 import { FieldTeamSize } from '../registrations/components/field-teamSize';
-import { FieldTeamSizeConfirmedOn } from '../registrations/components/field-teamSizeConfirmedOn';
+
 import { PanelRegistrationShipping } from './components/panel-shipping';
 import { PanelRegistrationBilling } from './components/panel-billing';
 import { PanelRegistrationInvoiceItems } from './components/panel-invoice-items';
 import { PanelRegistrationDetails } from './components/panel-details';
 import { CoachList } from '../team/components/coach-list';
 import { RegistrationFilesPanel } from './components/registration-files';
-import { PanelRegistrationFoodOrder } from './components/panel-food-order';
+
+import { LabelValue } from '../../components/label-value';
+import { OrderItemList2 } from '../../components/order-item-list2';
 
 const columnWidth = '460px';
 
@@ -83,29 +85,26 @@ export function RegistrationPage() {
               />
 
               {reg.event && (
-                <Panel title="Účasť" wrap direction="row" gap="small">
-                  <Box width={columnWidth}>
-                    <LabelValueGroup labelWidth="250px" gap="small" direction="row">
-                      <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
-                      {reg.program.maxTeamSize &&
-                        reg.girlCount + reg.boyCount > reg.program.maxTeamSize && (
-                          <Paragraph color="status-critical">
-                            Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna
-                            veľkosť tímu je {reg.program.maxTeamSize}. Na turnaji sa môže súťažne
-                            zúčastniť iba povolený počet detí. Ostatní sa môžu zúčastniť ako diváci.
-                          </Paragraph>
-                        )}
-                      <FieldTeamSizeConfirmedOn registration={reg} readOnly={!!reg.canceledOn} />
-                    </LabelValueGroup>
-                  </Box>
+                <Panel title="Účasť" wrap direction="column" gap="small">
+                  <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
+                  {reg.program.maxTeamSize &&
+                  reg.girlCount + reg.boyCount > reg.program.maxTeamSize ? (
+                    <Paragraph color="status-critical">
+                      Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna veľkosť
+                      tímu je {reg.program.maxTeamSize}. Na turnaji sa môže súťažne zúčastniť iba
+                      povolený počet detí. Ostatní sa môžu zúčastniť ako diváci.
+                    </Paragraph>
+                  ) : null}
+                  {!reg.foodOrder && <Text>Táto registrácia nemá žiadne stravovanie. </Text>}
+                  {reg.foodOrder && <Text weight="bold">Stravovanie</Text>}
+                  {reg.foodOrder && <OrderItemList2 order={reg.foodOrder} editable={false} />}
+                  {reg.foodOrder && (
+                    <LabelValue label="Poznámka k stravovaniu" labelWidth="300px">
+                      <TextArea readOnly>{reg.foodOrder.note}</TextArea>
+                    </LabelValue>
+                  )}
                 </Panel>
               )}
-
-              <PanelRegistrationFoodOrder
-                foodOrder={reg.foodOrder}
-                columnWidth={columnWidth}
-                readOnly={!!reg.canceledOn}
-              />
 
               <Panel title="Súbory" gap="small">
                 <RegistrationFilesPanel registrationId={reg.id} regConfirmed={!!reg.confirmedOn} />

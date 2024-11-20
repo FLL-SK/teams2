@@ -1,9 +1,22 @@
-import { Button, Form, FormField, Table, TextInput } from 'grommet';
+import {
+  Button,
+  Form,
+  FormField,
+  Text,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TextArea,
+  TextInput,
+} from 'grommet';
 import { Modal } from '../../../components/modal';
 import React, { useEffect } from 'react';
+import { LabelValue } from '../../../components/label-value';
 
 interface FormDataType {
-  orderItems: {
+  note?: string | null;
+  items: {
     productId: string;
     name: string;
     quantity: number;
@@ -14,23 +27,24 @@ interface FormDataType {
 
 export interface FoodOrderModalProps {
   availableItems: { id: string; n: string; up: number }[];
-  orderItems: FormDataType['orderItems'];
+  order: FormDataType;
   onClose: () => void;
-  onOrder: (orderData: FormDataType['orderItems']) => void;
+  onOrder: (orderData: FormDataType) => void;
 }
 
 export function FoodOrderModal(props: FoodOrderModalProps) {
   const [value, setValue] = React.useState<FormDataType>({
-    orderItems: [{ productId: '', name: '', quantity: 0, unitPrice: 0, price: 0 }],
+    note: '',
+    items: [{ productId: '', name: '', quantity: 0, unitPrice: 0, price: 0 }],
   });
 
   useEffect(() => {
     const mergedItems = props.availableItems.map((availableItem) => {
-      const existingItem = props.orderItems.find(
+      const existingItem = props.order.items.find(
         (orderItem) => orderItem.productId === availableItem.id,
       );
 
-      const mi: FormDataType['orderItems'][0] = {
+      const mi: FormDataType['items'][0] = {
         productId: availableItem.id,
         name: availableItem.n,
         quantity: existingItem ? existingItem.quantity : 0,
@@ -40,25 +54,26 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
       return mi;
     });
 
-    setValue({ orderItems: mergedItems });
-  }, [props.availableItems, props.orderItems]);
+    setValue({ ...props.order, items: mergedItems });
+  }, [props.availableItems, props.order]);
 
   const handleFormChange = (newValue: FormDataType) => {
     const nv: FormDataType = { ...value };
-    if (newValue.orderItems) {
-      const itms: FormDataType['orderItems'] = [...value.orderItems];
-      for (let i = 0; i < newValue.orderItems.length; i++) {
-        if (!newValue.orderItems[i]) {
+    nv.note = newValue.note;
+    if (newValue.items) {
+      const itms: FormDataType['items'] = [...value.items];
+      for (let i = 0; i < newValue.items.length; i++) {
+        if (!newValue.items[i]) {
           continue;
         }
-        const qty = parseInt((newValue.orderItems[i].quantity ?? '0').toString());
+        const qty = parseInt((newValue.items[i].quantity ?? '0').toString());
         itms[i] = {
           ...itms[i],
-          quantity: newValue.orderItems[i] ? qty : 0,
-          price: itms[i].unitPrice * (newValue.orderItems[i] ? qty : 0),
+          quantity: newValue.items[i] ? qty : 0,
+          price: itms[i].unitPrice * (newValue.items[i] ? qty : 0),
         };
       }
-      nv.orderItems = itms;
+      nv.items = itms;
     }
     setValue(nv);
   };
@@ -68,26 +83,32 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
       onClose={props.onClose}
       title="Objednávka stravovania"
       show={true}
-      footer={<Button primary label="Objednať" onClick={() => props.onOrder(value.orderItems)} />}
+      footer={<Button primary label="Objednať" onClick={() => props.onOrder(value)} />}
     >
       {props.availableItems.length === 0 && (
         <p>Tento turnaj nemá možnosť objednania stravovania.</p>
       )}
-      {value.orderItems.length > 0 && (
+      {value.items.length > 0 && (
         <Form onChange={handleFormChange}>
           <Table>
             <thead>
               <tr>
-                <th>Typ</th>
-                <th>Množstvo</th>
+                <th>
+                  <Text>Typ</Text>
+                </th>
+                <th>
+                  <Text>Množstvo</Text>
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {value.orderItems.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.name}</td>
+            <TableBody>
+              {value.items.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Text>{item.name}</Text>
+                  </TableCell>
 
-                  <td>
+                  <TableCell align="right" width={'xs'}>
                     <FormField name={`orderItems[${index}].quantity`} required>
                       <TextInput
                         type="number"
@@ -95,11 +116,19 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
                         value={item.quantity}
                       />
                     </FormField>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
+          <LabelValue label="Poznámka">
+            <TextArea
+              name="note"
+              placeholder="Poznámka"
+              value={value.note ?? undefined}
+              onChange={(event) => setValue({ ...value, note: event.target.value })}
+            />
+          </LabelValue>
         </Form>
       )}
     </Modal>

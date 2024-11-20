@@ -23,7 +23,7 @@ export const FieldTeamSize = (props: {
   const [setTeamSize] = useRegistrationSetTeamSizeMutation({ onError });
 
   return (
-    <LabelValue label="Veľkosť tímu">
+    <LabelValue label="Veľkosť tímu" direction="row">
       <Box direction="row" width="100%" justify="between">
         <Text>{formatTeamSize(registration)}</Text>
 

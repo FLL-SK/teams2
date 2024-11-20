@@ -43,12 +43,16 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   }, [registration]);
 
   const handleOrder = useCallback(
-    (data: { productId: string; name: string; quantity: number }[]) => {
+    (data: {
+      note?: string | null;
+      items: { productId: string; name: string; quantity: number }[];
+    }) => {
       updateOrder({
         variables: {
           id: registration.id,
           order: {
-            items: data.map((item) => ({
+            note: data.note,
+            items: data.items.map((item) => ({
               productId: item.productId,
               name: item.name,
               quantity: item.quantity,
@@ -115,7 +119,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
       {showFoodOrderModal && (
         <FoodOrderModal
           availableItems={registration.event.foodTypes ?? []}
-          orderItems={registration.foodOrder?.items ?? []}
+          order={registration.foodOrder ?? { note: '', items: [] }}
           onClose={() => setShowFoodOrderModal(false)}
           onOrder={(data) => {
             setShowFoodOrderModal(false);

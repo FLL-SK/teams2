@@ -3,6 +3,7 @@ fragment OrderFragment on Order {
   createdOn
   invoicedOn
   invoiceRef
+  note
   items {
     id
     productId

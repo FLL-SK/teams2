@@ -6,6 +6,7 @@ export interface OrderData {
   createdOn: Date;
   invoicedOn?: Date;
   invoiceRef?: string;
+  note?: string;
   items: {
     _id?: ObjectId;
     productId: ObjectId;
@@ -24,6 +25,7 @@ export const orderSchema = new Schema<OrderData>(
     createdOn: { type: Types.Date, required: true },
     invoicedOn: { type: Types.Date },
     invoiceRef: { type: Types.String },
+    note: { type: Types.String },
     items: [
       {
         productId: { type: Types.ObjectId, required: true },
