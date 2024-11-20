@@ -40,13 +40,23 @@ export const handleExportRegisteredTeams = (
     }
 
     return {
-      name: r.team.name,
       registeredOn: r.createdOn,
       type: r.type,
-      childrenCount: r.boyCount + r.girlCount,
-      eventName: r.event?.name ?? '',
+      paidOn: r.paidOn,
+      confirmedOn: r.confirmedOn,
       coachCount: r.team.coaches.length,
+      childrenCount: r.boyCount + r.girlCount,
+      sizeConfirmedOn: r.sizeConfirmedOn,
+
+      name: r.team.name,
       address: r.team.address,
+
+      eventName: r.event?.name ?? '',
+
+      impactedChildrenCount: r.impactedChildrenCount,
+      impactedTeamCount: r.impactedTeamCount,
+      setCount: r.setCount,
+
       ...cc,
     };
   });
