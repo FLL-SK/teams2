@@ -8,6 +8,7 @@ import {
   RegistrationFragmentFragment,
   useCancelRegistrationMutation,
   useChangeRegisteredEventMutation,
+  useUpdateRegistrationMutation,
 } from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
@@ -16,6 +17,9 @@ import { ChangeTeamEventDialog } from '../../../components/dialogs/change-team-e
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
+import { EditRegistrationTypeDialog } from '../../../components/dialogs/edit-registration-type-dialog';
+import { set } from 'lodash';
+import { on } from 'events';
 
 interface PanelRegistrationDetailsProps {
   registration: RegistrationFragmentFragment;
@@ -30,12 +34,16 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
 
   const [askUnregisterTeam, setAskUnregisterTeam] = useState(false);
   const [changeEvent, setChangeEvent] = useState(false);
+  const [changeRegType, setChangeRegType] = useState(false);
 
   const [unregisterTeam] = useCancelRegistrationMutation({
     onError: () => notify.error('Nepodarilo sa zrušiť registráciu.'),
   });
   const [switchTeamEvent] = useChangeRegisteredEventMutation({
     onError: () => notify.error('Nepodarilo sa presunúť tím na iný turnaj'),
+  });
+  const [updateRegistration] = useUpdateRegistrationMutation({
+    onError: () => notify.error('Nepodarilo sa zmeniť typ registrácie'),
   });
 
   return (
@@ -89,6 +97,8 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
               disabled={!isAdmin()}
             />
           )}
+
+          <Button label="Zmeniť typ" onClick={() => setChangeRegType(true)} disabled={!isAdmin()} />
         </Box>
       )}
 
@@ -98,6 +108,32 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
           teamName={reg.team.name}
           onClose={() => setAskUnregisterTeam(false)}
           onUnregister={() => unregisterTeam({ variables: { id: reg.id } })}
+        />
+      )}
+
+      {changeRegType && (
+        <EditRegistrationTypeDialog
+          show={changeRegType}
+          regTypeData={{
+            type: reg.type,
+            teams: reg.impactedTeamCount,
+            children: reg.impactedChildrenCount,
+            setCount: reg.setCount,
+          }}
+          onClose={() => setChangeRegType(false)}
+          onSubmit={async (e) =>
+            await updateRegistration({
+              variables: {
+                id: reg.id,
+                input: {
+                  type: e.type,
+                  impactedTeamCount: e.teams,
+                  impactedChildrenCount: e.children,
+                  setCount: e.setCount,
+                },
+              },
+            })
+          }
         />
       )}
 

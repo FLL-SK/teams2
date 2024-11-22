@@ -77,6 +77,7 @@ export class RegistrationDataSource extends BaseDataSource {
       type: input.type,
       childrenImpacted: input.impactedChildrenCount,
       teamsImpacted: input.impactedTeamCount,
+      setCount: input.setCount,
     };
     const registration = await registrationRepository
       .findByIdAndUpdate(id, u, { new: true })
