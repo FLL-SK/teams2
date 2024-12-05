@@ -57,27 +57,6 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
     setValue({ ...props.order, items: mergedItems });
   }, [props.availableItems, props.order]);
 
-  const handleFormChange = (newValue: FormDataType) => {
-    const nv: FormDataType = { ...value };
-    nv.note = newValue.note;
-    if (newValue.items) {
-      const itms: FormDataType['items'] = [...value.items];
-      for (let i = 0; i < newValue.items.length; i++) {
-        if (!newValue.items[i]) {
-          continue;
-        }
-        const qty = parseInt((newValue.items[i].quantity ?? '0').toString());
-        itms[i] = {
-          ...itms[i],
-          quantity: newValue.items[i] ? qty : 0,
-          price: itms[i].unitPrice * (newValue.items[i] ? qty : 0),
-        };
-      }
-      nv.items = itms;
-    }
-    setValue(nv);
-  };
-
   return (
     <Modal
       onClose={props.onClose}
@@ -89,7 +68,7 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
         <p>Tento turnaj nemá možnosť objednania stravovania.</p>
       )}
       {value.items.length > 0 && (
-        <Form onChange={handleFormChange}>
+        <Form>
           <Table>
             <thead>
               <tr>
@@ -114,6 +93,11 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
                         type="number"
                         name={`orderItems[${index}].quantity`}
                         value={item.quantity}
+                        onChange={(e) => {
+                          const v: FormDataType = { ...value };
+                          v.items[index].quantity = e.target.valueAsNumber;
+                          setValue(v);
+                        }}
                       />
                     </FormField>
                   </TableCell>

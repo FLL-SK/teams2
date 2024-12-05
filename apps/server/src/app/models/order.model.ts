@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Schema } from 'mongoose';
+import { AddressData, addressSchema } from './address.model';
 
 export interface OrderData {
   _id?: ObjectId;
@@ -7,6 +8,8 @@ export interface OrderData {
   invoicedOn?: Date;
   invoiceRef?: string;
   note?: string;
+  billTo: AddressData;
+  shipTo?: AddressData;
   items: {
     _id?: ObjectId;
     productId: ObjectId;
@@ -25,6 +28,8 @@ export const orderSchema = new Schema<OrderData>(
     createdOn: { type: Types.Date, required: true },
     invoicedOn: { type: Types.Date },
     invoiceRef: { type: Types.String },
+    billTo: { type: addressSchema, required: true },
+    shipTo: { type: addressSchema, required: false },
     note: { type: Types.String },
     items: [
       {
