@@ -11,7 +11,7 @@ import { EdgeSizeType } from 'grommet/utils';
 
 interface BaseListProps<T = unknown> extends Omit<ListProps, 'height' | 'width' | 'rowRenderer'> {
   rowGetter: (index: number) => T | null;
-  onEmptyList?: () => unknown;
+  onEmptyList?: () => ReactNode;
   renderRow: (data: T) => ReactNode;
   cols?: string;
   actionPanel?: ReactNode | null;
@@ -85,22 +85,25 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
     <Box height="100%">
       <ListHeaderRow justifyContent={actionsJustifyContent}>{actionPanel}</ListHeaderRow>
       <ContentPanel>
-        <AutoSizer>
-          {({ width, height }) => (
-            <List
-              {...listProps}
-              height={height}
-              width={width}
-              headerHeight={0}
-              rowHeight={rowHeight}
-              rowClassName={getRowClassName}
-              rowCount={rowCount}
-              rowGetter={rowGetter}
-              rowRenderer={rowRenderer}
-              estimatedRowSize={1000}
-            />
-          )}
-        </AutoSizer>
+        {rowCount === 0 && props.onEmptyList && props.onEmptyList()}
+        {rowCount > 0 && (
+          <AutoSizer>
+            {({ width, height }) => (
+              <List
+                {...listProps}
+                height={height}
+                width={width}
+                headerHeight={0}
+                rowHeight={rowHeight}
+                rowClassName={getRowClassName}
+                rowCount={rowCount}
+                rowGetter={rowGetter}
+                rowRenderer={rowRenderer}
+                estimatedRowSize={1000}
+              />
+            )}
+          </AutoSizer>
+        )}
       </ContentPanel>
     </Box>
   );
