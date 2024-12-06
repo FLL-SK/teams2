@@ -12,6 +12,7 @@ export interface RegistrationData {
   programId: ObjectId;
   eventId?: ObjectId;
   teamId: ObjectId;
+  teamNo?: string;
 
   billTo: AddressData;
   shipTo: AddressData;
@@ -71,6 +72,7 @@ const schema = new Schema<RegistrationData, RegistrationModel>({
   programId: { type: Types.ObjectId, ref: 'Program', required: true },
   eventId: { type: Types.ObjectId, ref: 'Event' },
   teamId: { type: Types.ObjectId, ref: 'Team', required: true },
+  teamNo: { type: Types.String, required: false },
 
   billTo: { type: addressSchema, required: true },
   shipTo: { type: addressSchema, required: true },

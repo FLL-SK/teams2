@@ -14,6 +14,8 @@ export interface ProgramData {
   endDate: Date;
   maxTeams?: number;
   maxTeamSize?: number;
+  /** Team registration sequence. Will be increased with every team registration */
+  teamRegSequence: number;
   group?: string;
 
   managersIds: ObjectId[];
@@ -40,6 +42,7 @@ export interface ProgramModel extends Model<ProgramData> {
     filter: ProgramFilter,
     projection?: ProjectionType<ProgramData>,
   ): Promise<ProgramDocument[]>;
+  incrementTeamRegSequence(programId: ObjectId): Promise<number>;
 }
 
 const schema = new Schema<ProgramData, ProgramModel>(
@@ -49,6 +52,7 @@ const schema = new Schema<ProgramData, ProgramModel>(
     logoUrl: { type: Types.String },
     color: { type: Types.String },
     conditions: { type: Types.String },
+    teamRegSequence: { type: Types.Number, default: 1 },
     maxTeams: { type: Types.Number },
     maxTeamSize: { type: Types.Number },
     managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
@@ -70,6 +74,19 @@ schema.index({ managersIds: 1 });
 
 schema.static('clean', function () {
   return this.deleteMany().exec();
+});
+
+schema.static('incrementTeamRegSequence', async function (programId: ObjectId) {
+  const program = await this.findOneAndUpdate(
+    { _id: programId },
+    { $inc: { teamRegSequence: 1 } },
+    { new: true },
+  ).exec();
+  if (!program) {
+    throw new Error(`Program not found: ${programId}`);
+  }
+
+  return program.teamRegSequence;
 });
 
 schema.static(

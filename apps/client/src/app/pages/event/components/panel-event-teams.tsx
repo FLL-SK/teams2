@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
 import { Modal } from '../../../components/modal';
 import { useAppUser } from '../../../components/app-user/use-app-user';
+import { handleExportForEventHub } from './handle-export-for-eventhub';
 
 interface PanelEventTeamsProps {
   event: EventFragmentFragment;
@@ -83,6 +84,12 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
           />
           <Button label="Emaily trénerov" onClick={() => setShowCoachesEmails(true)} />
           <Button label="Vystaviť faktúry za stravovanie" onClick={() => props.onIssueInvoices()} />
+          <Button
+            label="Export pre EventHub"
+            onClick={() =>
+              handleExportForEventHub(event?.program.name ?? '', event.name, regs ?? [])
+            }
+          />
         </Box>
       )}
 

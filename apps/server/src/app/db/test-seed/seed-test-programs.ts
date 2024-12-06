@@ -28,6 +28,7 @@ export const seedTestProgramData: TestSeedData[] = [
       { lineNo: 2, text: 'Item2', unitPrice: 200, quantity: 1 },
     ],
     conditions: '*Program1 conditions*\n1. condition 1\n2. condtion 2\n3. condition 3',
+    teamRegSequence: 1,
   },
   {
     name: 'Program2',
@@ -38,6 +39,7 @@ export const seedTestProgramData: TestSeedData[] = [
     description: '**Program2 description**\n* a\n* b\n* c',
 
     invoiceItems: [{ lineNo: 1, text: 'Item21', unitPrice: 21, quantity: 1 }],
+    teamRegSequence: 1,
   },
   {
     name: 'Program3-not active',
@@ -47,6 +49,7 @@ export const seedTestProgramData: TestSeedData[] = [
     managersIds: [],
     managers: ['devtest+progmgr2@fll.sk'],
     invoiceItems: [],
+    teamRegSequence: 1,
   },
 ];
 
@@ -62,6 +65,7 @@ export async function seedTestPrograms() {
       conditions: d.conditions,
       startDate: addDays(new Date(), d.startOffset),
       endDate: addDays(new Date(), d.endOffset),
+      teamRegSequence: d.teamRegSequence,
     };
 
     const nu = new programRepository(p);

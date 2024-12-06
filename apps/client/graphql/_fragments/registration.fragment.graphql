@@ -1,6 +1,7 @@
 fragment RegistrationBasicFragment on Registration {
   id
   teamId
+  teamNo
   programId
   eventId
 
@@ -127,4 +128,5 @@ fragment RegisteredTeamFragment on RegisteredTeamPayload {
   foodOrder {
     ...OrderFragment
   }
+  teamNo
 }

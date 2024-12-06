@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Box, CheckBox, Text, Tip } from 'grommet';
+import { Box, CheckBox, Text, Tip, Paragraph } from 'grommet';
 import {
   Checkmark,
   Cube,
@@ -12,6 +12,7 @@ import {
   Money,
   Cafeteria as CafeteriaIcon,
 } from 'grommet-icons';
+
 import { ListCol } from '../../../components/list/list-col';
 import { TextStriked } from '../../../components/text-striked';
 import { RegistrationListFragmentFragment } from '../../../_generated/graphql';
@@ -33,7 +34,7 @@ interface SelectTeamsProps {
 type RegistrationListProps = {
   rowCount: number;
   rowGetter: (index: number) => RegistrationListFragmentFragment | null;
-  onEmptyList?: () => unknown;
+  onEmptyList?: () => ReactNode;
   actionPanel: ReactNode;
   onClick: (team: RegistrationListFragmentFragment) => unknown;
   selectTeams?: SelectTeamsProps;
@@ -207,6 +208,10 @@ export function RegistrationList(props: RegistrationListProps) {
         rowHeight={getHeight}
         columnGap="medium"
         onRowSelect={(team) => onClick && onClick(team)}
+        onEmptyList={
+          props.onEmptyList ||
+          (() => <Paragraph>Pre zadané podmienky neboli nájdené žiadne registrácie</Paragraph>)
+        }
       />
     </ListWrapper>
   );
