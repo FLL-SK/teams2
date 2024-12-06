@@ -1,6 +1,7 @@
 fragment RegistrationBasicFragment on Registration {
   id
   teamId
+  teamNo
   programId
   eventId
 
