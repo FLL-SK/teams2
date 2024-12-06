@@ -67,6 +67,7 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
         </Box>
         <Box width={columnWidth}>
           <LabelValueGroup labelWidth="200px" gap="small" direction="row">
+            <LabelValue label="Číslo tímu" value={reg.teamNo ?? 'xxx'} />
             <LabelValue
               label="Typ"
               value={

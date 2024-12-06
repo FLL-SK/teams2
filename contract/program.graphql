@@ -16,6 +16,7 @@ type Program implements INode {
   conditions: String
   startDate: DateTime!
   endDate: DateTime!
+  teamRegSequence: Int!
   maxTeams: Int
   maxTeamSize: Int
   group: String

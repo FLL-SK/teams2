@@ -12,6 +12,7 @@ export const RegistrationMapper = {
       programId: registration.programId,
       eventId: registration.eventId,
       teamId: registration.teamId,
+      teamNo: registration.teamNo ?? 'xxx',
 
       billTo: AddressMapper.toAddress(registration.billTo),
       shipTo: AddressMapper.toAddress(registration.shipTo),

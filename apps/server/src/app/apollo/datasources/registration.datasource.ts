@@ -1,6 +1,7 @@
 import { BaseDataSource } from './_base.datasource';
 import {
   eventRepository,
+  programRepository,
   RegistrationData,
   RegistrationGroup,
   registrationRepository,
@@ -250,8 +251,12 @@ export class RegistrationDataSource extends BaseDataSource {
   async setConfirmedOn(id: ObjectId, confirmedOn: Date): Promise<Registration> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set confirmed on');
 
-    const r = await registrationRepository
-      .findByIdAndUpdate(id, { confirmedOn }, { new: true })
+    let r = await registrationRepository.findById(id).exec();
+
+    const teamNo = await programRepository.incrementTeamRegSequence(r.programId);
+
+    r = await registrationRepository
+      .findByIdAndUpdate(id, { confirmedOn, teamNo: teamNo.toString() }, { new: true })
       .exec();
 
     if (r.eventId) {
@@ -285,6 +290,7 @@ export class RegistrationDataSource extends BaseDataSource {
       const t: RegisteredTeamPayload = {
         id: reg._id,
         teamId: team._id,
+        teamNo: reg.teamNo,
         registeredOn: reg.createdOn,
         confirmedOn: reg.confirmedOn,
         paidOn: reg.paidOn,

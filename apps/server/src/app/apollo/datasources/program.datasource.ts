@@ -53,7 +53,7 @@ export class ProgramDataSource extends BaseDataSource {
   async createProgram(input: CreateProgramInput): Promise<ProgramPayload> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create program');
 
-    const u: ProgramData = { ...input, managersIds: [] };
+    const u: ProgramData = { ...input, managersIds: [], teamRegSequence: 1 };
     const nu = await programRepository.create(u);
     return { program: ProgramMapper.toProgram(nu) };
   }
