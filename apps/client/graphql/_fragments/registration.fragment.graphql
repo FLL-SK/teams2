@@ -121,4 +121,5 @@ fragment RegisteredTeamFragment on RegisteredTeamPayload {
   impactedChildrenCount
   impactedTeamCount
   setCount
+  teamNo
 }
