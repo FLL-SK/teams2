@@ -25,6 +25,8 @@ import {
   emailProgramRegistrationConfirmed,
 } from '../../utils/emails';
 import { FilterQuery, UpdateQuery } from 'mongoose';
+import { format } from 'path';
+import { formatTeamNo } from '../../utils/format-teamNo';
 
 const logBase = logger('DS:Registration');
 
@@ -256,7 +258,7 @@ export class RegistrationDataSource extends BaseDataSource {
     const teamNo = await programRepository.incrementTeamRegSequence(r.programId);
 
     r = await registrationRepository
-      .findByIdAndUpdate(id, { confirmedOn, teamNo: teamNo.toString() }, { new: true })
+      .findByIdAndUpdate(id, { confirmedOn, teamNo: formatTeamNo(teamNo) }, { new: true })
       .exec();
 
     if (r.eventId) {
