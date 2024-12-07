@@ -1,5 +1,6 @@
-import { Anchor, Button, Paragraph, Text } from 'grommet';
+import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import {
+  OrderInput,
   TeamRegistrationFragmentFragment,
   useUpdateRegistrationFoodOrderMutation,
 } from '../../../_generated/graphql';
@@ -11,11 +12,24 @@ import { formatDate } from '@teams2/dateutils';
 import { appPath } from '@teams2/common';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { useCallback, useMemo, useState } from 'react';
-import { FoodOrderModal } from './food-order-modal';
+import { emptyOrder, FoodOrderModal } from './food-order-modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 
 interface EventRegistrationTileProps {
   registration: TeamRegistrationFragmentFragment;
+}
+
+interface Address {
+  name: string;
+  street: string;
+  city: string;
+  zip: string;
+  companyNumber?: string | null;
+  vatNumber?: string | null;
+  taxNumber?: string | null;
+  contactName?: string | null;
+  phone?: string | null;
+  email?: string | null;
 }
 
 export function EventRegistrationTile(props: EventRegistrationTileProps) {
@@ -46,20 +60,28 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     (data: {
       note?: string | null;
       items: { productId: string; name: string; quantity: number }[];
+      billTo: Address;
+      shipTo?: Address | null;
     }) => {
+      const o: OrderInput = {
+        note: data.note,
+        items: data.items.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: 0,
+          price: 0,
+        })),
+        billTo: { ...data.billTo },
+      };
+      if (data.shipTo) {
+        o.shipTo = { ...data.shipTo };
+      }
+
       updateOrder({
         variables: {
           id: registration.id,
-          order: {
-            note: data.note,
-            items: data.items.map((item) => ({
-              productId: item.productId,
-              name: item.name,
-              quantity: item.quantity,
-              unitPrice: 0,
-              price: 0,
-            })),
-          },
+          order: o,
         },
       });
     },
@@ -98,16 +120,19 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
           teamId={registration.teamId}
           readOnly={!!registration.canceledOn}
         />
-        <LabelValue label="Stravovanie">
-          <Button
-            label={
-              registration.foodOrder && registration.foodOrder.items.length > 0
-                ? 'Upraviť'
-                : 'Objednať'
-            }
-            onClick={() => setShowFoodOrderModal(true)}
-            disabled={!canOrderFood}
-          />
+        <LabelValue label="Stravovanie" direction="row">
+          <Box direction="row" gap="small">
+            <Button
+              justify="end"
+              label={
+                registration.foodOrder && registration.foodOrder.items.length > 0
+                  ? 'Upraviť'
+                  : 'Objednať'
+              }
+              onClick={() => setShowFoodOrderModal(true)}
+              disabled={!canOrderFood}
+            />
+          </Box>
         </LabelValue>
         {!registration.confirmedOn && (
           <Text color="status-warning">
@@ -119,7 +144,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
       {showFoodOrderModal && (
         <FoodOrderModal
           availableItems={registration.event.foodTypes ?? []}
-          order={registration.foodOrder ?? { note: '', items: [] }}
+          order={registration.foodOrder ?? { ...emptyOrder, billTo: { ...registration.billTo } }}
           onClose={() => setShowFoodOrderModal(false)}
           onOrder={(data) => {
             setShowFoodOrderModal(false);
