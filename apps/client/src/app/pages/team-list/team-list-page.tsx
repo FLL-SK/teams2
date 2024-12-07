@@ -17,16 +17,20 @@ import {
   constructTeamListSearchParams,
   parseTeamListSearchParams,
 } from './components/team-list-params';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function TeamListPage() {
   const { isAdmin } = useAppUser();
+  const { notify } = useNotification();
   const [selectedTeam, setSelectedTeam] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<TeamListFilterValues>({});
 
   const [fetchTeams, { data: teamsData, error: teamsDataError, loading: teamsLoading }] =
-    useGetTeamsLazyQuery();
+    useGetTeamsLazyQuery({
+      onError: (e) => notify.error('Nepodarilo sa načítať zoznam tímov.', e.message),
+    });
 
   const [searchText, setSearchText] = useState('');
   const [searchTextEditing, setSearchTextEditing] = useState('');

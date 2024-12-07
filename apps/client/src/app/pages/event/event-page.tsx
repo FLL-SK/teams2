@@ -28,10 +28,14 @@ export function EventPage() {
   const { notify } = useNotification();
 
   const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
-    useGetEventLazyQuery({ fetchPolicy: 'cache-and-network' });
+    useGetEventLazyQuery({
+      fetchPolicy: 'cache-and-network',
+      onError: (e) => notify.error('Nepodarilo sa načitať údaje o turnaji.', e.message),
+    });
 
-  const [fetchReistrations, { data: regData }] = useGetRegisteredTeamsLazyQuery({
+  const [fetchRegistrations, { data: regData }] = useGetRegisteredTeamsLazyQuery({
     fetchPolicy: 'cache-and-network',
+    onError: (e) => notify.error('Nepodarilo sa načitať registrácie pre turnaj.', e.message),
   });
 
   const [undeleteEvent] = useUndeleteEventMutation({
@@ -51,7 +55,7 @@ export function EventPage() {
   React.useEffect(() => {
     if (id) {
       fetchEvent({ variables: { id } });
-      fetchReistrations({
+      fetchRegistrations({
         variables: { eventId: id, includeCoaches: canEdit },
       });
     }

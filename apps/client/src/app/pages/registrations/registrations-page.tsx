@@ -26,11 +26,13 @@ import {
 import { MultitagPanel } from './components/multitag-panel';
 import { Modal } from '../../components/modal';
 import { handleExportRegisteredTeams } from './components/handle-export-regs';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 const localStoreFilterEntry = 'registrations-filter';
 
 export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
+  const { notify } = useNotification();
   const [selectedReg, setSelectedReg] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);
@@ -39,7 +41,10 @@ export function RegistrationsPage() {
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
   const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
-    useGetProgramRegistrationsLazyQuery({ fetchPolicy: 'cache-and-network' });
+    useGetProgramRegistrationsLazyQuery({
+      fetchPolicy: 'cache-and-network',
+      onError: (e) => notify.error('Nepodarilo sa získať zoznam registrácií.', e.message),
+    });
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
     useGetProgramLazyQuery({ fetchPolicy: 'cache-and-network' });
 

@@ -26,12 +26,14 @@ import { RegistrationFilesPanel } from './components/registration-files';
 
 import { LabelValue } from '../../components/label-value';
 import { OrderItemList2 } from '../../components/order-item-list2';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 const columnWidth = '460px';
 
 export function RegistrationPage() {
   const { id } = useParams();
   const { isAdmin, isTeamCoach, userLoading } = useAppUser();
+  const { notify } = useNotification();
 
   const [removeTag] = useRemoveTagsFromTeamMutation();
   const [addTag] = useAddTagsToTeamMutation();
@@ -39,10 +41,14 @@ export function RegistrationPage() {
   const [
     fetchRegistration,
     { data: regData, loading: regLoading, error: regDataError, refetch: regRefetch },
-  ] = useGetRegistrationLazyQuery();
+  ] = useGetRegistrationLazyQuery({
+    onError: (e) => notify.error('Nepodarilo sa načítať registráciu.', e.message),
+  });
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery();
+    useGetNotesLazyQuery({
+      onError: (e) => notify.error('Nepodarilo sa načítať poznámky.', e.message),
+    });
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 

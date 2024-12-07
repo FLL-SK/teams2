@@ -32,7 +32,9 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isUser, xOut, isSuperAdmin, user } = useAppUser();
-  const [fetchUser, { data, loading, refetch, error }] = useGetUserProfileLazyQuery();
+  const [fetchUser, { data, loading, refetch, error }] = useGetUserProfileLazyQuery({
+    onError: (e) => notify.error('Nepodarilo sa načítať profil.', e.message),
+  });
 
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
@@ -116,7 +118,7 @@ export function ProfilePage() {
                 <LabelValue label="Meno" value={profile.firstName ?? '-'} />
                 <LabelValue label="Priezvisko" value={profile.lastName ?? '-'} />
                 <LabelValue label="Email" value={canEdit ? profile.username : xOut()} />
-                <LabelValue label="Telefón" value={canEdit ? profile.phone ?? '-' : xOut()} />
+                <LabelValue label="Telefón" value={canEdit ? (profile.phone ?? '-') : xOut()} />
                 {isAdmin() && (
                   <LabelValue
                     label="Súhlas GDPR"

@@ -6,10 +6,14 @@ import { ErrorPage } from '../../components/error-page';
 import { PanelSettings } from './components/panel-settings';
 import { PanelTags } from './components/panel-tags';
 import { Box, Heading } from 'grommet';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function SettingsPage() {
+  const { notify } = useNotification();
   const { user, userLoading: loading } = useAppUser();
-  const { data: settingsData } = useGetSettingsQuery();
+  const { data: settingsData } = useGetSettingsQuery({
+    onError: (e) => notify.error('Nepodarilo sa načítať nastavenia.', e.message),
+  });
 
   if (!loading && !user?.isAdmin) {
     return <ErrorPage title="Nemáte oprávnenie." />;

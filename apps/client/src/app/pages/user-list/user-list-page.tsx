@@ -14,16 +14,24 @@ import {
   parseUserListSearchParams,
 } from './components/user-list-params';
 import { useSearchParams } from 'react-router-dom';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function UserListPage() {
   const { isAdmin } = useAppUser();
+  const { notify } = useNotification();
   const [selectedTeam, setSelectedTeam] = React.useState<string>();
   const [showFilter, setShowFilter] = React.useState(false);
   const [filter, setFilter] = useState<UserListFilterValues>({});
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data: usersData, loading: usersLoading, error: usersError } = useGetUsersQuery();
+  const {
+    data: usersData,
+    loading: usersLoading,
+    error: usersError,
+  } = useGetUsersQuery({
+    onError: (e) => notify.error('Nepodarilo sa načítať zoznam používateľov.', e.message),
+  });
 
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState<UserListFragmentFragment[]>([]);
