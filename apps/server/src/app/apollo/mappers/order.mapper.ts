@@ -20,6 +20,8 @@ export const OrderMapper = {
         unitPrice: item.unitPrice,
         price: item.price,
       })),
+      billTo: order.billTo,
+      shipTo: order.shipTo,
     };
     return u;
   },
