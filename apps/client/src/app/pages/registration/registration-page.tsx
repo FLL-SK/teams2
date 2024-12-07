@@ -283,7 +283,6 @@ export function RegistrationPage() {
               )}
             </PanelGroup>
           </Box>
-
           {showFoodOrderModal && (
             <FoodOrderModal
               availableItems={reg?.event?.foodTypes ?? []}
