@@ -1,4 +1,4 @@
-import { Anchor, Box, Text, Tip } from 'grommet';
+import { Anchor, Box, Button, Text, Tip } from 'grommet';
 import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
@@ -23,19 +23,21 @@ export const FieldTeamSize = (props: {
   const [setTeamSize] = useRegistrationSetTeamSizeMutation({ onError });
 
   return (
-    <LabelValue label="Veľkosť tímu" direction="row">
+    <LabelValue
+      label="Veľkosť tímu"
+      tip="Počet detí a trénerov, ktorí sa záčastnia na turnaji."
+      direction="row"
+    >
       <Box direction="row" width="100%" justify="between">
         <Text>{formatTeamSize(registration)}</Text>
 
         {(isAdmin() || isTeamCoach(registration.teamId)) && (
-          <Tip content="Počet detí a trénerov, ktorí sa záčastnia na turnaji.">
-            <Anchor
-              size="small"
-              label="Nastav"
-              onClick={() => setShowDialog(true)}
-              disabled={readOnly}
-            />
-          </Tip>
+          <Button
+            size="small"
+            label="Nastav"
+            onClick={() => setShowDialog(true)}
+            disabled={readOnly}
+          />
         )}
       </Box>
 

@@ -1,4 +1,4 @@
-import { Anchor, Box, Text } from 'grommet';
+import { Anchor, Box, Button, Text } from 'grommet';
 import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditShipmentGroupDialog } from '../../../components/dialogs/edit-shipment-group-dialog';
@@ -27,7 +27,7 @@ export const FieldShipmentGroup = (props: {
       <Box direction="row" width="100%" justify="between">
         <Text>{registration.shipmentGroup ?? '-'}</Text>
         {isAdmin() && !registration.shippedOn && (
-          <Anchor
+          <Button
             size="small"
             label="Nastav"
             onClick={() => setShowDialog(true)}

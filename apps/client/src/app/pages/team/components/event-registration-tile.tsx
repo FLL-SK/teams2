@@ -123,7 +123,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
         <LabelValue label="Stravovanie" direction="row">
           <Box direction="row" gap="small">
             <Button
-              justify="end"
+              size="small"
               label={
                 registration.foodOrder && registration.foodOrder.items.length > 0
                   ? 'Upraviť'
