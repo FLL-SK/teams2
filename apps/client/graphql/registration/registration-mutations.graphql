@@ -152,3 +152,14 @@ mutation updateRegistrationFoodOrder($id: ID!, $order: OrderInput!) {
     }
   }
 }
+
+mutation removeRegistrationFoodOrder($id: ID!) {
+  removeRegistrationFoodOrder(id: $id) {
+    registration {
+      ...RegistrationBasicFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
+}

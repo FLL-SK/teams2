@@ -14,6 +14,7 @@ import {
   Address,
   OrderInput,
   useUpdateRegistrationFoodOrderMutation,
+  useRemoveRegistrationFoodOrderMutation,
 } from '../../_generated/graphql';
 
 import { TagList } from '../../components/tag-list';
@@ -33,6 +34,7 @@ import { useNotification } from '../../components/notifications/notification-pro
 import { fullAddress } from '../../utils/format-address';
 import { formatContact } from '../../utils/format-contact';
 import { emptyOrder, FoodOrderModal } from '../../components/food-order-modal';
+import { YesNoDialog } from '../../components/dialogs/yes-no-dialog';
 
 const columnWidth = '460px';
 
@@ -41,12 +43,17 @@ export function RegistrationPage() {
   const { isAdmin, isTeamCoach, isEventManager, userLoading } = useAppUser();
   const { notify } = useNotification();
   const [showFoodOrderModal, setShowFoodOrderModal] = React.useState(false);
+  const [confirmFoodOrderRemove, setConfirmFoodOrderRemove] = React.useState(false);
 
   const [removeTag] = useRemoveTagsFromTeamMutation({
     onError: (e) => notify.error('Nepodarilo sa odobrať štítok.', e.message),
   });
   const [addTag] = useAddTagsToTeamMutation({
     onError: (e) => notify.error('Nepodarilo sa pridať štítok.', e.message),
+  });
+
+  const [removeOrder] = useRemoveRegistrationFoodOrderMutation({
+    onError: (e) => notify.error('Nepodarilo sa zrušiť objednávku jedla.', e.message),
   });
 
   const [updateOrder] = useUpdateRegistrationFoodOrderMutation({
@@ -113,7 +120,7 @@ export function RegistrationPage() {
   );
 
   const canOrderFood = React.useMemo(() => {
-    if (reg && (reg.canceledOn || !reg.confirmedOn || !reg.event)) {
+    if (reg && (reg.canceledOn || !reg.confirmedOn || !reg.event || reg.foodOrder?.invoicedOn)) {
       return false;
     }
     const diff = new Date(reg?.event?.date ?? 0).getTime() - Date.now();
@@ -167,7 +174,7 @@ export function RegistrationPage() {
                       <Text weight="bold">Stravovanie</Text>
                       <OrderItemList2 order={reg.foodOrder} editable={false} />
                       <LabelValue label="Poznámka k stravovaniu" labelWidth="300px">
-                        <TextArea readOnly>{reg.foodOrder.note}</TextArea>
+                        <TextArea readOnly value={reg.foodOrder.note ?? undefined} />
                       </LabelValue>
                       <LabelValue
                         label="Fakturačná adresa"
@@ -180,18 +187,28 @@ export function RegistrationPage() {
                         labelWidth="300px"
                         value={formatContact(reg.foodOrder.billTo)}
                       />
-                      <Box direction="row" gap="small">
-                        <Button
-                          size="small"
-                          label={
-                            reg.foodOrder && reg.foodOrder.items.length > 0 ? 'Upraviť' : 'Objednať'
-                          }
-                          onClick={() => setShowFoodOrderModal(true)}
-                          disabled={!canOrderFood && !isAdmin() && !isEventManager(reg.event.id)}
-                        />
-                      </Box>
                     </Box>
                   )}
+                  <Box direction="row" gap="small">
+                    <Button
+                      size="small"
+                      label={
+                        reg.foodOrder && reg.foodOrder.items.length > 0 ? 'Upraviť' : 'Objednať'
+                      }
+                      onClick={() => setShowFoodOrderModal(true)}
+                      disabled={!canOrderFood && !isAdmin() && !isEventManager(reg.event.id)}
+                    />
+                    <Button
+                      size="small"
+                      label="Zrušiť objednávku"
+                      onClick={() => setConfirmFoodOrderRemove(true)}
+                      disabled={
+                        !reg.foodOrder ||
+                        !!reg.foodOrder.invoicedOn ||
+                        (!canOrderFood && !isAdmin() && !isEventManager(reg.event.id))
+                      }
+                    />
+                  </Box>
                 </Panel>
               )}
 
@@ -275,6 +292,18 @@ export function RegistrationPage() {
                 setShowFoodOrderModal(false);
                 handleOrder(data);
               }}
+            />
+          )}
+
+          {confirmFoodOrderRemove && (
+            <YesNoDialog
+              title="Zrušiť objednávku jedla"
+              message="Naozaj chcete zrušiť objednávku jedla?"
+              onYes={async () => {
+                await removeOrder({ variables: { id: reg.id } });
+                notify.info('Objednávka jedla bola zrušená.');
+              }}
+              onClose={() => setConfirmFoodOrderRemove(false)}
             />
           )}
         </>

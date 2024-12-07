@@ -36,11 +36,16 @@ export function exportEventFoodOrders(eventName: string, registrations: ExportSo
 
   const ftA: string[] = Array.from(foodTypes).sort();
 
-  aoa.push(
-    foodTypes.size > 0
-      ? ['Názov tímu', 'Organizácia', 'Mesto', 'Ulica', 'PSČ', 'Objednané dňa', ...ftA, 'Poznámka']
-      : [],
-  );
+  aoa.push([
+    'Názov tímu',
+    'Organizácia',
+    'Mesto',
+    'Ulica',
+    'PSČ',
+    'Objednané dňa',
+    ...ftA,
+    'Poznámka',
+  ]);
   for (const reg of registrations) {
     const row: ArrayOfSDN = [
       reg.name,

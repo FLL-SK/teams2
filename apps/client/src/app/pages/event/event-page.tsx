@@ -106,9 +106,11 @@ export function EventPage() {
               const result = await issueFoodInvoices({ variables: { eventId: event.id } });
               if (result.data?.issueEventFoodInvoices) {
                 notify.info(
-                  `Vystavené faktúry za stravovanie pre ${result.data?.issueEventFoodInvoices} tímov.`,
+                  `Vystavené faktúry za stravovanie pre ${result.data?.issueEventFoodInvoices ?? 0} tímov.`,
                 );
                 refetch();
+              } else {
+                notify.info('Neboli vystavené žiadne nové faktúry za stravovanie.');
               }
             }}
           />

@@ -26,6 +26,7 @@ import {
   emailEventRegistrationConfirmed,
   emailProgramRegistrationConfirmed,
   emailFoodOrderUpdated,
+  emailFoodOrderRemoved,
 } from '../../utils/emails';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import { OrderData } from '../../models/order.model';
@@ -322,6 +323,7 @@ export class RegistrationDataSource extends BaseDataSource {
 
     this.userGuard.isAdmin() ||
       this.userGuard.isCoach(r.teamId) ||
+      this.userGuard.isEventManager(r.eventId) ||
       this.userGuard.notAuthorized('Update food order');
 
     const createdOn = r.foodOrder?.createdOn ?? new Date();
@@ -335,6 +337,26 @@ export class RegistrationDataSource extends BaseDataSource {
     await r.save();
 
     emailFoodOrderUpdated(r, this.context.user.username);
+
+    return { registration: RegistrationMapper.toRegistration(r) };
+  }
+
+  async removeFoodOrder(regId: ObjectId): Promise<RegistrationPayload> {
+    const r = await registrationRepository.findById(regId).exec();
+
+    if (!r) {
+      throw new Error('Registration not found');
+    }
+
+    this.userGuard.isAdmin() ||
+      this.userGuard.isEventManager(r.eventId) ||
+      this.userGuard.isCoach(r.teamId) ||
+      this.userGuard.notAuthorized('Remove food order');
+
+    r.foodOrder = null;
+    await r.save();
+
+    emailFoodOrderRemoved(r, this.context.user.username);
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }
