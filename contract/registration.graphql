@@ -177,4 +177,5 @@ extend type Mutation {
   emailRegistrationInvoice(id: ID!): RegistrationPayload!
 
   updateRegistrationFoodOrder(id: ID!, order: OrderInput!): RegistrationPayload!
+  removeRegistrationFoodOrder(id: ID!): RegistrationPayload!
 }

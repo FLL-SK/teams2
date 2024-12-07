@@ -94,4 +94,6 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
 
   updateRegistrationFoodOrder: async (_parent, { id, order }, { dataSources }) =>
     dataSources.registration.updateFoodOrder(id, order),
+  removeRegistrationFoodOrder: async (_parent, { id }, { dataSources }) =>
+    dataSources.registration.removeFoodOrder(id),
 };
