@@ -1,14 +1,8 @@
 import { Box, Button, Text } from 'grommet';
-import { omit } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 
-import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
-import {
-  EventFragmentFragment,
-  PricelistItemFragmentFragment,
-  RegisteredTeamFragmentFragment,
-} from '../../../_generated/graphql';
+import { EventFragmentFragment, RegisteredTeamFragmentFragment } from '../../../_generated/graphql';
 import { PricelistItemList } from '../../../components/pricelist-item-list';
 import { handleExportFoodOrders } from './handle-export-food-orders';
 
@@ -16,18 +10,29 @@ interface PanelEventFoodProps {
   event: EventFragmentFragment;
   registrations: RegisteredTeamFragmentFragment[];
   onChange?: () => void;
-
   canEdit?: boolean;
+  onIssueInvoices: () => void;
 }
 
 export function PanelEventFood(props: PanelEventFoodProps) {
   const { event, canEdit, registrations: regs } = props;
-  const { notify } = useNotification();
 
-  const eventFoodItems: PricelistItemFragmentFragment[] = useMemo(() => {
-    if (!event) return [];
-    return event.foodTypes;
-  }, [event]);
+  const eventFoodOrders = React.useMemo(() => {
+    const items = event.foodTypes.map((ft) => ({ id: ft.id, n: ft.n, up: ft.up, qty: 0 }));
+    for (const r of regs ?? []) {
+      if (r.foodOrder) {
+        for (const i of r.foodOrder.items) {
+          const item = items.find((it) => it.id === i.productId);
+          if (item) {
+            item.qty += i.quantity;
+          } else {
+            items.push({ id: i.id, n: i.name, qty: i.quantity, up: i.unitPrice });
+          }
+        }
+      }
+    }
+    return items;
+  }, [event, regs]);
 
   if (!event) {
     return null;
@@ -35,12 +40,14 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
   return (
     <Panel title="Stravovanie" gap="medium">
-      {eventFoodItems.length === 0 && (
+      {eventFoodOrders.length === 0 && (
         <>
           <Text>Tento turnaj nemá definované žiadne stravovanie.</Text>
         </>
       )}
-      {eventFoodItems.length > 0 && <PricelistItemList items={eventFoodItems} editable={canEdit} />}
+      {eventFoodOrders.length > 0 && (
+        <PricelistItemList items={eventFoodOrders} editable={canEdit} />
+      )}
       {canEdit && (
         <Box direction="row" gap="small">
           <Button
@@ -49,6 +56,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
               handleExportFoodOrders(event?.program.name ?? '', event.name, regs ?? [])
             }
           />
+          <Button label="Vystaviť faktúry za stravovanie" onClick={() => props.onIssueInvoices()} />
         </Box>
       )}
     </Panel>

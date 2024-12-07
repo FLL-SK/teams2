@@ -13,6 +13,8 @@ interface ExportSourceType {
   eventName: string;
   foodOrder?: null | {
     createdOn: string;
+    updatedOn?: string | null;
+    note?: string | null;
     items: {
       productId: string;
       name: string;
@@ -36,7 +38,7 @@ export function exportEventFoodOrders(eventName: string, registrations: ExportSo
 
   aoa.push(
     foodTypes.size > 0
-      ? ['Názov tímu', 'Organizácia', 'Mesto', 'Ulica', 'PSČ', 'Objednané dňa', ...ftA]
+      ? ['Názov tímu', 'Organizácia', 'Mesto', 'Ulica', 'PSČ', 'Objednané dňa', ...ftA, 'Poznámka']
       : [],
   );
   for (const reg of registrations) {
@@ -48,10 +50,11 @@ export function exportEventFoodOrders(eventName: string, registrations: ExportSo
       reg.address.zip,
     ];
     if (reg.foodOrder) {
-      row.push(new Date(reg.foodOrder.createdOn));
+      row.push(new Date(reg.foodOrder.updatedOn ?? reg.foodOrder.createdOn));
       for (const ft of ftA) {
         row.push(reg.foodOrder.items.find((i) => i.name === ft)?.quantity ?? '');
       }
+      row.push(reg.foodOrder.note ?? '');
     }
 
     aoa.push(row);

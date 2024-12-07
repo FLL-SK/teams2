@@ -17,7 +17,6 @@ interface PanelEventTeamsProps {
   event: EventFragmentFragment;
   registrations?: RegisteredTeamFragmentFragment[];
   canEdit?: boolean;
-  onIssueInvoices: () => void;
 }
 
 export function PanelEventTeams(props: PanelEventTeamsProps) {
@@ -47,7 +46,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
         {(regs ?? []).map((reg, idx) => (
           <ListRow2
             key={reg.id}
-            columns="50px 1fr 80px 80px auto"
+            columns="50px 1fr 100px 100px auto"
             pad="small"
             align="center"
             onClick={isAdmin() ? () => navigate(appPath.registration(reg.id)) : undefined}
@@ -83,7 +82,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
             }
           />
           <Button label="Emaily trénerov" onClick={() => setShowCoachesEmails(true)} />
-          <Button label="Vystaviť faktúry za stravovanie" onClick={() => props.onIssueInvoices()} />
+
           <Button
             label="Export pre EventHub"
             onClick={() =>

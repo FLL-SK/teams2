@@ -97,12 +97,11 @@ export function EventPage() {
             publicOnly={!canEdit}
           />
 
-          <PanelEventFood event={event} registrations={regs} canEdit={canEdit} onChange={refetch} />
-
-          <PanelEventTeams
+          <PanelEventFood
             event={event}
-            canEdit={canEdit}
             registrations={regs}
+            canEdit={canEdit}
+            onChange={refetch}
             onIssueInvoices={async () => {
               const result = await issueFoodInvoices({ variables: { eventId: event.id } });
               if (result.data?.issueEventFoodInvoices) {
@@ -113,6 +112,8 @@ export function EventPage() {
               }
             }}
           />
+
+          <PanelEventTeams event={event} canEdit={canEdit} registrations={regs} />
           {canEdit && (
             <Panel title="Manažéri">
               <Box direction="row" wrap>
