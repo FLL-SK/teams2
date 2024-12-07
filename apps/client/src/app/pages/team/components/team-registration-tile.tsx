@@ -1,14 +1,9 @@
 import React, { useMemo } from 'react';
-import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { LabelValue } from '../../../components/label-value';
-import { FieldTeamSize } from '../../registrations/components/field-teamSize';
-import { FieldTeamSizeConfirmedOn } from '../../registrations/components/field-teamSizeConfirmedOn';
 import { appPath } from '@teams2/common';
-import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
-import { useAppUser } from '../../../components/app-user/use-app-user';
 import { RegistrationFilesPanel } from '../../registration/components/registration-files';
 import { EventRegistrationTile } from './event-registration-tile';
 import { useNavigate } from 'react-router-dom';
@@ -67,6 +62,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
                 onClick={() =>
                   navigate(appPath.registerEvent(registration.teamId, registration.programId))
                 }
+                disabled={!!registration.canceledOn || !registration.confirmedOn}
               />
             </Box>
           )}
