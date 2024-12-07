@@ -5,6 +5,7 @@ import { AddressData, addressSchema } from './address.model';
 export interface OrderData {
   _id?: ObjectId;
   createdOn: Date;
+  updatedOn?: Date;
   invoicedOn?: Date;
   invoiceRef?: string;
   note?: string;
@@ -26,6 +27,7 @@ const Types = Schema.Types;
 export const orderSchema = new Schema<OrderData>(
   {
     createdOn: { type: Types.Date, required: true },
+    updatedOn: { type: Types.Date },
     invoicedOn: { type: Types.Date },
     invoiceRef: { type: Types.String },
     billTo: { type: addressSchema, required: true },

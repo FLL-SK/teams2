@@ -324,9 +324,11 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.isCoach(r.teamId) ||
       this.userGuard.notAuthorized('Update food order');
 
+    const createdOn = r.foodOrder?.createdOn ?? new Date();
     const no: OrderData = {
       ...orderData,
-      createdOn: new Date(),
+      createdOn,
+      updatedOn: new Date(),
     };
 
     r.foodOrder = no;

@@ -5,6 +5,7 @@
 type Order implements INode {
   id: ID!
   createdOn: DateTime!
+  updatedOn: DateTime
   invoicedOn: DateTime
   invoiceRef: String
   note: String
