@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text } from 'grommet';
+import { Box, Text, Tip } from 'grommet';
 import { ReactNode } from 'react';
 import { LabelValueGroupContext } from './label-value-group';
 
@@ -7,6 +7,7 @@ interface LabelValueProps {
   label: string;
   labelWidth?: string;
   value?: string | null;
+  tip?: string;
   direction?: 'row' | 'column';
   children?: ReactNode;
 }
@@ -32,7 +33,12 @@ export const LabelValue = (props: LabelValueProps) => {
                 min: (labelWidth ?? context.labelWidth ?? dir === 'row') ? '50%' : '100%',
               }}
             >
-              <Text weight="bold">{label}</Text>
+              {props.tip && (
+                <Tip content={props.tip}>
+                  <Text weight="bold">{label}</Text>
+                </Tip>
+              )}
+              {!props.tip && <Text weight="bold">{label}</Text>}
             </Box>
             {typeof value === 'string' && <Text>{value}</Text>}
             {children}
