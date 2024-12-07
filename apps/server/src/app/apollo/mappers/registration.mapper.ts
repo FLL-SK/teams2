@@ -1,6 +1,7 @@
 import { RegistrationData } from '../../models';
 import { Registration } from '../../_generated/graphql';
 import { AddressMapper } from './address.mapper';
+import { OrderMapper } from './order.mapper';
 
 export const RegistrationMapper = {
   toRegistration(registration: RegistrationData | null | undefined): Registration | null {
@@ -46,6 +47,8 @@ export const RegistrationMapper = {
       impactedChildrenCount: registration.childrenImpacted ?? 0,
       impactedTeamCount: registration.teamsImpacted ?? 1,
       setCount: registration.setCount ?? 1,
+
+      foodOrder: OrderMapper.toOrder(registration.foodOrder),
 
       invoiceItems: [],
       team: null,

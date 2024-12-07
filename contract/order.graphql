@@ -1,0 +1,39 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+# import * from "./pricelist.graphql"
+
+type Order implements INode {
+  id: ID!
+  createdOn: DateTime!
+  updatedOn: DateTime
+  invoicedOn: DateTime
+  invoiceRef: String
+  note: String
+  items: [OrderItem!]!
+  billTo: Address!
+  shipTo: Address
+}
+
+type OrderItem {
+  id: ID!
+  productId: ID!
+  name: String!
+  quantity: Float!
+  unitPrice: Float!
+  price: Float!
+}
+
+input OrderInput {
+  items: [OrderItemInput!]!
+  note: String
+  billTo: AddressInput!
+  shipTo: AddressInput
+}
+
+input OrderItemInput {
+  productId: ID!
+  name: String!
+  quantity: Float!
+  unitPrice: Float!
+  price: Float!
+}

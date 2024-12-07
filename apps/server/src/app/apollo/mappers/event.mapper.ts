@@ -1,11 +1,13 @@
 import { EventData } from '../../models';
 import { Event, Product } from '../../_generated/graphql';
+import { PricelistEntryMapper } from './pricelist.mapper';
 
 export const EventMapper = {
   toEvent(event: EventData | null | undefined): Event | null {
     if (!event) {
       return null;
     }
+
     const u: Omit<Required<Event>, '__typename'> = {
       id: event._id,
       name: event.name,
@@ -26,6 +28,8 @@ export const EventMapper = {
       managers: [],
       program: null,
       registrationsCount: 0,
+
+      foodTypes: event.foodTypes.map(PricelistEntryMapper.toPricelistEntry),
     };
     return u;
   },

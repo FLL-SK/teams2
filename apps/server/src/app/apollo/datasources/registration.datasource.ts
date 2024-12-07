@@ -9,13 +9,15 @@ import {
   userRepository,
 } from '../../models';
 import {
+  OrderInput,
   RegisteredTeamPayload,
   Registration,
   RegistrationFilter,
   RegistrationInput,
+  RegistrationPayload,
   TeamSizeInput,
 } from '../../_generated/graphql';
-import { RegistrationMapper } from '../mappers';
+import { OrderMapper, RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import { logger } from '@teams2/logger';
 import Dataloader from 'dataloader';
@@ -23,8 +25,10 @@ import {
   emailTeamSizeConfirmed,
   emailEventRegistrationConfirmed,
   emailProgramRegistrationConfirmed,
+  emailFoodOrderUpdated,
 } from '../../utils/emails';
 import { FilterQuery, UpdateQuery } from 'mongoose';
+import { OrderData } from '../../models/order.model';
 import { formatTeamNo } from '../../utils/format-teamNo';
 
 const logBase = logger('DS:Registration');
@@ -149,6 +153,25 @@ export class RegistrationDataSource extends BaseDataSource {
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { invoiceIssuedOn, invoiceRef }, { new: true })
+      .exec();
+    return RegistrationMapper.toRegistration(registration);
+  }
+
+  async setFoodInvoicedOn(
+    id: ObjectId,
+    invoiceIssuedOn?: Date,
+    invoiceRef?: string,
+  ): Promise<Registration> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set invoiced on');
+
+    const q: UpdateQuery<RegistrationData> = {
+      foodOrder: {
+        invoicedOn: invoiceIssuedOn,
+        invoiceRef,
+      },
+    };
+    const registration = await registrationRepository
+      .findByIdAndUpdate(id, q, { new: true })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -290,6 +313,32 @@ export class RegistrationDataSource extends BaseDataSource {
     return RegistrationMapper.toRegistration(registration);
   }
 
+  async updateFoodOrder(regId: ObjectId, orderData: OrderInput): Promise<RegistrationPayload> {
+    const r = await registrationRepository.findById(regId).exec();
+
+    if (!r) {
+      throw new Error('Registration not found');
+    }
+
+    this.userGuard.isAdmin() ||
+      this.userGuard.isCoach(r.teamId) ||
+      this.userGuard.notAuthorized('Update food order');
+
+    const createdOn = r.foodOrder?.createdOn ?? new Date();
+    const no: OrderData = {
+      ...orderData,
+      createdOn,
+      updatedOn: new Date(),
+    };
+
+    r.foodOrder = no;
+    await r.save();
+
+    emailFoodOrderUpdated(r, this.context.user.username);
+
+    return { registration: RegistrationMapper.toRegistration(r) };
+  }
+
   async getRegisteredTeams(
     eventId: ObjectId,
     includeCoaches?: boolean,
@@ -328,6 +377,7 @@ export class RegistrationDataSource extends BaseDataSource {
           taxNumber: team.address.taxNumber,
         },
         coaches: [],
+        foodOrder: OrderMapper.toOrder(reg.foodOrder),
       };
 
       if (

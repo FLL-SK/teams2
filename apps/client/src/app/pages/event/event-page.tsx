@@ -8,6 +8,8 @@ import { UserTags } from '../../components/user-tags';
 import {
   useAddEventManagerMutation,
   useGetEventLazyQuery,
+  useGetRegisteredTeamsLazyQuery,
+  useIssueEventFoodInvoicesMutation,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
 } from '../../_generated/graphql';
@@ -18,6 +20,7 @@ import { PanelEventDetails } from './components/panel-details';
 import { PanelEventFees } from './components/panel-event-fees';
 import { PanelEventTeams } from './components/panel-event-teams';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { PanelEventFood } from './components/panel-event-food';
 
 export function EventPage() {
   const { id } = useParams();
@@ -25,7 +28,15 @@ export function EventPage() {
   const { notify } = useNotification();
 
   const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
-    useGetEventLazyQuery({ fetchPolicy: 'cache-and-network' });
+    useGetEventLazyQuery({
+      fetchPolicy: 'cache-and-network',
+      onError: (e) => notify.error('Nepodarilo sa načitať údaje o turnaji.', e.message),
+    });
+
+  const [fetchRegistrations, { data: regData }] = useGetRegisteredTeamsLazyQuery({
+    fetchPolicy: 'cache-and-network',
+    onError: (e) => notify.error('Nepodarilo sa načitať registrácie pre turnaj.', e.message),
+  });
 
   const [undeleteEvent] = useUndeleteEventMutation({
     onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
@@ -37,13 +48,21 @@ export function EventPage() {
     onError: (e) => notify.error('Nepodarilo sa odstrániť manažéra turnaja.', e.message),
   });
 
+  const [issueFoodInvoices] = useIssueEventFoodInvoicesMutation({
+    onError: (e) => notify.error('Nepodarilo sa vystaviť faktúry za stravovanie.', e.message),
+  });
+
   React.useEffect(() => {
     if (id) {
       fetchEvent({ variables: { id } });
+      fetchRegistrations({
+        variables: { eventId: id, includeCoaches: canEdit },
+      });
     }
   }, [id, fetchEvent]);
 
   const event = eventData?.getEvent;
+  const regs = regData?.getRegisteredTeams ?? [];
   const canEdit = isAdmin() || isEventManager(id);
   const isDeleted = !!event?.deletedOn;
 
@@ -78,7 +97,23 @@ export function EventPage() {
             publicOnly={!canEdit}
           />
 
-          <PanelEventTeams event={event} canEdit={canEdit} />
+          <PanelEventFood
+            event={event}
+            registrations={regs}
+            canEdit={canEdit}
+            onChange={refetch}
+            onIssueInvoices={async () => {
+              const result = await issueFoodInvoices({ variables: { eventId: event.id } });
+              if (result.data?.issueEventFoodInvoices) {
+                notify.info(
+                  `Vystavené faktúry za stravovanie pre ${result.data?.issueEventFoodInvoices} tímov.`,
+                );
+                refetch();
+              }
+            }}
+          />
+
+          <PanelEventTeams event={event} canEdit={canEdit} registrations={regs} />
           {canEdit && (
             <Panel title="Manažéri">
               <Box direction="row" wrap>

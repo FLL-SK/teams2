@@ -13,6 +13,7 @@ import { SetClearDate } from './set-clear-date';
 export const FieldConfirmedOn = (props: {
   registration: Pick<Registration, 'id' | 'confirmedOn'>;
   readOnly: boolean;
+  tip?: string;
 }) => {
   const { registration, readOnly } = props;
   const { isAdmin } = useAppUser();
@@ -22,7 +23,7 @@ export const FieldConfirmedOn = (props: {
   const [clearConfirmed] = useRegistrationClearConfirmedMutation({ onError });
 
   return (
-    <LabelValue label="Potvrdená">
+    <LabelValue label="Potvrdená" tip={props.tip}>
       <SetClearDate
         canEdit={isAdmin() && !readOnly}
         date={registration.confirmedOn}

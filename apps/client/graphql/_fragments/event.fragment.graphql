@@ -10,6 +10,10 @@ fragment EventBasicFragment on Event {
 
   managersIds
 
+  foodTypes {
+    ...PricelistItemFragment
+  }
+
   deletedOn
   deletedBy
 }

@@ -19,7 +19,9 @@ export function ProgramsPage(props: ProgramsPageProps) {
 
   const onError = useCallback(() => notify.error('Nepodarilo sa vytvoriť program.'), [notify]);
 
-  const { data, loading, refetch } = useGetProgramsQuery();
+  const { data, loading, refetch } = useGetProgramsQuery({
+    onError: (e) => notify.error('Nepodarilo sa načítať programy.', e.message),
+  });
 
   const [createProgram] = useCreateProgramMutation({
     onCompleted: () => refetch(),

@@ -14,14 +14,19 @@ import { PanelProgramFees } from './components/panel-program-fees';
 import { PanelProgramEvents } from './components/panel-program-events';
 import { PanelProgramFiles } from './components/panel-program-files';
 import { PanelProgramManagers } from './components/panel-program-managers';
+import { useNotification } from '../../components/notifications/notification-provider';
 
 export function ProgramPage() {
   const { id } = useParams();
+  const { notify } = useNotification();
 
   const [
     fetchProgram,
     { data: programData, loading: programLoading, error, refetch: programRefetch },
-  ] = useGetProgramLazyQuery({ fetchPolicy: 'cache-and-network' });
+  ] = useGetProgramLazyQuery({
+    fetchPolicy: 'cache-and-network',
+    onError: (e) => notify.error('Nepodarilo sa načítať údaje o programe.', e.message),
+  });
 
   const { isProgramManager, isAdmin } = useAppUser();
 

@@ -39,6 +39,10 @@ fragment RegistrationBasicFragment on Registration {
   impactedChildrenCount
   impactedTeamCount
   setCount
+
+  foodOrder {
+    ...OrderFragment
+  }
 }
 
 fragment RegistrationListFragment on Registration {
@@ -121,5 +125,8 @@ fragment RegisteredTeamFragment on RegisteredTeamPayload {
   impactedChildrenCount
   impactedTeamCount
   setCount
+  foodOrder {
+    ...OrderFragment
+  }
   teamNo
 }

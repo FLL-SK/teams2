@@ -28,7 +28,6 @@ import { NoteList } from '../../components/note-list';
 import { TeamRegistrationsList } from './components/team-registrations';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { PanelTeamCoaches } from './components/panel-team-coaches';
-import { testingLibraryReactVersion } from '@nx/react/src/utils/versions';
 
 export function TeamPage() {
   const { id } = useParams();
@@ -43,10 +42,16 @@ export function TeamPage() {
   const onError = useCallback(() => notify.error('Nepodarilo sa aktualizovať tím.'), [notify]);
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery({ fetchPolicy: 'cache-and-network' });
+    useGetTeamLazyQuery({
+      fetchPolicy: 'cache-and-network',
+      onError: () => notify.error('Nepodarilo sa načítať tím.'),
+    });
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery({ fetchPolicy: 'cache-and-network' });
+    useGetNotesLazyQuery({
+      fetchPolicy: 'cache-and-network',
+      onError: () => notify.error('Nepodarilo sa načítať poznámky.'),
+    });
 
   const [removeTag] = useRemoveTagsFromTeamMutation({ onError });
   const [addTag] = useAddTagsToTeamMutation({ onError });

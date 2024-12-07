@@ -1,7 +1,9 @@
 import { Address } from '../_generated/graphql';
 
-export const fullAddress = (a?: Omit<Address, '__typename'> | null) =>
-  a ? `${a.name}, ${a.street}, ${a.city} ${a.zip}` : undefined;
+export const fullAddress = (
+  a?: { name: string; street: string; city: string; zip: string } | null,
+) => (a ? `${a.name}, ${a.street}, ${a.city} ${a.zip}` : undefined);
 
-export const fullAddressNoName = (a?: Omit<Address, '__typename'> | null) =>
-  a ? `${a.street}, ${a.city} ${a.zip}` : undefined;
+export const fullAddressNoName = (
+  a?: { name?: string; street: string; city: string; zip: string } | null,
+) => (a ? `${a.street}, ${a.city} ${a.zip}` : undefined);

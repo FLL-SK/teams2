@@ -28,4 +28,6 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.event.addEventManager(eventId, userId),
   removeEventManager: (_parent, { eventId, userId }, { dataSources }) =>
     dataSources.event.removeEventManager(eventId, userId),
+  issueEventFoodInvoices: (_parent, { eventId }, { dataSources }) =>
+    dataSources.event.issueFoodInvoices(eventId),
 };

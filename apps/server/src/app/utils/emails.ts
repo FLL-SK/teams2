@@ -4,6 +4,7 @@ import { getServerConfig } from '../../server-config';
 import {
   eventRepository,
   programRepository,
+  RegistrationData,
   registrationRepository,
   teamRepository,
   userRepository,
@@ -184,6 +185,33 @@ export async function emailTeamSizeConfirmed(
 
   // email to event managers
   const event = await eventRepository.findById(eventId).lean().exec();
+  const eventManagers = await userRepository
+    .find({ _id: { $in: event.managersIds } })
+    .lean()
+    .exec();
+  eventManagers.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
+}
+
+export async function emailFoodOrderUpdated(registration: RegistrationData, updatedBy: string) {
+  const registrationUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registration._id.toString());
+  const team = await teamRepository.findById(registration.teamId).lean().exec();
+
+  const subject = `Objednávka stravy - ${team.name}`;
+  const title = subject;
+  const text = `Používateľ ${updatedBy} objednal stravovanie pre tímu ${team.name}. ${registrationUrl}`;
+
+  // email to admin
+  getAppSettings().then((s) => {
+    if (s.sysEmail) {
+      emailMessage({ to: s.sysEmail, subject, title, text });
+    } else {
+      logLib.error('emailFoodOrderUpdated: no sysEmail in settings');
+    }
+  });
+
+  // email to event managers
+  const event = await eventRepository.findById(registration.eventId).lean().exec();
   const eventManagers = await userRepository
     .find({ _id: { $in: event.managersIds } })
     .lean()

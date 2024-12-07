@@ -1,5 +1,6 @@
 import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
+import { PricelistEntryData } from './pricelist.model';
 
 const Types = Schema.Types;
 
@@ -16,6 +17,8 @@ export interface EventData {
   date?: Date;
   registrationEnd?: Date;
 
+  foodTypes: PricelistEntryData[];
+
   deletedOn?: Date;
   deletedBy?: ObjectId;
 }
@@ -26,11 +29,11 @@ export interface EventModel extends Model<EventData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo
   findEventsManagedByUser(
     userId: ObjectId,
-    projection?: ProjectionType<EventData>
+    projection?: ProjectionType<EventData>,
   ): Promise<EventDocument[]>;
   findEventsForProgram(
     programId: ObjectId,
-    projection?: ProjectionType<EventData>
+    projection?: ProjectionType<EventData>,
   ): Promise<EventDocument[]>;
 }
 
@@ -45,12 +48,19 @@ const schema = new Schema<EventData, EventModel>(
     date: { type: Types.Date },
     registrationEnd: { type: Types.Date },
 
+    foodTypes: [
+      {
+        n: { type: Types.String, required: true },
+        up: { type: Types.Number, required: true },
+      },
+    ],
+
     managersIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],
 
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
   },
-  { collation: { locale: 'sk', strength: 1 } }
+  { collation: { locale: 'sk', strength: 1 } },
 );
 
 schema.index({ programId: 1, name: 1 }, { unique: true });
@@ -64,14 +74,14 @@ schema.static(
   'findEventsManagedByUser',
   function (userId: ObjectId, projection?: ProjectionType<EventData>) {
     return this.find({ managersIds: userId, deletedOn: null }, projection).exec();
-  }
+  },
 );
 
 schema.static(
   'findEventsForProgram',
   function (programId: ObjectId, projection?: ProjectionType<EventData>) {
     return this.find({ programId, deletedOn: null }, projection).exec();
-  }
+  },
 );
 
 export const eventRepository = model<EventData, EventModel>('Event', schema);

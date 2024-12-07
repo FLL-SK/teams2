@@ -1,0 +1,12 @@
+# import * from "./shared/scalars.graphql"
+# import * from "./shared/types.graphql"
+
+type PricelistItem implements INode {
+  id: ID!
+  "Product name"
+  n: String!
+  "Unit"
+  u: String
+  "Unit price"
+  up: Float!
+}

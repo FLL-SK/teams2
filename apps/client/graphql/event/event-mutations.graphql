@@ -43,3 +43,7 @@ mutation removeEventManager($eventId: ID!, $userId: ID!) {
     ...EventFragment
   }
 }
+
+mutation issueEventFoodInvoices($eventId: ID!) {
+  issueEventFoodInvoices(eventId: $eventId)
+}

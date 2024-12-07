@@ -15,31 +15,21 @@ interface SetClearDateProps {
   onSet: () => void;
   onClear: () => void;
   canEdit?: boolean;
-  tip?: string;
   action?: Action;
   clearType?: 'button' | 'anchor';
 }
 
 export function SetClearDate(props: SetClearDateProps) {
-  const { date, onSet, onClear, canEdit, tip, clearType, action } = props;
+  const { date, onSet, onClear, canEdit, clearType, action } = props;
 
   return (
-    <Box direction="row" width="100%" justify="between">
-      <Box direction="row">
-        {date && canEdit && clearType !== 'anchor' && (
-          <Button plain tip="Zruš" icon={<FormClose color="brand" />} onClick={() => onClear()} />
-        )}
-        <Tip content={tip}>
-          <Text>{date ? formatDate(date) : '-'}</Text>
-        </Tip>
-      </Box>
+    <Box direction="row" width="100%" justify="between" align="center">
+      <Text>{date ? formatDate(date) : '-'}</Text>
 
-      {canEdit && date && clearType === 'anchor' && (
-        <Anchor size="small" label="Zruš" onClick={() => onClear()} />
-      )}
-      {canEdit && !date && <Anchor size="small" label="Potvrď" onClick={() => onSet()} />}
+      {canEdit && date && <Button size="small" label="Zruš" onClick={() => onClear()} />}
+      {canEdit && !date && <Button size="small" label="Potvrď" onClick={() => onSet()} />}
       {action && !action.hide && (
-        <Anchor size="small" label={action.label} onClick={action.onClick} />
+        <Button size="small" label={action.label} onClick={action.onClick} />
       )}
     </Box>
   );

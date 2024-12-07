@@ -21,6 +21,7 @@ import { FilterQuery } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
+import { issueFoodInvoices } from '../../domains/event';
 
 const logBase = logger('DS:Event');
 
@@ -66,7 +67,11 @@ export class EventDataSource extends BaseDataSource {
   async createEvent(input: CreateEventInput): Promise<CreateEventPayload> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create event');
     const { maxTeams, ...evtData } = input;
-    const u: EventData = { ...evtData, managersIds: [] };
+    const u: EventData = {
+      ...evtData,
+      managersIds: [],
+      foodTypes: [],
+    };
     if (maxTeams > 0) {
       u.maxTeams = maxTeams;
     }
@@ -141,5 +146,12 @@ export class EventDataSource extends BaseDataSource {
       event.managersIds.map(async (u) => userRepository.findById(u).exec()),
     );
     return users.filter((e) => !!e).map(UserMapper.toUser);
+  }
+
+  async issueFoodInvoices(eventId: ObjectId): Promise<number> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Issue food invoices');
+    return issueFoodInvoices(eventId, this.context);
   }
 }
