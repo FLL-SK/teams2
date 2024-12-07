@@ -25,6 +25,7 @@ import {
   emailProgramRegistrationConfirmed,
 } from '../../utils/emails';
 import { FilterQuery, UpdateQuery } from 'mongoose';
+import { formatTeamNo } from '../../utils/format-teamNo';
 
 const logBase = logger('DS:Registration');
 
@@ -253,10 +254,23 @@ export class RegistrationDataSource extends BaseDataSource {
 
     let r = await registrationRepository.findById(id).exec();
 
-    const teamNo = await programRepository.incrementTeamRegSequence(r.programId);
+    let teamNo = 'xxx';
+    if (!r.eventId) {
+      const tn = await programRepository.incrementTeamRegSequence(r.programId);
+      teamNo = formatTeamNo(tn);
+    } else {
+      // get teamNo from program registration
+      const pr = await registrationRepository
+        .findOne({ programId: r.programId, teamId: r.teamId, canceledOn: null })
+        .exec();
+      if (!pr) {
+        throw new Error('Program registration not found');
+      }
+      teamNo = pr.teamNo;
+    }
 
     r = await registrationRepository
-      .findByIdAndUpdate(id, { confirmedOn, teamNo: teamNo.toString() }, { new: true })
+      .findByIdAndUpdate(id, { confirmedOn, teamNo }, { new: true })
       .exec();
 
     if (r.eventId) {
