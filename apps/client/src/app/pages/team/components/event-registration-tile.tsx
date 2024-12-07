@@ -34,7 +34,7 @@ interface Address {
 
 export function EventRegistrationTile(props: EventRegistrationTileProps) {
   const { registration } = props;
-  const { isAdmin } = useAppUser();
+  const { isAdmin, isEventManager } = useAppUser();
   const [showFoodOrderModal, setShowFoodOrderModal] = useState(false);
 
   const { notify } = useNotification();
@@ -130,7 +130,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
                   : 'Objednať'
               }
               onClick={() => setShowFoodOrderModal(true)}
-              disabled={!canOrderFood}
+              disabled={!canOrderFood && !isAdmin() && !isEventManager(registration.event.id)}
             />
           </Box>
         </LabelValue>

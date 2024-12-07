@@ -120,7 +120,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
             )}
             */}
 
-            <LabelValue label="Odoslaná">
+            <LabelValue label="Faktúra odoslaná">
               {invoiceBeingSent && <Spinner />}
               {!invoiceBeingSent && (
                 <Text>{reg.invoiceSentOn ? formatDate(reg.invoiceSentOn) : '-'}</Text>
