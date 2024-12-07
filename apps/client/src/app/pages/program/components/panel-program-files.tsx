@@ -52,11 +52,17 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
         getUploadUrl({
           variables: { programId: program.id, input: ff },
           onCompleted: async (data) => {
-            if (await uploadS3XHR(f, data.getProgramFileUploadUrl)) {
-              addProgramFile({ variables: { programId: program.id, input: ff } });
+            let success = false;
+            try {
+              success = await uploadS3XHR(f, data.getProgramFileUploadUrl);
+            } catch (e) {
+              notify.error('Nepodarilo sa nahrať súbor.', (e as Error).message);
+              console.error(e);
             }
-
-            //TODO status/result notification
+            if (success) {
+              addProgramFile({ variables: { programId: program.id, input: ff } });
+              notify.info('Súbor bol úspešne nahraný.');
+            }
           },
         });
       }

@@ -70,7 +70,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
       </Box>
       <Box background={'light-2'} pad="small">
         <Text weight={'bold'}>Súbory</Text>
-        <Box direction="row" wrap gap="small" background="light-2">
+        <Box gap="small" background="light-2">
           <RegistrationFilesPanel
             registrationId={registration.id}
             regConfirmed={!!registration.confirmedOn}
