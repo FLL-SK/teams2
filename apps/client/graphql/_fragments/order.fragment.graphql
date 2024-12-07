@@ -12,4 +12,11 @@ fragment OrderFragment on Order {
     unitPrice
     price
   }
+  billTo {
+    ...AddressFragment
+  }
+
+  shipTo {
+    ...AddressFragment
+  }
 }

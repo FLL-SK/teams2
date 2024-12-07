@@ -9,6 +9,8 @@ type Order implements INode {
   invoiceRef: String
   note: String
   items: [OrderItem!]!
+  billTo: Address!
+  shipTo: Address
 }
 
 type OrderItem {
@@ -23,6 +25,8 @@ type OrderItem {
 input OrderInput {
   items: [OrderItemInput!]!
   note: String
+  billTo: AddressInput!
+  shipTo: AddressInput
 }
 
 input OrderItemInput {
