@@ -19,7 +19,13 @@ export const LabelValue = (props: LabelValueProps) => {
         const dir = direction ?? context.direction;
 
         return (
-          <Box direction={dir} border={{ side: 'bottom', color: 'light-3' }} gap="xsmall">
+          <Box
+            direction={dir}
+            border={{ side: 'bottom', color: 'light-3' }}
+            gap="xsmall"
+            align={dir == 'row' ? 'center' : undefined}
+            justify={dir == 'row' ? 'between' : undefined}
+          >
             <Box
               width={{
                 width: (labelWidth ?? context.labelWidth ?? dir === 'row') ? '50%' : '100%',
