@@ -13,9 +13,9 @@ import {
   Tab,
   Box,
 } from 'grommet';
-import { Modal } from '../../../components/modal';
+import { Modal } from './modal';
 import React, { useEffect } from 'react';
-import { LabelValue } from '../../../components/label-value';
+import { LabelValue } from './label-value';
 
 interface Address {
   name: string;

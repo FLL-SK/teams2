@@ -12,7 +12,7 @@ import { formatDate } from '@teams2/dateutils';
 import { appPath } from '@teams2/common';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { useCallback, useMemo, useState } from 'react';
-import { emptyOrder, FoodOrderModal } from './food-order-modal';
+import { emptyOrder, FoodOrderModal } from '../../../components/food-order-modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 
 interface EventRegistrationTileProps {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Paragraph, Spinner, Text, TextArea } from 'grommet';
+import { Box, Button, Paragraph, Spinner, Text, TextArea } from 'grommet';
 import { useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -11,6 +11,9 @@ import {
   useGetRegistrationLazyQuery,
   useGetNotesLazyQuery,
   useRemoveTagsFromTeamMutation,
+  Address,
+  OrderInput,
+  useUpdateRegistrationFoodOrderMutation,
 } from '../../_generated/graphql';
 
 import { TagList } from '../../components/tag-list';
@@ -27,16 +30,28 @@ import { RegistrationFilesPanel } from './components/registration-files';
 import { LabelValue } from '../../components/label-value';
 import { OrderItemList2 } from '../../components/order-item-list2';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { fullAddress } from '../../utils/format-address';
+import { formatContact } from '../../utils/format-contact';
+import { emptyOrder, FoodOrderModal } from '../../components/food-order-modal';
 
 const columnWidth = '460px';
 
 export function RegistrationPage() {
   const { id } = useParams();
-  const { isAdmin, isTeamCoach, userLoading } = useAppUser();
+  const { isAdmin, isTeamCoach, isEventManager, userLoading } = useAppUser();
   const { notify } = useNotification();
+  const [showFoodOrderModal, setShowFoodOrderModal] = React.useState(false);
 
-  const [removeTag] = useRemoveTagsFromTeamMutation();
-  const [addTag] = useAddTagsToTeamMutation();
+  const [removeTag] = useRemoveTagsFromTeamMutation({
+    onError: (e) => notify.error('Nepodarilo sa odobrať štítok.', e.message),
+  });
+  const [addTag] = useAddTagsToTeamMutation({
+    onError: (e) => notify.error('Nepodarilo sa pridať štítok.', e.message),
+  });
+
+  const [updateOrder] = useUpdateRegistrationFoodOrderMutation({
+    onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
+  });
 
   const [
     fetchRegistration,
@@ -52,6 +67,9 @@ export function RegistrationPage() {
 
   const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
 
+  const reg = regData?.getRegistration;
+  const invoiceItems = reg?.invoiceItems ?? [];
+
   React.useEffect(() => {
     if (id) {
       fetchRegistration({ variables: { id } });
@@ -59,8 +77,50 @@ export function RegistrationPage() {
     }
   }, [id, fetchRegistration, fetchNotes]);
 
-  const reg = regData?.getRegistration;
-  const invoiceItems = reg?.invoiceItems ?? [];
+  const handleOrder = React.useCallback(
+    (data: {
+      note?: string | null;
+      items: { productId: string; name: string; quantity: number }[];
+      billTo: Address;
+      shipTo?: Address | null;
+    }) => {
+      if (!reg) {
+        return;
+      }
+      const o: OrderInput = {
+        note: data.note,
+        items: data.items.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: 0,
+          price: 0,
+        })),
+        billTo: { ...data.billTo },
+      };
+      if (data.shipTo) {
+        o.shipTo = { ...data.shipTo };
+      }
+
+      updateOrder({
+        variables: {
+          id: reg.id,
+          order: o,
+        },
+      });
+    },
+    [reg],
+  );
+
+  const canOrderFood = React.useMemo(() => {
+    if (reg && (reg.canceledOn || !reg.confirmedOn || !reg.event)) {
+      return false;
+    }
+    const diff = new Date(reg?.event?.date ?? 0).getTime() - Date.now();
+    const max = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+    return diff > max;
+  }, [reg]);
 
   if (!id || (regDataError && !regLoading)) {
     return <ErrorPage title="Chyba pri získavaní dát o registrácii." />;
@@ -102,12 +162,35 @@ export function RegistrationPage() {
                     </Paragraph>
                   ) : null}
                   {!reg.foodOrder && <Text>Táto registrácia nemá žiadne stravovanie. </Text>}
-                  {reg.foodOrder && <Text weight="bold">Stravovanie</Text>}
-                  {reg.foodOrder && <OrderItemList2 order={reg.foodOrder} editable={false} />}
                   {reg.foodOrder && (
-                    <LabelValue label="Poznámka k stravovaniu" labelWidth="300px">
-                      <TextArea readOnly>{reg.foodOrder.note}</TextArea>
-                    </LabelValue>
+                    <Box gap="small">
+                      <Text weight="bold">Stravovanie</Text>
+                      <OrderItemList2 order={reg.foodOrder} editable={false} />
+                      <LabelValue label="Poznámka k stravovaniu" labelWidth="300px">
+                        <TextArea readOnly>{reg.foodOrder.note}</TextArea>
+                      </LabelValue>
+                      <LabelValue
+                        label="Fakturačná adresa"
+                        labelWidth="300px"
+                        value={fullAddress(reg.foodOrder.billTo)}
+                      />
+
+                      <LabelValue
+                        label="Fakturačný kontakt"
+                        labelWidth="300px"
+                        value={formatContact(reg.foodOrder.billTo)}
+                      />
+                      <Box direction="row" gap="small">
+                        <Button
+                          size="small"
+                          label={
+                            reg.foodOrder && reg.foodOrder.items.length > 0 ? 'Upraviť' : 'Objednať'
+                          }
+                          onClick={() => setShowFoodOrderModal(true)}
+                          disabled={!canOrderFood && !isAdmin() && !isEventManager(reg.event.id)}
+                        />
+                      </Box>
+                    </Box>
                   )}
                 </Panel>
               )}
@@ -183,6 +266,17 @@ export function RegistrationPage() {
               )}
             </PanelGroup>
           </Box>
+          {showFoodOrderModal && (
+            <FoodOrderModal
+              availableItems={reg?.event?.foodTypes ?? []}
+              order={reg.foodOrder ?? { ...emptyOrder, billTo: { ...reg.billTo } }}
+              onClose={() => setShowFoodOrderModal(false)}
+              onOrder={(data) => {
+                setShowFoodOrderModal(false);
+                handleOrder(data);
+              }}
+            />
+          )}
         </>
       )}
     </BasePage>
