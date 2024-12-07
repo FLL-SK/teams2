@@ -310,12 +310,13 @@ export class RegistrationDataSource extends BaseDataSource {
       this.userGuard.isCoach(r.teamId) ||
       this.userGuard.notAuthorized('Update food order');
 
-    const no: OrderData = {
-      ...orderData,
-      createdOn: new Date(),
-    };
+    // const no: OrderData = {
+    //   ...orderData,
+    //   createdOn: new Date(),
 
-    r.foodOrder = no;
+    // };
+
+    //r.foodOrder = no;
     await r.save();
 
     emailFoodOrderUpdated(r, this.context.user.username);
