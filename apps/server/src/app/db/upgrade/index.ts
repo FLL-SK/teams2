@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { EventModel } from '../../models';
 import _ from 'lodash';
 import { RegistrationData } from '../../models';
+import { formatTeamNo } from '../../utils/format-teamNo';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');
@@ -80,7 +81,7 @@ async function initTeamRegistrationSequence() {
       const qt: Partial<RegistrationData> = { programId: p._id, teamId: t._id, canceledOn: null };
       await mongoose.connection.db
         .collection('registrations')
-        .updateMany(qt, { $set: { teamNo: teamNo.toString().padStart(3, '0') } });
+        .updateMany(qt, { $set: { teamNo: formatTeamNo(teamNo) } });
     }
   }
 }
