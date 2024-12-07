@@ -167,7 +167,7 @@ export function RegistrationPage() {
                       <Text weight="bold">Stravovanie</Text>
                       <OrderItemList2 order={reg.foodOrder} editable={false} />
                       <LabelValue label="Poznámka k stravovaniu" labelWidth="300px">
-                        <TextArea readOnly>{reg.foodOrder.note}</TextArea>
+                        <TextArea readOnly value={reg.foodOrder.note ?? undefined} />
                       </LabelValue>
                       <LabelValue
                         label="Fakturačná adresa"
@@ -180,18 +180,18 @@ export function RegistrationPage() {
                         labelWidth="300px"
                         value={formatContact(reg.foodOrder.billTo)}
                       />
-                      <Box direction="row" gap="small">
-                        <Button
-                          size="small"
-                          label={
-                            reg.foodOrder && reg.foodOrder.items.length > 0 ? 'Upraviť' : 'Objednať'
-                          }
-                          onClick={() => setShowFoodOrderModal(true)}
-                          disabled={!canOrderFood && !isAdmin() && !isEventManager(reg.event.id)}
-                        />
-                      </Box>
                     </Box>
                   )}
+                  <Box direction="row" gap="small">
+                    <Button
+                      size="small"
+                      label={
+                        reg.foodOrder && reg.foodOrder.items.length > 0 ? 'Upraviť' : 'Objednať'
+                      }
+                      onClick={() => setShowFoodOrderModal(true)}
+                      disabled={!canOrderFood && !isAdmin() && !isEventManager(reg.event.id)}
+                    />
+                  </Box>
                 </Panel>
               )}
 
