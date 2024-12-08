@@ -1,5 +1,6 @@
 import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
-import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
+import { saveXlsx } from './save-xlsx';
+import { ArrayOfArraysOfAny } from './def-aoa';
 
 interface ExportSourceType {
   createdOn: string;
