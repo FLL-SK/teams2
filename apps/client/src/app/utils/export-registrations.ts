@@ -1,6 +1,7 @@
 import { NestedObjectLeaves } from '@teams2/common';
 import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
-import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
+import { saveXlsx } from './save-xlsx';
+import { ArrayOfArraysOfAny } from './def-aoa';
 
 interface ExportSourceType {
   registeredOn: string;

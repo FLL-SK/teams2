@@ -1,6 +1,8 @@
 import { NestedObjectLeaves } from '@teams2/common';
 import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
-import { ArrayOfArraysOfAny, saveXlsx } from './save-xlsx';
+import { saveXlsx } from './save-xlsx';
+import { ArrayOfArraysOfAny } from './def-aoa';
+import { saveCsv } from './save-csv';
 
 interface ExportSourceType {
   email: string;
@@ -59,5 +61,5 @@ export function exportRegistrationsForEventHub(
 ) {
   const aoa: ArrayOfArraysOfAny = json2Aoa<ExportSourceType>(registrations, fields);
   const today = new Date().toISOString().substring(0, 10);
-  saveXlsx(aoa, `eventhub timy (${batchName}) ${today}.xlsx`);
+  saveCsv(aoa, `eventhub timy (${batchName}) ${today}.csv`);
 }

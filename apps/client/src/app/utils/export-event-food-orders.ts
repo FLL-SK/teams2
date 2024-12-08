@@ -1,5 +1,6 @@
 import { NestedObjectLeaves } from '@teams2/common';
-import { ArrayOfArraysOfAny, ArrayOfSDN, saveXlsx } from './save-xlsx';
+import { saveXlsx } from './save-xlsx';
+import { ArrayOfArraysOfAny, ArrayOfSDN } from './def-aoa';
 
 interface ExportSourceType {
   name: string;
