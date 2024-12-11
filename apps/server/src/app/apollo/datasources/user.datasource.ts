@@ -61,7 +61,10 @@ export class UserDataSource extends BaseDataSource {
       lastName: input.lastName,
       phone: input.phone,
     };
-    if (input.gdprAccepted) {
+
+    const user = await userRepository.findById(id).lean().exec();
+
+    if (input.gdprAccepted && !user.gdprAcceptedOn) {
       u.gdprAcceptedOn = new Date();
       u.gdprDeclinedOn = null;
     }
@@ -69,10 +72,9 @@ export class UserDataSource extends BaseDataSource {
       u.username = input.username;
     }
 
-    const user = await userRepository.findById(id).lean().exec();
-
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
-    if (input.gdprAccepted) {
+
+    if (input.gdprAccepted && !user.gdprAcceptedOn) {
       emailUserAcceptedGdprToAdmin(nu.username);
     }
     if (nu) {
