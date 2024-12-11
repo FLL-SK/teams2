@@ -507,3 +507,27 @@ export async function emailTeamUnregisteredFromProgram(registrationId: ObjectId)
     managers.map((m) => m.username),
   );
 }
+
+export async function emailUsernameChanged(
+  oldUsername: string,
+  newUsername: string,
+  changedBy: string,
+  userId: ObjectId,
+) {
+  const log = logLib.extend('emailUsernameChanged');
+  const profileUrl = getServerConfig().clientAppRootUrl + appPath.profile(userId.toString());
+  const subject = `Zmena emailu na profile ${oldUsername} na ${newUsername}`;
+  const title = subject;
+  const text = `Váš prihlasovaci email bol zmenený. Pôvodný email bol ${oldUsername}. Nový prihlasovací email je ${newUsername}. Zmena bola vykonaná používateľom ${changedBy}. V prípade, že je zmena nesprávna nás kontaktujte. Váš profil je dostupný tu ${profileUrl}`;
+  emailMessage({ to: oldUsername, subject, title, text });
+  emailMessage({ to: newUsername, subject, title, text });
+  getAppSettings().then((s) =>
+    emailMessage({
+      to: s.sysEmail,
+      subject,
+      title,
+      text: `Email na profile ${oldUsername} bol zmenený na ${newUsername} používateľom ${changedBy}. Profil je dostupný tu ${profileUrl}`,
+    }),
+  );
+  log.debug('email sent to %o and %o and to admin', oldUsername, newUsername);
+}

@@ -19,6 +19,10 @@ export class UserGuard {
     this.message = message || 'Not authorized';
   }
 
+  get userName() {
+    return this.user ? this.user.username : 'not-logged-in';
+  }
+
   getManagedEvents() {
     return this.eventManagerOfEvents;
   }
@@ -28,7 +32,7 @@ export class UserGuard {
   }
 
   isAdmin() {
-    return this.user ? this.user.isAdmin ?? this.user.isSuperAdmin ?? false : false;
+    return this.user ? (this.user.isAdmin ?? this.user.isSuperAdmin ?? false) : false;
   }
 
   isLoggedIn() {

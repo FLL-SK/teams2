@@ -12,7 +12,7 @@ interface ActionButton {
 
 interface YesNoDialogProps {
   title?: string;
-  message?: string;
+  message: string;
   onYes: () => void | Promise<void>;
   onNo?: () => void | Promise<void>;
   onClose: () => void;
