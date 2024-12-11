@@ -3,6 +3,9 @@ import { Box, Button, CheckBox, Form, FormField, Paragraph } from 'grommet';
 import { Modal } from '../modal';
 import { useGetSettingsQuery } from '../../_generated/graphql';
 import { validateEmail, validatePhone } from '@teams2/common';
+import { useAppUser } from '../app-user/use-app-user';
+import { YesNoDialog } from './yes-no-dialog';
+import { set } from 'lodash';
 
 interface EditUserDialogProps {
   user?: EditUserDialogFields | null;
@@ -24,6 +27,9 @@ export interface EditUserDialogFields {
 export function EditUserDialog(props: EditUserDialogProps) {
   const { onClose, onSubmit, show = true, user, requestGdprConsent } = props;
   const [formValues, setFormValues] = useState<EditUserDialogFields>();
+  const { isAdmin } = useAppUser();
+  const [confirmNewUsername, setConfirmNewUsername] = useState(false);
+  const [doSubmit, setDoSubmit] = useState(false);
 
   const { data } = useGetSettingsQuery();
   const url = data?.getSettings?.privacyPolicyUrl ?? '';
@@ -39,12 +45,26 @@ export function EditUserDialog(props: EditUserDialogProps) {
     });
   }, [requestGdprConsent, user]);
 
+  useEffect(() => {
+    if (!doSubmit || confirmNewUsername) {
+      return;
+    }
+    setDoSubmit(false);
+    onSubmit({
+      ...formValues,
+      usernameOverride: formValues?.usernameOverride !== user?.username ? isAdmin() : false,
+    }).then(() => onClose());
+  }, [doSubmit, confirmNewUsername]);
+
   if (!show) {
     return null;
   }
 
   const handleSubmit = async ({ value }: { value: EditUserDialogFields }) => {
-    await onSubmit(value);
+    if (value.username !== user?.username) {
+      setConfirmNewUsername(true);
+    }
+    setDoSubmit(true);
   };
 
   return (
@@ -62,7 +82,7 @@ export function EditUserDialog(props: EditUserDialogProps) {
             label="E-mail"
             name="username"
             required
-            disabled
+            disabled={!isAdmin()}
             validate={(f: string) =>
               validateEmail(f) ? true : { status: 'error', message: 'Nesprávny email.' }
             }
@@ -99,6 +119,17 @@ export function EditUserDialog(props: EditUserDialogProps) {
           </Box>
         </Box>
       </Form>
+      {confirmNewUsername && (
+        <YesNoDialog
+          onYes={() => {
+            /** empty */
+          }}
+          onClose={() => setConfirmNewUsername(false)}
+          title="Zmena emailu"
+          message="Zmena emailu má vplyv na prihlasovacie údaje úžívateľa. Naozaj chcete pokračovať?"
+          onNo={() => setFormValues({ ...formValues, username: user?.username })}
+        />
+      )}
     </Modal>
   );
 }

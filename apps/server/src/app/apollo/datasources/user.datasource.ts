@@ -6,7 +6,11 @@ import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
-import { emailUserAcceptedGdprToAdmin, emailUserRejectedGdprToAdmin } from '../../utils/emails';
+import {
+  emailUserAcceptedGdprToAdmin,
+  emailUsernameChanged,
+  emailUserRejectedGdprToAdmin,
+} from '../../utils/emails';
 
 const logBase = logger('DS:User');
 
@@ -65,10 +69,16 @@ export class UserDataSource extends BaseDataSource {
       u.username = input.username;
     }
 
+    const user = await userRepository.findById(id).lean().exec();
+
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
     if (input.gdprAccepted) {
       emailUserAcceptedGdprToAdmin(nu.username);
     }
+    if (nu) {
+      emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id);
+    }
+
     return { user: UserMapper.toUser(nu) };
   }
 
