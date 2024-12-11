@@ -72,8 +72,6 @@ export class UserDataSource extends BaseDataSource {
       u.username = input.username;
     }
 
-    const user = await userRepository.findById(id).lean().exec();
-
     const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
 
     if (input.gdprAccepted && !user.gdprAcceptedOn) {
