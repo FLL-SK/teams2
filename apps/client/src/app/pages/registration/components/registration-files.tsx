@@ -18,11 +18,14 @@ export function RegistrationFilesPanel(props: RegistrationFilesPanelProps) {
   const files = data?.getRegistrationFiles ?? [];
 
   return files.length === 0 ? (
-    <Text>{`${
-      regConfirmed
-        ? 'Žiadne súbory.'
-        : 'Vaša registrácia ešte nebola potvrdená. Súbory budú dostupné až po potvrdení vašej registrácie.'
-    }`}</Text>
+    regConfirmed ? (
+      <Text>'Žiadne súbory.'</Text>
+    ) : (
+      <Text>
+        'Vaša registrácia ešte nebola potvrdená. Súbory budú dostupné až po potvrdení vašej
+        registrácie.'
+      </Text>
+    )
   ) : (
     <>
       {files.map((file) => (
