@@ -13,11 +13,11 @@ export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
   const regs = useMemo(
-    // get only event registrations
+    // get only program registrations
     () =>
       registrations.filter(
         (reg) =>
-          !!reg.eventId && !reg.canceledOn && (includeInactive || reg.program?.endDate >= today),
+          !reg.eventId && !reg.canceledOn && (includeInactive || reg.program?.endDate >= today),
       ),
     [includeInactive, registrations, today],
   );
