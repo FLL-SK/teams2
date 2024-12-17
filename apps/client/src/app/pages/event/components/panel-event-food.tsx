@@ -12,6 +12,7 @@ import { handleExportFoodOrders } from './handle-export-food-orders';
 import { LabelValue } from '../../../components/label-value';
 import { formatDate } from '@teams2/dateutils';
 import { EditPricelistItemDialog } from '../../../components/dialogs/edit-pricelist-item-dialog';
+import { EditDateDialog } from '../../../components/dialogs/edit-date-dialog';
 
 interface PanelEventFoodProps {
   event: EventFragmentFragment;
@@ -55,6 +56,10 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
   return (
     <Panel title="Stravovanie" gap="medium">
+      <LabelValue
+        label="Termín pre objednávky stravovania"
+        value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
+      />
       {eventFoodOrders.length === 0 && (
         <>
           <Text>Tento turnaj nemá definované žiadne stravovanie.</Text>
@@ -62,10 +67,6 @@ export function PanelEventFood(props: PanelEventFoodProps) {
       )}
       {eventFoodOrders.length > 0 && (
         <>
-          <LabelValue
-            label="Deadline na objednávky"
-            value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
-          />
           <PricelistItemList
             items={eventFoodOrders}
             editable={canEdit}
@@ -85,6 +86,11 @@ export function PanelEventFood(props: PanelEventFoodProps) {
       )}
       {canEdit && (
         <Box direction="row" gap="small">
+          <Button
+            label="Upraviť termín"
+            onClick={() => setShowModifyDeadlineDialog(true)}
+            disabled={!props.onModifyDeadline}
+          />
           <Button
             label="Export objednávok stravovania"
             onClick={() =>
@@ -109,6 +115,17 @@ export function PanelEventFood(props: PanelEventFoodProps) {
               const q = eventFoodOrders.find((i) => i.id === showModifyItemDialog.id)?.qty ?? 0;
               return q > 0;
             })(),
+          }}
+        />
+      )}
+      {showModifyDeadlineDialog && (
+        <EditDateDialog
+          show={showModifyDeadlineDialog}
+          date={event.foodOrderDeadline}
+          onClose={() => setShowModifyDeadlineDialog(false)}
+          onSubmit={({ date }) => {
+            props.onModifyDeadline?.(new Date(date));
+            setShowModifyDeadlineDialog(false);
           }}
         />
       )}

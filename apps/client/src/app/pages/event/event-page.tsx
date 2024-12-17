@@ -159,6 +159,14 @@ export function EventPage() {
                 notify.info('Typ stravovania bol odstránený.');
               }
             }}
+            onModifyDeadline={async (d) => {
+              const result = await updateFoodOrderDeadline({
+                variables: { eventId: event.id, deadline: d.toISOString() },
+              });
+              if (result.data?.updateEventFoodOrderDeadline) {
+                notify.info('Termín pre objednávky stravovania bol upravený.');
+              }
+            }}
           />
 
           <PanelEventTeams event={event} canEdit={canEdit} registrations={regs} />
