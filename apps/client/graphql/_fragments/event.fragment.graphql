@@ -10,6 +10,7 @@ fragment EventBasicFragment on Event {
 
   managersIds
 
+  foodOrderDeadline
   foodTypes {
     ...PricelistItemFragment
   }

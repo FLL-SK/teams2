@@ -6,12 +6,16 @@ import { ErrorPage } from '../../components/error-page';
 import { Panel } from '../../components/panel';
 import { UserTags } from '../../components/user-tags';
 import {
+  useAddEventFoodTypeMutation,
   useAddEventManagerMutation,
   useGetEventLazyQuery,
   useGetRegisteredTeamsLazyQuery,
   useIssueEventFoodInvoicesMutation,
+  useRemoveEventFoodTypeMutation,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
+  useUpdateEventFoodOrderDeadlineMutation,
+  useUpdateEventFoodTypeMutation,
 } from '../../_generated/graphql';
 
 import { useParams } from 'react-router-dom';
@@ -50,6 +54,23 @@ export function EventPage() {
 
   const [issueFoodInvoices] = useIssueEventFoodInvoicesMutation({
     onError: (e) => notify.error('Nepodarilo sa vystaviť faktúry za stravovanie.', e.message),
+  });
+
+  const [updateFoodType] = useUpdateEventFoodTypeMutation({
+    onError: (e) => notify.error('Nepodarilo sa upraviť typ stravovania.', e.message),
+  });
+
+  const [addFoodType] = useAddEventFoodTypeMutation({
+    onError: (e) => notify.error('Nepodarilo sa pridať typ stravovania.', e.message),
+  });
+
+  const [removeFoodType] = useRemoveEventFoodTypeMutation({
+    onError: (e) => notify.error('Nepodarilo sa odstrániť typ stravovania.', e.message),
+  });
+
+  const [updateFoodOrderDeadline] = useUpdateEventFoodOrderDeadlineMutation({
+    onError: (e) =>
+      notify.error('Nepodarilo sa upraviť deadline na objednávky stravovania.', e.message),
   });
 
   React.useEffect(() => {
@@ -111,6 +132,31 @@ export function EventPage() {
                 refetch();
               } else {
                 notify.info('Neboli vystavené žiadne nové faktúry za stravovanie.');
+              }
+            }}
+            onModifyItem={async (foodType) => {
+              const result = await updateFoodType({
+                variables: { eventId: event.id, foodType },
+              });
+              if (result.data?.updateEventFoodType) {
+                notify.info('Typ stravovania bol upravený.');
+              }
+            }}
+            onAddItem={async () => {
+              const result = await addFoodType({ variables: { eventId: event.id } });
+              if (result.data?.addEventFoodType) {
+                notify.info('Typ stravovania bol pridaný.');
+              }
+            }}
+            onRemoveItem={async (i) => {
+              if (!i.id) {
+                return;
+              }
+              const result = await removeFoodType({
+                variables: { eventId: event.id, foodTypeId: i.id },
+              });
+              if (result.data?.removeEventFoodType) {
+                notify.info('Typ stravovania bol odstránený.');
               }
             }}
           />

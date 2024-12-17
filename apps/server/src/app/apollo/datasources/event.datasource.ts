@@ -14,6 +14,7 @@ import {
   EventFilterInput,
   UpdateEventInput,
   UpdateEventPayload,
+  PricelistItemInput,
 } from '../../_generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
@@ -153,5 +154,75 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isEventManager(eventId)) ||
       this.userGuard.notAuthorized('Issue food invoices');
     return issueFoodInvoices(eventId, this.context);
+  }
+
+  async addFoodType(eventId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Add food type');
+    const foodType = { n: 'Nový typ stravy', up: 0 };
+    const event = await eventRepository
+      .findOneAndUpdate({ _id: eventId }, { $push: { foodTypes: foodType } }, { new: true })
+      .exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return EventMapper.toEvent(event);
+  }
+
+  async removeFoodType(eventId: ObjectId, foodTypeId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Remove food type');
+    const ex = await registrationRepository
+      .findOne({
+        eventId,
+        'foodOrder.items.productId': foodTypeId,
+      })
+      .exec();
+    if (ex) {
+      throw new Error('Food type is in use');
+    }
+    const event = await eventRepository
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $pull: { foodTypes: { _id: foodTypeId } } },
+        { new: true },
+      )
+      .exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return EventMapper.toEvent(event);
+  }
+
+  async updateFoodType(eventId: ObjectId, foodType: PricelistItemInput): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Update food type');
+    const event = await eventRepository
+      .findOneAndUpdate(
+        { _id: eventId, 'foodTypes._id': foodType.id },
+        { $set: { 'foodTypes.$.up': foodType.up, 'foodTypes.$.n': foodType.n } },
+        { new: true },
+      )
+      .exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return EventMapper.toEvent(event);
+  }
+
+  async updateFoodOrderDeadline(eventId: ObjectId, deadline: Date): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Update food order deadline');
+    const event = await eventRepository
+      .findOneAndUpdate({ _id: eventId }, { $set: { foodOrderDeadline: deadline } }, { new: true })
+      .exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return EventMapper.toEvent(event);
   }
 }

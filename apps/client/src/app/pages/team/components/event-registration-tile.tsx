@@ -17,6 +17,7 @@ import { useNotification } from '../../../components/notifications/notification-
 
 interface EventRegistrationTileProps {
   registration: TeamRegistrationFragmentFragment;
+  canEdit?: boolean;
 }
 
 interface Address {
@@ -33,9 +34,10 @@ interface Address {
 }
 
 export function EventRegistrationTile(props: EventRegistrationTileProps) {
-  const { registration } = props;
+  const { registration, canEdit } = props;
   const { isAdmin, isEventManager } = useAppUser();
   const [showFoodOrderModal, setShowFoodOrderModal] = useState(false);
+  const [today] = useState(new Date().toISOString().substring(0, 10));
 
   const { notify } = useNotification();
   const [updateOrder] = useUpdateRegistrationFoodOrderMutation({
@@ -47,19 +49,21 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   }
 
   const canOrderFood = useMemo(() => {
-    if (registration.canceledOn || !registration.confirmedOn || !registration.event) {
+    if (
+      registration.canceledOn ||
+      !registration.confirmedOn ||
+      !registration.event ||
+      !canEdit ||
+      (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today)
+    ) {
       return false;
     }
-    const diff = new Date(registration.event.date ?? 0).getTime() - Date.now();
-    const max = 1000 * 60 * 60 * 24 * 7; // 7 days
-
-    return diff > max;
   }, [registration]);
 
   const handleOrder = useCallback(
     (data: {
       note?: string | null;
-      items: { productId: string; name: string; quantity: number }[];
+      items: { productId: string; name: string; quantity: number; unitPrice: number }[];
       billTo: Address;
       shipTo?: Address | null;
     }) => {
@@ -69,8 +73,8 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
           productId: item.productId,
           name: item.name,
           quantity: item.quantity,
-          unitPrice: 0,
-          price: 0,
+          unitPrice: item.unitPrice,
+          price: item.quantity * item.unitPrice,
         })),
         billTo: { ...data.billTo },
       };
@@ -105,7 +109,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
           <Text>{registration.event.date ? formatDate(registration.event.date) : 'neurčený'}</Text>
         </LabelValue>
 
-        <FieldTeamSize registration={registration} readOnly={!!registration.canceledOn} />
+        <FieldTeamSize registration={registration} readOnly={!canEdit} />
 
         {registration.program.maxTeamSize &&
         registration.girlCount + registration.boyCount > registration.program.maxTeamSize ? (
@@ -118,7 +122,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
         <FieldTeamSizeConfirmedOn
           registration={registration}
           teamId={registration.teamId}
-          readOnly={!!registration.canceledOn}
+          readOnly={!canEdit}
         />
         <LabelValue label="Stravovanie" direction="row">
           <Box direction="row" gap="small">

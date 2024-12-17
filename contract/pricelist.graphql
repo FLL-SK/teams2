@@ -10,3 +10,13 @@ type PricelistItem implements INode {
   "Unit price"
   up: Float!
 }
+
+input PricelistItemInput {
+  id: ID
+  "Product name"
+  n: String!
+  "Unit"
+  u: String
+  "Unit price"
+  up: Float!
+}

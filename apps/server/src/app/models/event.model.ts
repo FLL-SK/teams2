@@ -17,6 +17,7 @@ export interface EventData {
   date?: Date;
   registrationEnd?: Date;
 
+  foodOrderDeadline?: Date;
   foodTypes: PricelistEntryData[];
 
   deletedOn?: Date;
@@ -48,6 +49,7 @@ const schema = new Schema<EventData, EventModel>(
     date: { type: Types.Date },
     registrationEnd: { type: Types.Date },
 
+    foodOrderDeadline: { type: Types.Date },
     foodTypes: [
       {
         n: { type: Types.String, required: true },

@@ -26,6 +26,10 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
     [allRegistrations, registration.programId],
   );
 
+  const canEdit = useMemo(() => {
+    return !registration.canceledOn && !registration.confirmedOn;
+  }, [registration]);
+
   return (
     <Box>
       <Box direction="row" width="100%" gap="small" pad="small" background={'light-3'} wrap>
@@ -54,7 +58,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
 
         <Box width="55%">
           {eventReg ? (
-            <EventRegistrationTile registration={eventReg} />
+            <EventRegistrationTile registration={eventReg} canEdit={canEdit} />
           ) : (
             <Box direction="row">
               <Button
@@ -62,7 +66,7 @@ export function TeamRegistrationTile(props: TeamRegistrationTileProps) {
                 onClick={() =>
                   navigate(appPath.registerEvent(registration.teamId, registration.programId))
                 }
-                disabled={!!registration.canceledOn || !registration.confirmedOn}
+                disabled={!canEdit}
               />
             </Box>
           )}

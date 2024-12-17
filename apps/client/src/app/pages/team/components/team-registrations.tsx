@@ -11,15 +11,17 @@ interface TeamRegistrationsListProps {
 export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
   const { registrations, includeInactive } = props;
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
+
   const regs = useMemo(
-    // get only program registrations
+    // get only event registrations
     () =>
       registrations.filter(
         (reg) =>
-          !reg.eventId && !reg.canceledOn && (includeInactive || reg.program?.endDate >= today),
+          !!reg.eventId && !reg.canceledOn && (includeInactive || reg.program?.endDate >= today),
       ),
     [includeInactive, registrations, today],
   );
+
   return (
     <Box gap="small">
       {regs.map((reg) => (

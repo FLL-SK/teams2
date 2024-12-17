@@ -23,6 +23,7 @@ type Event implements INode {
 
   invoiceItems: [InvoiceItem!]!
 
+  foodOrderDeadline: DateTime
   foodTypes: [PricelistItem!]!
 
   deletedOn: DateTime
@@ -82,4 +83,9 @@ extend type Mutation {
   removeEventManager(eventId: ID!, userId: ID!): Event
 
   issueEventFoodInvoices(eventId: ID!): Int!
+
+  updateEventFoodOrderDeadline(eventId: ID!, deadline: DateTime!): Event
+  updateEventFoodType(eventId: ID!, foodType: PricelistItemInput!): Event
+  addEventFoodType(eventId: ID!): Event
+  removeEventFoodType(eventId: ID!, foodTypeId: ID!): Event
 }

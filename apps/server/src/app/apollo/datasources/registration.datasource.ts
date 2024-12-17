@@ -332,6 +332,8 @@ export class RegistrationDataSource extends BaseDataSource {
       createdOn,
       updatedOn: new Date(),
     };
+    // remove items with quantity 0
+    no.items = no.items.filter((i) => i.quantity > 0);
 
     r.foodOrder = no;
     await r.save();
