@@ -225,4 +225,30 @@ export class EventDataSource extends BaseDataSource {
     }
     return EventMapper.toEvent(event);
   }
+
+  async inviteTeam(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Invite team');
+    const event = await eventRepository
+      .findOneAndUpdate({ _id: eventId }, { $addToSet: { invitedTeamsIds: teamId } }, { new: true })
+      .exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return EventMapper.toEvent(event);
+  }
+
+  async uninviteTeam(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Uninvite team');
+    const event = await eventRepository
+      .findOneAndUpdate({ _id: eventId }, { $pull: { invitedTeamsIds: teamId } }, { new: true })
+      .exec();
+    if (!event) {
+      throw new Error('Event not found');
+    }
+    return EventMapper.toEvent(event);
+  }
 }

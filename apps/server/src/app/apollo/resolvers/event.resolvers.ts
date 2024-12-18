@@ -15,6 +15,8 @@ export const typeResolver: Resolver<Event> = {
     dataSources.program.getProgram(programId),
   invoiceItems: async ({ id }, _args, { dataSources }) =>
     dataSources.invoice.getEventInvoiceItems(id),
+  invitedTeams: async ({ invitedTeamsIds }, _args, { dataSources }) =>
+    invitedTeamsIds.map((id) => dataSources.team.getTeam(id)),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {

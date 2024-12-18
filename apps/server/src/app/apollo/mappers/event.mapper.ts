@@ -31,6 +31,9 @@ export const EventMapper = {
 
       foodTypes: event.foodTypes.map(PricelistEntryMapper.toPricelistEntry),
       foodOrderDeadline: event.foodOrderDeadline,
+
+      invitedTeamsIds: event.invitedTeamsIds,
+      invitedTeams: [],
     };
     return u;
   },
