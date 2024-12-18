@@ -19,6 +19,9 @@ type Event implements INode {
   ownFeesAllowed: Boolean
   maxTeams: Int
 
+  invitedTeamsIds: [ID!]!
+  invitedTeams: [Team!]!
+
   managersIds: [ID!]!
 
   invoiceItems: [InvoiceItem!]!
@@ -88,4 +91,7 @@ extend type Mutation {
   updateEventFoodType(eventId: ID!, foodType: PricelistItemInput!): Event
   addEventFoodType(eventId: ID!): Event
   removeEventFoodType(eventId: ID!, foodTypeId: ID!): Event
+
+  inviteTeamToEvent(eventId: ID!, teamId: ID!): Event
+  uninviteTeamFromEvent(eventId: ID!, teamId: ID!): Event
 }

@@ -71,3 +71,15 @@ mutation removeEventFoodType($eventId: ID!, $foodTypeId: ID!) {
     ...EventFragment
   }
 }
+
+mutation inviteTeamToEvent($eventId: ID!, $teamId: ID!) {
+  inviteTeamToEvent(eventId: $eventId, teamId: $teamId) {
+    ...EventFragment
+  }
+}
+
+mutation uninviteTeamFromEvent($eventId: ID!, $teamId: ID!) {
+  uninviteTeamFromEvent(eventId: $eventId, teamId: $teamId) {
+    ...EventFragment
+  }
+}

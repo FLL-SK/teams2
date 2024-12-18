@@ -8,6 +8,8 @@ fragment EventBasicFragment on Event {
   date
   registrationEnd
 
+  invitedTeamsIds
+
   managersIds
 
   foodOrderDeadline
@@ -44,5 +46,9 @@ fragment EventFragment on Event {
 
   invoiceItems {
     ...InvoiceItemFragment
+  }
+
+  invitedTeams {
+    ...TeamListFragment
   }
 }
