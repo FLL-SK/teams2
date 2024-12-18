@@ -12,10 +12,12 @@ import {
   Tabs,
   Tab,
   Box,
+  TableHeader,
 } from 'grommet';
 import { Modal } from './modal';
 import React, { useEffect } from 'react';
 import { LabelValue } from './label-value';
+import { parse } from 'path';
 
 interface Address {
   name: string;
@@ -45,7 +47,7 @@ interface FormDataType {
 
 export const emptyOrder: FormDataType = {
   note: '',
-  items: [{ productId: '', name: '', quantity: 0, unitPrice: 0, price: 0 }],
+  items: [],
   billTo: {
     name: '',
     street: '',
@@ -72,20 +74,35 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
   const [activeTab, setActiveTab] = React.useState(0);
 
   useEffect(() => {
-    const o = props.order ?? emptyOrder;
+    const o = props.order ? { ...props.order, billTo: { ...props.order.billTo } } : emptyOrder;
 
-    const mergedItems = props.availableItems.map((availableItem) => {
-      const existingItem = o.items.find((orderItem) => orderItem.productId === availableItem.id);
+    // get available items that are not in the order
+    const ai = props.availableItems
+      .filter((ai) => !o.items.find((oi) => oi.productId === ai.id))
+      .map((i) => {
+        const mi: FormDataType['items'][0] = {
+          productId: i.id,
+          name: i.n,
+          quantity: 0,
+          unitPrice: i.up,
+          price: 0,
+        };
+        return mi;
+      });
 
+    const oi = o.items.map((i) => {
       const mi: FormDataType['items'][0] = {
-        productId: availableItem.id,
-        name: availableItem.n,
-        quantity: existingItem ? existingItem.quantity : 0,
-        unitPrice: availableItem.up,
-        price: existingItem ? existingItem.price : 0,
+        productId: i.productId,
+        name: i.name,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+        price: i.price,
       };
       return mi;
     });
+
+    const mergedItems = [...oi, ...ai];
+    mergedItems.sort((a, b) => a.name.localeCompare(b.name));
 
     setValue({ ...o, items: mergedItems });
   }, [props.availableItems, props.order]);
@@ -116,20 +133,35 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
         <p>Tento turnaj nemá možnosť objednania stravovania.</p>
       )}
       {value.items.length > 0 && (
-        <Form>
+        <Form
+          value={value}
+          onChange={(data: FormDataType) => {
+            data.items.forEach((item) => {
+              item.quantity = parseInt(item.quantity.toString());
+              item.price = Math.round(item.quantity * item.unitPrice * 100) / 100;
+            });
+            setValue(data);
+          }}
+        >
           <Tabs activeIndex={activeTab} onActive={(index) => setActiveTab(index)}>
             <Tab title="Jedlo">
               <Table>
-                <thead>
-                  <tr>
-                    <th>
+                <TableHeader>
+                  <TableRow>
+                    <TableCell>
                       <Text>Typ</Text>
-                    </th>
-                    <th>
+                    </TableCell>
+                    <TableCell>
                       <Text>Množstvo</Text>
-                    </th>
-                  </tr>
-                </thead>
+                    </TableCell>
+                    <TableCell>
+                      <Text>Jdn. cena</Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text>Cena</Text>
+                    </TableCell>
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
                   {value.items.map((item, index) => (
                     <TableRow key={index}>
@@ -137,139 +169,59 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
                         <Text>{item.name}</Text>
                       </TableCell>
 
-                      <TableCell align="right" width={'xs'}>
-                        <FormField name={`orderItems[${index}].quantity`} required>
-                          <TextInput
-                            type="number"
-                            name={`orderItems[${index}].quantity`}
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const v: FormDataType = { ...value };
-                              v.items[index].quantity = e.target.valueAsNumber;
-                              setValue(v);
-                            }}
-                          />
+                      <TableCell align="right" width="xsmall">
+                        <FormField name={`items[${index}].quantity`} required>
+                          <TextInput type="number" name={`items[${index}].quantity`} />
                         </FormField>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Text>{item.unitPrice} €</Text>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Text>{item.price} €</Text>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              <LabelValue label="Poznámka">
-                <TextArea
-                  name="note"
-                  placeholder="Poznámka"
-                  value={value.note ?? undefined}
-                  onChange={(event) => setValue({ ...value, note: event.target.value })}
-                />
-              </LabelValue>
+              <FormField label="Poznámka" name="note">
+                <TextArea name="note" placeholder="Poznámka" />
+              </FormField>
             </Tab>
             <Tab title="Fakturačná adresa">
               <FormField name="billTo.name" label="Meno" required>
-                <TextInput
-                  name="billTo.name"
-                  value={value.billTo.name}
-                  onChange={(event) =>
-                    setValue({ ...value, billTo: { ...value.billTo, name: event.target.value } })
-                  }
-                />
+                <TextInput name="billTo.name" />
               </FormField>
               <FormField name="billTo.street" label="Ulica" required>
-                <TextInput
-                  name="billTo.street"
-                  value={value.billTo.street}
-                  onChange={(event) =>
-                    setValue({ ...value, billTo: { ...value.billTo, street: event.target.value } })
-                  }
-                />
+                <TextInput name="billTo.street" />
               </FormField>
               <FormField name="billTo.city" label="Mesto" required>
-                <TextInput
-                  name="billTo.city"
-                  value={value.billTo.city}
-                  onChange={(event) =>
-                    setValue({ ...value, billTo: { ...value.billTo, city: event.target.value } })
-                  }
-                />
+                <TextInput name="billTo.city" />
               </FormField>
               <FormField name="billTo.zip" label="PSČ" required>
-                <TextInput
-                  name="billTo.zip"
-                  value={value.billTo.zip}
-                  onChange={(event) =>
-                    setValue({ ...value, billTo: { ...value.billTo, zip: event.target.value } })
-                  }
-                />
+                <TextInput name="billTo.zip" />
               </FormField>
             </Tab>
             <Tab title="Fakturačné údaje">
               <FormField name="billTo.companyNumber" label="IČO">
-                <TextInput
-                  name="billTo.companyNumber"
-                  value={value.billTo.companyNumber ?? undefined}
-                  onChange={(event) =>
-                    setValue({
-                      ...value,
-                      billTo: { ...value.billTo, companyNumber: event.target.value },
-                    })
-                  }
-                />
+                <TextInput name="billTo.companyNumber" />
               </FormField>
               <FormField name="billTo.taxNumber" label="DIČ">
-                <TextInput
-                  name="billTo.taxNumber"
-                  value={value.billTo.taxNumber ?? undefined}
-                  onChange={(event) =>
-                    setValue({
-                      ...value,
-                      billTo: { ...value.billTo, taxNumber: event.target.value },
-                    })
-                  }
-                />
+                <TextInput name="billTo.taxNumber" />
               </FormField>
               <FormField name="billTo.vatNumber" label="IČ DPH">
-                <TextInput
-                  name="billTo.vatNumber"
-                  value={value.billTo.vatNumber ?? undefined}
-                  onChange={(event) =>
-                    setValue({
-                      ...value,
-                      billTo: { ...value.billTo, vatNumber: event.target.value },
-                    })
-                  }
-                />
+                <TextInput name="billTo.vatNumber" />
               </FormField>
             </Tab>
             <Tab title="Kontaktné údaje">
               <FormField name="billTo.contactName" label="Kontaktná osoba">
-                <TextInput
-                  name="billTo.contactName"
-                  value={value.billTo.contactName ?? undefined}
-                  onChange={(event) =>
-                    setValue({
-                      ...value,
-                      billTo: { ...value.billTo, contactName: event.target.value },
-                    })
-                  }
-                />
+                <TextInput name="billTo.contactName" />
               </FormField>
               <FormField name="billTo.phone" label="Telefón">
-                <TextInput
-                  name="billTo.phone"
-                  value={value.billTo.phone ?? undefined}
-                  onChange={(event) =>
-                    setValue({ ...value, billTo: { ...value.billTo, phone: event.target.value } })
-                  }
-                />
+                <TextInput name="billTo.phone" />
               </FormField>
               <FormField name="billTo.email" label="Email">
-                <TextInput
-                  name="billTo.email"
-                  value={value.billTo.email ?? undefined}
-                  onChange={(event) =>
-                    setValue({ ...value, billTo: { ...value.billTo, email: event.target.value } })
-                  }
-                />
+                <TextInput name="billTo.email" />
               </FormField>
             </Tab>
           </Tabs>

@@ -87,21 +87,28 @@ export function RegistrationPage() {
   const handleOrder = React.useCallback(
     (data: {
       note?: string | null;
-      items: { productId: string; name: string; quantity: number }[];
+      items: {
+        productId: string;
+        name: string;
+        quantity: number;
+        unitPrice: number;
+        price: number;
+      }[];
       billTo: Address;
       shipTo?: Address | null;
     }) => {
       if (!reg) {
         return;
       }
+
       const o: OrderInput = {
         note: data.note,
         items: data.items.map((item) => ({
           productId: item.productId,
           name: item.name,
           quantity: item.quantity,
-          unitPrice: 0,
-          price: 0,
+          unitPrice: item.unitPrice,
+          price: item.price,
         })),
         billTo: { ...data.billTo },
       };
@@ -138,7 +145,7 @@ export function RegistrationPage() {
   }
 
   return (
-    <BasePage title="Registrácia">
+    <BasePage title={`Registrácia ${reg?.event ? 'na turnaj' : 'do programu'}`}>
       {regLoading || !reg ? (
         <Spinner />
       ) : (

@@ -1,4 +1,4 @@
-import { Box, Button, Text } from 'grommet';
+import { Box, Button, Text, Tip } from 'grommet';
 import { Group as GroupIcon, Cafeteria as CafeteriaIcon } from 'grommet-icons';
 import React, { useMemo, useState } from 'react';
 import { ListRow2 } from '../../../components/list-row';
@@ -58,11 +58,15 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
             </Box>
             <Box>
               {reg.foodOrder ? (
-                <CafeteriaIcon color={reg.foodOrder.invoicedOn ? 'green' : undefined} />
+                <Tip content="Objednávka jedla">
+                  <CafeteriaIcon color={reg.foodOrder.invoicedOn ? 'green' : undefined} />
+                </Tip>
               ) : null}
             </Box>
             <Box direction="row" gap="small">
-              <GroupIcon />
+              <Tip content="Počet členov tímu">
+                <GroupIcon />
+              </Tip>
               <Text>
                 {formatTeamSize(reg)}
                 {!reg.sizeConfirmedOn && ' ?'}

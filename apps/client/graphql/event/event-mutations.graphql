@@ -47,3 +47,27 @@ mutation removeEventManager($eventId: ID!, $userId: ID!) {
 mutation issueEventFoodInvoices($eventId: ID!) {
   issueEventFoodInvoices(eventId: $eventId)
 }
+
+mutation updateEventFoodType($eventId: ID!, $foodType: PricelistItemInput!) {
+  updateEventFoodType(eventId: $eventId, foodType: $foodType) {
+    ...EventFragment
+  }
+}
+
+mutation updateEventFoodOrderDeadline($eventId: ID!, $deadline: DateTime!) {
+  updateEventFoodOrderDeadline(eventId: $eventId, deadline: $deadline) {
+    ...EventFragment
+  }
+}
+
+mutation addEventFoodType($eventId: ID!) {
+  addEventFoodType(eventId: $eventId) {
+    ...EventFragment
+  }
+}
+
+mutation removeEventFoodType($eventId: ID!, $foodTypeId: ID!) {
+  removeEventFoodType(eventId: $eventId, foodTypeId: $foodTypeId) {
+    ...EventFragment
+  }
+}

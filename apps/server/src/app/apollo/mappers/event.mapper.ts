@@ -30,6 +30,7 @@ export const EventMapper = {
       registrationsCount: 0,
 
       foodTypes: event.foodTypes.map(PricelistEntryMapper.toPricelistEntry),
+      foodOrderDeadline: event.foodOrderDeadline,
     };
     return u;
   },

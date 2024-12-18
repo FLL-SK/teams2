@@ -28,7 +28,7 @@ export function PricelistItemList(props: PricelistItemListProps) {
       <ListHeader2 columns={columns} pad="small">
         <JustifiedText justify="start">Položka</JustifiedText>
         <JustifiedText justify="center">Cena/Jdn.</JustifiedText>
-        <JustifiedText justify="center">Monžstvo</JustifiedText>
+        <JustifiedText justify="center">Množstvo</JustifiedText>
       </ListHeader2>
       {items.map((item) => (
         <ListRow2
@@ -53,6 +53,7 @@ export function PricelistItemList(props: PricelistItemListProps) {
           {editable && onRemove && (
             <Button
               size="large"
+              disabled={!onRemove || item.qty !== 0}
               plain
               hoverIndicator
               icon={<CloseIcon size="small" />}

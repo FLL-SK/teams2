@@ -11,6 +11,7 @@ interface TeamRegistrationsListProps {
 export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
   const { registrations, includeInactive } = props;
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
+
   const regs = useMemo(
     // get only program registrations
     () =>
@@ -20,6 +21,7 @@ export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
       ),
     [includeInactive, registrations, today],
   );
+
   return (
     <Box gap="small">
       {regs.map((reg) => (

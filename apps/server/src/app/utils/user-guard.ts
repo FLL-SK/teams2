@@ -85,7 +85,8 @@ export class UserGuard {
     }
     const teams = await registrationRepository.find({
       programId: programId,
-      teamId: { $in: this.coachOfTeams },
+      teamId: { $in: this.coachOfTeams.map((t) => new ObjectId(t)) },
+      confirmedOn: { $ne: null },
     });
     return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
   }
