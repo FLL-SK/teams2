@@ -8,6 +8,7 @@ fragment EventBasicFragment on Event {
   date
   registrationEnd
 
+  invitationOnly
   invitedTeamsIds
 
   managersIds

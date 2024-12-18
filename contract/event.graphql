@@ -19,6 +19,7 @@ type Event implements INode {
   ownFeesAllowed: Boolean
   maxTeams: Int
 
+  invitationOnly: Boolean
   invitedTeamsIds: [ID!]!
   invitedTeams: [Team!]!
 
@@ -44,6 +45,7 @@ input CreateEventInput {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  invitationOnly: Boolean
   maxTeams: Int
 }
 
@@ -58,6 +60,7 @@ input UpdateEventInput {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  invitationOnly: Boolean
   maxTeams: Int
 }
 
