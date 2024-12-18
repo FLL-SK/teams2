@@ -31,6 +31,9 @@ export function EventListTile(props: EventListTileProps) {
   } else if (event.maxTeams && event.maxTeams - event.registrationsCount < 3) {
     maxColor = 'status-warning';
     notice = 'Posledné miesta';
+  } else if (event.invitationOnly) {
+    maxColor = 'status-warning';
+    notice = 'Len na pozvánky';
   }
 
   return (

@@ -19,6 +19,10 @@ type Event implements INode {
   ownFeesAllowed: Boolean
   maxTeams: Int
 
+  invitationOnly: Boolean
+  invitedTeamsIds: [ID!]!
+  invitedTeams: [Team!]!
+
   managersIds: [ID!]!
 
   invoiceItems: [InvoiceItem!]!
@@ -41,6 +45,7 @@ input CreateEventInput {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  invitationOnly: Boolean
   maxTeams: Int
 }
 
@@ -55,6 +60,7 @@ input UpdateEventInput {
   registrationEnd: DateTime
   conditions: String
   ownFeesAllowed: Boolean
+  invitationOnly: Boolean
   maxTeams: Int
 }
 
@@ -88,4 +94,7 @@ extend type Mutation {
   updateEventFoodType(eventId: ID!, foodType: PricelistItemInput!): Event
   addEventFoodType(eventId: ID!): Event
   removeEventFoodType(eventId: ID!, foodTypeId: ID!): Event
+
+  inviteTeamToEvent(eventId: ID!, teamId: ID!): Event
+  uninviteTeamFromEvent(eventId: ID!, teamId: ID!): Event
 }

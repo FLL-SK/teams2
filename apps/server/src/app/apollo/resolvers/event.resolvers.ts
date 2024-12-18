@@ -15,6 +15,8 @@ export const typeResolver: Resolver<Event> = {
     dataSources.program.getProgram(programId),
   invoiceItems: async ({ id }, _args, { dataSources }) =>
     dataSources.invoice.getEventInvoiceItems(id),
+  invitedTeams: async ({ invitedTeamsIds }, _args, { dataSources }) =>
+    invitedTeamsIds.map((teamId) => dataSources.team.getTeam(teamId)),
 };
 
 export const mutationResolvers: MutationResolvers<ApolloContext> = {
@@ -38,4 +40,8 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
     dataSources.event.addFoodType(eventId),
   removeEventFoodType: (_parent, { eventId, foodTypeId }, { dataSources }) =>
     dataSources.event.removeFoodType(eventId, foodTypeId),
+  inviteTeamToEvent: (_parent, { eventId, teamId }, { dataSources }) =>
+    dataSources.event.inviteTeam(eventId, teamId),
+  uninviteTeamFromEvent: (_parent, { eventId, teamId }, { dataSources }) =>
+    dataSources.event.uninviteTeam(eventId, teamId),
 };

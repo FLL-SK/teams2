@@ -1,6 +1,7 @@
 import { BaseDataSource } from './_base.datasource';
 import {
   eventRepository,
+  ProgramData,
   programRepository,
   RegistrationData,
   RegistrationGroup,
@@ -130,11 +131,15 @@ export class RegistrationDataSource extends BaseDataSource {
     return count;
   }
 
-  async getProgramRegistrations(programId: ObjectId): Promise<Registration[]> {
-    const regs = await registrationRepository
-      .find({ programId, canceledOn: null })
-      .sort({ createdOn: 1 })
-      .exec();
+  async getProgramRegistrations(
+    programId: ObjectId,
+    includeNotConfirmed?: boolean | null,
+  ): Promise<Registration[]> {
+    const q: FilterQuery<RegistrationData> = { programId, canceledOn: null };
+    if (includeNotConfirmed === false) {
+      q.confirmedOn = { $ne: null };
+    }
+    const regs = await registrationRepository.find(q).sort({ createdOn: 1 }).exec();
     return regs.map(RegistrationMapper.toRegistration);
   }
 

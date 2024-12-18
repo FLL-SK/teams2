@@ -21,8 +21,8 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
 
   getEventRegistrations: async (_parent, { eventId }, { dataSources }) =>
     dataSources.registration.getEventRegistrations(eventId),
-  getProgramRegistrations: async (_parent, { programId }, { dataSources }) =>
-    dataSources.registration.getProgramRegistrations(programId),
+  getProgramRegistrations: async (_parent, { programId, includeNotConfirmed }, { dataSources }) =>
+    dataSources.registration.getProgramRegistrations(programId, includeNotConfirmed),
 
   getRegistrationFiles: async (_parent, { id }, ctx) => getRegistrationFiles(id, ctx),
   getRegisteredTeams: async (_parent, { eventId, includeCoaches }, { dataSources }) =>

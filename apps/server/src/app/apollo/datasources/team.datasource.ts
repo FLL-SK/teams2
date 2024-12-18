@@ -35,8 +35,9 @@ export class TeamDataSource extends BaseDataSource {
   async getTeam(id: ObjectId): Promise<Team> {
     if (!id) return null;
     const log = logBase.extend('getTeam');
-    log.debug('getTeam %s', id.toString());
-    const team = this.loader.load(id.toString());
+    const ids = id.toString();
+    log.debug('getTeam %s', ids);
+    const team = this.loader.load(ids);
     return team;
   }
 

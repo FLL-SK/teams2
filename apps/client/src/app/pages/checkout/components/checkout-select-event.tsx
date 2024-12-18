@@ -32,6 +32,16 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
 
   const events = data?.getEvents ?? [];
 
+  const handleSelectEvent = (event: EventListFragmentFragment) => {
+    if (
+      event.invitationOnly &&
+      event.invitedTeamsIds.findIndex((id) => id === details.teamId) === -1
+    ) {
+      return;
+    }
+    onSubmit(event);
+  };
+
   return (
     <Box gap="medium">
       <Text>Vyberte turnaj na ktorý sa chcete prihlásiť:</Text>
@@ -40,7 +50,7 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
         <EventListTile
           key={event.id}
           event={event}
-          onClick={() => onSubmit(event)}
+          onClick={() => handleSelectEvent(event)}
           selected={details.event?.id === event.id}
           disabled={event.maxTeams && event.registrationsCount >= event.maxTeams ? true : false}
           showNotice

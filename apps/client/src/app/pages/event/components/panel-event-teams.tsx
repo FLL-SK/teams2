@@ -3,7 +3,11 @@ import { Group as GroupIcon, Cafeteria as CafeteriaIcon } from 'grommet-icons';
 import React, { useMemo, useState } from 'react';
 import { ListRow2 } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
-import { EventFragmentFragment, RegisteredTeamFragmentFragment } from '../../../_generated/graphql';
+import {
+  EventFragmentFragment,
+  RegisteredTeamFragmentFragment,
+  TeamListFragmentFragment,
+} from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 import { handleExportRegisteredTeams } from './handle-export-teams';
@@ -12,17 +16,22 @@ import { appPath } from '@teams2/common';
 import { Modal } from '../../../components/modal';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { handleExportForEventHub } from './handle-export-for-eventhub';
+import { ManageEventInvitesDialog } from './manage-event-invites-dialog';
 
 interface PanelEventTeamsProps {
   event: EventFragmentFragment;
   registrations?: RegisteredTeamFragmentFragment[];
   canEdit?: boolean;
+  onInvite?: (teamId: string) => void;
+  onUninvite?: (teamId: string) => void;
+  invitableTeams?: { id: string; name: string }[];
 }
 
 export function PanelEventTeams(props: PanelEventTeamsProps) {
   const { event, canEdit, registrations: regs } = props;
   const navigate = useNavigate();
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);
+  const [showManageInvites, setShowManageInvites] = useState(false);
   const { isAdmin } = useAppUser();
 
   const coachesEmails: string[] = useMemo(
@@ -42,6 +51,16 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
 
   return (
     <Panel title="Tímy" gap="small">
+      {event.invitationOnly && (
+        <Box gap="medium">
+          <Text>
+            Turnaj je len na pozvánky. Počet pozvaných tímov {event.invitedTeamsIds.length}
+          </Text>
+          <Box direction="row">
+            <Button label="Manažovať pozvánky" onClick={() => setShowManageInvites(true)} />
+          </Box>
+        </Box>
+      )}
       <Box direction="row" wrap>
         {(regs ?? []).map((reg, idx) => (
           <ListRow2
@@ -109,6 +128,16 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
           ))}
         </Box>
       </Modal>
+
+      {showManageInvites && (
+        <ManageEventInvitesDialog
+          event={event}
+          invitableTeams={props.invitableTeams ?? []}
+          onClose={() => setShowManageInvites(false)}
+          onInvite={props.onInvite}
+          onUninvite={props.onUninvite}
+        />
+      )}
     </Panel>
   );
 }

@@ -9,11 +9,14 @@ import {
   useAddEventFoodTypeMutation,
   useAddEventManagerMutation,
   useGetEventLazyQuery,
+  useGetProgramRegistrationsLazyQuery,
   useGetRegisteredTeamsLazyQuery,
+  useInviteTeamToEventMutation,
   useIssueEventFoodInvoicesMutation,
   useRemoveEventFoodTypeMutation,
   useRemoveEventManagerMutation,
   useUndeleteEventMutation,
+  useUninviteTeamFromEventMutation,
   useUpdateEventFoodOrderDeadlineMutation,
   useUpdateEventFoodTypeMutation,
 } from '../../_generated/graphql';
@@ -25,6 +28,7 @@ import { PanelEventFees } from './components/panel-event-fees';
 import { PanelEventTeams } from './components/panel-event-teams';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { PanelEventFood } from './components/panel-event-food';
+import { EventType } from 'nx/src/native';
 
 export function EventPage() {
   const { id } = useParams();
@@ -40,6 +44,11 @@ export function EventPage() {
   const [fetchRegistrations, { data: regData }] = useGetRegisteredTeamsLazyQuery({
     fetchPolicy: 'cache-and-network',
     onError: (e) => notify.error('Nepodarilo sa načitať registrácie pre turnaj.', e.message),
+  });
+
+  const [fetchProgramRegistrations, { data: progRegs }] = useGetProgramRegistrationsLazyQuery({
+    fetchPolicy: 'cache-and-network',
+    onError: (e) => notify.error('Nepodarilo sa načítať registrácie pre program.', e.message),
   });
 
   const [undeleteEvent] = useUndeleteEventMutation({
@@ -73,6 +82,14 @@ export function EventPage() {
       notify.error('Nepodarilo sa upraviť deadline na objednávky stravovania.', e.message),
   });
 
+  const [inviteTeam] = useInviteTeamToEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa pozvať tím na turnaj.', e.message),
+  });
+
+  const [uninviteTeam] = useUninviteTeamFromEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa zrušiť pozvánku tímu na turnaj.', e.message),
+  });
+
   React.useEffect(() => {
     if (id) {
       fetchEvent({ variables: { id } });
@@ -86,6 +103,27 @@ export function EventPage() {
   const regs = regData?.getRegisteredTeams ?? [];
   const canEdit = isAdmin() || isEventManager(id);
   const isDeleted = !!event?.deletedOn;
+
+  const invitableTeams = React.useMemo(() => {
+    if (!progRegs?.getProgramRegistrations) {
+      return [];
+    }
+    const it: { id: string; name: string; teamNo: string }[] = progRegs.getProgramRegistrations.map(
+      (r) => ({
+        id: r.teamId,
+        name: r.team?.name,
+        teamNo: r.teamNo ?? 'xxx',
+      }),
+    );
+    it.sort((a, b) => a.name.localeCompare(b.name));
+    return it;
+  }, [progRegs, regs]);
+
+  React.useEffect(() => {
+    if (event?.programId && event?.invitationOnly) {
+      fetchProgramRegistrations({ variables: { programId: event.programId } });
+    }
+  }, [event?.programId, fetchProgramRegistrations]);
 
   if (!id || (eventError && !eventLoading)) {
     return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
@@ -169,7 +207,19 @@ export function EventPage() {
             }}
           />
 
-          <PanelEventTeams event={event} canEdit={canEdit} registrations={regs} />
+          <PanelEventTeams
+            event={event}
+            canEdit={canEdit}
+            registrations={regs}
+            invitableTeams={invitableTeams}
+            onInvite={async (teamId) => {
+              await inviteTeam({ variables: { eventId: id, teamId } });
+            }}
+            onUninvite={async (teamId) => {
+              await uninviteTeam({ variables: { eventId: id, teamId } });
+            }}
+          />
+
           {canEdit && (
             <Panel title="Manažéri">
               <Box direction="row" wrap>
