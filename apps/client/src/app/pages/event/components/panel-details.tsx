@@ -61,6 +61,9 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
             label="Dátum turnaja"
             value={event?.date ? formatDate(event?.date) : 'neurčený'}
           />
+          <LabelValue label="Typ">
+            <Text>{event?.invitationOnly ? 'Iba pre pozvané tímy' : 'Otvorený'}</Text>
+          </LabelValue>
           {(isAdmin() || isEventManager(event.id)) && (
             <LabelValue label="Poplatky turnaja">
               {event?.ownFeesAllowed ? 'áno' : 'nie'}

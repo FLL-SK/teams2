@@ -30,8 +30,6 @@ import { CheckoutConfirmBillToContact } from './components/checkout-confirm-bill
 import { formatFullName } from '../../utils/format-fullname';
 import { handleMutationErrors, MutationData } from '../../utils/handle_mutation_error';
 import { CheckoutSelectType } from './components/checkout-select-type';
-import { CheckoutSelectProduct } from './components/checkout-select-item';
-import { set } from 'lodash';
 
 type CheckoutStep =
   | 'intro'
@@ -48,19 +46,25 @@ export function CheckoutPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [teamId, setTeamId] = useState<string | null>(null);
   const [programId, setProgramId] = useState<string | null>(null);
+  const [eventId, setEventId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isTeamCoach, user } = useAppUser();
   const [step, setStep] = useState<CheckoutStep>('intro');
-  const [checkoutDetails, setCheckoutDetails] = useState<CheckoutDetails>({ type: 'NORMAL' });
+  const [checkoutDetails, setCheckoutDetails] = useState<CheckoutDetails>({
+    teamId: 'x',
+    type: 'NORMAL',
+  });
   const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
 
   const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
     useGetProgramLazyQuery();
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery();
+    useGetTeamLazyQuery({
+      onError: (e) => notify.error('Nepodarilo sa načítať tím.', e.message),
+    });
 
   const [updateTeam] = useUpdateTeamMutation({
     onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
@@ -78,8 +82,11 @@ export function CheckoutPage() {
   const team = teamData?.getTeam;
 
   React.useEffect(() => {
-    setTeamId(searchParams.get('teamId'));
+    const tid = searchParams.get('teamId');
+    setTeamId(tid);
+    setCheckoutDetails({ ...checkoutDetails, teamId: tid ?? 'x' });
     setProgramId(searchParams.get('programId'));
+    setEventId(searchParams.get('eventId'));
   }, [searchParams]);
 
   React.useEffect(() => {

@@ -30,6 +30,7 @@ interface FormFields {
   registrationEnd?: string; // UTC ISO date
   conditions?: string;
   ownFeesAllowed?: boolean;
+  invitationOnly?: boolean;
   maxTeams: number;
 }
 
@@ -44,9 +45,10 @@ export function EditEventDialog(props: EditEventDialogProps) {
     registrationEnd: toZonedDateString(event?.registrationEnd),
     conditions: event?.conditions ?? '',
     ownFeesAllowed: event?.ownFeesAllowed ?? false,
+    invitationOnly: event?.invitationOnly ?? false,
     maxTeams: event?.maxTeams ?? 0,
   });
-  const { isAdmin } = useAppUser();
+  const { isAdmin, isProgramManager } = useAppUser();
 
   if (!show) {
     return null;
@@ -94,7 +96,12 @@ export function EditEventDialog(props: EditEventDialogProps) {
           <FormField label="Maximálny počet tímov" disabled={!teamCountLimited} name="maxTeams">
             <TextInput type="number" name="maxTeams" />
           </FormField>
-          {isAdmin() && <CheckBox name="ownFeesAllowed" label="Povoliť poplatky turnaja" />}
+          {(isAdmin() || isProgramManager(event?.programId)) && (
+            <CheckBox name="ownFeesAllowed" label="Povoliť poplatky turnaja" />
+          )}
+          {(isAdmin() || isProgramManager(event?.programId)) && (
+            <CheckBox name="invitationOnly" label="Turnaj iba pre pozvané tímy" />
+          )}
         </Grid>
         <FormField label="Podmienky" name="conditions">
           <TextArea rows={10} name="conditions" />

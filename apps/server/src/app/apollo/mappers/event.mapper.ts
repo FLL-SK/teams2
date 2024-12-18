@@ -32,6 +32,7 @@ export const EventMapper = {
       foodTypes: event.foodTypes.map(PricelistEntryMapper.toPricelistEntry),
       foodOrderDeadline: event.foodOrderDeadline,
 
+      invitationOnly: event.invitationOnly,
       invitedTeamsIds: event.invitedTeamsIds,
       invitedTeams: [],
     };

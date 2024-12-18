@@ -8,8 +8,8 @@ query getRegistrationsCount($filter: RegistrationFilter) {
   getRegistrationsCount(filter: $filter)
 }
 
-query getProgramRegistrations($programId: ID!) {
-  getProgramRegistrations(programId: $programId) {
+query getProgramRegistrations($programId: ID!, $includeNotConfirmed: Boolean) {
+  getProgramRegistrations(programId: $programId, includeNotConfirmed: $includeNotConfirmed) {
     ...RegistrationListFragment
   }
 }

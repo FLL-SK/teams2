@@ -10,6 +10,7 @@ import {
 export type Address = AddressGQL;
 
 export interface CheckoutDetails {
+  teamId: string;
   item?: ProductFragment;
   program?: ProgramListFragmentFragment;
   event?: EventListFragmentFragment;

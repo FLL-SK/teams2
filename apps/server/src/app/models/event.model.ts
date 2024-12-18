@@ -12,6 +12,7 @@ export interface EventData {
   ownFeesAllowed?: boolean;
   maxTeams?: number;
 
+  invitationOnly?: boolean;
   invitedTeamsIds?: ObjectId[];
 
   managersIds: ObjectId[];
@@ -48,6 +49,7 @@ const schema = new Schema<EventData, EventModel>(
     ownFeesAllowed: { type: Types.Boolean },
     maxTeams: { type: Types.Number },
 
+    invitationOnly: { type: Types.Boolean },
     invitedTeamsIds: [{ type: Types.ObjectId, ref: 'Team', default: [] }],
 
     date: { type: Types.Date },

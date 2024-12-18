@@ -133,7 +133,7 @@ input RegistrationFilter {
 extend type Query {
   getRegistration(id: ID!): Registration
   getRegistrationsCount(filter: RegistrationFilter): Int!
-  getProgramRegistrations(programId: ID!): [Registration!]!
+  getProgramRegistrations(programId: ID!, includeNotConfirmed: Boolean): [Registration!]!
   getEventRegistrations(eventId: ID!): [Registration!]!
   getRegistrationFiles(id: ID!): [File!]!
   getRegisteredTeams(eventId: ID!, includeCoaches: Boolean): [RegisteredTeamPayload!]!
