@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Text, Tip } from 'grommet';
-import { FormClose } from 'grommet-icons';
+import { Box, Button, Text } from 'grommet';
 
 interface Action {
   label: string;
@@ -17,20 +16,30 @@ interface SetClearDateProps {
   canEdit?: boolean;
   action?: Action;
   clearType?: 'button' | 'anchor';
+  direction?: 'row' | 'column';
 }
 
 export function SetClearDate(props: SetClearDateProps) {
-  const { date, onSet, onClear, canEdit, clearType, action } = props;
+  const { date, onSet, onClear, canEdit, clearType, action, direction = 'row' } = props;
 
   return (
-    <Box direction="row" width="100%" justify="between" align="center">
+    <Box
+      direction={direction}
+      width="100%"
+      align={direction === 'row' ? 'center' : undefined}
+      gap="small"
+    >
       <Text>{date ? formatDate(date) : '-'}</Text>
 
-      {canEdit && date && <Button size="small" label="Zruš" onClick={() => onClear()} />}
-      {canEdit && !date && <Button size="small" label="Potvrď" onClick={() => onSet()} />}
-      {action && !action.hide && (
-        <Button size="small" label={action.label} onClick={action.onClick} />
-      )}
+      <Box direction="row" gap="small">
+        {canEdit && date && <Button size="small" label="Zruš" onClick={() => onClear()} />}
+        {canEdit && !date && <Button size="small" label="Potvrď" onClick={() => onSet()} />}
+      </Box>
+      <Box direction="row" gap="small">
+        {action && !action.hide && (
+          <Button size="small" label={action.label} onClick={action.onClick} />
+        )}
+      </Box>
     </Box>
   );
 }

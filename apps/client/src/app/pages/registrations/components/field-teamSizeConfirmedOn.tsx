@@ -14,8 +14,9 @@ export const FieldTeamSizeConfirmedOn = (props: {
   registration: Pick<Registration, 'id' | 'sizeConfirmedOn'>;
   teamId?: string;
   readOnly: boolean;
+  direction?: 'row' | 'column';
 }) => {
-  const { registration, teamId, readOnly } = props;
+  const { registration, teamId, readOnly, direction = 'row' } = props;
   const { isAdmin, isTeamCoach } = useAppUser();
   const { notify } = useNotification();
   const onError = useCallback(
@@ -30,6 +31,7 @@ export const FieldTeamSizeConfirmedOn = (props: {
     <LabelValue
       label="Veľkosť tímu potvrdená"
       tip="Dátum potvrdenia počtu detí a trénerov, ktorí sa NAOZAJ záčastnia na turnaji."
+      direction={direction}
     >
       <SetClearDate
         canEdit={(isAdmin() || isTeamCoach(teamId)) && !readOnly}
@@ -40,6 +42,7 @@ export const FieldTeamSizeConfirmedOn = (props: {
             variables: { id: registration.id, date: toUtcDateString(new Date()) ?? '' },
           })
         }
+        direction={direction}
       />
     </LabelValue>
   );

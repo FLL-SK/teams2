@@ -3,7 +3,7 @@ import { Box, Button, Form, FormField } from 'grommet';
 import { Modal } from '../modal';
 
 interface EditTeamSizeDialogProps {
-  size?: FormFields | null;
+  teamSize?: FormFields | null;
   onClose: () => void;
   onSubmit: (field: FormFields) => Promise<unknown>;
   show?: boolean;
@@ -16,15 +16,15 @@ interface FormFields {
 }
 
 export function EditTeamSizeDialog(props: EditTeamSizeDialogProps) {
-  const { onClose, onSubmit, show = true, size } = props;
+  const { onClose, onSubmit, show = true, teamSize } = props;
 
   const v = useCallback(
     () => ({
-      girlCount: size?.girlCount ?? 0,
-      boyCount: size?.boyCount ?? 0,
-      coachCount: size?.coachCount ?? 0,
+      girlCount: teamSize?.girlCount ?? 0,
+      boyCount: teamSize?.boyCount ?? 0,
+      coachCount: teamSize?.coachCount ?? 0,
     }),
-    [size]
+    [teamSize],
   );
 
   const [formValues, setFormValues] = useState<FormFields>(v());
@@ -43,7 +43,7 @@ export function EditTeamSizeDialog(props: EditTeamSizeDialogProps) {
   };
 
   return (
-    <Modal title={'Počet členov tímu'} onClose={onClose} width="small">
+    <Modal title={'Počet členov tímu'} onClose={onClose} width="medium">
       <Form onSubmit={handleSubmit} messages={{ required: 'Povinný údaj' }} value={formValues}>
         <FormField
           label="Dievčatá"

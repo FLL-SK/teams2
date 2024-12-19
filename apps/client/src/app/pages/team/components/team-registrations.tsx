@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box } from 'grommet';
 import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
-import { TeamRegistrationTile } from './team-registration-tile';
+import { ProgramRegistrationTile } from './program-registration-tile';
 
 interface TeamRegistrationsListProps {
   registrations: TeamRegistrationFragmentFragment[];
@@ -12,7 +12,7 @@ export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
   const { registrations, includeInactive } = props;
   const today = useMemo(() => new Date().toISOString().substring(0, 10), []);
 
-  const regs = useMemo(
+  const progRegs = useMemo(
     // get only program registrations
     () =>
       registrations.filter(
@@ -24,8 +24,18 @@ export function TeamRegistrationsList(props: TeamRegistrationsListProps) {
 
   return (
     <Box gap="small">
-      {regs.map((reg) => (
-        <TeamRegistrationTile key={reg.id} registration={reg} allRegistrations={registrations} />
+      {progRegs.map((reg) => (
+        <ProgramRegistrationTile
+          key={reg.id}
+          registration={reg}
+          eventRegistrations={registrations.filter(
+            (r) =>
+              r.programId === reg.programId &&
+              !!r.eventId &&
+              !r.canceledOn &&
+              (includeInactive || (r.event?.date ?? '9999') >= today),
+          )}
+        />
       ))}
     </Box>
   );

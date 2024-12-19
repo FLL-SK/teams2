@@ -10,8 +10,9 @@ import { formatTeamSize } from '../../../utils/format-teamsize';
 export const FieldTeamSize = (props: {
   registration: Pick<Registration, 'id' | 'boyCount' | 'girlCount' | 'coachCount' | 'teamId'>;
   readOnly: boolean;
+  direction?: 'row' | 'column';
 }) => {
-  const { registration, readOnly } = props;
+  const { registration, readOnly, direction = 'row' } = props;
   const { isAdmin, isTeamCoach } = useAppUser();
   const { notify } = useNotification();
   const onError = useCallback(
@@ -26,24 +27,32 @@ export const FieldTeamSize = (props: {
     <LabelValue
       label="Veľkosť tímu"
       tip="Počet detí a trénerov, ktorí sa záčastnia na turnaji."
-      direction="row"
+      direction={direction}
     >
-      <Box direction="row" width="100%" justify="between">
+      <Box
+        direction={direction}
+        width="100%"
+        //justify="between"
+        align={direction === 'column' ? 'center' : undefined}
+        gap="small"
+      >
         <Text>{formatTeamSize(registration)}</Text>
 
         {(isAdmin() || isTeamCoach(registration.teamId)) && (
-          <Button
-            size="small"
-            label="Nastav"
-            onClick={() => setShowDialog(true)}
-            disabled={readOnly}
-          />
+          <Box direction="row">
+            <Button
+              size="small"
+              label="Nastav"
+              onClick={() => setShowDialog(true)}
+              disabled={readOnly}
+            />
+          </Box>
         )}
       </Box>
 
       <EditTeamSizeDialog
         show={showDialog}
-        size={registration}
+        teamSize={registration}
         onClose={() => setShowDialog(false)}
         onSubmit={(size) => setTeamSize({ variables: { id: registration.id, input: size } })}
       />

@@ -13,11 +13,13 @@ interface LabelValueProps {
 }
 
 export const LabelValue = (props: LabelValueProps) => {
-  const { label, value = '', direction = 'column', labelWidth, children } = props;
+  const { label, value = '', direction, labelWidth, children } = props;
   return (
     <LabelValueGroupContext.Consumer>
       {(context) => {
-        const dir = direction ?? context.direction;
+        const dir = direction ?? context.direction ?? 'column';
+
+        console.log('LabelValue', label, value, dir);
 
         return (
           <Box
@@ -25,12 +27,12 @@ export const LabelValue = (props: LabelValueProps) => {
             border={{ side: 'bottom', color: 'light-3' }}
             gap="xsmall"
             align={dir == 'row' ? 'center' : undefined}
-            justify={dir == 'row' ? 'between' : undefined}
+            // justify={dir == 'row' ? 'between' : undefined}
           >
             <Box
               width={{
-                width: (labelWidth ?? context.labelWidth ?? dir === 'row') ? '50%' : '100%',
-                min: (labelWidth ?? context.labelWidth ?? dir === 'row') ? '50%' : '100%',
+                width: labelWidth ?? context.labelWidth ?? (dir === 'row' ? '50%' : '100%'),
+                min: labelWidth ?? context.labelWidth ?? (dir === 'row' ? '50%' : '100%'),
               }}
             >
               {props.tip && (
