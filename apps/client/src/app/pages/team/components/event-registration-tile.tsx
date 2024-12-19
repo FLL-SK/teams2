@@ -18,6 +18,7 @@ import { useNotification } from '../../../components/notifications/notification-
 interface EventRegistrationTileProps {
   registration: TeamRegistrationFragmentFragment;
   canEdit?: boolean;
+  showInactive?: boolean;
 }
 
 interface Address {
@@ -93,57 +94,61 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   );
 
   return (
-    <>
-      <LabelValueGroup labelWidth="250px" gap="small" direction="row">
-        <LabelValue label="Turnaj">
-          <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
-        </LabelValue>
-        <LabelValue label="Registracia na turnaj">
-          <Anchor
-            label="Otvor detaily registracie na turnaj"
-            href={appPath.registration(registration.id)}
+    <Box>
+      <Box background={'light-2'} pad="small">
+        <LabelValueGroup direction="row" labelWidth="200px">
+          <LabelValue label="Turnaj">
+            <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
+          </LabelValue>
+
+          <LabelValue label="Stav">
+            <Text>{registration.confirmedOn ? 'Potvrdený' : 'Nepotvrdený'}</Text>
+            <Anchor label={'Otvor detail'} href={appPath.registration(registration.id)} />
+          </LabelValue>
+
+          <LabelValue label="Dátum turnaja">
+            <Text>
+              {registration.event.date ? formatDate(registration.event.date) : 'dátum neurčený'}
+            </Text>
+          </LabelValue>
+
+          <FieldTeamSize registration={registration} readOnly={!canEdit} direction="row" />
+          {registration.program.maxTeamSize &&
+          registration.girlCount + registration.boyCount > registration.program.maxTeamSize ? (
+            <Paragraph color="status-critical">
+              Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna veľkosť tímu je{' '}
+              {registration.program.maxTeamSize}. Na turnaji sa môže súťažne zúčastniť iba povolený
+              počet detí. Ostatní sa môžu zúčastniť ako diváci.
+            </Paragraph>
+          ) : null}
+
+          <FieldTeamSizeConfirmedOn
+            registration={registration}
+            readOnly={!canEdit}
+            direction="row"
           />
-        </LabelValue>
 
-        <LabelValue label="Dátum turnaja">
-          <Text>{registration.event.date ? formatDate(registration.event.date) : 'neurčený'}</Text>
-        </LabelValue>
-
-        <FieldTeamSize registration={registration} readOnly={!canEdit} />
-
-        {registration.program.maxTeamSize &&
-        registration.girlCount + registration.boyCount > registration.program.maxTeamSize ? (
-          <Paragraph color="status-critical">
-            Počet detí v tíme je väčší ako dovoľujú pravidlá programu. Maximálna veľkosť tímu je{' '}
-            {registration.program.maxTeamSize}. Na turnaji sa môže súťažne zúčastniť iba povolený
-            počet detí. Ostatní sa môžu zúčastniť ako diváci.
-          </Paragraph>
-        ) : null}
-        <FieldTeamSizeConfirmedOn
-          registration={registration}
-          teamId={registration.teamId}
-          readOnly={!canEdit}
-        />
-        <LabelValue label="Stravovanie" direction="row">
-          <Box direction="row" gap="small">
-            <Button
-              size="small"
-              label={
-                registration.foodOrder && registration.foodOrder.items.length > 0
-                  ? 'Upraviť'
-                  : 'Objednať'
-              }
-              onClick={() => setShowFoodOrderModal(true)}
-              disabled={!canOrderFood && !isAdmin() && !isEventManager(registration.event.id)}
-            />
-          </Box>
-        </LabelValue>
-        {!registration.confirmedOn && (
-          <Text color="status-warning">
-            Stravovanie je možné objedať až po potvrdní registrácie.
-          </Text>
-        )}
-      </LabelValueGroup>
+          <LabelValue label="Stravovanie" direction="row">
+            <Box direction="row" gap="small">
+              <Button
+                size="small"
+                label={
+                  registration.foodOrder && registration.foodOrder.items.length > 0
+                    ? 'Upraviť'
+                    : 'Objednať'
+                }
+                onClick={() => setShowFoodOrderModal(true)}
+                disabled={!(canOrderFood && (isAdmin() || isEventManager(registration.event.id)))}
+              />
+            </Box>
+            {!registration.confirmedOn && (
+              <Text color="status-warning">
+                Stravovanie je možné objedať až po potvrdní registrácie.
+              </Text>
+            )}
+          </LabelValue>
+        </LabelValueGroup>
+      </Box>
 
       {showFoodOrderModal && (
         <FoodOrderModal
@@ -156,6 +161,6 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
           }}
         />
       )}
-    </>
+    </Box>
   );
 }

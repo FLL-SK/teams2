@@ -6,6 +6,7 @@ import { CheckoutDetails } from './types';
 
 interface CheckoutSelectEventProps {
   details: CheckoutDetails;
+  ignoreEvents?: string[];
   onSubmit: (event: EventListFragmentFragment) => void;
   nextStep: () => void;
   prevStep: () => void;
@@ -13,7 +14,7 @@ interface CheckoutSelectEventProps {
 }
 
 export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
-  const { details, onSubmit, nextStep, prevStep, cancel } = props;
+  const { details, onSubmit, nextStep, prevStep, cancel, ignoreEvents = [] } = props;
   const [fetchEvents, { data, loading }] = useGetEventsLazyQuery({
     fetchPolicy: 'network-only',
   });
@@ -52,7 +53,12 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
           event={event}
           onClick={() => handleSelectEvent(event)}
           selected={details.event?.id === event.id}
-          disabled={event.maxTeams && event.registrationsCount >= event.maxTeams ? true : false}
+          disabled={
+            (event.maxTeams && event.registrationsCount >= event.maxTeams) ||
+            ignoreEvents.find((e) => e === event.id)
+              ? true
+              : false
+          }
           showNotice
         />
       ))}

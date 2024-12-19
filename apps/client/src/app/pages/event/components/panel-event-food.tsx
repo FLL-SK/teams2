@@ -59,6 +59,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
       <LabelValue
         label="Termín pre objednávky stravovania"
         value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
+        direction="row"
       />
       {eventFoodOrders.length === 0 && (
         <>

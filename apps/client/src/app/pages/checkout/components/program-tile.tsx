@@ -41,6 +41,9 @@ export function ProgramTile(props: ProgramTileProps) {
         <Box width="100%">
           <Box direction="row" justify="between">
             <Text>{program.name}</Text>
+            {disabled && (
+              <Text color="status-warning">Do tohto programu sa už nemôžete prihlásiť.</Text>
+            )}
             {showNotice && <Text color={maxColor}>{notice}</Text>}
           </Box>
           <Markdown>{program.description ?? ''}</Markdown>

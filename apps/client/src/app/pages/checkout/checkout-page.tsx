@@ -213,6 +213,9 @@ export function CheckoutPage() {
           {step === 'select-item' && !isRegisteringForEvent && (
             <CheckoutSelectProgram
               details={checkoutDetails}
+              ignorePrograms={team.registrations
+                .filter((r) => !r.canceledOn)
+                .map((r) => r.programId)}
               onSubmit={(p) => setCheckoutDetails({ ...checkoutDetails, program: p })}
               nextStep={() => setStep('select-type')}
               prevStep={() => setStep('confirm-billto-contact')}
@@ -222,6 +225,9 @@ export function CheckoutPage() {
           {step === 'select-item' && isRegisteringForEvent && (
             <CheckoutSelectEvent
               details={checkoutDetails}
+              ignoreEvents={team.registrations
+                .filter((r) => !r.canceledOn && r.eventId)
+                .map((r) => r.eventId ?? '')}
               onSubmit={(e) => setCheckoutDetails({ ...checkoutDetails, event: e })}
               nextStep={() => setStep('billto')}
               prevStep={() => setStep('confirm-billto-contact')}

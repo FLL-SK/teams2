@@ -49,6 +49,11 @@ export function EventListTile(props: EventListTileProps) {
         <Box>
           <Text>{event.name}</Text>
           {!hideProgram && <Text size="small">{event.program.name}</Text>}
+          {disabled && (
+            <Text color="status-warning" size="small">
+              Na tento turnaj sa už nemôžete prihlásiť.
+            </Text>
+          )}
         </Box>
       </Box>
 

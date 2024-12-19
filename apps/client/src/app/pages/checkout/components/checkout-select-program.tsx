@@ -7,13 +7,14 @@ import { CheckoutDetails } from './types';
 interface CheckoutSelectProgramProps {
   details: CheckoutDetails;
   onSubmit: (program: ProgramListFragmentFragment) => void;
+  ignorePrograms?: string[];
   nextStep: () => void;
   prevStep: () => void;
   cancel: () => void;
 }
 
 export function CheckoutSelectProgram(props: CheckoutSelectProgramProps) {
-  const { details, onSubmit, nextStep, prevStep, cancel } = props;
+  const { details, onSubmit, nextStep, prevStep, cancel, ignorePrograms = [] } = props;
   const { data, loading } = useGetProgramsQuery({ variables: { filter: { isActive: true } } });
 
   if (loading) {
@@ -32,7 +33,12 @@ export function CheckoutSelectProgram(props: CheckoutSelectProgramProps) {
           program={program}
           onClick={() => onSubmit(program)}
           selected={details.program?.id === program.id}
-          disabled={program.maxTeams && program.regCount >= program.maxTeams ? true : false}
+          disabled={
+            (program.maxTeams && program.regCount >= program.maxTeams) ||
+            ignorePrograms.find((p) => p === program.id)
+              ? true
+              : false
+          }
           showNotice
         />
       ))}
