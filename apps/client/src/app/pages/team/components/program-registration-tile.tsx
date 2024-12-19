@@ -19,7 +19,7 @@ export function ProgramRegistrationTile(props: ProgramRegistrationTileProps) {
   const navigate = useNavigate();
 
   const canEdit = useMemo(() => {
-    return !registration.canceledOn && !registration.confirmedOn;
+    return !registration.canceledOn && registration.confirmedOn;
   }, [registration]);
 
   return (
