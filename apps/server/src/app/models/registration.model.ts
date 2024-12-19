@@ -57,6 +57,7 @@ interface CountRegistrationsFilter {
   onlyNotShipped?: boolean;
   onlyUnconfirmed?: boolean;
   onlyUnpaid?: boolean;
+  onlyProgramRelated?: boolean;
   programId?: ObjectId;
   eventId?: ObjectId;
   teamId?: ObjectId;
@@ -142,9 +143,13 @@ schema.static('groupRegistrations', async function (filter: CountRegistrationsFi
   if (filter.programId) {
     q.programId = filter.programId;
   }
+
   if (filter.onlyUnconfirmed) {
     q.confirmedOn = null;
+  } else {
+    q.confirmedOn = { $ne: null };
   }
+
   if (filter.onlyUnpaid) {
     q.paidOn = null;
     q.invoiceIssuedOn = { $ne: null };
@@ -160,6 +165,10 @@ schema.static('groupRegistrations', async function (filter: CountRegistrationsFi
   if (filter.eventId) {
     q.eventId = filter.eventId;
   }
+  if (filter.onlyProgramRelated) {
+    q.eventId = null;
+  }
+
   if (filter.teamId) {
     q.teamId = filter.teamId;
   }
@@ -179,6 +188,7 @@ schema.static('groupRegistrations', async function (filter: CountRegistrationsFi
       },
     ])
     .exec();
+
   return regs;
 });
 

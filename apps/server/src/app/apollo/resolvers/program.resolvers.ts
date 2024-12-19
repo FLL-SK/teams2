@@ -16,7 +16,10 @@ export const typeResolver: Resolver<Program> = {
   registrations: async ({ id }, _args, { dataSources }) =>
     dataSources.registration.getProgramRegistrations(id),
   regCount: async ({ id }, _args, { dataSources }) => {
-    const r = await dataSources.registration.getRegistrationGroups({ programId: id });
+    const r = await dataSources.registration.getRegistrationGroups({
+      programId: id,
+      onlyProgramRelated: true,
+    });
     return r.length;
   },
   regUnconfirmed: async ({ id }, _args, { dataSources }) => {
