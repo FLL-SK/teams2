@@ -4,17 +4,17 @@ import { EventListTile } from './event-list-tile';
 import { EventListFragmentFragment } from '../_generated/graphql';
 import { useNavigate } from 'react-router-dom';
 import { appPath } from '@teams2/common';
+import { ColorType } from 'grommet/utils';
 
 interface EventListProps {
   events: EventListFragmentFragment[];
   onClick?: (event: EventListFragmentFragment) => void;
   onRemove?: (event: EventListFragmentFragment) => Promise<unknown>;
-  showNotice?: boolean;
 }
 
 export function EventList(props: EventListProps) {
   const navigate = useNavigate();
-  const { events, onClick, onRemove, showNotice } = props;
+  const { events, onClick, onRemove } = props;
 
   return (
     <Box gap="small">
@@ -24,7 +24,6 @@ export function EventList(props: EventListProps) {
           event={event}
           onClick={onClick ? () => onClick(event) : () => navigate(appPath.event(event.id))}
           onRemove={onRemove ? () => onRemove(event) : undefined}
-          showNotice={showNotice}
         />
       ))}
     </Box>

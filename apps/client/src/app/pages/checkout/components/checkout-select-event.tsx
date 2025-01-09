@@ -3,6 +3,8 @@ import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
 import { EventListFragmentFragment, useGetEventsLazyQuery } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';
+import { is } from 'date-fns/locale';
+import { ColorType } from 'grommet/utils';
 
 interface CheckoutSelectEventProps {
   details: CheckoutDetails;
@@ -18,6 +20,7 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
   const [fetchEvents, { data, loading }] = useGetEventsLazyQuery({
     fetchPolicy: 'network-only',
   });
+  const [today] = React.useState(new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
 
   React.useEffect(() => {
     if (details.program) {
@@ -27,39 +30,71 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
     }
   }, [details.program, fetchEvents]);
 
+  const df = React.useCallback(
+    (event: EventListFragmentFragment) => {
+      console.log('event', today, event.date, event);
+      if (
+        event.invitationOnly &&
+        event.invitedTeamsIds.findIndex((id) => id === details.teamId) === -1
+      ) {
+        return {
+          isDisabled: true,
+          notice: 'Len na pozvánky',
+          color: 'status-warning' as ColorType,
+        };
+      }
+
+      if (event.registrationEnd && event.registrationEnd < today) {
+        return {
+          isDisabled: true,
+          notice: 'Registrácia skončila',
+          color: 'status-warning' as ColorType,
+        };
+      }
+
+      if (event.maxTeams && event.registrationsCount >= event.maxTeams) {
+        return {
+          isDisabled: true,
+          notice: 'Turnaj je naplnený',
+          color: 'status-critical' as ColorType,
+        };
+      }
+
+      if (event.date && event.date < today) {
+        return {
+          isDisabled: true,
+          notice: 'Turnaj už prebehol',
+          color: 'status-warning' as ColorType,
+        };
+      }
+
+      if (ignoreEvents.find((e) => e === event.id)) {
+        return { isDisabled: true, notice: '', color: 'status-ok' as ColorType };
+      }
+
+      return { isDisabled: false, notice: '', color: 'status-ok' as ColorType };
+    },
+    [ignoreEvents, today, details.teamId],
+  );
+
   if (loading) {
     return <Spinner />;
   }
 
   const events = data?.getEvents ?? [];
 
-  const handleSelectEvent = (event: EventListFragmentFragment) => {
-    if (
-      event.invitationOnly &&
-      event.invitedTeamsIds.findIndex((id) => id === details.teamId) === -1
-    ) {
-      return;
-    }
-    onSubmit(event);
-  };
-
   return (
     <Box gap="medium">
-      <Text>Vyberte turnaj na ktorý sa chcete prihlásiť:</Text>
+      <Text>Vyberte turnaj na ktorý sa chcete registrovať:</Text>
 
       {events.map((event) => (
         <EventListTile
           key={event.id}
           event={event}
-          onClick={() => handleSelectEvent(event)}
+          onClick={() => onSubmit(event)}
           selected={details.event?.id === event.id}
-          disabled={
-            (event.maxTeams && event.registrationsCount >= event.maxTeams) ||
-            ignoreEvents.find((e) => e === event.id)
-              ? true
-              : false
-          }
-          showNotice
+          disabled={df(event).isDisabled}
+          showNotice={df(event)}
         />
       ))}
 

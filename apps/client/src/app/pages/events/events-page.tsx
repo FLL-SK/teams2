@@ -25,7 +25,7 @@ export function EventsPage(props: EventsPageProps) {
           <Paragraph>Aktuálne ešte nie sú aktívne žiadne turnaje.</Paragraph>
         </Box>
       )}
-      <EventList events={events} showNotice />
+      <EventList events={events} />
     </BasePage>
   );
 }

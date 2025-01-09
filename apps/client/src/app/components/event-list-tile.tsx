@@ -2,7 +2,7 @@ import React from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Text, Tip } from 'grommet';
 import { Calendar, Close, Group } from 'grommet-icons';
-import { BorderType } from 'grommet/utils';
+import { BorderType, ColorType } from 'grommet/utils';
 
 import { EventListFragmentFragment } from '../_generated/graphql';
 import { getColor } from '../theme';
@@ -15,7 +15,7 @@ interface EventListTileProps {
   onRemove?: (e: EventListFragmentFragment) => void;
   hideProgram?: boolean;
   disabled?: boolean;
-  showNotice?: boolean;
+  showNotice?: { notice: string; color?: ColorType };
 }
 
 export function EventListTile(props: EventListTileProps) {
@@ -23,18 +23,6 @@ export function EventListTile(props: EventListTileProps) {
   const border: BorderType = selected
     ? { color: getColor('brand'), size: 'large' }
     : { side: 'top' };
-  let maxColor = undefined;
-  let notice = undefined;
-  if (event.maxTeams && event.registrationsCount >= event.maxTeams) {
-    maxColor = 'status-critical';
-    notice = 'Turnaj je naplnený';
-  } else if (event.maxTeams && event.maxTeams - event.registrationsCount < 3) {
-    maxColor = 'status-warning';
-    notice = 'Posledné miesta';
-  } else if (event.invitationOnly) {
-    maxColor = 'status-warning';
-    notice = 'Len na pozvánky';
-  }
 
   return (
     <ListRow2
@@ -51,7 +39,7 @@ export function EventListTile(props: EventListTileProps) {
           {!hideProgram && <Text size="small">{event.program.name}</Text>}
           {disabled && (
             <Text color="status-warning" size="small">
-              Na tento turnaj sa už nemôžete prihlásiť.
+              Na tento turnaj sa nedá registrovať.
             </Text>
           )}
         </Box>
@@ -66,16 +54,16 @@ export function EventListTile(props: EventListTileProps) {
         <Box direction="row" gap="small">
           <Tip content="Počet tímov / maximálny">
             <Box direction="row" gap="xsmall" align="center">
-              <Group color={maxColor} />
-              <Text color={maxColor}>
+              <Group />
+              <Text>
                 {event.registrationsCount}/{event.maxTeams ?? '-'}
               </Text>
             </Box>
           </Tip>
         </Box>
         {showNotice && (
-          <Text color={maxColor} size="small">
-            {notice}
+          <Text color={showNotice.color} size="small">
+            {showNotice.notice}
           </Text>
         )}
       </Box>
