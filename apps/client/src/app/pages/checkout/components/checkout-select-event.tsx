@@ -3,6 +3,7 @@ import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
 import { EventListFragmentFragment, useGetEventsLazyQuery } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';
+import { is } from 'date-fns/locale';
 
 interface CheckoutSelectEventProps {
   details: CheckoutDetails;
@@ -18,6 +19,7 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
   const [fetchEvents, { data, loading }] = useGetEventsLazyQuery({
     fetchPolicy: 'network-only',
   });
+  const [today] = React.useState(new Date().toISOString());
 
   React.useEffect(() => {
     if (details.program) {
@@ -27,21 +29,30 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
     }
   }, [details.program, fetchEvents]);
 
+  const isDisabled = React.useCallback(
+    (event: EventListFragmentFragment) => {
+      const d =
+        // check if event is full
+        (event.maxTeams && event.registrationsCount >= event.maxTeams) ||
+        // check if event is in the past
+        (event.date && event.date < today) ||
+        // check if event is invitation only and team is not invited
+        (event.invitationOnly &&
+          event.invitedTeamsIds.findIndex((id) => id === details.teamId) === -1) ||
+        // check if event is in ignore list
+        ignoreEvents.find((e) => e === event.id)
+          ? true
+          : false;
+      return d;
+    },
+    [ignoreEvents, today, details.teamId],
+  );
+
   if (loading) {
     return <Spinner />;
   }
 
   const events = data?.getEvents ?? [];
-
-  const handleSelectEvent = (event: EventListFragmentFragment) => {
-    if (
-      event.invitationOnly &&
-      event.invitedTeamsIds.findIndex((id) => id === details.teamId) === -1
-    ) {
-      return;
-    }
-    onSubmit(event);
-  };
 
   return (
     <Box gap="medium">
@@ -51,14 +62,9 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
         <EventListTile
           key={event.id}
           event={event}
-          onClick={() => handleSelectEvent(event)}
+          onClick={() => onSubmit(event)}
           selected={details.event?.id === event.id}
-          disabled={
-            (event.maxTeams && event.registrationsCount >= event.maxTeams) ||
-            ignoreEvents.find((e) => e === event.id)
-              ? true
-              : false
-          }
+          disabled={isDisabled(event)}
           showNotice
         />
       ))}
