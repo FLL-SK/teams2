@@ -365,7 +365,7 @@ export class RegistrationDataSource extends BaseDataSource {
 
     this.userGuard.isAdmin() ||
       this.userGuard.isEventManager(r.eventId) ||
-      this.userGuard.isCoach(r.teamId) ||
+      (this.userGuard.isCoach(r.teamId) && !r.foodOrder.invoicedOn) ||
       this.userGuard.notAuthorized('Remove food order');
 
     r.foodOrder = null;
