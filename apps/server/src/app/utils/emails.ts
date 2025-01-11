@@ -86,7 +86,7 @@ export function emailEventChangedToEventManagers(
 ) {
   const subject = `Zmena turnaja ${eventName}`;
   const title = subject;
-  const text = `Turnaj turnaj ${eventName} programu ${programName} bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Turnaj ${eventName} programu ${programName} bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
@@ -169,6 +169,7 @@ export async function emailTeamSizeConfirmed(
 ) {
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
+  const event = await eventRepository.findById(eventId).lean().exec();
 
   const subject = `Veľkosť tímu potvrdená - ${team.name}`;
   const title = subject;
@@ -184,7 +185,6 @@ export async function emailTeamSizeConfirmed(
   });
 
   // email to event managers
-  const event = await eventRepository.findById(eventId).lean().exec();
   const eventManagers = await userRepository
     .find({ _id: { $in: event.managersIds } })
     .lean()
@@ -199,7 +199,7 @@ export async function emailFoodOrderUpdated(registration: RegistrationData, upda
 
   const subject = `Objednávka stravy - ${team.name}`;
   const title = subject;
-  const text = `Používateľ ${updatedBy} objednal stravovanie pre tímu ${team.name}. ${registrationUrl}`;
+  const text = `Používateľ ${updatedBy} objednal stravovanie pre tím ${team.name}. ${registrationUrl}`;
 
   // email to admin
   getAppSettings().then((s) => {
@@ -254,10 +254,11 @@ export async function emailEventRegistrationConfirmed(
   const log = logLib.extend('emailRegistrationConfirmedEvent');
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
+  const event = await eventRepository.findById(eventId).lean().exec();
 
   const subject = `Registrácia tímu na turnaj potvrdená - ${team.name}`;
   const title = subject;
-  const text = `Organizátor turnaja potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+  const text = `Organizátor turnaja '${event.name}' potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
 
@@ -271,7 +272,6 @@ export async function emailEventRegistrationConfirmed(
   });
 
   // email to event managers
-  const event = await eventRepository.findById(eventId).lean().exec();
   const eventManagers = await userRepository
     .find({ _id: { $in: event.managersIds } }, { username: 1 })
     .lean()
@@ -298,10 +298,11 @@ export async function emailProgramRegistrationConfirmed(
   const log = logLib.extend('emailRegistrationConfirmedProg');
   const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
+  const program = await programRepository.findById(programId).lean().exec();
 
   const subject = `Registrácia tímu do programu potvrdená - ${team.name}`;
   const title = subject;
-  const text = `Organizátor programu potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+  const text = `Organizátor programu '${program.name} potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
 
   // email to admin
 
@@ -315,7 +316,6 @@ export async function emailProgramRegistrationConfirmed(
   });
 
   // email to program managers
-  const program = await programRepository.findById(programId).lean().exec();
   const programManagers = await userRepository
     .find({ _id: { $in: program.managersIds } }, { username: 1 })
     .lean()
@@ -430,7 +430,9 @@ export async function emailTeamUnregisteredFromEvent(registrationId: ObjectId) {
     programRepository.findById(reg.programId).lean().exec(),
   ]);
 
-  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
+  const regUrl = getServerConfig().clientAppRootUrl + appPath.registration(reg._id.toString());
+
+  const canceledBy = await userRepository.findById(reg.canceledBy).lean().exec();
 
   const coaches = await userRepository
     .find({ _id: { $in: team.coachesIds } }, { username: 1 })
@@ -452,7 +454,7 @@ export async function emailTeamUnregisteredFromEvent(registrationId: ObjectId) {
 
   const subject = `Zrušenie registrácia tímu ${team.name}`;
   const title = subject;
-  const text = `Registrácia tímu ${team.name} turnaj ${event.name} programu ${program.name} bola zrušená. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Registrácia tímu '${team.name}' na turnaji '${event.name}' programu ${program.name} bola zrušená užívateľom ${canceledBy.username} (${canceledBy.firstName} ${canceledBy.lastName}) . Viac informácií o registrá nájdete tu ${regUrl}`;
 
   coachEmails.forEach((to) => emailMessage({ to, subject, title, text }));
   log.debug(
