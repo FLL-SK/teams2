@@ -226,7 +226,7 @@ export async function emailFoodOrderRemoved(registration: RegistrationData, remo
 
   const subject = `Objednávka stravy zrušená - ${team.name}`;
   const title = subject;
-  const text = `Používateľ ${removedBy} zrušil stravovanie pre tímu ${team.name}. ${registrationUrl}`;
+  const text = `Používateľ ${removedBy} zrušil stravovanie pre tím ${team.name}. ${registrationUrl}`;
 
   // email to admin
   getAppSettings().then((s) => {
