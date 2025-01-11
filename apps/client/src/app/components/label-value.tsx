@@ -19,8 +19,6 @@ export const LabelValue = (props: LabelValueProps) => {
       {(context) => {
         const dir = direction ?? context.direction ?? 'column';
 
-        console.log('LabelValue', label, value, dir);
-
         return (
           <Box
             direction={dir}
