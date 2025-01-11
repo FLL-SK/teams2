@@ -181,12 +181,15 @@ export async function cancelRegistration(
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   const { dataSources, userGuard } = ctx;
-  const log = logLib.extend('registerTeam');
+  const log = logLib.extend('cancelRegistration');
   const reg = await dataSources.registration.getRegistration(id);
 
   if (
     !userGuard.isAdmin() &&
-    !((await userGuard.isCoach(reg.teamId)) && !reg.invoiceIssuedOn && !reg.shippedOn)
+    reg.canceledOn &&
+    !((await userGuard.isCoach(reg.teamId)) && !reg.confirmedOn) &&
+    !(reg.programId && (await userGuard.isProgramManager(reg.programId))) &&
+    !(reg.eventId && (await userGuard.isEventManager(reg.eventId)))
   ) {
     log.debug('Not authorized to cancel registration %s', id);
     return { errors: [{ code: 'not_authorized' }] };
