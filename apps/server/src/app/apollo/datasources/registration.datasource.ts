@@ -263,7 +263,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.sizeConfirmedOn = date;
     await r.save();
 
-    emailTeamSizeConfirmed(r.eventId, r.teamId, this.context.user.username);
+    emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
 
     return RegistrationMapper.toRegistration(r);
   }
@@ -303,9 +303,9 @@ export class RegistrationDataSource extends BaseDataSource {
       .exec();
 
     if (r.eventId) {
-      emailEventRegistrationConfirmed(r.eventId, r.teamId, this.context.user.username);
+      emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
     } else {
-      emailProgramRegistrationConfirmed(r.programId, r.teamId, this.context.user.username);
+      emailProgramRegistrationConfirmed(r._id, r.programId, r.teamId, this.context.user.username);
     }
     return RegistrationMapper.toRegistration(r);
   }

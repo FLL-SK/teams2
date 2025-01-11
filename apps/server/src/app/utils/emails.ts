@@ -74,7 +74,7 @@ export function emailEventChangedToCoach(
 ) {
   const subject = `Zmena na turnaji ${eventName}`;
   const title = subject;
-  const text = `Turnaj ${eventName} programu ${programName}, na ktorý je váš tím ${teamName} regitrovaný, bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Turnaj ${eventName} programu ${programName}, na ktorý je váš tím ${teamName} regitrovaný, bol zmenený.\nViac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
@@ -86,7 +86,7 @@ export function emailEventChangedToEventManagers(
 ) {
   const subject = `Zmena turnaja ${eventName}`;
   const title = subject;
-  const text = `Turnaj ${eventName} programu ${programName} bol zmenený. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Turnaj ${eventName} programu ${programName} bol zmenený.\nViac informácií o turnaji nájdete tu ${eventUrl}`;
   emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
@@ -97,7 +97,7 @@ export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId
   const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(eventId.toHexString());
   const subject = `Pridaný manažér pre turnaj ${ev.name}`;
   const title = subject;
-  const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér turnaja ${ev.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér turnaja ${ev.name}.\nViac informácií o turnaji nájdete tu ${eventUrl}`;
 
   // send to admin
   getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
@@ -117,7 +117,7 @@ export async function emailProgramManagerAdded(programId: ObjectId, userId: Obje
   const url = getServerConfig().clientAppRootUrl + appPath.program(programId.toHexString());
   const subject = `Pridaný manažér pre program ${prg.name}`;
   const title = subject;
-  const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}. Viac informácií o programe nájdete tu ${url}`;
+  const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}.\nViac informácií o programe nájdete tu ${url}`;
 
   // send to admin
   getAppSettings().then((s) => {
@@ -163,17 +163,19 @@ export function emailUserRejectedGdprToAdmin(userEmail: string) {
 }
 
 export async function emailTeamSizeConfirmed(
+  registrationId: ObjectId,
   eventId: ObjectId,
   teamId: ObjectId,
   confirmedBy: string,
 ) {
-  const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
+  const regUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registrationId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
   const event = await eventRepository.findById(eventId).lean().exec();
 
   const subject = `Veľkosť tímu potvrdená - ${team.name}`;
   const title = subject;
-  const text = `Používateľ ${confirmedBy} potvrdil veľkosť tímu ${team.name}. ${teamUrl}`;
+  const text = `Používateľ ${confirmedBy} potvrdil veľkosť tímu ${team.name} pre turnaj ${event.name}.\nDetaily registrácie nájdete tu ${regUrl}`;
 
   // email to admin
   getAppSettings().then((s) => {
@@ -238,7 +240,7 @@ export async function emailFoodOrderRemoved(registration: RegistrationData, remo
 
   const subject = `Objednávka stravy zrušená - ${team.name}`;
   const title = subject;
-  const text = `Používateľ ${removedBy} zrušil stravovanie pre tím ${team.name}. ${registrationUrl}`;
+  const text = `Používateľ ${removedBy} zrušil stravovanie pre tím ${team.name}.\nDetaily registrácie nájdete tu ${registrationUrl}`;
 
   // email to admin
   getAppSettings().then((s) => {
@@ -259,18 +261,19 @@ export async function emailFoodOrderRemoved(registration: RegistrationData, remo
 }
 
 export async function emailEventRegistrationConfirmed(
+  regId: ObjectId,
   eventId: ObjectId,
   teamId: ObjectId,
   confirmedBy: string,
 ) {
   const log = logLib.extend('emailRegistrationConfirmedEvent');
-  const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
+  const regUrl = getServerConfig().clientAppRootUrl + appPath.registration(regId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
   const event = await eventRepository.findById(eventId).lean().exec();
 
   const subject = `Registrácia tímu na turnaj potvrdená - ${team.name}`;
   const title = subject;
-  const text = `Organizátor turnaja '${event.name}' potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+  const text = `Organizátor turnaja '${event.name}' potvrdil registráciu tímu ${team.name}.\nDetaily registrácie nájdete tu ${regUrl}`;
 
   // email to admin
 
@@ -303,18 +306,19 @@ export async function emailEventRegistrationConfirmed(
 }
 
 export async function emailProgramRegistrationConfirmed(
+  regId: ObjectId,
   programId: ObjectId,
   teamId: ObjectId,
   confirmedBy: string,
 ) {
   const log = logLib.extend('emailRegistrationConfirmedProg');
-  const teamUrl = getServerConfig().clientAppRootUrl + appPath.team(teamId.toString());
+  const regUrl = getServerConfig().clientAppRootUrl + appPath.registration(regId.toString());
   const team = await teamRepository.findById(teamId).lean().exec();
   const program = await programRepository.findById(programId).lean().exec();
 
   const subject = `Registrácia tímu do programu potvrdená - ${team.name}`;
   const title = subject;
-  const text = `Organizátor programu '${program.name} potvrdil registráciu tímu ${team.name}. ${teamUrl}`;
+  const text = `Organizátor programu '${program.name} potvrdil registráciu tímu ${team.name}.\nDetaily registrácie nájdete tu ${regUrl}`;
 
   // email to admin
 
@@ -356,7 +360,8 @@ export async function emailTeamRegisteredForEvent(registrationId: ObjectId) {
     programRepository.findById(reg.programId).lean().exec(),
   ]);
 
-  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
+  const regUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registrationId.toString());
 
   const coaches = await userRepository
     .find({ _id: { $in: team.coachesIds } }, { username: 1 })
@@ -377,7 +382,7 @@ export async function emailTeamRegisteredForEvent(registrationId: ObjectId) {
 
   const subject = `Registrácia tímu ${team.name} na turnaj ${event.name}`;
   const title = subject;
-  const text = `Tím ${team.name} bol úspešne zaregistrovaný na turnaj ${event.name} programu ${program.name}. Viac informácií o turnaji nájdete tu ${eventUrl}`;
+  const text = `Tím ${team.name} bol úspešne zaregistrovaný na turnaj ${event.name} programu ${program.name}.\nDetaily registrácie nájdete tu ${regUrl}`;
 
   coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
   log.debug(
@@ -401,7 +406,8 @@ export async function emailTeamRegisteredForProgram(registrationId: ObjectId) {
     programRepository.findById(reg.programId).lean().exec(),
   ]);
 
-  const programUrl = getServerConfig().clientAppRootUrl + appPath.program(program._id.toString());
+  const regUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registrationId.toString());
 
   const coaches = await userRepository
     .find({ _id: { $in: team.coachesIds } }, { username: 1 })
@@ -417,7 +423,7 @@ export async function emailTeamRegisteredForProgram(registrationId: ObjectId) {
 
   const subject = `Registrácia tímu ${team.name} do programu ${program.name}`;
   const title = subject;
-  const text = `Tím ${team.name} bol úspešne zaregistrovaný do programu ${program.name}. Viac informácií o programe nájdete tu ${programUrl}`;
+  const text = `Tím ${team.name} bol úspešne zaregistrovaný do programu ${program.name}.\nDetaily registrácie nájdete ${regUrl}`;
 
   coaches.forEach((m) => emailMessage({ to: m.username, subject, title, text }));
   log.debug(
@@ -466,7 +472,7 @@ export async function emailTeamUnregisteredFromEvent(registrationId: ObjectId) {
 
   const subject = `Zrušenie registrácia tímu ${team.name}`;
   const title = subject;
-  const text = `Registrácia tímu '${team.name}' na turnaji '${event.name}' programu ${program.name} bola zrušená užívateľom ${canceledBy.username} (${canceledBy.firstName} ${canceledBy.lastName}) . Viac informácií o registrá nájdete tu ${regUrl}`;
+  const text = `Registrácia tímu '${team.name}' na turnaji '${event.name}' programu ${program.name} bola zrušená užívateľom ${canceledBy.username} (${canceledBy.firstName} ${canceledBy.lastName}).\nDetaily registrácie nájdete tu ${regUrl}`;
 
   coachEmails.forEach((to) => emailMessage({ to, subject, title, text }));
   log.debug(
@@ -490,7 +496,8 @@ export async function emailTeamUnregisteredFromProgram(registrationId: ObjectId)
     programRepository.findById(reg.programId).lean().exec(),
   ]);
 
-  const programUrl = getServerConfig().clientAppRootUrl + appPath.program(program._id.toString());
+  const regUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registrationId.toString());
 
   const coaches = await userRepository
     .find({ _id: { $in: team.coachesIds } }, { username: 1 })
@@ -507,7 +514,7 @@ export async function emailTeamUnregisteredFromProgram(registrationId: ObjectId)
 
   const subject = `Zrušenie registrácia tímu ${team.name}`;
   const title = subject;
-  const text = `Registrácia tímu ${team.name} v programe ${program.name} bola zrušená. Viac informácií o programe nájdete tu ${programUrl}`;
+  const text = `Registrácia tímu ${team.name} v programe ${program.name} bola zrušená.\nDetaily registrácie nájdete tu ${regUrl}`;
 
   coachEmails.forEach((to) => emailMessage({ to, subject, title, text }));
   log.debug(
@@ -532,7 +539,13 @@ export async function emailUsernameChanged(
   const profileUrl = getServerConfig().clientAppRootUrl + appPath.profile(userId.toString());
   const subject = `Zmena emailu na profile ${oldUsername} na ${newUsername}`;
   const title = subject;
-  const text = `Váš prihlasovaci email bol zmenený. Pôvodný email bol ${oldUsername}. Nový prihlasovací email je ${newUsername}. Zmena bola vykonaná používateľom ${changedBy}. V prípade, že je zmena nesprávna nás kontaktujte. Váš profil je dostupný tu ${profileUrl}`;
+  const text =
+    `Váš prihlasovaci email bol zmenený.\n` +
+    `Pôvodný email bol ${oldUsername}.\n` +
+    `Nový prihlasovací email je ${newUsername}.\n` +
+    `Zmena bola vykonaná používateľom ${changedBy}.\n` +
+    `V prípade, že je zmena nesprávna nás kontaktujte.\n` +
+    `Váš profil je dostupný tu ${profileUrl}`;
   emailMessage({ to: oldUsername, subject, title, text });
   emailMessage({ to: newUsername, subject, title, text });
   getAppSettings().then((s) =>
@@ -540,7 +553,7 @@ export async function emailUsernameChanged(
       to: s.sysEmail,
       subject,
       title,
-      text: `Email na profile ${oldUsername} bol zmenený na ${newUsername} používateľom ${changedBy}. Profil je dostupný tu ${profileUrl}`,
+      text: `Email na profile ${oldUsername} bol zmenený na ${newUsername} používateľom ${changedBy}.\nProfil je dostupný tu ${profileUrl}`,
     }),
   );
   log.debug('email sent to %o and %o and to admin', oldUsername, newUsername);
