@@ -200,13 +200,17 @@ export async function emailFoodOrderUpdated(registration: RegistrationData, upda
   const subject = `Objednávka stravy - ${team.name}`;
   const title = subject;
   const orderItems = registration.foodOrder.items
-    .map((i, idx) => `${idx}) ${i.name} x ${i.quantity} = ${i.price}`)
+    .map(
+      (i, idx) =>
+        `${idx + 1}) ${i.name} : ${i.price.toFixed(2)} EUR x ${i.quantity} ks = ${i.price.toFixed(2)} EUR`,
+    )
     .join('\n');
   const text =
-    `Používateľ ${updatedBy} objednal stravovanie pre tím ${team.name}.\nDetaily registrácie nájdete tu ${registrationUrl}` +
-    '\n\n' +
+    `Používateľ ${updatedBy} objednal stravovanie pre tím ${team.name}.` +
+    `<br/>Detaily registrácie nájdete tu ${registrationUrl}` +
+    '<br/><br/>' +
     orderItems +
-    '\n\n' +
+    '<br/><br/>' +
     `Poznámka: ${registration.foodOrder.note}`;
 
   // email to admin
