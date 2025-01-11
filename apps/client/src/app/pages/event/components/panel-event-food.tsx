@@ -64,6 +64,15 @@ export function PanelEventFood(props: PanelEventFoodProps) {
       {eventFoodOrders.length === 0 && (
         <>
           <Text>Tento turnaj nemá definované žiadne stravovanie.</Text>
+          {canEdit && (
+            <Box direction="row">
+              <Button
+                label="Pridať"
+                onClick={() => props.onAddItem?.()}
+                disabled={!props.onAddItem}
+              />
+            </Box>
+          )}
         </>
       )}
       {eventFoodOrders.length > 0 && (

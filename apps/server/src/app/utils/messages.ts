@@ -27,7 +27,7 @@ export async function msgFromTemplate(title: string, message: string): Promise<s
   </div>  
   <div>
     <h3>${title}</h3>
-    <p>${message}</p>
+    ${message.replace(/\n/g, '<br/>')}
   </div>
   `;
 
