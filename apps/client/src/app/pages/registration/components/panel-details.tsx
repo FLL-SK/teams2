@@ -30,7 +30,7 @@ interface PanelRegistrationDetailsProps {
 export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const { registration: reg, columnWidth, readOnly } = props;
   const { notify } = useNotification();
-  const { isAdmin, isTeamCoach } = useAppUser();
+  const { isAdmin, isTeamCoach, isEventManager, isProgramManager } = useAppUser();
 
   const [askUnregisterTeam, setAskUnregisterTeam] = useState(false);
   const [changeEvent, setChangeEvent] = useState(false);
@@ -45,6 +45,12 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const [updateRegistration] = useUpdateRegistrationMutation({
     onError: () => notify.error('Nepodarilo sa zmeniť typ registrácie'),
   });
+
+  const canCancelReg =
+    isAdmin() ||
+    (isTeamCoach(reg.teamId) && !reg.confirmedOn) ||
+    isProgramManager(reg.programId) ||
+    isEventManager(reg.eventId);
 
   return (
     <Panel title="Detaily registrácie" gap="small">
@@ -67,16 +73,18 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
         </Box>
         <Box width={columnWidth}>
           <LabelValueGroup labelWidth="200px" gap="small" direction="row">
-            <LabelValue label="Číslo tímu" value={reg.teamNo ?? 'xxx'} />
-            <LabelValue
-              label="Typ"
-              value={
-                `${reg.type}` +
-                (reg.type === 'CLASS_PACK'
-                  ? ` - T:${reg.impactedTeamCount} - D:${reg.impactedChildrenCount} - S:${reg.setCount}`
-                  : '')
-              }
-            />
+            {!reg.event && <LabelValue label="Číslo tímu" value={reg.teamNo ?? 'xxx'} />}
+            {!reg.event && (
+              <LabelValue
+                label="Typ"
+                value={
+                  `${reg.type}` +
+                  (reg.type === 'CLASS_PACK'
+                    ? ` - T:${reg.impactedTeamCount} - D:${reg.impactedChildrenCount} - S:${reg.setCount}`
+                    : '')
+                }
+              />
+            )}
             <LabelValue label="Dátum registrácie" value={formatDate(reg.createdOn)} />
             <FieldConfirmedOn registration={reg} readOnly={readOnly} />
           </LabelValueGroup>
@@ -87,15 +95,13 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
           <Button
             label="Zrušiť registráciu"
             onClick={() => setAskUnregisterTeam(true)}
-            disabled={
-              !isAdmin() && !(isTeamCoach(reg.teamId) && !reg.invoiceIssuedOn && !reg.shippedOn)
-            }
+            disabled={!canCancelReg}
           />
           {reg.event && (
             <Button
               label="Zmeniť turnaj"
               onClick={() => setChangeEvent(true)}
-              disabled={!isAdmin()}
+              disabled={!(isAdmin() || isProgramManager(reg.programId))}
             />
           )}
 
