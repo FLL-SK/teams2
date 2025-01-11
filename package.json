@@ -25,9 +25,6 @@
     "testseed": "yarn nx run server:testseed"
   },
   "private": true,
-  "resolutions": {
-    "@types/react": "18.3.3"
-  },
   "dependencies": {
     "@apollo/server": "4.11.3",
     "@aws-sdk/client-s3": "3.726.1",
@@ -102,14 +99,14 @@
     "@types/passport": "1.0.17",
     "@types/passport-jwt": "4.0.1",
     "@types/passport-local": "1.0.38",
-    "@types/react": "18.3.3",
-    "@types/react-color": "3.0.6",
-    "@types/react-dom": "18.3.0",
-    "@types/react-is": "18.3.0",
+    "@types/react": "19.0.4",
+    "@types/react-color": "3.0.13",
+    "@types/react-dom": "19.0.2",
+    "@types/react-is": "19.0.0",
     "@types/react-router-dom": "5.3.3",
     "@types/react-virtualized": "9.22.0",
-    "@typescript-eslint/eslint-plugin": "7.17.0",
-    "@typescript-eslint/parser": "7.17.0",
+    "@typescript-eslint/eslint-plugin": "8.19.1",
+    "@typescript-eslint/parser": "8.19.1",
     "babel-jest": "29.7.0",
     "babel-loader": "9.2.1",
     "babel-plugin-styled-components": "2.1.4",
@@ -129,17 +126,17 @@
     "jest-environment-node": "29.7.0",
     "nx": "20.3.1",
     "prettier": "3.4.2",
-    "react": "18.3.1",
+    "react": "19.0.0",
     "react-color": "2.19.3",
-    "react-dom": "18.3.1",
-    "react-is": "18.3.1",
-    "react-router-dom": "6.25.1",
+    "react-dom": "19.0.0",
+    "react-is": "19.0.0",
+    "react-router-dom": "7.1.1",
     "react-virtualized": "9.22.5",
     "regenerator-runtime": "0.14.1",
     "styled-components": "6.1.14",
     "stylis": "^4.3.4",
     "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
-    "typescript": "5.6.3"
+    "typescript": "5.7.3"
   }
 }
