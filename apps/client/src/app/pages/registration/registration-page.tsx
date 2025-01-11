@@ -130,10 +130,10 @@ export function RegistrationPage() {
     if (reg && (reg.canceledOn || !reg.confirmedOn || !reg.event || reg.foodOrder?.invoicedOn)) {
       return false;
     }
-    const diff = new Date(reg?.event?.date ?? 0).getTime() - Date.now();
-    const max = 1000 * 60 * 60 * 24 * 7; // 7 days
 
-    return diff > max;
+    return reg?.event?.foodOrderDeadline
+      ? reg?.event?.foodOrderDeadline > new Date(reg?.event?.date ?? 0).toISOString()
+      : true;
   }, [reg]);
 
   if (!id || (regDataError && !regLoading)) {

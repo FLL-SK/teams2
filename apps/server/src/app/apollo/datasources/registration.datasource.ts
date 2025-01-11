@@ -326,8 +326,17 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Registration not found');
     }
 
+    const e = await eventRepository.findById(r.eventId).exec();
+    if (!e) {
+      throw new Error('Event not found');
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (this.userGuard.isCoach(r.teamId) &&
+        (e.foodOrderDeadline ? e.foodOrderDeadline >= today : true)) ||
       this.userGuard.isEventManager(r.eventId) ||
       this.userGuard.notAuthorized('Update food order');
 
