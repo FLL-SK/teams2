@@ -16,12 +16,12 @@ export function ConfirmTeamUnregisterDialog(props: ConfirmTeamUnregisterDialogPr
     <Modal width="medium" onClose={onClose} title="Potvrdenie">
       <Box pad="medium">
         <Paragraph>
-          Naozaj chcete zrušiť registrciu tímu <strong>{teamName}</strong>{' '}
+          Naozaj chcete zrušiť registráciu tímu <strong>{teamName}</strong>{' '}
           {type === 'EVENT' ? 'na turnaji' : 'v programe'}?
           <br />
           <br />
-          Pokiaľ nie ste administrátor, tak registráciu môžete zrušiť len ak nebola ešte vystavená
-          faktúra a neboli odoslané žiadne materiály k programu, napr. Challenge sety.
+          Ako tréner môžete zrušiť registráciu len ak ešte nebola potrdená. V opačnom prípade je
+          potrebné kontaktovať organizátora turnaja, alebo programu.
         </Paragraph>
         <Box pad="small" direction="row" justify="evenly">
           <Button
