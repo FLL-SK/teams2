@@ -321,7 +321,6 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async updateFoodOrder(regId: ObjectId, orderData: OrderInput): Promise<RegistrationPayload> {
     const r = await registrationRepository.findById(regId).exec();
-
     if (!r) {
       throw new Error('Registration not found');
     }
@@ -336,7 +335,7 @@ export class RegistrationDataSource extends BaseDataSource {
 
     this.userGuard.isAdmin() ||
       (this.userGuard.isCoach(r.teamId) &&
-        (e.foodOrderDeadline ? e.foodOrderDeadline >= today : true)) ||
+        (e.foodOrderDeadline ? e.foodOrderDeadline.getTime() >= today.getTime() : true)) ||
       this.userGuard.isEventManager(r.eventId) ||
       this.userGuard.notAuthorized('Update food order');
 
