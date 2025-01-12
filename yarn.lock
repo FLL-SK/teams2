@@ -8814,21 +8814,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:19.0.2":
-  version: 19.0.2
-  resolution: "@types/react-dom@npm:19.0.2"
-  peerDependencies:
-    "@types/react": ^19.0.0
-  checksum: 10/d2ae81ec0b8eee7a4bf31918796fdaa34e8db68f69682163bc212d759de76783e6ffcc02c02722dcf508429067148841e6da81414cc730ca2a28c9c2b350c880
+"@types/react-dom@npm:18.3.2":
+  version: 18.3.2
+  resolution: "@types/react-dom@npm:18.3.2"
+  dependencies:
+    "@types/react": "npm:^18"
+  checksum: 10/29337fe650ec49178121a815f0c5b7f6081e63b216a29bd6f90bb5e5b0367d60a95b50a25b1848031c82458de2dfb62f78b18e72d0e6fed6f77951e64e3897d1
   languageName: node
   linkType: hard
 
-"@types/react-is@npm:19.0.0":
-  version: 19.0.0
-  resolution: "@types/react-is@npm:19.0.0"
+"@types/react-is@npm:18.3.1":
+  version: 18.3.1
+  resolution: "@types/react-is@npm:18.3.1"
   dependencies:
-    "@types/react": "npm:*"
-  checksum: 10/c56e39e88558a71bc0b1deaa84cce9d5c84d6522057b73690d099b0763898203ec29a91563431e83b5086c49ac64a239fe993c50a4f008d6fbfc551587db5895
+    "@types/react": "npm:^18"
+  checksum: 10/ccb79d6e196a5232cde8ccb255ec97e062801a3dafeff3816130fb5ad6b9a87f7c0806ab35bc00890a229773228ef217d0390839b68c705d3add2f798b5fcf82
   languageName: node
   linkType: hard
 
@@ -8863,12 +8863,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:19.0.4":
+"@types/react@npm:*":
   version: 19.0.4
   resolution: "@types/react@npm:19.0.4"
   dependencies:
     csstype: "npm:^3.0.2"
   checksum: 10/9c20c1bafc21b2022bb8d3cc168ec646ae91580f769218cf0040a789c6b757412b6f4462b475a229039e99cc2727af03ca87b6b39b16930928c717cfe8e06e67
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:18.3.12":
+  version: 18.3.12
+  resolution: "@types/react@npm:18.3.12"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10/c9bbdfeacd5347d2240e0d2cb5336bc57dbc1b9ff557b6c4024b49df83419e4955553518169d3736039f1b62608e15b35762a6c03d49bd86e33add4b43b19033
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18":
+  version: 18.3.18
+  resolution: "@types/react@npm:18.3.18"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10/7fdd8b853e0d291d4138133f93f8d5c333da918e5804afcea61a923aab4bdfc9bb15eb21a5640959b452972b8715ddf10ffb12b3bd071898b9e37738636463f2
   languageName: node
   linkType: hard
 
@@ -22771,10 +22791,10 @@ __metadata:
     "@types/passport": "npm:1.0.17"
     "@types/passport-jwt": "npm:4.0.1"
     "@types/passport-local": "npm:1.0.38"
-    "@types/react": "npm:19.0.4"
+    "@types/react": "npm:18.3.12"
     "@types/react-color": "npm:3.0.13"
-    "@types/react-dom": "npm:19.0.2"
-    "@types/react-is": "npm:19.0.0"
+    "@types/react-dom": "npm:18.3.2"
+    "@types/react-is": "npm:18.3.1"
     "@types/react-router-dom": "npm:5.3.3"
     "@types/react-virtualized": "npm:9.22.0"
     "@typescript-eslint/eslint-plugin": "npm:8.19.1"
