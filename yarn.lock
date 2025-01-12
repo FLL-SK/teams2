@@ -8814,12 +8814,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18.3.2":
-  version: 18.3.2
-  resolution: "@types/react-dom@npm:18.3.2"
-  dependencies:
-    "@types/react": "npm:^18"
-  checksum: 10/29337fe650ec49178121a815f0c5b7f6081e63b216a29bd6f90bb5e5b0367d60a95b50a25b1848031c82458de2dfb62f78b18e72d0e6fed6f77951e64e3897d1
+"@types/react-dom@npm:18.3.5":
+  version: 18.3.5
+  resolution: "@types/react-dom@npm:18.3.5"
+  peerDependencies:
+    "@types/react": ^18.0.0
+  checksum: 10/02095b326f373867498e0eb2b5ebb60f9bd9535db0d757ea13504c4b7d75e16605cf1d43ce7a2e67893d177b51db4357cabb2842fb4257c49427d02da1a14e09
   languageName: node
   linkType: hard
 
@@ -8872,17 +8872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.3.12":
-  version: 18.3.12
-  resolution: "@types/react@npm:18.3.12"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 10/c9bbdfeacd5347d2240e0d2cb5336bc57dbc1b9ff557b6c4024b49df83419e4955553518169d3736039f1b62608e15b35762a6c03d49bd86e33add4b43b19033
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18":
+"@types/react@npm:18.3.18, @types/react@npm:^18":
   version: 18.3.18
   resolution: "@types/react@npm:18.3.18"
   dependencies:
@@ -20711,6 +20701,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-virtualized-auto-sizer@npm:1.0.25":
+  version: 1.0.25
+  resolution: "react-virtualized-auto-sizer@npm:1.0.25"
+  peerDependencies:
+    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/43678a904019f0413a3c649b5b64ea51263283120c991b285077b5075cf2ea564571f6d48b3a396b588d500d45820d1c98989cb7091e2a009e73e4faa7da9d20
+  languageName: node
+  linkType: hard
+
 "react-virtualized@npm:9.22.5":
   version: 9.22.5
   resolution: "react-virtualized@npm:9.22.5"
@@ -22791,9 +22791,9 @@ __metadata:
     "@types/passport": "npm:1.0.17"
     "@types/passport-jwt": "npm:4.0.1"
     "@types/passport-local": "npm:1.0.38"
-    "@types/react": "npm:18.3.12"
+    "@types/react": "npm:18.3.18"
     "@types/react-color": "npm:3.0.13"
-    "@types/react-dom": "npm:18.3.2"
+    "@types/react-dom": "npm:18.3.5"
     "@types/react-is": "npm:18.3.1"
     "@types/react-router-dom": "npm:5.3.3"
     "@types/react-virtualized": "npm:9.22.0"
@@ -22848,6 +22848,7 @@ __metadata:
     react-is: "npm:18.3.1"
     react-router-dom: "npm:7.1.1"
     react-virtualized: "npm:9.22.5"
+    react-virtualized-auto-sizer: "npm:1.0.25"
     regenerator-runtime: "npm:0.14.1"
     styled-components: "npm:6.1.14"
     stylis: "npm:^4.3.4"
