@@ -122,9 +122,9 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
     [data],
   );
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  // useEffect(() => {
+  //   refresh();
+  // }, [refresh]);
 
   return (
     <AppUserContext.Provider
