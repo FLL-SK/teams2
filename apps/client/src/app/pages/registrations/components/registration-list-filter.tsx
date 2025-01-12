@@ -122,7 +122,7 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
         <SidebarPanel label="Zásielka č.">
           <TextInput
             value={values.shipmentGroup ?? ''}
-            onChange={(e: React.MouseEvent) =>
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               onChange({ ...values, shipmentGroup: e.target.value })
             }
           />
