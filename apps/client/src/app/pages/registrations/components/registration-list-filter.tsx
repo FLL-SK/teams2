@@ -122,7 +122,9 @@ export function RegistrationListFilter(props: RegistrationListFilterProps) {
         <SidebarPanel label="Zásielka č.">
           <TextInput
             value={values.shipmentGroup ?? ''}
-            onChange={(e) => onChange({ ...values, shipmentGroup: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange({ ...values, shipmentGroup: e.target.value })
+            }
           />
         </SidebarPanel>
         <SidebarPanel label="Štítky tímu">

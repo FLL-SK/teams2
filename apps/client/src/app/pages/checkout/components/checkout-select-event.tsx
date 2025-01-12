@@ -32,7 +32,6 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
 
   const df = React.useCallback(
     (event: EventListFragmentFragment) => {
-      console.log('event', today, event.date, event);
       if (
         event.invitationOnly &&
         event.invitedTeamsIds.findIndex((id) => id === details.teamId) === -1

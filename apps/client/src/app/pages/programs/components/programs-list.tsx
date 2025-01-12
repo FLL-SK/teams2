@@ -93,7 +93,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
           <Box
             direction="row"
             gap="xsmall"
-            onClick={(e) => navigateRegs(e, { notConfirmed: true })}
+            onClick={(e: React.MouseEvent) => navigateRegs(e, { notConfirmed: true })}
           >
             <Halt />
             <Text size="small">{program.regUnconfirmed}</Text>
@@ -105,7 +105,11 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regNotInvoiced ? (
         <Tip content="nefakturované">
-          <Box direction="row" gap="xsmall" onClick={(e) => navigateRegs(e, { notInvoiced: true })}>
+          <Box
+            direction="row"
+            gap="xsmall"
+            onClick={(e: React.MouseEvent) => navigateRegs(e, { notInvoiced: true })}
+          >
             <Document />
             <Text size="small">{program.regNotInvoiced}</Text>
           </Box>
@@ -116,7 +120,11 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regUnpaid ? (
         <Tip content="nezaplatené">
-          <Box direction="row" gap="xsmall" onClick={(e) => navigateRegs(e, { notPaid: true })}>
+          <Box
+            direction="row"
+            gap="xsmall"
+            onClick={(e: React.MouseEvent) => navigateRegs(e, { notPaid: true })}
+          >
             <Money />
             <Text size="small">{program.regUnpaid}</Text>
           </Box>
@@ -127,7 +135,11 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
 
       {program.regNotShipped ? (
         <Tip content="neodoslané">
-          <Box direction="row" gap="xsmall" onClick={(e) => navigateRegs(e, { notShipped: true })}>
+          <Box
+            direction="row"
+            gap="xsmall"
+            onClick={(e: React.MouseEvent) => navigateRegs(e, { notShipped: true })}
+          >
             <Deliver />
             <Text size="small">{program.regNotShipped}</Text>
           </Box>
