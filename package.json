@@ -25,6 +25,10 @@
     "testseed": "yarn nx run server:testseed"
   },
   "private": true,
+  "resolutions": {
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5"
+  },
   "dependencies": {
     "@apollo/server": "4.11.3",
     "@aws-sdk/client-s3": "3.726.1",
