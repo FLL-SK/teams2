@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import {
   eventRepository,
+  PricelistEntryData,
   programRepository,
   RegistrationData,
   registrationRepository,
@@ -65,29 +66,44 @@ export function emailUserSignupToAdmin(to: string) {
   getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
 }
 
-export function emailEventChangedToCoach(
-  emails: string[],
-  teamName: string,
-  eventName: string,
-  programName: string,
-  eventUrl: string,
-) {
-  const subject = `Zmena na turnaji ${eventName}`;
+export function emailEventChangedToCoach(options: EventChangeNotifyOptions & { teamName: string }) {
+  const subject = `Zmena na turnaji ${options.eventName}`;
   const title = subject;
-  const text = `Turnaj ${eventName} programu ${programName}, na ktorý je váš tím ${teamName} regitrovaný, bol zmenený.\nViac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((to) => emailMessage({ to, subject, title, text }));
+  const text =
+    `Turnaj ${options.eventName} programu ${options.programName}, na ktorý je váš tím ${options.teamName} registrovaný, bol zmenený.` +
+    `\nViac informácií o turnaji nájdete tu ${options.eventUrl}`;
+  options.emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
-export function emailEventChangedToEventManagers(
-  emails: string[],
-  eventName: string,
-  programName: string,
-  eventUrl: string,
+export interface EventChangeNotifyOptions {
+  emails: string[];
+  teamName?: string;
+  eventName: string;
+  programName: string;
+  eventUrl: string;
+}
+
+export function emailFoodItemChanged(
+  options: EventChangeNotifyOptions & { oldItem: PricelistEntryData; newItem: PricelistEntryData },
 ) {
-  const subject = `Zmena turnaja ${eventName}`;
+  const subject = `Zmena v stravovaní na turnaji ${options.eventName}`;
   const title = subject;
-  const text = `Turnaj ${eventName} programu ${programName} bol zmenený.\nViac informácií o turnaji nájdete tu ${eventUrl}`;
-  emails.forEach((to) => emailMessage({ to, subject, title, text }));
+  const text =
+    `Usporiadateľ turnaja '${options.eventName}' programu '${options.programName}' zmenil položku stravovania.` +
+    `\nAk ste stravovanie už objednali, prosím skontrolujte zmeny a prípadne kontaktujte usporiadateľa turnaja.` +
+    `\n\nPôvodná položka: ${options.oldItem.n} - ${options.oldItem.up} EUR` +
+    `\nNová položka: ${options.newItem.n} - ${options.newItem.up} EUR` +
+    `\n\nViac informácií o turnaji nájdete tu ${options.eventUrl}`;
+  options.emails.forEach((to) => emailMessage({ to, subject, title, text }));
+}
+
+export function emailEventChangedToEventManagers(options: EventChangeNotifyOptions) {
+  const subject = `Zmena turnaja ${options.eventName}`;
+  const title = subject;
+  const text =
+    `Turnaj ${options.eventName} programu ${options.programName} bol zmenený.` +
+    `\nViac informácií o turnaji nájdete tu ${options.eventUrl}`;
+  options.emails.forEach((to) => emailMessage({ to, subject, title, text }));
 }
 
 export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId) {

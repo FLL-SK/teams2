@@ -2,8 +2,13 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 
-import { eventRepository } from '../models';
-import { emailEventChangedToCoach, emailEventChangedToEventManagers } from '../utils/emails';
+import { eventRepository, PricelistEntryData } from '../models';
+import {
+  emailEventChangedToCoach,
+  emailEventChangedToEventManagers,
+  emailFoodItemChanged,
+  EventChangeNotifyOptions,
+} from '../utils/emails';
 
 import { logger } from '@teams2/logger';
 import { RegistrationPayload } from '../_generated/graphql';
@@ -13,8 +18,30 @@ import { issueFoodInvoice } from './registration';
 const logLib = logger('domain:Event');
 
 export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloContext) {
-  const { dataSources } = ctx;
   const log = logLib.extend('sendNotify');
+  log.debug('Going to sent notifications');
+  notifyAboutEventChange(eventId, ctx, emailEventChangedToCoach, emailEventChangedToEventManagers);
+}
+
+export async function notifyEventFoodItemChanged(
+  ctx: ApolloContext,
+  eventId: ObjectId,
+  foodItemOld: PricelistEntryData,
+  foodItemNew: PricelistEntryData,
+) {
+  const log = logLib.extend('sendNotifyFoodItemChanged');
+  log.debug('Going to sent notifications');
+  notifyAboutEventChange(eventId, ctx, emailFoodItemChanged, emailFoodItemChanged);
+}
+
+export async function notifyAboutEventChange(
+  eventId: ObjectId,
+  ctx: ApolloContext,
+  notifyCoaches: (options: EventChangeNotifyOptions) => void,
+  notifyManagers: (options: EventChangeNotifyOptions) => void,
+) {
+  const { dataSources } = ctx;
+  const log = logLib.extend('sendEventChangeNotify');
   log.debug('Going to sent notifications');
   const event = await eventRepository.findById(eventId).exec();
 
@@ -27,13 +54,20 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
     evt.map(async (t) => ({
       name: (await dataSources.team.getTeam(t.teamId)).name,
       coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
+      registrationId: t.id,
     })),
   );
 
   // send email to coaches of registered teams
   log.debug('Sending notitications to %d teams', teams.length);
   teams.forEach((t) =>
-    emailEventChangedToCoach(t.coaches, t.name, event.name, program.name, eventUrl),
+    notifyCoaches({
+      emails: t.coaches,
+      teamName: t.name,
+      eventName: event.name,
+      programName: program.name,
+      eventUrl,
+    }),
   );
 
   // get data for sending emails to managers
@@ -41,7 +75,12 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
     ...(await dataSources.program.getProgramManagers(event.programId)).map((e) => e.username),
     ...(await dataSources.event.getEventManagers(eventId)).map((e) => e.username),
   ];
-  emailEventChangedToEventManagers(managerEmails, event.name, program.name, eventUrl);
+  notifyManagers({
+    emails: managerEmails,
+    eventName: event.name,
+    programName: program.name,
+    eventUrl,
+  });
 }
 
 export async function changeRegisteredEvent(

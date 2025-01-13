@@ -22,7 +22,7 @@ import { FilterQuery } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
-import { issueFoodInvoices } from '../../domains/event';
+import { issueFoodInvoices, notifyEventFoodItemChanged } from '../../domains/event';
 
 const logBase = logger('DS:Event');
 
@@ -208,9 +208,19 @@ export class EventDataSource extends BaseDataSource {
         { new: true },
       )
       .exec();
+
     if (!event) {
       throw new Error('Event not found');
     }
+
+    // notify coaches about food type change
+    notifyEventFoodItemChanged(
+      this.context,
+      eventId,
+      foodType,
+      event.foodTypes.find((f) => f._id.equals(foodType.id)),
+    );
+
     return EventMapper.toEvent(event);
   }
 
