@@ -141,10 +141,12 @@ schema.static(
     const u = [
       {
         $set: {
-          present: v,
+          foodOrderEnabled: v,
         },
       },
     ];
+
+    console.log('togle', eventId, u, v);
 
     return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
   },

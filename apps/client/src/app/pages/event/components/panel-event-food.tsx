@@ -1,4 +1,4 @@
-import { Box, Button, Text } from 'grommet';
+import { Box, Button, Text, CheckBox } from 'grommet';
 import React from 'react';
 
 import { Panel } from '../../../components/panel';
@@ -58,11 +58,13 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
   return (
     <Panel title="Stravovanie" gap="medium">
-      <LabelValue
-        label="Objednávanie stravovanie"
-        value={event.foodOrderEnabled ? 'Zapnuté' : 'Vypnuté'}
-        labelWidth="350px"
-      />
+      <LabelValue label="Objednávanie stravovanie povolené" labelWidth="350px" direction="row">
+        <CheckBox
+          toggle
+          checked={!!event.foodOrderEnabled}
+          onClick={event.foodOrderEnabled ? props.onDisableFoodOrders : props.onEnableFoodOrders}
+        />
+      </LabelValue>
       <LabelValue
         label="Termín pre objednávky stravovania"
         value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
@@ -109,17 +111,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             onClick={() => setShowModifyDeadlineDialog(true)}
             disabled={!props.onModifyDeadline}
           />
-          {event.foodOrderEnabled ? (
-            <Button
-              label="Zakázať objednávanie stravovania"
-              onClick={() => props.onDisableFoodOrders()}
-            />
-          ) : (
-            <Button
-              label="Povoliť objednávanie stravovania"
-              onClick={() => props.onEnableFoodOrders()}
-            />
-          )}
+
           <Button
             label="Export objednávok stravovania"
             onClick={() =>
