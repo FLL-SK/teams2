@@ -271,4 +271,12 @@ export class EventDataSource extends BaseDataSource {
     const ne = await eventRepository.unarchiveEvent(eventId, this.userGuard.userId);
     return EventMapper.toEvent(ne);
   }
+
+  async toggleEventFoodOrderEnabled(eventId: ObjectId, enable?: boolean): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Toggle food order enabled');
+    const ne = await eventRepository.toggleFoodOrderEnabled(eventId, this.userGuard.userId, enable);
+    return EventMapper.toEvent(ne);
+  }
 }

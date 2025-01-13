@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
+import { Schema, model, Model, Document, ProjectionType, Aggregate } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { PricelistEntryData } from './pricelist.model';
 
@@ -47,6 +47,11 @@ export interface EventModel extends Model<EventData> {
   deleteEvent(eventId: ObjectId, userId: ObjectId): Promise<EventDocument>;
   undeleteEvent(eventId: ObjectId, userId: ObjectId): Promise<EventDocument>;
   unarchiveEvent(eventId: ObjectId, userId: ObjectId): Promise<EventDocument>;
+  toggleFoodOrderEnabled(
+    eventId: ObjectId,
+    userId: ObjectId,
+    enable?: boolean,
+  ): Promise<EventDocument>;
 }
 
 const schema = new Schema<EventData, EventModel>(
@@ -123,5 +128,26 @@ schema.static('unarchiveEvent', function (eventId: ObjectId, userId: ObjectId) {
   const u: Partial<EventData> = { archivedOn: null, archivedBy: null };
   return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
 });
+
+schema.static(
+  'toggleFoodOrderEnabled',
+  function (eventId: ObjectId, userId: ObjectId, enable?: boolean) {
+    const v =
+      typeof enable === 'boolean'
+        ? enable
+        : {
+            $not: '$present',
+          };
+    const u = [
+      {
+        $set: {
+          present: v,
+        },
+      },
+    ];
+
+    return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
+  },
+);
 
 export const eventRepository = model<EventData, EventModel>('Event', schema);

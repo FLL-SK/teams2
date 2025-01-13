@@ -45,6 +45,8 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   uninviteTeamFromEvent: (_parent, { eventId, teamId }, { dataSources }) =>
     dataSources.event.uninviteTeam(eventId, teamId),
 
+  toggleEventFoodOrderEnabled: (_parent, { eventId }, { dataSources }) =>
+    dataSources.event.toggleEventFoodOrderEnabled(eventId),
   archiveEvent: (_parent, { eventId }, { dataSources }) => dataSources.event.archiveEvent(eventId),
   unarchiveEvent: (_parent, { eventId }, { dataSources }) =>
     dataSources.event.unarchiveEvent(eventId),
