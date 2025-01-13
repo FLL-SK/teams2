@@ -146,8 +146,6 @@ schema.static(
       },
     ];
 
-    console.log('togle', eventId, u, v);
-
     return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
   },
 );

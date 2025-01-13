@@ -276,7 +276,7 @@ export class EventDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
       this.userGuard.notAuthorized('Toggle food order enabled');
-    console.log('toggleEventFoodOrderEnabled', eventId, enable);
+
     const ne = await eventRepository.toggleFoodOrderEnabled(eventId, this.userGuard.userId, enable);
     return EventMapper.toEvent(ne);
   }
