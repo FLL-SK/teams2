@@ -21,6 +21,9 @@ fragment EventBasicFragment on Event {
 
   deletedOn
   deletedBy
+
+  archivedOn
+  archivedBy
 }
 
 fragment EventListFragment on Event {

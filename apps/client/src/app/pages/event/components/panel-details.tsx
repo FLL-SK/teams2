@@ -11,7 +11,10 @@ import { useNotification } from '../../../components/notifications/notification-
 import { Panel } from '../../../components/panel';
 import {
   EventFragmentFragment,
+  useArchiveEventMutation,
   useDeleteEventMutation,
+  useToggleEventFoodOrderEnabledMutation,
+  useUnarchiveEventMutation,
   useUpdateEventMutation,
 } from '../../../_generated/graphql';
 
@@ -33,6 +36,10 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
 
   const [deleteEvent] = useDeleteEventMutation({
     onError: (e) => notify.error('Nepodarilo sa odstrániť turnaj.', e.message),
+  });
+
+  const [archiveEvent] = useArchiveEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa archivovať turnaj.', e.message),
   });
 
   const handleDeleteEvent = useCallback(() => {
@@ -107,6 +114,12 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
               color="status-critical"
               onClick={handleDeleteEvent}
               disabled={!canEdit || !!event.deletedOn}
+            />
+            <Button
+              label="Archivovať"
+              color="status-warning"
+              onClick={() => archiveEvent({ variables: { eventId: event.id } })}
+              disabled={!canEdit || !!event.deletedOn || !!event.archivedOn}
             />
           </Box>
         )}

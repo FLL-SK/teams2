@@ -24,6 +24,8 @@ interface PanelEventFoodProps {
   onAddItem?: () => void;
   onModifyItem?: (item: PricelistItemInput) => void;
   onRemoveItem?: (item: PricelistItemInput) => void;
+  onEnableFoodOrders: () => void;
+  onDisableFoodOrders: () => void;
 }
 
 export function PanelEventFood(props: PanelEventFoodProps) {
@@ -57,9 +59,15 @@ export function PanelEventFood(props: PanelEventFoodProps) {
   return (
     <Panel title="Stravovanie" gap="medium">
       <LabelValue
+        label="Objednávanie stravovanie"
+        value={event.foodOrderEnabled ? 'Zapnuté' : 'Vypnuté'}
+        labelWidth="350px"
+      />
+      <LabelValue
         label="Termín pre objednávky stravovania"
         value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
         direction="row"
+        labelWidth="350px"
       />
       {eventFoodOrders.length === 0 && (
         <>
@@ -101,6 +109,17 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             onClick={() => setShowModifyDeadlineDialog(true)}
             disabled={!props.onModifyDeadline}
           />
+          {event.foodOrderEnabled ? (
+            <Button
+              label="Zakázať objednávanie stravovania"
+              onClick={() => props.onDisableFoodOrders()}
+            />
+          ) : (
+            <Button
+              label="Povoliť objednávanie stravovania"
+              onClick={() => props.onEnableFoodOrders()}
+            />
+          )}
           <Button
             label="Export objednávok stravovania"
             onClick={() =>

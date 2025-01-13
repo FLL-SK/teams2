@@ -15,6 +15,8 @@ import {
   useIssueEventFoodInvoicesMutation,
   useRemoveEventFoodTypeMutation,
   useRemoveEventManagerMutation,
+  useToggleEventFoodOrderEnabledMutation,
+  useUnarchiveEventMutation,
   useUndeleteEventMutation,
   useUninviteTeamFromEventMutation,
   useUpdateEventFoodOrderDeadlineMutation,
@@ -28,11 +30,10 @@ import { PanelEventFees } from './components/panel-event-fees';
 import { PanelEventTeams } from './components/panel-event-teams';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { PanelEventFood } from './components/panel-event-food';
-import { EventType } from 'nx/src/native';
 
 export function EventPage() {
   const { id } = useParams();
-  const { isAdmin, isEventManager } = useAppUser();
+  const { isAdmin, isEventManager, isProgramManager } = useAppUser();
   const { notify } = useNotification();
 
   const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
@@ -90,6 +91,14 @@ export function EventPage() {
     onError: (e) => notify.error('Nepodarilo sa zrušiť pozvánku tímu na turnaj.', e.message),
   });
 
+  const [unarchiveEvent] = useUnarchiveEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
+  });
+
+  const [toggleFoodOrderEnabled] = useToggleEventFoodOrderEnabledMutation({
+    onError: (e) => notify.error('Nepodarilo sa zmeniť stav objednávania jedla.', e.message),
+  });
+
   React.useEffect(() => {
     if (id) {
       fetchEvent({ variables: { id } });
@@ -103,6 +112,7 @@ export function EventPage() {
   const regs = regData?.getRegisteredTeams ?? [];
   const canEdit = isAdmin() || isEventManager(id);
   const isDeleted = !!event?.deletedOn;
+  const isArchived = !!event?.archivedOn;
 
   const invitableTeams = React.useMemo(() => {
     if (!progRegs?.getProgramRegistrations) {
@@ -138,11 +148,23 @@ export function EventPage() {
           {isDeleted && (
             <Box direction="row" gap="medium" align="center">
               <Text color="status-error">Turnaj bol zrušený.</Text>
-              {isAdmin() && (
+              {(isAdmin() || isEventManager(event.id) || isProgramManager(event.programId)) && (
                 <Button
                   size="small"
                   label="Obnoviť turnaj"
                   onClick={() => undeleteEvent({ variables: { id: event.id } })}
+                />
+              )}
+            </Box>
+          )}
+          {isArchived && (
+            <Box direction="row" gap="medium" align="center">
+              <Text color="status-error">Turnaj nie je aktívny.</Text>
+              {(isAdmin() || isEventManager(event.id) || isProgramManager(event.programId)) && (
+                <Button
+                  size="small"
+                  label="Aktivovať turnaj"
+                  onClick={() => unarchiveEvent({ variables: { eventId: event.id } })}
                 />
               )}
             </Box>
@@ -203,6 +225,22 @@ export function EventPage() {
               });
               if (result.data?.updateEventFoodOrderDeadline) {
                 notify.info('Termín pre objednávky stravovania bol upravený.');
+              }
+            }}
+            onEnableFoodOrders={async () => {
+              const result = await toggleFoodOrderEnabled({
+                variables: { eventId: event.id, enable: true },
+              });
+              if (result.data?.toggleEventFoodOrderEnabled) {
+                notify.info('Objednávanie stravovania bolo zapnuté.');
+              }
+            }}
+            onDisableFoodOrders={async () => {
+              const result = await toggleFoodOrderEnabled({
+                variables: { eventId: event.id, enable: false },
+              });
+              if (result.data?.toggleEventFoodOrderEnabled) {
+                notify.info('Objednávanie stravovania bolo vypnuté.');
               }
             }}
           />
