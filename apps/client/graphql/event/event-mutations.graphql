@@ -83,3 +83,21 @@ mutation uninviteTeamFromEvent($eventId: ID!, $teamId: ID!) {
     ...EventFragment
   }
 }
+
+mutation toggleEventFoodOrderEnabled($eventId: ID!, $enable: Boolean) {
+  toggleEventFoodOrderEnabled(eventId: $eventId, enable: $enable) {
+    ...EventFragment
+  }
+}
+
+mutation archiveEvent($eventId: ID!) {
+  archiveEvent(eventId: $eventId) {
+    ...EventFragment
+  }
+}
+
+mutation unarchiveEvent($eventId: ID!) {
+  unarchiveEvent(eventId: $eventId) {
+    ...EventFragment
+  }
+}

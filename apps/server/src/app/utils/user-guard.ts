@@ -23,6 +23,10 @@ export class UserGuard {
     return this.user ? this.user.username : 'not-logged-in';
   }
 
+  get userId() {
+    return this.user ? this.user._id : null;
+  }
+
   getManagedEvents() {
     return this.eventManagerOfEvents;
   }

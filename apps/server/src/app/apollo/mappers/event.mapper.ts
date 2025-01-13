@@ -24,6 +24,9 @@ export const EventMapper = {
       deletedOn: event.deletedOn,
       deletedBy: event.deletedBy,
 
+      archivedOn: event.archivedOn,
+      archivedBy: event.archivedBy,
+
       invoiceItems: [],
       managers: [],
       program: null,
@@ -31,6 +34,7 @@ export const EventMapper = {
 
       foodTypes: event.foodTypes.map(PricelistEntryMapper.toPricelistEntry),
       foodOrderDeadline: event.foodOrderDeadline,
+      foodOrderEnabled: event.foodOrderEnabled,
 
       invitationOnly: event.invitationOnly,
       invitedTeamsIds: event.invitedTeamsIds,

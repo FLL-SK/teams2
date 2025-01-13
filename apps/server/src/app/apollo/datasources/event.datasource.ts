@@ -251,4 +251,24 @@ export class EventDataSource extends BaseDataSource {
     }
     return EventMapper.toEvent(event);
   }
+
+  async archiveEvent(eventId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManager(eventId)) ||
+      this.userGuard.notAuthorized('Archive event');
+
+    const ne = await eventRepository.archiveEvent(eventId, this.userGuard.userId);
+    return EventMapper.toEvent(ne);
+  }
+
+  async unarchiveEvent(eventId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManager(eventId)) ||
+      this.userGuard.notAuthorized('Unarchive event');
+
+    const ne = await eventRepository.unarchiveEvent(eventId, this.userGuard.userId);
+    return EventMapper.toEvent(ne);
+  }
 }
