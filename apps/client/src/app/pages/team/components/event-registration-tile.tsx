@@ -55,7 +55,8 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
       !registration.confirmedOn ||
       !registration.event ||
       !canEdit ||
-      (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today)
+      (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today) ||
+      !registration.event.foodOrderEnabled
     ) {
       return false;
     }
@@ -96,13 +97,13 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   return (
     <Box>
       <Box background={'light-2'} pad="small">
-        <LabelValueGroup direction="row" labelWidth="200px">
+        <LabelValueGroup direction="row" labelWidth="350px">
           <LabelValue label="Turnaj">
             <Anchor label={registration.event.name} href={appPath.event(registration.event.id)} />
           </LabelValue>
 
-          <LabelValue label="Stav">
-            <Text>{registration.confirmedOn ? 'Potvrdený' : 'Nepotvrdený'}</Text>
+          <LabelValue label="Stav registrácie">
+            <Text>{registration.confirmedOn ? 'Potvrdená' : 'Nepotvrdená'}</Text>
             <Anchor label={'Otvor detail'} href={appPath.registration(registration.id)} />
           </LabelValue>
 
@@ -138,7 +139,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
                     : 'Objednať'
                 }
                 onClick={() => setShowFoodOrderModal(true)}
-                disabled={!(canOrderFood && (isAdmin() || isEventManager(registration.event.id)))}
+                disabled={!canOrderFood && !(isAdmin() || isEventManager(registration.event.id))}
               />
             </Box>
             {!registration.confirmedOn && (

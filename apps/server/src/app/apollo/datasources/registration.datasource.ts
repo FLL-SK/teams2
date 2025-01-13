@@ -330,6 +330,11 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Event not found');
     }
 
+    if (!e.foodOrderEnabled || this.userGuard.isEventManager(e._id) || this.userGuard.isAdmin()) {
+      // allow admins and event managers to update food orders
+      throw new Error('Food orders are not enabled');
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

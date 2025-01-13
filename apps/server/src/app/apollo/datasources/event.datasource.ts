@@ -57,6 +57,7 @@ export class EventDataSource extends BaseDataSource {
       today.setHours(0, 0, 0, 0);
       q.date = { $not: { $lt: today } };
       q.deletedOn = null;
+      q.archivedOn = null;
     }
     log.debug('filter=%o', q);
 

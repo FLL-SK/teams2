@@ -42,6 +42,11 @@ export function EventListTile(props: EventListTileProps) {
               Na tento turnaj sa nedá registrovať.
             </Text>
           )}
+          {event.archivedOn && (
+            <Text color="status-critical" size="small">
+              Turnaj nie je aktívny.
+            </Text>
+          )}
         </Box>
       </Box>
 

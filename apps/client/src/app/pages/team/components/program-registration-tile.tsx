@@ -1,8 +1,6 @@
-import React, { useMemo } from 'react';
-import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
-import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
-import { LabelValueGroup } from '../../../components/label-value-group';
-import { LabelValue } from '../../../components/label-value';
+import React from 'react';
+import { Anchor, Box, Button, Text } from 'grommet';
+import { Registration, TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
 import { appPath } from '@teams2/common';
 import { RegistrationFilesPanel } from '../../registration/components/registration-files';
 import { EventRegistrationTile } from './event-registration-tile';
@@ -18,9 +16,10 @@ export function ProgramRegistrationTile(props: ProgramRegistrationTileProps) {
 
   const navigate = useNavigate();
 
-  const canEdit = useMemo(() => {
-    return !registration.canceledOn && !!registration.confirmedOn;
-  }, [registration]);
+  const canEdit = (r: Pick<Registration, 'canceledOn' | 'confirmedOn'>) => {
+    const c = !r.canceledOn && !!r.confirmedOn;
+    return c;
+  };
 
   return (
     <Box>
@@ -49,7 +48,7 @@ export function ProgramRegistrationTile(props: ProgramRegistrationTileProps) {
         {eventRegistrations.map((r) => (
           <Box key={r.id}>
             <hr />
-            <EventRegistrationTile registration={r} canEdit={canEdit} />
+            <EventRegistrationTile registration={r} canEdit={canEdit(r)} />
           </Box>
         ))}
         <Box direction="row" pad={{ top: 'small' }}>
@@ -58,7 +57,7 @@ export function ProgramRegistrationTile(props: ProgramRegistrationTileProps) {
             onClick={() =>
               navigate(appPath.registerEvent(registration.teamId, registration.programId))
             }
-            disabled={!canEdit}
+            disabled={!canEdit(registration)}
           />
         </Box>
       </Box>
