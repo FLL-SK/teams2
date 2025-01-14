@@ -113,6 +113,7 @@ export class RegistrationDataSource extends BaseDataSource {
     if (!newEvent) {
       throw new Error('Turnaj nebol nájdený');
     }
+    await this.removeFoodOrder(regId);
     registration.eventId = newEventId;
     registration.programId = newEvent.programId;
     await registration.save();
