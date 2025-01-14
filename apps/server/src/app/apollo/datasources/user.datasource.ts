@@ -63,6 +63,7 @@ export class UserDataSource extends BaseDataSource {
     };
 
     const user = await userRepository.findById(id).lean().exec();
+    const usernameChanged = input.username && input.username !== user.username;
 
     if (input.gdprAccepted && !user.gdprAcceptedOn) {
       u.gdprAcceptedOn = new Date();
@@ -77,7 +78,7 @@ export class UserDataSource extends BaseDataSource {
     if (input.gdprAccepted && !user.gdprAcceptedOn) {
       emailUserAcceptedGdprToAdmin(nu.username);
     }
-    if (nu) {
+    if (nu && usernameChanged) {
       emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id);
     }
 
