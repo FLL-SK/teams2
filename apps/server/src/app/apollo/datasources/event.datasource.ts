@@ -203,7 +203,11 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isEventManager(eventId)) ||
       this.userGuard.notAuthorized('Update food type');
 
-    const event = await modifyFoodType(eventId, foodType);
+    const event = await modifyFoodType(
+      eventId,
+      { ...foodType, _id: foodType.id },
+      this.context.user._id,
+    );
 
     if (!event) {
       throw new Error('Event not found');

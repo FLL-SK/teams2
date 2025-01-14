@@ -16,9 +16,9 @@ import {
   programRepository,
   RegistrationData,
   RegistrationDocument,
-  RegistrationModel,
   registrationRepository,
   teamRepository,
+  userRepository,
 } from '../models';
 import { getAppSettings } from '../utils/settings';
 import { createNote } from './note';
@@ -129,7 +129,7 @@ export async function emailRegistrationInvoice(
     registration.billTo.email
   }  \n2. tréner: ${coachEmails.join(', ')}  `;
 
-  await createRegistrationNote(id, text, ctx);
+  await createRegistrationNote(id, text, ctx.user._id);
 
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
@@ -143,9 +143,9 @@ export async function emailRegistrationInvoice(
 export async function createRegistrationNote(
   registrationId: ObjectId,
   text: string,
-  ctx: ApolloContext,
+  createdBy: ObjectId,
 ) {
-  return await createNote('registration', registrationId, text, ctx);
+  return await createNote('registration', registrationId, text, createdBy);
 }
 
 export async function getRegistrationFiles(
@@ -551,7 +551,7 @@ export async function emailFoodInvoice(
     registration.billTo.email
   }  \n2. tréner: ${coachEmails.join(', ')}  `;
 
-  await createRegistrationNote(id, text, ctx);
+  await createRegistrationNote(id, text, ctx.user._id);
 
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
@@ -562,17 +562,36 @@ export async function emailFoodInvoice(
   return { registration: RegistrationMapper.toRegistration(ni) };
 }
 
-export async function modifyFoodOrderItem(reg: RegistrationDocument, changes: PricelistEntryData) {
+export async function modifyFoodOrderItem(
+  reg: RegistrationDocument,
+  changes: PricelistEntryData,
+  changedBy: ObjectId,
+) {
   const log = logLib.extend('modifyFoodOrderItem');
-  log.info('Modifying food order item %s', reg._id);
+  log.info('Modifying registration %s, changes=%o', reg._id, changes);
 
   if (!reg.foodOrder) {
     log.error('Food order not found in registration %s', reg._id);
     return { errors: [{ code: 'food_order_not_found' }] };
   }
+
   const item = reg.foodOrder.items.find((i) => i.productId.equals(changes._id));
 
-  const oldItem = { ...item };
+  if (!item) {
+    log.error('Food item not found in food order %s', changes._id);
+    return { errors: [{ code: 'food_item_not_found' }] };
+  }
+
+  const oldItem: OrderData['items'][0] = {
+    _id: item._id,
+    productId: item.productId,
+    name: item.name,
+    unitPrice: item.unitPrice,
+    price: item.price,
+    quantity: item.quantity,
+  };
+
+  log.info('Modifying food item %o', oldItem._id, oldItem.name);
 
   item.unitPrice = changes.up;
   item.price = Math.round(item.quantity * item.unitPrice * 100) / 100;
@@ -580,16 +599,15 @@ export async function modifyFoodOrderItem(reg: RegistrationDocument, changes: Pr
 
   await reg.save();
 
-  notifyFoodItemChanged(reg, this.context, oldItem, item);
+  notifyFoodItemChanged(reg, oldItem, item, changedBy);
 }
 
 export async function notifyFoodItemChanged(
   reg: RegistrationData,
-  ctx: ApolloContext,
   oldItem: OrderData['items'][0],
   changes: Omit<OrderData['items'][0], '_id'>,
+  changedBy: ObjectId,
 ): Promise<RegistrationPayload> {
-  const { dataSources } = ctx;
   const log = logLib.extend('notifyFoodItemChanged');
   log.debug(`id: ${reg._id}`);
 
@@ -604,7 +622,8 @@ export async function notifyFoodItemChanged(
     return { errors: [{ code: 'food_order_not_found' }] };
   }
 
-  const coachEmails = (await dataSources.team.getTeamCoaches(registration.teamId)).map(
+  const team = await teamRepository.findById(registration.teamId).lean().exec();
+  const coachEmails = (await userRepository.find({ _id: { $in: team.coachesIds } })).map(
     (c) => c.username,
   );
   const event = await eventRepository.findById(registration.eventId).lean().exec();
@@ -627,5 +646,5 @@ export async function notifyFoodItemChanged(
     oldItem.name
   }, ${oldItem.unitPrice} EUR  \n2. nová: ${changes.name}, ${changes.unitPrice} EUR  `;
 
-  await createRegistrationNote(registration._id, text, ctx);
+  await createRegistrationNote(registration._id, text, changedBy);
 }

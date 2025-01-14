@@ -2,16 +2,10 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 
-import {
-  eventRepository,
-  PricelistEntryData,
-  registrationRepository,
-  userRepository,
-} from '../models';
+import { eventRepository, PricelistEntryData, registrationRepository } from '../models';
 import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
-  emailFoodItemChanged,
   EventChangeNotifyOptions,
 } from '../utils/emails';
 
@@ -28,7 +22,11 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
   notifyAboutEventChange(eventId, ctx, emailEventChangedToCoach, emailEventChangedToEventManagers);
 }
 
-export async function modifyFoodType(eventId: ObjectId, foodType: PricelistEntryData) {
+export async function modifyFoodType(
+  eventId: ObjectId,
+  foodType: PricelistEntryData,
+  changedBy: ObjectId,
+) {
   const log = logLib.extend('modifyFoodType');
   const event = await eventRepository.findById(eventId).exec();
 
@@ -38,6 +36,7 @@ export async function modifyFoodType(eventId: ObjectId, foodType: PricelistEntry
   }
 
   const of = event.foodTypes.find((f) => f._id.equals(foodType._id));
+
   if (!of) {
     log.error('Food type not found');
     return null;
@@ -59,8 +58,9 @@ export async function modifyFoodType(eventId: ObjectId, foodType: PricelistEntry
   const regs = await registrationRepository
     .find({ eventId: eventId, 'foodOrder.items.productId': foodType._id })
     .exec();
+
   for (const reg of regs) {
-    modifyFoodOrderItem(reg, foodType);
+    await modifyFoodOrderItem(reg, foodType, changedBy);
   }
 
   return event;
