@@ -101,6 +101,8 @@ export class RegistrationDataSource extends BaseDataSource {
     registration.canceledOn = new Date();
     registration.canceledBy = this.context.user._id;
     await registration.save();
+    await this.removeFoodOrder(id);
+
     return RegistrationMapper.toRegistration(registration);
   }
 

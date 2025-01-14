@@ -176,6 +176,7 @@ export class EventDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
       this.userGuard.notAuthorized('Remove food type');
+
     const ex = await registrationRepository
       .findOne({
         eventId,
