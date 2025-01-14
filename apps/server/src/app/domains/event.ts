@@ -41,6 +41,10 @@ export async function modifyFoodType(
   log.debug('Modifying food type %s', foodType._id);
   const oldFoodType: PricelistEntryData = { n: of.n, up: of.up };
 
+  of.n = foodType.n;
+  of.up = foodType.up;
+  of.u = foodType.u;
+
   await event.save();
 
   const programName = (await programRepository.findById(event.programId).exec()).name;
