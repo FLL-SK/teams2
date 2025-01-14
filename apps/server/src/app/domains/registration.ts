@@ -627,6 +627,7 @@ export async function notifyFoodItemChanged(
     (c) => c.username,
   );
   const event = await eventRepository.findById(registration.eventId).lean().exec();
+  const program = await programRepository.findById(registration.programId).lean().exec();
 
   log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
 
@@ -636,7 +637,7 @@ export async function notifyFoodItemChanged(
   emailFoodItemChanged({
     emails: coachEmails,
     eventName: event.name,
-    programName: programRepository.name,
+    programName: program.name,
     oldItem,
     changes,
     regUrl,
