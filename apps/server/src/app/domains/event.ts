@@ -2,7 +2,13 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 
-import { eventRepository, PricelistEntryData, registrationRepository } from '../models';
+import {
+  eventRepository,
+  PricelistEntryData,
+  programRepository,
+  registrationRepository,
+  userRepository,
+} from '../models';
 import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
@@ -43,16 +49,28 @@ export async function modifyFoodType(
   }
 
   log.debug('Modifying food type %s', foodType._id);
-  const oldFoodType = { ...of };
-  of.n = foodType.n;
-  of.up = foodType.up;
+  const oldFoodType: PricelistEntryData = { n: of.n, up: of.up };
 
   await event.save();
 
+  const programName = (await programRepository.findById(event.programId).exec()).name;
   // TODO: notify other event managers about food item change
-  //const emails = (await userRepository.find({ _id: { $in: event.managersIds } }).exec()).map(
-  //  (u) => u.username,
-  //);
+  const emails = (await userRepository.find({ _id: { $in: event.managersIds } }).exec()).map(
+    (u) => u.username,
+  );
+  const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
+  const change =
+    'Bol zmenený typ jedla:' +
+    `\nPôvodne: ${oldFoodType.n}, ${oldFoodType.up} EUR` +
+    `\nNové: ${foodType.n}, ${foodType.up} EUR `;
+  emailEventChangedToEventManagers({
+    emails,
+    eventName: event.name,
+    programName,
+    eventUrl,
+    change,
+    changeTitle: 'Zmena typu jedla',
+  });
 
   // modify food order items for all registrations
   const regs = await registrationRepository
