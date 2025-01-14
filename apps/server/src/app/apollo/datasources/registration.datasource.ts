@@ -352,6 +352,10 @@ export class RegistrationDataSource extends BaseDataSource {
     };
     // remove items with quantity 0
     no.items = no.items.filter((i) => i.quantity > 0);
+    // round prices to 2 decimal places
+    no.items.forEach((i) => {
+      i.price = Math.round(i.quantity * i.unitPrice * 100) / 100;
+    });
 
     r.foodOrder = no;
     await r.save();
