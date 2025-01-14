@@ -22,7 +22,8 @@ import { FilterQuery } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
-import { issueFoodInvoices, notifyEventFoodItemChanged } from '../../domains/event';
+import { issueFoodInvoices, modifyFoodType } from '../../domains/event';
+import { modifyFoodOrderItem } from '../../domains/registration';
 
 const logBase = logger('DS:Event');
 
@@ -201,26 +202,12 @@ export class EventDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
       this.userGuard.notAuthorized('Update food type');
-    const event = await eventRepository
-      .findOneAndUpdate(
-        { _id: eventId, 'foodTypes._id': foodType.id },
-        { $set: { 'foodTypes.$.up': foodType.up, 'foodTypes.$.n': foodType.n } },
-        { new: true },
-      )
-      .exec();
+
+    const event = await modifyFoodType(eventId, foodType);
 
     if (!event) {
       throw new Error('Event not found');
     }
-
-    // notify coaches about food type change
-    notifyEventFoodItemChanged(
-      this.context,
-      eventId,
-      foodType,
-      event.foodTypes.find((f) => f._id.equals(foodType.id)),
-    );
-
     return EventMapper.toEvent(event);
   }
 

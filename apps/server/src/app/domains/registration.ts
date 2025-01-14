@@ -11,18 +11,25 @@ import {
   eventRepository,
   InvoiceItemData,
   invoiceItemRepository,
+  OrderData,
+  PricelistEntryData,
+  programRepository,
   RegistrationData,
+  RegistrationDocument,
+  RegistrationModel,
   registrationRepository,
   teamRepository,
 } from '../models';
 import { getAppSettings } from '../utils/settings';
 import { createNote } from './note';
 import {
+  emailFoodItemChanged,
   emailTeamRegisteredForEvent,
   emailTeamRegisteredForProgram,
   emailTeamUnregisteredFromEvent,
   emailTeamUnregisteredFromProgram,
 } from '../utils/emails';
+import { appPath } from '@teams2/common';
 
 const logLib = logger('domain:Registration');
 
@@ -540,7 +547,7 @@ export async function emailFoodInvoice(
     return { errors: [{ code: 'food_invoice_email_error', message: result.error }] };
   }
 
-  const text = `Faktúra za strvovanie odoslaná.  \n1. platiteľ: ${
+  const text = `Faktúra za stravovanie odoslaná.  \n1. platiteľ: ${
     registration.billTo.email
   }  \n2. tréner: ${coachEmails.join(', ')}  `;
 
@@ -553,4 +560,72 @@ export async function emailFoodInvoice(
   );
 
   return { registration: RegistrationMapper.toRegistration(ni) };
+}
+
+export async function modifyFoodOrderItem(reg: RegistrationDocument, changes: PricelistEntryData) {
+  const log = logLib.extend('modifyFoodOrderItem');
+  log.info('Modifying food order item %s', reg._id);
+
+  if (!reg.foodOrder) {
+    log.error('Food order not found in registration %s', reg._id);
+    return { errors: [{ code: 'food_order_not_found' }] };
+  }
+  const item = reg.foodOrder.items.find((i) => i.productId.equals(changes._id));
+
+  const oldItem = { ...item };
+
+  item.unitPrice = changes.up;
+  item.price = Math.round(item.quantity * item.unitPrice * 100) / 100;
+  item.name = changes.n;
+
+  await reg.save();
+
+  notifyFoodItemChanged(reg, this.context, oldItem, item);
+}
+
+export async function notifyFoodItemChanged(
+  reg: RegistrationData,
+  ctx: ApolloContext,
+  oldItem: OrderData['items'][0],
+  changes: Omit<OrderData['items'][0], '_id'>,
+): Promise<RegistrationPayload> {
+  const { dataSources } = ctx;
+  const log = logLib.extend('notifyFoodItemChanged');
+  log.debug(`id: ${reg._id}`);
+
+  const registration = reg;
+
+  if (!registration) {
+    log.error('registration not found %s', reg);
+    return { errors: [{ code: 'registration_not_found' }] };
+  }
+  if (!registration.foodOrder) {
+    log.error('food order not found %s', reg);
+    return { errors: [{ code: 'food_order_not_found' }] };
+  }
+
+  const coachEmails = (await dataSources.team.getTeamCoaches(registration.teamId)).map(
+    (c) => c.username,
+  );
+  const event = await eventRepository.findById(registration.eventId).lean().exec();
+
+  log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
+
+  const regUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registration._id.toHexString());
+
+  emailFoodItemChanged({
+    emails: coachEmails,
+    eventName: event.name,
+    programName: programRepository.name,
+    oldItem,
+    changes,
+    regUrl,
+  });
+
+  const text = `Položka objednávky jedla zmenená usporiadateľom.  \n1. stará: ${
+    oldItem.name
+  }, ${oldItem.unitPrice} EUR  \n2. nová: ${changes.name}, ${changes.unitPrice} EUR  `;
+
+  await createRegistrationNote(registration._id, text, ctx);
 }

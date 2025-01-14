@@ -2,7 +2,12 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 
-import { eventRepository, PricelistEntryData } from '../models';
+import {
+  eventRepository,
+  PricelistEntryData,
+  registrationRepository,
+  userRepository,
+} from '../models';
 import {
   emailEventChangedToCoach,
   emailEventChangedToEventManagers,
@@ -13,7 +18,7 @@ import {
 import { logger } from '@teams2/logger';
 import { RegistrationPayload } from '../_generated/graphql';
 import { appPath } from '@teams2/common';
-import { issueFoodInvoice } from './registration';
+import { issueFoodInvoice, modifyFoodOrderItem } from './registration';
 
 const logLib = logger('domain:Event');
 
@@ -23,18 +28,72 @@ export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloCont
   notifyAboutEventChange(eventId, ctx, emailEventChangedToCoach, emailEventChangedToEventManagers);
 }
 
-export async function notifyEventFoodItemChanged(
-  ctx: ApolloContext,
-  eventId: ObjectId,
-  foodItemOld: PricelistEntryData,
-  foodItemNew: PricelistEntryData,
-) {
-  const log = logLib.extend('sendNotifyFoodItemChanged');
-  log.debug('Going to sent notifications');
-  notifyAboutEventChange(eventId, ctx, emailFoodItemChanged, emailFoodItemChanged);
+export async function modifyFoodType(eventId: ObjectId, foodType: PricelistEntryData) {
+  const log = logLib.extend('modifyFoodType');
+  const event = await eventRepository.findById(eventId).exec();
+
+  if (!event) {
+    log.error('Event not found');
+    return null;
+  }
+
+  const of = event.foodTypes.find((f) => f._id.equals(foodType._id));
+  if (!of) {
+    log.error('Food type not found');
+    return null;
+  }
+
+  log.debug('Modifying food type %s', foodType._id);
+  const oldFoodType = { ...of };
+  of.n = foodType.n;
+  of.up = foodType.up;
+
+  await event.save();
+
+  // TODO: notify other event managers about food item change
+  //const emails = (await userRepository.find({ _id: { $in: event.managersIds } }).exec()).map(
+  //  (u) => u.username,
+  //);
+
+  // modify food order items for all registrations
+  const regs = await registrationRepository
+    .find({ eventId: eventId, 'foodOrder.items.productId': foodType._id })
+    .exec();
+  for (const reg of regs) {
+    modifyFoodOrderItem(reg, foodType);
+  }
+
+  return event;
 }
 
-export async function notifyAboutEventChange(
+async function getEventEmails(eventId: ObjectId, ctx: ApolloContext) {
+  const event = await eventRepository.findById(eventId).exec();
+  const program = await ctx.dataSources.program.getProgram(event.programId);
+
+  const regs = await ctx.dataSources.registration.getEventRegistrations(eventId);
+  // get data for sending emails to coaches
+  const teams = await Promise.all(
+    regs.map(async (r) => {
+      const team = await ctx.dataSources.team.getTeam(r.teamId);
+      const coaches = team.coaches.map((c) => c.username);
+      return {
+        name: team.name,
+        coaches,
+        registrationId: r.id,
+      };
+    }),
+  );
+
+  // get data for sending emails to managers
+  const managerEmails = [
+    ...(await ctx.dataSources.program.getProgramManagers(event.programId)).map((e) => e.username),
+    ...(await ctx.dataSources.event.getEventManagers(eventId)).map((e) => e.username),
+  ];
+
+  return { teams, managerEmails, event, program };
+}
+
+async function notifyAboutEventChange(
   eventId: ObjectId,
   ctx: ApolloContext,
   notifyCoaches: (options: EventChangeNotifyOptions) => void,
@@ -48,14 +107,18 @@ export async function notifyAboutEventChange(
   const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
   const program = await dataSources.program.getProgram(event.programId);
 
-  const evt = await dataSources.registration.getEventRegistrations(eventId);
+  const regs = await dataSources.registration.getEventRegistrations(eventId);
   // get data for sending emails to coaches
   const teams = await Promise.all(
-    evt.map(async (t) => ({
-      name: (await dataSources.team.getTeam(t.teamId)).name,
-      coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
-      registrationId: t.id,
-    })),
+    regs.map(async (r) => {
+      const team = await dataSources.team.getTeam(r.teamId);
+      const coaches = team.coaches.map((c) => c.username);
+      return {
+        name: team.name,
+        coaches,
+        registrationId: r.id,
+      };
+    }),
   );
 
   // send email to coaches of registered teams

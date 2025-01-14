@@ -130,13 +130,13 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             props.onModifyItem?.(item);
             setShowModifyItemDialog(null);
           }}
-          disable={{
-            price: (() => {
-              // check if item is used in any order
-              const q = eventFoodOrders.find((i) => i.id === showModifyItemDialog.id)?.qty ?? 0;
-              return q > 0;
-            })(),
-          }}
+          // disable={{
+          //   price: (() => {
+          //     // check if item is used in any order
+          //     const q = eventFoodOrders.find((i) => i.id === showModifyItemDialog.id)?.qty ?? 0;
+          //     return q > 0;
+          //   })(),
+          // }}
         />
       )}
       {showModifyDeadlineDialog && (
