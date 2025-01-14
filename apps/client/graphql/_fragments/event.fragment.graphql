@@ -14,12 +14,16 @@ fragment EventBasicFragment on Event {
   managersIds
 
   foodOrderDeadline
+  foodOrderEnabled
   foodTypes {
     ...PricelistItemFragment
   }
 
   deletedOn
   deletedBy
+
+  archivedOn
+  archivedBy
 }
 
 fragment EventListFragment on Event {

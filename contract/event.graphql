@@ -28,10 +28,14 @@ type Event implements INode {
   invoiceItems: [InvoiceItem!]!
 
   foodOrderDeadline: DateTime
+  foodOrderEnabled: Boolean
   foodTypes: [PricelistItem!]!
 
   deletedOn: DateTime
   deletedBy: ID
+
+  archivedOn: DateTime
+  archivedBy: ID
 
   registrationsCount: Int!
   managers: [User!]!
@@ -97,4 +101,9 @@ extend type Mutation {
 
   inviteTeamToEvent(eventId: ID!, teamId: ID!): Event
   uninviteTeamFromEvent(eventId: ID!, teamId: ID!): Event
+
+  toggleEventFoodOrderEnabled(eventId: ID!, enable: Boolean): Event
+
+  archiveEvent(eventId: ID!): Event
+  unarchiveEvent(eventId: ID!): Event
 }

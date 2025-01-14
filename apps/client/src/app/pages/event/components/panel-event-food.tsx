@@ -1,4 +1,4 @@
-import { Box, Button, Text } from 'grommet';
+import { Box, Button, Text, CheckBox } from 'grommet';
 import React from 'react';
 
 import { Panel } from '../../../components/panel';
@@ -24,6 +24,8 @@ interface PanelEventFoodProps {
   onAddItem?: () => void;
   onModifyItem?: (item: PricelistItemInput) => void;
   onRemoveItem?: (item: PricelistItemInput) => void;
+  onEnableFoodOrders: () => void;
+  onDisableFoodOrders: () => void;
 }
 
 export function PanelEventFood(props: PanelEventFoodProps) {
@@ -56,10 +58,18 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
   return (
     <Panel title="Stravovanie" gap="medium">
+      <LabelValue label="Objednávanie stravovanie povolené" labelWidth="350px" direction="row">
+        <CheckBox
+          toggle
+          checked={!!event.foodOrderEnabled}
+          onClick={event.foodOrderEnabled ? props.onDisableFoodOrders : props.onEnableFoodOrders}
+        />
+      </LabelValue>
       <LabelValue
         label="Termín pre objednávky stravovania"
         value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
         direction="row"
+        labelWidth="350px"
       />
       {eventFoodOrders.length === 0 && (
         <>
@@ -101,6 +111,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             onClick={() => setShowModifyDeadlineDialog(true)}
             disabled={!props.onModifyDeadline}
           />
+
           <Button
             label="Export objednávok stravovania"
             onClick={() =>
@@ -119,13 +130,13 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             props.onModifyItem?.(item);
             setShowModifyItemDialog(null);
           }}
-          disable={{
-            price: (() => {
-              // check if item is used in any order
-              const q = eventFoodOrders.find((i) => i.id === showModifyItemDialog.id)?.qty ?? 0;
-              return q > 0;
-            })(),
-          }}
+          // disable={{
+          //   price: (() => {
+          //     // check if item is used in any order
+          //     const q = eventFoodOrders.find((i) => i.id === showModifyItemDialog.id)?.qty ?? 0;
+          //     return q > 0;
+          //   })(),
+          // }}
         />
       )}
       {showModifyDeadlineDialog && (

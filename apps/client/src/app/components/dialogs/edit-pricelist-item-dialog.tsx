@@ -61,14 +61,13 @@ export function EditPricelistItemDialog(props: EditPricelistItemDialogProps) {
       >
         <FormField label="Názov" name="n" required>
           <TextInput name="n" disabled={props.disable?.name} />
+          {props.disable?.price && <Text size="small">Názov nie je možné meniť.</Text>}
         </FormField>
 
         <FormField label="Jednotková cena" name="up">
           <TextInput type="number" name="up" step={0.01} disabled={props.disable?.price} />
         </FormField>
-        {props.disable?.price && (
-          <Text size="small">Cenu nie je možné meniť. Už existujú objednávky s týmto typom.</Text>
-        )}
+        {props.disable?.price && <Text size="small">Cenu nie je možné meniť.</Text>}
 
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />

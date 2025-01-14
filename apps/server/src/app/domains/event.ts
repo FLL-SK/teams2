@@ -2,46 +2,76 @@ import { ObjectId } from 'mongodb';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 
-import { eventRepository } from '../models';
-import { emailEventChangedToCoach, emailEventChangedToEventManagers } from '../utils/emails';
+import {
+  eventRepository,
+  PricelistEntryData,
+  programRepository,
+  registrationRepository,
+  userRepository,
+} from '../models';
+import { emailEventChangedToEventManagers } from '../utils/emails';
 
 import { logger } from '@teams2/logger';
 import { RegistrationPayload } from '../_generated/graphql';
 import { appPath } from '@teams2/common';
-import { issueFoodInvoice } from './registration';
+import { issueFoodInvoice, modifyFoodOrderItem } from './registration';
 
 const logLib = logger('domain:Event');
 
-export async function notifyEventParticipants(eventId: ObjectId, ctx: ApolloContext) {
-  const { dataSources } = ctx;
-  const log = logLib.extend('sendNotify');
-  log.debug('Going to sent notifications');
+export async function modifyFoodType(
+  eventId: ObjectId,
+  foodType: PricelistEntryData,
+  changedBy: ObjectId,
+) {
+  const log = logLib.extend('modifyFoodType');
   const event = await eventRepository.findById(eventId).exec();
 
+  if (!event) {
+    log.error('Event not found');
+    return null;
+  }
+
+  const of = event.foodTypes.find((f) => f._id.equals(foodType._id));
+
+  if (!of) {
+    log.error('Food type not found');
+    return null;
+  }
+
+  log.debug('Modifying food type %s', foodType._id);
+  const oldFoodType: PricelistEntryData = { n: of.n, up: of.up };
+
+  await event.save();
+
+  const programName = (await programRepository.findById(event.programId).exec()).name;
+  // TODO: notify other event managers about food item change
+  const emails = (await userRepository.find({ _id: { $in: event.managersIds } }).exec()).map(
+    (u) => u.username,
+  );
   const eventUrl = getServerConfig().clientAppRootUrl + appPath.event(event._id.toString());
-  const program = await dataSources.program.getProgram(event.programId);
+  const change =
+    'Bol zmenený typ jedla:' +
+    `\nPôvodne: ${oldFoodType.n}, ${oldFoodType.up} EUR` +
+    `\nNové: ${foodType.n}, ${foodType.up} EUR `;
+  emailEventChangedToEventManagers({
+    emails,
+    eventName: event.name,
+    programName,
+    eventUrl,
+    change,
+    changeTitle: 'Zmena typu jedla',
+  });
 
-  const evt = await dataSources.registration.getEventRegistrations(eventId);
-  // get data for sending emails to coaches
-  const teams = await Promise.all(
-    evt.map(async (t) => ({
-      name: (await dataSources.team.getTeam(t.teamId)).name,
-      coaches: (await dataSources.team.getTeamCoaches(t.id)).map((c) => c.username),
-    })),
-  );
+  // modify food order items for all registrations
+  const regs = await registrationRepository
+    .find({ eventId: eventId, 'foodOrder.items.productId': foodType._id })
+    .exec();
 
-  // send email to coaches of registered teams
-  log.debug('Sending notitications to %d teams', teams.length);
-  teams.forEach((t) =>
-    emailEventChangedToCoach(t.coaches, t.name, event.name, program.name, eventUrl),
-  );
+  for (const reg of regs) {
+    await modifyFoodOrderItem(reg, foodType, changedBy);
+  }
 
-  // get data for sending emails to managers
-  const managerEmails = [
-    ...(await dataSources.program.getProgramManagers(event.programId)).map((e) => e.username),
-    ...(await dataSources.event.getEventManagers(eventId)).map((e) => e.username),
-  ];
-  emailEventChangedToEventManagers(managerEmails, event.name, program.name, eventUrl);
+  return event;
 }
 
 export async function changeRegisteredEvent(

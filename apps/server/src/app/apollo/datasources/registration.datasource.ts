@@ -330,6 +330,11 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Event not found');
     }
 
+    if (!e.foodOrderEnabled || this.userGuard.isEventManager(e._id) || this.userGuard.isAdmin()) {
+      // allow admins and event managers to update food orders
+      throw new Error('Food orders are not enabled');
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -347,6 +352,10 @@ export class RegistrationDataSource extends BaseDataSource {
     };
     // remove items with quantity 0
     no.items = no.items.filter((i) => i.quantity > 0);
+    // round prices to 2 decimal places
+    no.items.forEach((i) => {
+      i.price = Math.round(i.quantity * i.unitPrice * 100) / 100;
+    });
 
     r.foodOrder = no;
     await r.save();

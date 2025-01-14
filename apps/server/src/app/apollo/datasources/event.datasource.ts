@@ -22,7 +22,8 @@ import { FilterQuery } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
-import { issueFoodInvoices } from '../../domains/event';
+import { issueFoodInvoices, modifyFoodType } from '../../domains/event';
+import { modifyFoodOrderItem } from '../../domains/registration';
 
 const logBase = logger('DS:Event');
 
@@ -57,6 +58,7 @@ export class EventDataSource extends BaseDataSource {
       today.setHours(0, 0, 0, 0);
       q.date = { $not: { $lt: today } };
       q.deletedOn = null;
+      q.archivedOn = null;
     }
     log.debug('filter=%o', q);
 
@@ -200,13 +202,13 @@ export class EventDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
       this.userGuard.notAuthorized('Update food type');
-    const event = await eventRepository
-      .findOneAndUpdate(
-        { _id: eventId, 'foodTypes._id': foodType.id },
-        { $set: { 'foodTypes.$.up': foodType.up, 'foodTypes.$.n': foodType.n } },
-        { new: true },
-      )
-      .exec();
+
+    const event = await modifyFoodType(
+      eventId,
+      { ...foodType, _id: foodType.id },
+      this.context.user._id,
+    );
+
     if (!event) {
       throw new Error('Event not found');
     }
@@ -250,5 +252,34 @@ export class EventDataSource extends BaseDataSource {
       throw new Error('Event not found');
     }
     return EventMapper.toEvent(event);
+  }
+
+  async archiveEvent(eventId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManager(eventId)) ||
+      this.userGuard.notAuthorized('Archive event');
+
+    const ne = await eventRepository.archiveEvent(eventId, this.userGuard.userId);
+    return EventMapper.toEvent(ne);
+  }
+
+  async unarchiveEvent(eventId: ObjectId): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManager(eventId)) ||
+      this.userGuard.notAuthorized('Unarchive event');
+
+    const ne = await eventRepository.unarchiveEvent(eventId, this.userGuard.userId);
+    return EventMapper.toEvent(ne);
+  }
+
+  async toggleEventFoodOrderEnabled(eventId: ObjectId, enable?: boolean): Promise<Event> {
+    this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      this.userGuard.notAuthorized('Toggle food order enabled');
+
+    const ne = await eventRepository.toggleFoodOrderEnabled(eventId, this.userGuard.userId, enable);
+    return EventMapper.toEvent(ne);
   }
 }

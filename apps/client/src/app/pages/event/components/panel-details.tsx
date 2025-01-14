@@ -11,9 +11,14 @@ import { useNotification } from '../../../components/notifications/notification-
 import { Panel } from '../../../components/panel';
 import {
   EventFragmentFragment,
+  useArchiveEventMutation,
   useDeleteEventMutation,
+  useToggleEventFoodOrderEnabledMutation,
+  useUnarchiveEventMutation,
   useUpdateEventMutation,
 } from '../../../_generated/graphql';
+import { YesNoDialog } from '../../../components/dialogs/yes-no-dialog';
+import { set } from 'lodash';
 
 interface PanelEventDetailsProps {
   event: EventFragmentFragment;
@@ -26,6 +31,8 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
   const { isAdmin, isEventManager } = useAppUser();
   const [showEventTerms, setShowEventTerms] = useState<boolean>(false);
   const [showEventEditDialog, setShowEventEditDialog] = useState(false);
+  const [confirmEventDelete, setConfirmEventDelete] = useState(false);
+  const [confirmEventArchive, setConfirmEventArchive] = useState(false);
 
   const [updateEvent] = useUpdateEventMutation({
     onError: (e) => notify.error('Nepodarilo sa aktualizovať turnaj', e.message),
@@ -35,9 +42,16 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
     onError: (e) => notify.error('Nepodarilo sa odstrániť turnaj.', e.message),
   });
 
+  const [archiveEvent] = useArchiveEventMutation({
+    onError: (e) => notify.error('Nepodarilo sa archivovať turnaj.', e.message),
+  });
+
   const handleDeleteEvent = useCallback(() => {
     if (event?.registrationsCount === 0) {
-      deleteEvent({ variables: { id: event?.id } });
+      deleteEvent({
+        variables: { id: event?.id },
+        onCompleted: () => notify.info('Turnaj bol zrušený.'),
+      });
     } else {
       notify.error('Nie je možné vymazať turnaj, na ktorý je prihlásený jeden alebo viac tímov.');
     }
@@ -105,8 +119,14 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
             <Button
               label="Odstrániť"
               color="status-critical"
-              onClick={handleDeleteEvent}
+              onClick={() => setConfirmEventDelete(true)}
               disabled={!canEdit || !!event.deletedOn}
+            />
+            <Button
+              label="Archivovať"
+              color="status-warning"
+              onClick={() => setConfirmEventArchive(true)}
+              disabled={!canEdit || !!event.deletedOn || !!event.archivedOn}
             />
           </Box>
         )}
@@ -129,6 +149,27 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
           <Markdown>{event?.conditions ?? ''}</Markdown>
         </Box>
       </Modal>
+      {confirmEventDelete && (
+        <YesNoDialog
+          title="Zrušiť turnaj"
+          message="Naozaj chcete zrušiť tento turnaj?"
+          onYes={async () => handleDeleteEvent()}
+          onClose={() => setConfirmEventDelete(false)}
+        />
+      )}
+      {confirmEventArchive && (
+        <YesNoDialog
+          title="Archivovať turnaj"
+          message="Naozaj chcete archivovať tento turnaj?"
+          onYes={async () => {
+            archiveEvent({
+              variables: { eventId: event.id },
+              onCompleted: () => notify.info('Turnaj bol archivovaný.'),
+            });
+          }}
+          onClose={() => setConfirmEventArchive(false)}
+        />
+      )}
     </Panel>
   );
 }

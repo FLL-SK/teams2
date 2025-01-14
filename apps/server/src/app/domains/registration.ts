@@ -11,18 +11,25 @@ import {
   eventRepository,
   InvoiceItemData,
   invoiceItemRepository,
+  OrderData,
+  PricelistEntryData,
+  programRepository,
   RegistrationData,
+  RegistrationDocument,
   registrationRepository,
   teamRepository,
+  userRepository,
 } from '../models';
 import { getAppSettings } from '../utils/settings';
 import { createNote } from './note';
 import {
+  emailFoodItemChanged,
   emailTeamRegisteredForEvent,
   emailTeamRegisteredForProgram,
   emailTeamUnregisteredFromEvent,
   emailTeamUnregisteredFromProgram,
 } from '../utils/emails';
+import { appPath } from '@teams2/common';
 
 const logLib = logger('domain:Registration');
 
@@ -122,7 +129,7 @@ export async function emailRegistrationInvoice(
     registration.billTo.email
   }  \n2. tréner: ${coachEmails.join(', ')}  `;
 
-  await createRegistrationNote(id, text, ctx);
+  await createRegistrationNote(id, text, ctx.user._id);
 
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
@@ -136,9 +143,9 @@ export async function emailRegistrationInvoice(
 export async function createRegistrationNote(
   registrationId: ObjectId,
   text: string,
-  ctx: ApolloContext,
+  createdBy: ObjectId,
 ) {
-  return await createNote('registration', registrationId, text, ctx);
+  return await createNote('registration', registrationId, text, createdBy);
 }
 
 export async function getRegistrationFiles(
@@ -540,11 +547,11 @@ export async function emailFoodInvoice(
     return { errors: [{ code: 'food_invoice_email_error', message: result.error }] };
   }
 
-  const text = `Faktúra za strvovanie odoslaná.  \n1. platiteľ: ${
+  const text = `Faktúra za stravovanie odoslaná.  \n1. platiteľ: ${
     registration.billTo.email
   }  \n2. tréner: ${coachEmails.join(', ')}  `;
 
-  await createRegistrationNote(id, text, ctx);
+  await createRegistrationNote(id, text, ctx.user._id);
 
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
@@ -553,4 +560,91 @@ export async function emailFoodInvoice(
   );
 
   return { registration: RegistrationMapper.toRegistration(ni) };
+}
+
+export async function modifyFoodOrderItem(
+  reg: RegistrationDocument,
+  changes: PricelistEntryData,
+  changedBy: ObjectId,
+) {
+  const log = logLib.extend('modifyFoodOrderItem');
+  log.info('Modifying registration %s, changes=%o', reg._id, changes);
+
+  if (!reg.foodOrder) {
+    log.error('Food order not found in registration %s', reg._id);
+    return { errors: [{ code: 'food_order_not_found' }] };
+  }
+
+  const item = reg.foodOrder.items.find((i) => i.productId.equals(changes._id));
+
+  if (!item) {
+    log.error('Food item not found in food order %s', changes._id);
+    return { errors: [{ code: 'food_item_not_found' }] };
+  }
+
+  const oldItem: OrderData['items'][0] = {
+    _id: item._id,
+    productId: item.productId,
+    name: item.name,
+    unitPrice: item.unitPrice,
+    price: item.price,
+    quantity: item.quantity,
+  };
+
+  log.info('Modifying food item %o', oldItem._id, oldItem.name);
+
+  item.unitPrice = changes.up;
+  item.price = Math.round(item.quantity * item.unitPrice * 100) / 100;
+  item.name = changes.n;
+
+  await reg.save();
+
+  notifyFoodItemChanged(reg, oldItem, item, changedBy);
+}
+
+export async function notifyFoodItemChanged(
+  reg: RegistrationData,
+  oldItem: OrderData['items'][0],
+  changes: Omit<OrderData['items'][0], '_id'>,
+  changedBy: ObjectId,
+): Promise<RegistrationPayload> {
+  const log = logLib.extend('notifyFoodItemChanged');
+  log.debug(`id: ${reg._id}`);
+
+  const registration = reg;
+
+  if (!registration) {
+    log.error('registration not found %s', reg);
+    return { errors: [{ code: 'registration_not_found' }] };
+  }
+  if (!registration.foodOrder) {
+    log.error('food order not found %s', reg);
+    return { errors: [{ code: 'food_order_not_found' }] };
+  }
+
+  const team = await teamRepository.findById(registration.teamId).lean().exec();
+  const coachEmails = (await userRepository.find({ _id: { $in: team.coachesIds } })).map(
+    (c) => c.username,
+  );
+  const event = await eventRepository.findById(registration.eventId).lean().exec();
+
+  log.debug('going to send emails to=%s cc=%o', registration.billTo.email, coachEmails);
+
+  const regUrl =
+    getServerConfig().clientAppRootUrl + appPath.registration(registration._id.toHexString());
+
+  emailFoodItemChanged({
+    emails: coachEmails,
+    eventName: event.name,
+    programName: programRepository.name,
+    oldItem,
+    changes,
+    regUrl,
+  });
+
+  const text = `Položka objednávky jedla zmenená usporiadateľom.  \n1. stará: ${
+    oldItem.name
+  }, ${oldItem.unitPrice} EUR  \n2. nová: ${changes.name}, ${changes.unitPrice} EUR  `;
+
+  await createRegistrationNote(registration._id, text, changedBy);
 }
