@@ -166,7 +166,11 @@ export function RegistrationPage() {
 
               {reg.event && (
                 <Panel title="Účasť" wrap direction="column" gap="small">
-                  <FieldTeamSize registration={reg} readOnly={!!reg.canceledOn} />
+                  <FieldTeamSize
+                    registration={reg}
+                    readOnly={!!reg.canceledOn}
+                    labelWidth="350px"
+                  />
                   {reg.program.maxTeamSize &&
                   reg.girlCount + reg.boyCount > reg.program.maxTeamSize ? (
                     <Paragraph color="status-critical">
