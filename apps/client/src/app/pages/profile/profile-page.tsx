@@ -174,7 +174,7 @@ export function ProfilePage() {
               </Box>
             </Panel>
             {canEdit && (
-              <Panel title="Tímy">
+              <Panel title="Manažované tímy">
                 <Box gap="medium">
                   {teamData.map((t) => (
                     <ListRow2
@@ -215,10 +215,23 @@ export function ProfilePage() {
             )}
 
             {!!profile.managingEvents.length && canEdit && (
-              <Panel title="Turnaje">
+              <Panel title="Manažované turnaje">
                 <Box direction="row" wrap>
                   {profile.managingEvents.map((e) => (
                     <Tag key={e.id} onClick={() => navigate(appPath.event(e.id))} value={e.name} />
+                  ))}
+                </Box>
+              </Panel>
+            )}
+            {!!profile.managingPrograms.length && canEdit && (
+              <Panel title="Manažované programy">
+                <Box direction="row" wrap>
+                  {profile.managingPrograms.map((e) => (
+                    <Tag
+                      key={e.id}
+                      onClick={() => navigate(appPath.program(e.id))}
+                      value={e.name}
+                    />
                   ))}
                 </Box>
               </Panel>
