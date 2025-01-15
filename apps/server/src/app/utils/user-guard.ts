@@ -129,7 +129,9 @@ export class UserGuard {
     if (!this.user) {
       return false;
     }
+
     const event = await eventRepository.findById(eventId).lean().exec();
+
     if (!event) {
       return false;
     }
