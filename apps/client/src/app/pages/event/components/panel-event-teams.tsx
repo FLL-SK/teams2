@@ -32,7 +32,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
   const navigate = useNavigate();
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);
   const [showManageInvites, setShowManageInvites] = useState(false);
-  const { isAdmin } = useAppUser();
+  const { isAdmin, isEventManager, isProgramManager } = useAppUser();
 
   const coachesEmails: string[] = useMemo(
     () =>
@@ -68,7 +68,11 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
             columns="50px 1fr 100px 100px auto"
             pad="small"
             align="center"
-            onClick={isAdmin() ? () => navigate(appPath.registration(reg.id)) : undefined}
+            onClick={
+              isAdmin() || isEventManager(event.id) || isProgramManager(event.programId)
+                ? () => navigate(appPath.registration(reg.id))
+                : undefined
+            }
           >
             <Text>{idx + 1}</Text>
             <Box>

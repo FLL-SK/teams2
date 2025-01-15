@@ -31,6 +31,10 @@ export class UserGuard {
     return this.eventManagerOfEvents;
   }
 
+  getManagedPrograms() {
+    return this.programManagerOfPrograms;
+  }
+
   isSuperAdmin() {
     return this.user ? !!this.user.isSuperAdmin : false;
   }
@@ -119,6 +123,23 @@ export class UserGuard {
         ) ?? [];
     }
     return this.programManagerOfPrograms.includes(programId.toString());
+  }
+
+  async isProgramManagerForEvent(eventId: ObjectId) {
+    if (!this.user) {
+      return false;
+    }
+    const event = await eventRepository.findById(eventId);
+    if (!event) {
+      return false;
+    }
+    if (!this.programManagerOfPrograms) {
+      this.programManagerOfPrograms =
+        (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>
+          p._id.toString(),
+        ) ?? [];
+    }
+    return this.programManagerOfPrograms.includes(event.programId.toString());
   }
 
   notAuthorized(context?: string) {

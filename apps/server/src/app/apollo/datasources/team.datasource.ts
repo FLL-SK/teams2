@@ -160,7 +160,7 @@ export class TeamDataSource extends BaseDataSource {
     const log = logBase.extend('getTeamCoaches');
     const isAdmin = this.userGuard.isAdmin();
     const isCoach = await this.userGuard.isCoach(teamId);
-    const isEvtMgr = await this.isTeamRegisteredOnEventManagedBy(this.context.user._id, teamId);
+    const isEvtMgr = await this.isTeamRegisteredOnEventManagedByLoggedInUser(teamId);
     log.debug(
       'team %s isAdmin=%s isCoach=%s isEvtMgr=%s',
       teamId.toString(),
@@ -235,9 +235,15 @@ export class TeamDataSource extends BaseDataSource {
     return tags.filter((c) => !!c && !c.deletedOn); // this filter should remove nulls caused by data incosistency
   }
 
-  async isTeamRegisteredOnEventManagedBy(userId: ObjectId, teamId: ObjectId): Promise<boolean> {
+  async isTeamRegisteredOnEventManagedByLoggedInUser(teamId: ObjectId): Promise<boolean> {
     const reg = await registrationRepository
-      .findOne({ teamId, eventId: this.context.userGuard.getManagedEvents() })
+      .findOne({
+        teamId,
+        $or: [
+          { eventId: this.context.userGuard.getManagedEvents() },
+          { programId: this.context.userGuard.getManagedPrograms() },
+        ],
+      })
       .lean()
       .exec();
 

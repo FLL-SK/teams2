@@ -6,6 +6,7 @@ import { Add } from 'grommet-icons';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
 import { useCreateProgramMutation, useGetProgramsQuery } from '../../_generated/graphql';
+import { useAppUser } from '../../components/app-user/use-app-user';
 
 interface ProgramsPageProps {
   responsiveSize?: string;
@@ -16,6 +17,7 @@ export function ProgramsPage(props: ProgramsPageProps) {
   const [showInactivePrograms, setShowInactivePrograms] = useState(false);
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
   const { notify } = useNotification();
+  const { isAdmin } = useAppUser();
 
   const onError = useCallback(() => notify.error('Nepodarilo sa vytvoriť program.'), [notify]);
 
@@ -40,6 +42,7 @@ export function ProgramsPage(props: ProgramsPageProps) {
             icon={<Add />}
             onClick={() => setShowAddProgramDialog(true)}
             label="Nový program"
+            disabled={!isAdmin()}
           />
           <CheckBox
             label="Zobraziť neaktívne programy"

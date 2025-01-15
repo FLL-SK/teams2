@@ -113,7 +113,7 @@ function regsToBadges(regCount?: MenuProps['regCount']) {
 
 function Menu(props: MenuProps) {
   const { isAuthenticated } = useAuthenticate();
-  const { user: appUser } = useAppUser();
+  const { user: appUser, isAdmin } = useAppUser();
 
   return (
     <Nav align="center" justify="between" gap="medium">
@@ -126,10 +126,12 @@ function Menu(props: MenuProps) {
         />
       )}
       {isAuthenticated && <MenuButton path={appPath.events()} title="Turnaje" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.programs()} title="Programy" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.teams()} title="Tímy" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.users()} title="Používatelia" />}
-      {appUser?.isAdmin && <MenuButton path={appPath.settings()} title="Nastavenia" />}
+      {(isAdmin() || (appUser?.managingPrograms ?? []).length > 0) && (
+        <MenuButton path={appPath.programs()} title="Programy" />
+      )}
+      {isAdmin() && <MenuButton path={appPath.teams()} title="Tímy" />}
+      {isAdmin() && <MenuButton path={appPath.users()} title="Používatelia" />}
+      {isAdmin() && <MenuButton path={appPath.settings()} title="Nastavenia" />}
     </Nav>
   );
 }
