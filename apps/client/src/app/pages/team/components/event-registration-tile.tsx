@@ -95,6 +95,11 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     [registration],
   );
 
+  console.log('CO', canOrderFood);
+  console.log('ADMIN', isAdmin());
+  console.log('EM', isEventManager(registration.event.id));
+  console.log(!canOrderFood && !(isAdmin() || isEventManager(registration.event.id)));
+
   return (
     <Box>
       <Box background={'light-2'} pad="small">
@@ -145,7 +150,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
             </Box>
             {!registration.confirmedOn && (
               <Text color="status-warning">
-                Stravovanie je možné objedať až po potvrdní registrácie.
+                Stravovanie je možné objedať až po potvrdení registrácie.
               </Text>
             )}
           </LabelValue>
