@@ -50,6 +50,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   }
 
   const canOrderFood = useMemo(() => {
+    console.log('registration', canEdit, today, registration);
     if (
       registration.canceledOn ||
       !registration.confirmedOn ||
