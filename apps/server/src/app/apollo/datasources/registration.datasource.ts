@@ -325,17 +325,20 @@ export class RegistrationDataSource extends BaseDataSource {
   async updateFoodOrder(regId: ObjectId, orderData: OrderInput): Promise<RegistrationPayload> {
     const r = await registrationRepository.findById(regId).exec();
     if (!r) {
-      throw new Error('Registration not found');
+      throw new Error('Registrácia nenájdená');
     }
 
     const e = await eventRepository.findById(r.eventId).exec();
     if (!e) {
-      throw new Error('Event not found');
+      throw new Error('Turnaj nenájdený');
     }
 
-    if (!e.foodOrderEnabled || this.userGuard.isEventManager(e._id) || this.userGuard.isAdmin()) {
+    if (
+      !e.foodOrderEnabled &&
+      !(this.userGuard.isEventManager(e._id) || this.userGuard.isAdmin())
+    ) {
       // allow admins and event managers to update food orders
-      throw new Error('Food orders are not enabled');
+      throw new Error('Objednávky jedla nie sú povolené');
     }
 
     const today = new Date();
