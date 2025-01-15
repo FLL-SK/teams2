@@ -50,7 +50,6 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   }
 
   const canOrderFood = useMemo(() => {
-    console.log('registration', canEdit, today, registration);
     if (
       registration.canceledOn ||
       !registration.confirmedOn ||
@@ -61,6 +60,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     ) {
       return false;
     }
+    return true;
   }, [registration]);
 
   const handleOrder = useCallback(
@@ -94,11 +94,6 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     },
     [registration],
   );
-
-  console.log('CO', canOrderFood);
-  console.log('ADMIN', isAdmin());
-  console.log('EM', isEventManager(registration.event.id));
-  console.log(!canOrderFood && !(isAdmin() || isEventManager(registration.event.id)));
 
   return (
     <Box>
