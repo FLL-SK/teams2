@@ -110,7 +110,7 @@ export function EventPage() {
 
   const event = eventData?.getEvent;
   const regs = regData?.getRegisteredTeams ?? [];
-  const canEdit = isAdmin() || isEventManager(id);
+  const canEdit = isAdmin() || isEventManager(id) || isProgramManager(event?.programId);
   const isDeleted = !!event?.deletedOn;
   const isArchived = !!event?.archivedOn;
 
