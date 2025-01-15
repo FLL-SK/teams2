@@ -102,17 +102,26 @@ export function EventPage() {
   React.useEffect(() => {
     if (id) {
       fetchEvent({ variables: { id } });
-      fetchRegistrations({
-        variables: { eventId: id, includeCoaches: canEdit },
-      });
     }
   }, [id, fetchEvent]);
 
   const event = eventData?.getEvent;
   const regs = regData?.getRegisteredTeams ?? [];
-  const canEdit = isAdmin() || isEventManager(id) || isProgramManager(event?.programId);
   const isDeleted = !!event?.deletedOn;
   const isArchived = !!event?.archivedOn;
+
+  const canEdit = React.useMemo(
+    () => isAdmin() || isEventManager(id) || isProgramManager(event?.programId),
+    [isAdmin, isEventManager, isProgramManager, id, eventData],
+  );
+
+  React.useEffect(() => {
+    if (id) {
+      fetchRegistrations({
+        variables: { eventId: id, includeCoaches: canEdit },
+      });
+    }
+  }, [id, fetchRegistrations, canEdit]);
 
   const invitableTeams = React.useMemo(() => {
     if (!progRegs?.getProgramRegistrations) {
