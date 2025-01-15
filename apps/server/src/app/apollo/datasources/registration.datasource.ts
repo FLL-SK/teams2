@@ -431,7 +431,9 @@ export class RegistrationDataSource extends BaseDataSource {
 
       if (
         includeCoaches &&
-        (this.context.userGuard.isAdmin() || this.context.userGuard.isEventManager(eventId))
+        (this.context.userGuard.isAdmin() ||
+          this.context.userGuard.isEventManager(eventId) ||
+          this.context.userGuard.isProgramManagerForEvent(eventId))
       ) {
         const c = await userRepository
           .find({ _id: { $in: team.coachesIds }, deletedOn: null }, { _id: 1 })
