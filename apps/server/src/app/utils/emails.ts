@@ -233,7 +233,7 @@ export async function emailFoodOrderUpdated(registration: RegistrationData, upda
   const orderItems = registration.foodOrder.items
     .map(
       (i, idx) =>
-        `${idx + 1}) ${i.name} : ${i.price.toFixed(2)} EUR x ${i.quantity} ks = ${i.price.toFixed(2)} EUR`,
+        `${idx + 1}) ${i.name} : ${i.unitPrice.toFixed(2)} EUR x ${i.quantity.toFixed(2)} ks = ${i.price.toFixed(2)} EUR`,
     )
     .join('\n');
   const text =
