@@ -333,10 +333,7 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Turnaj nenájdený');
     }
 
-    if (
-      !e.foodOrderEnabled &&
-      !(this.userGuard.isEventManager(e._id) || this.userGuard.isAdmin())
-    ) {
+    if (!e.foodOrderEnabled && !this.userGuard.isEventManager(e._id) && !this.userGuard.isAdmin()) {
       // allow admins and event managers to update food orders
       throw new Error('Objednávky jedla nie sú povolené');
     }
