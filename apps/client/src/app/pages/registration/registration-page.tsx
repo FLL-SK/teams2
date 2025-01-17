@@ -127,13 +127,20 @@ export function RegistrationPage() {
   );
 
   const canOrderFood = React.useMemo(() => {
-    if (reg && (reg.canceledOn || !reg.confirmedOn || !reg.event || reg.foodOrder?.invoicedOn)) {
+    const today = new Date().toISOString().substring(0, 10);
+    if (
+      reg &&
+      (reg.canceledOn ||
+        !reg.confirmedOn ||
+        !reg.event ||
+        reg.foodOrder?.invoicedOn ||
+        !reg.event.foodOrderEnabled ||
+        (reg.event.foodOrderDeadline && reg.event.foodOrderDeadline < today))
+    ) {
       return false;
     }
 
-    return reg?.event?.foodOrderDeadline
-      ? reg?.event?.foodOrderDeadline > new Date(reg?.event?.date ?? 0).toISOString()
-      : true;
+    return true;
   }, [reg]);
 
   if (!id || (regDataError && !regLoading)) {
