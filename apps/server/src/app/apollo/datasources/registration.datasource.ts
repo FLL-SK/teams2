@@ -333,7 +333,11 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Turnaj nenájdený');
     }
 
-    if (!e.foodOrderEnabled && !this.userGuard.isEventManager(e._id) && !this.userGuard.isAdmin()) {
+    if (
+      !e.foodOrderEnabled &&
+      !(await this.userGuard.isEventManager(e._id)) &&
+      !this.userGuard.isAdmin()
+    ) {
       // allow admins and event managers to update food orders
       throw new Error('Objednávky jedla nie sú povolené');
     }
@@ -342,9 +346,9 @@ export class RegistrationDataSource extends BaseDataSource {
     today.setHours(0, 0, 0, 0);
 
     this.userGuard.isAdmin() ||
-      (this.userGuard.isCoach(r.teamId) &&
+      ((await this.userGuard.isCoach(r.teamId)) &&
         (e.foodOrderDeadline ? e.foodOrderDeadline.getTime() >= today.getTime() : true)) ||
-      this.userGuard.isEventManager(r.eventId) ||
+      (await this.userGuard.isEventManager(r.eventId)) ||
       this.userGuard.notAuthorized('Update food order');
 
     const createdOn = r.foodOrder?.createdOn ?? new Date();
@@ -376,8 +380,8 @@ export class RegistrationDataSource extends BaseDataSource {
     }
 
     this.userGuard.isAdmin() ||
-      this.userGuard.isEventManager(r.eventId) ||
-      (this.userGuard.isCoach(r.teamId) && !r.foodOrder.invoicedOn) ||
+      (await this.userGuard.isEventManager(r.eventId)) ||
+      ((await this.userGuard.isCoach(r.teamId)) && !r.foodOrder.invoicedOn) ||
       this.userGuard.notAuthorized('Remove food order');
 
     r.foodOrder = null;
@@ -431,9 +435,9 @@ export class RegistrationDataSource extends BaseDataSource {
 
       if (
         includeCoaches &&
-        (this.context.userGuard.isAdmin() ||
-          this.context.userGuard.isEventManager(eventId) ||
-          this.context.userGuard.isProgramManagerForEvent(eventId))
+        (this.userGuard.isAdmin() ||
+          (await this.userGuard.isEventManager(eventId)) ||
+          (await this.userGuard.isProgramManagerForEvent(eventId)))
       ) {
         const c = await userRepository
           .find({ _id: { $in: team.coachesIds }, deletedOn: null }, { _id: 1 })
