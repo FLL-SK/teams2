@@ -43,7 +43,7 @@ interface NotificationAction {
 
 function dispatchNotification(
   state: NotificationType[],
-  action: NotificationAction
+  action: NotificationAction,
 ): NotificationType[] {
   switch (action.type) {
     case 'ADD':
@@ -73,7 +73,7 @@ export const NotificationProvider = (props: { children?: ReactNode }): JSX.Eleme
 
   const notifyError = useCallback(
     (msg: string, details?: string) => {
-      const delay = ALERT_DELAY;
+      const delay = ALERT_DELAY_FATAL;
       const id = Date.now() + delay;
       dispatch({
         type: 'ADD',
@@ -81,7 +81,7 @@ export const NotificationProvider = (props: { children?: ReactNode }): JSX.Eleme
       });
       setTimeout(() => removeNotification(id), delay);
     },
-    [removeNotification]
+    [removeNotification],
   );
 
   const notifyFatal = useCallback(
@@ -94,7 +94,7 @@ export const NotificationProvider = (props: { children?: ReactNode }): JSX.Eleme
       });
       setTimeout(() => removeNotification(id), delay);
     },
-    [removeNotification]
+    [removeNotification],
   );
 
   const notifyInfo = useCallback(
@@ -107,7 +107,7 @@ export const NotificationProvider = (props: { children?: ReactNode }): JSX.Eleme
       });
       setTimeout(() => removeNotification(id), delay);
     },
-    [removeNotification]
+    [removeNotification],
   );
 
   return (
