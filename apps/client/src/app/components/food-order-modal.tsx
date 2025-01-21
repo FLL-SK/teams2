@@ -18,6 +18,8 @@ import { Modal } from './modal';
 import React, { useEffect } from 'react';
 import { LabelValue } from './label-value';
 import { parse } from 'path';
+import { ProgramUpdateLevel } from 'typescript';
+import { formatDate } from '@teams2/dateutils';
 
 interface Address {
   name: string;
@@ -43,6 +45,9 @@ interface FormDataType {
   }[];
   billTo: Address;
   shipTo?: Address | null;
+  invoicedOn?: string | null;
+  invoiceRef?: string | null;
+  sentOn?: string | null;
 }
 
 export const emptyOrder: FormDataType = {
@@ -132,6 +137,14 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
       {props.availableItems.length === 0 && (
         <p>Tento turnaj nemá možnosť objednania stravovania.</p>
       )}
+
+      {props.order?.invoicedOn && (
+        <p>
+          Objednávka už bola fakturovaná dňa {formatDate(props.order.invoicedOn)} s referenciou{' '}
+          {props.order.invoiceRef}
+        </p>
+      )}
+
       {value.items.length > 0 && (
         <Form
           value={value}

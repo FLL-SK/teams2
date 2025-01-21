@@ -54,6 +54,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
       registration.canceledOn ||
       !registration.confirmedOn ||
       !registration.event ||
+      registration.foodOrder?.invoicedOn ||
       !canEdit ||
       (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today) ||
       !registration.event.foodOrderEnabled
