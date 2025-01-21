@@ -333,13 +333,16 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Turnaj nenájdený');
     }
 
-    if (
-      !e.foodOrderEnabled &&
-      !(await this.userGuard.isEventManager(e._id)) &&
-      !this.userGuard.isAdmin()
-    ) {
+    const isEvtMgr = await this.userGuard.isEventManager(e._id);
+
+    if (!e.foodOrderEnabled && !isEvtMgr && !this.userGuard.isAdmin()) {
       // allow admins and event managers to update food orders
       throw new Error('Objednávky jedla nie sú povolené');
+    }
+
+    if (r.foodOrder.invoicedOn && !isEvtMgr && !this.userGuard.isAdmin()) {
+      // allow admins and event managers to update food already invoiced orders
+      throw new Error('Objednávka jedla už bola fakturovaná. Kontaktujte organizátora.');
     }
 
     const today = new Date();
@@ -348,7 +351,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       ((await this.userGuard.isCoach(r.teamId)) &&
         (e.foodOrderDeadline ? e.foodOrderDeadline.getTime() >= today.getTime() : true)) ||
-      (await this.userGuard.isEventManager(r.eventId)) ||
+      isEvtMgr ||
       this.userGuard.notAuthorized('Update food order');
 
     const createdOn = r.foodOrder?.createdOn ?? new Date();
