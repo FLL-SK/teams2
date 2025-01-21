@@ -453,7 +453,11 @@ export async function issueFoodInvoice(registrationId: ObjectId): Promise<Regist
 
   const settings = await getAppSettings();
   const reg = await registrationRepository.findById(registrationId).lean().exec();
-  const items = await invoiceItemRepository.find({ registrationId }).lean().exec();
+  const items = (reg.foodOrder?.items ?? []).map((i) => ({
+    text: i.name,
+    quantity: i.quantity,
+    unitPrice: i.unitPrice,
+  }));
 
   const team = await teamRepository.findById(reg.teamId).lean().exec();
 
