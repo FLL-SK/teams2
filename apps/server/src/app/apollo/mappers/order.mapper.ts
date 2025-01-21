@@ -12,6 +12,7 @@ export const OrderMapper = {
       updatedOn: order.updatedOn,
       invoicedOn: order.invoicedOn,
       invoiceRef: order.invoiceRef,
+      sentOn: order.sentOn,
       note: order.note,
       items: order.items.map((item) => ({
         id: item._id,

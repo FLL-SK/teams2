@@ -92,7 +92,7 @@ extend type Mutation {
   addEventManager(eventId: ID!, userId: ID!): Event
   removeEventManager(eventId: ID!, userId: ID!): Event
 
-  issueEventFoodInvoices(eventId: ID!): Int!
+  issueEventFoodInvoices(eventId: ID!): [RegistrationPayload!]!
 
   updateEventFoodOrderDeadline(eventId: ID!, deadline: DateTime!): Event
   updateEventFoodType(eventId: ID!, foodType: PricelistItemInput!): Event

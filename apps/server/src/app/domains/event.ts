@@ -102,21 +102,26 @@ export async function changeRegisteredEvent(
   }
 }
 
-export async function issueFoodInvoices(eventId: ObjectId, ctx: ApolloContext) {
+export async function issueFoodInvoices(eventId: ObjectId) {
   const log = logLib.extend('issueFoodInvoices');
-  log.info('Sending food invoices for event=%s', eventId);
-  const registrations = await ctx.dataSources.registration.getEventRegistrations(eventId);
-  log.debug('Found %d registrations', registrations.length);
-  let count = 0;
-  await Promise.all(
-    registrations.map(async (r) => {
-      if (r.confirmedOn && r.foodOrder && !r.foodOrder.invoicedOn) {
-        count++;
-        log.debug('Sending food invoice for registration=%s', r.id);
-        await issueFoodInvoice(r.id, ctx);
-      }
-    }),
-  );
-  log.info('Sent %d food invoices', count);
-  return count;
+
+  log.info('Issuing food invoices for event=%s', eventId);
+  const registrations = await registrationRepository.getEventRegistrations(eventId, {
+    active: true,
+    confirmed: true,
+    havingFoodOrder: true,
+  });
+  log.debug('Found %d registrations having food order', registrations.length);
+
+  const result: RegistrationPayload[] = [];
+  for (const r of registrations) {
+    if (!r.foodOrder.invoicedOn) {
+      log.debug('Issuing food invoice for registration=%s', r._id);
+      const rr = await issueFoodInvoice(r._id);
+      result.push(rr);
+    }
+  }
+
+  log.info('Sent %d food invoices', result.length);
+  return result;
 }

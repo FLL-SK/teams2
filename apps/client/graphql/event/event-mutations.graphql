@@ -45,7 +45,14 @@ mutation removeEventManager($eventId: ID!, $userId: ID!) {
 }
 
 mutation issueEventFoodInvoices($eventId: ID!) {
-  issueEventFoodInvoices(eventId: $eventId)
+  issueEventFoodInvoices(eventId: $eventId) {
+    registration {
+      ...RegistrationBasicFragment
+    }
+    errors {
+      ...MutationErrorFragment
+    }
+  }
 }
 
 mutation updateEventFoodType($eventId: ID!, $foodType: PricelistItemInput!) {

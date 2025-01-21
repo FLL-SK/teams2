@@ -446,13 +446,9 @@ export async function createProgramRegistration(
   return registration;
 }
 
-export async function issueFoodInvoice(
-  registrationId: ObjectId,
-  ctx: ApolloContext,
-): Promise<RegistrationPayload> {
-  const { dataSources } = ctx;
+export async function issueFoodInvoice(registrationId: ObjectId): Promise<RegistrationPayload> {
   const config = getServerConfig();
-  const log = logLib.extend('createFoodInv');
+  const log = logLib.extend('issueFoodInv');
   log.debug(`registrationId: ${registrationId}`);
 
   const settings = await getAppSettings();
@@ -482,16 +478,22 @@ export async function issueFoodInvoice(
 
   if (result.status === 'error') {
     log.error(`invoice post error: %s`, result.error);
-    return { errors: [{ code: 'food_invoice_post_error', message: result.error }] };
+    return {
+      registration: RegistrationMapper.toRegistration(reg),
+      errors: [{ code: 'food_invoice_post_error', message: result.error }],
+    };
   }
 
   // update registration
-  const r = await dataSources.registration.setInvoicedOn(
-    reg._id,
-    new Date(result.createdOn),
-    result.id,
-  );
-  return { registration: r };
+  const u = {
+    'foodOrder.invoicedOn': new Date(),
+    'foodOrder.invoiceRef': result.id,
+  };
+
+  const nr = await registrationRepository.findOneAndUpdate({ _id: registrationId }, u, {
+    new: true,
+  });
+  return { registration: RegistrationMapper.toRegistration(nr) };
 }
 
 export async function emailFoodInvoice(
@@ -555,7 +557,7 @@ export async function emailFoodInvoice(
 
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
-    { invoiceSentOn: new Date() },
+    { 'foodOrder.sentOn': new Date() },
     { new: true },
   );
 
