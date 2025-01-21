@@ -170,8 +170,8 @@ export class EventDataSource extends BaseDataSource {
   async issueFoodInvoices(eventId: ObjectId): Promise<number> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId));
-    this.userGuard.notAuthorized('Issue food invoices');
+      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
+      this.userGuard.notAuthorized('Issue food invoices');
     return issueFoodInvoices(eventId, this.context);
   }
 
