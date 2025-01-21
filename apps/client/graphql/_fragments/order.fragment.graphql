@@ -4,6 +4,7 @@ fragment OrderFragment on Order {
   invoicedOn
   updatedOn
   invoiceRef
+  sentOn
   note
   items {
     id

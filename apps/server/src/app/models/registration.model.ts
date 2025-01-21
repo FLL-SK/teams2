@@ -66,6 +66,19 @@ interface CountRegistrationsFilter {
 
 export interface RegistrationModel extends Model<RegistrationData> {
   groupRegistrations(filter: CountRegistrationsFilter): Promise<RegistrationGroup[]>; //
+  getEventRegistrations(
+    eventId: ObjectId,
+    options: {
+      active?: boolean;
+      confirmed?: boolean;
+      canceled?: boolean;
+      unpaid?: boolean;
+      invoiced?: boolean;
+      shipped?: boolean;
+      havingFoodOrder?: boolean;
+      notHavingFoodOrder?: boolean;
+    },
+  ): Promise<RegistrationData[]>; // get all registrations for event
   clean(): Promise<DeleteResult>; // remove all docs from repo
 }
 
@@ -191,6 +204,50 @@ schema.static('groupRegistrations', async function (filter: CountRegistrationsFi
 
   return regs;
 });
+
+schema.static(
+  'getEventRegistrations',
+  function (
+    eventId: ObjectId,
+    options: {
+      active?: boolean;
+      confirmed?: boolean;
+      canceled?: boolean;
+      unpaid?: boolean;
+      invoiced?: boolean;
+      shipped?: boolean;
+      havingFoodOrder?: boolean;
+      notHavingFoodOrder?: boolean;
+    },
+  ): Promise<RegistrationData[]> {
+    const q: FilterQuery<RegistrationData> = { eventId };
+    if (options.confirmed) {
+      q.confirmedOn = { $ne: null };
+    }
+    if (options.active) {
+      q.canceledOn = null;
+    }
+    if (options.canceled) {
+      q.canceledOn = { $ne: null };
+    }
+    if (options.unpaid) {
+      q.paidOn = null;
+    }
+    if (options.invoiced) {
+      q.invoiceIssuedOn = { $ne: null };
+    }
+    if (options.shipped) {
+      q.shippedOn = { $ne: null };
+    }
+    if (options.havingFoodOrder) {
+      q['foodOrder.items'] = { $exists: true, $ne: [] };
+    }
+    if (options.notHavingFoodOrder) {
+      q['foodOrder.items'] = { $exists: false };
+    }
+    return this.find(q).exec();
+  },
+);
 
 export const registrationRepository = model<RegistrationData, RegistrationModel>(
   'Registration',

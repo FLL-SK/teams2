@@ -15,6 +15,7 @@ import {
   UpdateEventInput,
   UpdateEventPayload,
   PricelistItemInput,
+  RegistrationPayload,
 } from '../../_generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
@@ -23,7 +24,6 @@ import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
 import { issueFoodInvoices, modifyFoodType } from '../../domains/event';
-import { modifyFoodOrderItem } from '../../domains/registration';
 
 const logBase = logger('DS:Event');
 
@@ -167,12 +167,12 @@ export class EventDataSource extends BaseDataSource {
     return users.filter((e) => !!e).map(UserMapper.toUser);
   }
 
-  async issueFoodInvoices(eventId: ObjectId): Promise<number> {
+  async issueFoodInvoices(eventId: ObjectId): Promise<RegistrationPayload[]> {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(eventId)) ||
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Issue food invoices');
-    return issueFoodInvoices(eventId, this.context);
+    return issueFoodInvoices(eventId);
   }
 
   async addFoodType(eventId: ObjectId): Promise<Event> {

@@ -8,6 +8,7 @@ export interface OrderData {
   updatedOn?: Date;
   invoicedOn?: Date;
   invoiceRef?: string;
+  sentOn?: Date;
   note?: string;
   billTo: AddressData;
   shipTo?: AddressData;
@@ -30,6 +31,7 @@ export const orderSchema = new Schema<OrderData>(
     updatedOn: { type: Types.Date },
     invoicedOn: { type: Types.Date },
     invoiceRef: { type: Types.String },
+    sentOn: { type: Types.Date },
     billTo: { type: addressSchema, required: true },
     shipTo: { type: addressSchema, required: false },
     note: { type: Types.String },

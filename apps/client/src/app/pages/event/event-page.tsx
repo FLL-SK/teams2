@@ -194,10 +194,22 @@ export function EventPage() {
             onChange={refetch}
             onIssueInvoices={async () => {
               const result = await issueFoodInvoices({ variables: { eventId: event.id } });
+
               if (result.data?.issueEventFoodInvoices) {
+                const inv = result.data.issueEventFoodInvoices;
+                const errors = inv.reduce((acc, i) => (i.errors ? acc + 1 : acc), 0);
+                const issued = inv.length - errors;
                 notify.info(
-                  `Vystavené faktúry za stravovanie pre ${result.data?.issueEventFoodInvoices ?? 0} tímov.`,
+                  `Vystavené faktúry za stravovanie pre ${issued} tímov. Chyby: ${errors ?? 0}`,
                 );
+                for (const i of inv) {
+                  if (i.errors) {
+                    notify.error(
+                      `Nepodarilo sa vystavit fakturu pre tim ${i.registration?.teamNo}.`,
+                      i.errors[0].message ?? 'Neznáma chyba',
+                    );
+                  }
+                }
                 refetch();
               } else {
                 notify.info('Neboli vystavené žiadne nové faktúry za stravovanie.');

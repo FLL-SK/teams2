@@ -8,6 +8,7 @@ type Order implements INode {
   updatedOn: DateTime
   invoicedOn: DateTime
   invoiceRef: String
+  sentOn: DateTime
   note: String
   items: [OrderItem!]!
   billTo: Address!

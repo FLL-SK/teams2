@@ -1,4 +1,5 @@
 fragment MutationErrorFragment on MutationError {
   code
   field
+  message
 }
