@@ -340,7 +340,7 @@ export class RegistrationDataSource extends BaseDataSource {
       throw new Error('Objednávky jedla nie sú povolené');
     }
 
-    if (r.foodOrder.invoicedOn && !isEvtMgr && !this.userGuard.isAdmin()) {
+    if (r.foodOrder?.invoicedOn && !isEvtMgr && !this.userGuard.isAdmin()) {
       // allow admins and event managers to update food already invoiced orders
       throw new Error('Objednávka jedla už bola fakturovaná. Kontaktujte organizátora.');
     }
