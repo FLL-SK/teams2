@@ -470,7 +470,7 @@ export async function issueFoodInvoice(registrationId: ObjectId): Promise<Regist
   const invoicePost = api.constructInvoice(
     `Stravovanie tímu ${team.name}`,
     reg.billTo,
-    reg.shipTo,
+    undefined,
     items,
     reg.invoiceNote,
     { email: settings.billingEmail },
