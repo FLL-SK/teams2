@@ -191,6 +191,7 @@ export function EventPage() {
             event={event}
             registrations={regs}
             canEdit={canEdit}
+            hideQty={!canEdit}
             onChange={refetch}
             onIssueInvoices={async () => {
               const result = await issueFoodInvoices({ variables: { eventId: event.id } });

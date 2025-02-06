@@ -19,6 +19,7 @@ interface PanelEventFoodProps {
   registrations: RegisteredTeamFragmentFragment[];
   onChange?: () => void;
   canEdit?: boolean;
+  hideQty?: boolean;
   onIssueInvoices: () => void;
   onModifyDeadline?: (deadline: Date) => void;
   onAddItem?: () => void;
@@ -29,7 +30,7 @@ interface PanelEventFoodProps {
 }
 
 export function PanelEventFood(props: PanelEventFoodProps) {
-  const { event, canEdit, registrations: regs } = props;
+  const { event, canEdit, registrations: regs, hideQty } = props;
   const [showModifyItemDialog, setShowModifyItemDialog] = React.useState<PricelistItemInput | null>(
     null,
   );
@@ -92,6 +93,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             editable={canEdit}
             onClick={(i) => setShowModifyItemDialog(i)}
             onRemove={(i) => props.onRemoveItem?.(i)}
+            hideQty={hideQty}
           />
           {canEdit && (
             <Box direction="row">
