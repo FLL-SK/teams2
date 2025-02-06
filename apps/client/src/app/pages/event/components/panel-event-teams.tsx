@@ -79,21 +79,27 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
               <Text>{reg.name}</Text>
               <Text size="small">{fullAddress(reg.address)}</Text>
             </Box>
+
             <Box>
-              {reg.foodOrder ? (
+              {canEdit && reg.foodOrder ? (
                 <Tip content="Objednávka jedla">
                   <CafeteriaIcon color={reg.foodOrder.invoicedOn ? 'green' : undefined} />
                 </Tip>
               ) : null}
             </Box>
+
             <Box direction="row" gap="small">
-              <Tip content="Počet členov tímu">
-                <GroupIcon />
-              </Tip>
-              <Text>
-                {formatTeamSize(reg)}
-                {!reg.sizeConfirmedOn && ' ?'}
-              </Text>
+              {canEdit ? (
+                <>
+                  <Tip content="Počet členov tímu">
+                    <GroupIcon />
+                  </Tip>
+                  <Text>
+                    {formatTeamSize(reg)}
+                    {!reg.sizeConfirmedOn && ' ?'}
+                  </Text>
+                </>
+              ) : null}
             </Box>
             <Box />
           </ListRow2>
