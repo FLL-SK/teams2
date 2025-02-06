@@ -59,7 +59,7 @@ export async function createRegistrationInvoice(
     reg.billTo,
     reg.shipTo,
     items,
-    reg.invoiceNote,
+    `Registrácia tímu ${team.name}`,
     { email: settings.billingEmail },
   );
 
@@ -469,10 +469,10 @@ export async function issueFoodInvoice(registrationId: ObjectId): Promise<Regist
   }
   const invoicePost = api.constructInvoice(
     `Stravovanie tímu ${team.name}`,
-    reg.billTo,
+    reg.foodOrder.billTo,
     undefined,
     items,
-    reg.invoiceNote,
+    'Stravné pre tím ' + team.name,
     { email: settings.billingEmail },
   );
 
