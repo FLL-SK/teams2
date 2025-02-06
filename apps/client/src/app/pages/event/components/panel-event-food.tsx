@@ -59,13 +59,15 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
   return (
     <Panel title="Stravovanie" gap="medium">
-      <LabelValue label="Objednávanie stravovanie povolené" labelWidth="350px" direction="row">
-        <CheckBox
-          toggle
-          checked={!!event.foodOrderEnabled}
-          onClick={event.foodOrderEnabled ? props.onDisableFoodOrders : props.onEnableFoodOrders}
-        />
-      </LabelValue>
+      {canEdit && (
+        <LabelValue label="Objednávanie stravovanie povolené" labelWidth="350px" direction="row">
+          <CheckBox
+            toggle
+            checked={!!event.foodOrderEnabled}
+            onClick={event.foodOrderEnabled ? props.onDisableFoodOrders : props.onEnableFoodOrders}
+          />
+        </LabelValue>
+      )}
       <LabelValue
         label="Termín pre objednávky stravovania"
         value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
