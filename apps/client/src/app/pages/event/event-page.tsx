@@ -127,13 +127,25 @@ export function EventPage() {
     if (!progRegs?.getProgramRegistrations) {
       return [];
     }
-    const it: { id: string; name: string; teamNo: string }[] = progRegs.getProgramRegistrations.map(
-      (r) => ({
+
+    const it: { id: string; name: string; teamNo: string }[] = [];
+    for (const r of progRegs.getProgramRegistrations) {
+      if (!r.team) {
+        continue;
+      }
+      if (event?.invitedTeamsIds.includes(r.teamId)) {
+        continue;
+      }
+      if (it.findIndex((i) => i.id === r.teamId) >= 0) {
+        continue;
+      }
+      it.push({
         id: r.teamId,
-        name: r.team?.name,
+        name: r.team.name,
         teamNo: r.teamNo ?? 'xxx',
-      }),
-    );
+      });
+    }
+
     it.sort((a, b) => a.name.localeCompare(b.name));
     return it;
   }, [progRegs, regs]);

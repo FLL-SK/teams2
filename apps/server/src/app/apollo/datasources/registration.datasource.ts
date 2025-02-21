@@ -138,7 +138,7 @@ export class RegistrationDataSource extends BaseDataSource {
     programId: ObjectId,
     includeNotConfirmed?: boolean | null,
   ): Promise<Registration[]> {
-    const q: FilterQuery<RegistrationData> = { programId, canceledOn: null, eventId: null };
+    const q: FilterQuery<RegistrationData> = { programId, canceledOn: null };
     if (includeNotConfirmed === false) {
       q.confirmedOn = { $ne: null };
     }
