@@ -24,7 +24,7 @@ interface PanelEventTeamsProps {
   canEdit?: boolean;
   onInvite?: (teamId: string) => void;
   onUninvite?: (teamId: string) => void;
-  invitableTeams?: { id: string; name: string }[];
+  invitableTeams?: { id: string; name: string; teamNo: string }[];
 }
 
 export function PanelEventTeams(props: PanelEventTeamsProps) {
@@ -76,7 +76,7 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
           >
             <Text>{idx + 1}</Text>
             <Box>
-              <Text>{reg.name}</Text>
+              <Text>{'(' + (reg.teamNo ? reg.teamNo : '') + ') ' + reg.name}</Text>
               <Text size="small">{fullAddress(reg.address)}</Text>
             </Box>
 

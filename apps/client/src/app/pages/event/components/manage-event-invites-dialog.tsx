@@ -9,7 +9,7 @@ import React from 'react';
 interface ManageEventInvitesDialogProps {
   show?: boolean;
   event: EventFragmentFragment;
-  invitableTeams: { id: string; name: string }[];
+  invitableTeams: { id: string; name: string; teamNo: string }[];
   onClose: () => void;
   onInvite?: (teamId: string) => void;
   onUninvite?: (teamId: string) => void;
@@ -65,7 +65,7 @@ export function ManageEventInvitesDialog(props: ManageEventInvitesDialogProps) {
           {props.invitableTeams.map((team) => (
             <Button
               key={team.id}
-              label={team.name}
+              label={'(' + team.teamNo + ') ' + team.name}
               onClick={() => {
                 setShowSelectTeam(false);
                 onInvite && onInvite(team.id);
