@@ -56,9 +56,12 @@ export function PanelEventTeams(props: PanelEventTeamsProps) {
           <Text>
             Turnaj je len na pozvánky. Počet pozvaných tímov {event.invitedTeamsIds.length}
           </Text>
-          <Box direction="row">
-            <Button label="Manažovať pozvánky" onClick={() => setShowManageInvites(true)} />
-          </Box>
+
+          {(isAdmin() || isEventManager(event.id) || isProgramManager(event.programId)) && (
+            <Box direction="row">
+              <Button label="Manažovať pozvánky" onClick={() => setShowManageInvites(true)} />
+            </Box>
+          )}
         </Box>
       )}
       <Box direction="row" wrap>
