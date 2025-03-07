@@ -68,15 +68,15 @@ export function PanelEventFood(props: PanelEventFoodProps) {
           />
         </LabelValue>
       )}
-      {event.foodOrderEnabled && (
-        <LabelValue
-          label="Termín pre objednávky stravovania"
-          value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
-          direction="row"
-          labelWidth="350px"
-        />
-      )}
-      {event.foodOrderEnabled && eventFoodOrders.length === 0 && (
+
+      <LabelValue
+        label="Termín pre objednávky stravovania"
+        value={event.foodOrderDeadline ? formatDate(event.foodOrderDeadline) : 'neurčený'}
+        direction="row"
+        labelWidth="350px"
+      />
+
+      {eventFoodOrders.length === 0 && (
         <>
           <Text>Tento turnaj nemá definované žiadne stravovanie.</Text>
           {canEdit && (
@@ -90,7 +90,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
           )}
         </>
       )}
-      {event.foodOrderEnabled && eventFoodOrders.length > 0 && (
+      {eventFoodOrders.length > 0 && (
         <>
           <PricelistItemList
             items={eventFoodOrders}
@@ -115,7 +115,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
           <Button
             label="Upraviť termín"
             onClick={() => setShowModifyDeadlineDialog(true)}
-            disabled={!props.onModifyDeadline || !event.foodOrderEnabled}
+            disabled={!props.onModifyDeadline}
           />
 
           <Button
@@ -123,13 +123,8 @@ export function PanelEventFood(props: PanelEventFoodProps) {
             onClick={() =>
               handleExportFoodOrders(event?.program.name ?? '', event.name, regs ?? [])
             }
-            disabled={!event.foodOrderEnabled}
           />
-          <Button
-            label="Vystaviť faktúry za stravovanie"
-            onClick={() => props.onIssueInvoices()}
-            disabled={!event.foodOrderEnabled}
-          />
+          <Button label="Vystaviť faktúry za stravovanie" onClick={() => props.onIssueInvoices()} />
         </Box>
       )}
       {showModifyItemDialog && (
