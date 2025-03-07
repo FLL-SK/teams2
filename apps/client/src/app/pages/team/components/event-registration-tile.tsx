@@ -51,22 +51,22 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
 
   const canOrderFood: { status: boolean; msg: string } = useMemo(() => {
     if (registration.canceledOn) {
-      return { status: false, msg: 'Registrácia bola zrušená.' };
+      return { status: false, msg: 'Registrácia na turnaj bola zrušená.' };
     }
     if (!registration.confirmedOn) {
-      return { status: false, msg: 'Registrácia nie je potvrdená.' };
+      return { status: false, msg: 'Registrácia na turnaj ešte nie je potvrdená.' };
     }
     if (!registration.event) {
       return { status: false, msg: 'Turnaj nie je definovaný.' };
     }
     if (registration.foodOrder?.invoicedOn) {
-      return { status: false, msg: 'Objednávka jedla bola fakturovaná.' };
+      return { status: false, msg: 'Objednávka jedla bola už fakturovaná.' };
     }
     if (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today) {
-      return { status: false, msg: 'Objednávka jedla je uzavretá.' };
+      return { status: false, msg: 'Objednávanie jedla je už ukončené.' };
     }
     if (!registration.event.foodOrderEnabled) {
-      return { status: false, msg: 'Objednávka jedla nie je povolená.' };
+      return { status: false, msg: 'Objednávanie jedla nie je povolené organizátorom.' };
     }
     if (!canEdit) {
       return { status: false, msg: 'Nemáte oprávnenie objednať jedlo.' };
