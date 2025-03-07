@@ -49,19 +49,29 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     return null;
   }
 
-  const canOrderFood = useMemo(() => {
-    if (
-      registration.canceledOn ||
-      !registration.confirmedOn ||
-      !registration.event ||
-      registration.foodOrder?.invoicedOn ||
-      !canEdit ||
-      (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today) ||
-      !registration.event.foodOrderEnabled
-    ) {
-      return false;
+  const canOrderFood: { status: boolean; msg: string } = useMemo(() => {
+    if (registration.canceledOn) {
+      return { status: false, msg: 'Registrácia bola zrušená.' };
     }
-    return true;
+    if (!registration.confirmedOn) {
+      return { status: false, msg: 'Registrácia nie je potvrdená.' };
+    }
+    if (!registration.event) {
+      return { status: false, msg: 'Turnaj nie je definovaný.' };
+    }
+    if (registration.foodOrder?.invoicedOn) {
+      return { status: false, msg: 'Objednávka jedla bola fakturovaná.' };
+    }
+    if (registration.event.foodOrderDeadline && registration.event.foodOrderDeadline < today) {
+      return { status: false, msg: 'Objednávka jedla je uzavretá.' };
+    }
+    if (!registration.event.foodOrderEnabled) {
+      return { status: false, msg: 'Objednávka jedla nie je povolená.' };
+    }
+    if (!canEdit) {
+      return { status: false, msg: 'Nemáte oprávnenie objednať jedlo.' };
+    }
+    return { status: true, msg: '' };
   }, [registration]);
 
   const handleOrder = useCallback(
@@ -141,14 +151,12 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
                     : 'Objednať'
                 }
                 onClick={() => setShowFoodOrderModal(true)}
-                disabled={!canOrderFood && !(isAdmin() || isEventManager(registration.event.id))}
+                disabled={
+                  !canOrderFood.status && !(isAdmin() || isEventManager(registration.event.id))
+                }
               />
             </Box>
-            {!registration.confirmedOn && (
-              <Text color="status-warning">
-                Stravovanie je možné objedať až po potvrdení registrácie.
-              </Text>
-            )}
+            {!canOrderFood.status && <Text color="status-warning">{canOrderFood.msg}</Text>}
           </LabelValue>
         </LabelValueGroup>
       </Box>
