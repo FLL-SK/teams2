@@ -292,18 +292,24 @@ export class RegistrationDataSource extends BaseDataSource {
       teamNo = formatTeamNo(tn);
     } else {
       // get teamNo from program registration
-      const pr = await registrationRepository
-        .findOne({ programId: r.programId, teamId: r.teamId, canceledOn: null })
-        .exec();
+      const q: Partial<RegistrationData> = {
+        programId: r.programId,
+        eventId: null,
+        teamId: r.teamId,
+        canceledOn: null,
+      };
+      const pr = await registrationRepository.findOne(q).exec();
       if (!pr) {
         throw new Error('Program registration not found');
       }
       teamNo = pr.teamNo;
     }
 
-    r = await registrationRepository
-      .findByIdAndUpdate(id, { confirmedOn, teamNo }, { new: true })
-      .exec();
+    const u: Partial<RegistrationData> = {
+      confirmedOn,
+      teamNo,
+    };
+    r = await registrationRepository.findByIdAndUpdate(id, u, { new: true }).exec();
 
     if (r.eventId) {
       emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
