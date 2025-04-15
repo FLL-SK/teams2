@@ -3,7 +3,6 @@ import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
 import { EventListFragmentFragment, useGetEventsLazyQuery } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';
-import { is } from 'date-fns/locale';
 import { ColorType } from 'grommet/utils';
 
 interface CheckoutSelectEventProps {
