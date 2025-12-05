@@ -139,6 +139,7 @@ export function EventPage() {
       if (it.findIndex((i) => i.id === r.teamId) >= 0) {
         continue;
       }
+
       it.push({
         id: r.teamId,
         name: r.team.name,
@@ -154,7 +155,7 @@ export function EventPage() {
     if (event?.programId && event?.invitationOnly) {
       fetchProgramRegistrations({ variables: { programId: event.programId } });
     }
-  }, [event?.programId, fetchProgramRegistrations]);
+  }, [event, fetchProgramRegistrations]);
 
   if (!id || (eventError && !eventLoading)) {
     return <ErrorPage title="Chyba pri nahrávaní turnaja." />;
