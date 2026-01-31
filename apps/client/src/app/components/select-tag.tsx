@@ -4,9 +4,15 @@ import { useEffect, useState } from 'react';
 import {
   TagColorType,
   TagFragmentFragment,
-  useCreateTagMutation,
-  useGetTagsQuery,
+  CreateTagDocument,
+  CreateTagMutation,
+  CreateTagMutationVariables,
+  GetTagsDocument,
+  GetTagsQuery,
+  GetTagsQueryVariables,
 } from '../_generated/graphql';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { useNotification } from './notifications/notification-provider';
 
 interface SelectTagProps {
   selected?: string[]; // already selected tags ids
@@ -22,9 +28,13 @@ const defaultColor: TagColorType = 'TC1';
 
 export function SelectTag(props: SelectTagProps) {
   const { onSelect, onClose, disabled, readonly, defaultValue, selected } = props;
-  const { data, loading, refetch } = useGetTagsQuery();
+  const { notify } = useNotification();
+  const { data, loading, refetch } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument);
   const [options, setOptions] = useState<TagFragmentFragment[]>([]);
-  const [createTag] = useCreateTagMutation({ onCompleted: () => refetch() });
+  const [createTag] = useMutation<CreateTagMutation, CreateTagMutationVariables>(
+    CreateTagDocument,
+    { onCompleted: () => refetch(), onError: () => notify.error('Chyba pri vytváraní tagu') },
+  );
 
   useEffect(() => {
     if (!loading) {
@@ -36,7 +46,7 @@ export function SelectTag(props: SelectTagProps) {
     if (t.id === createTagIndicator) {
       try {
         const res = await createTag({ variables: { input: { label: t.label } } });
-        if (!res.errors && res.data && res.data.createTag) {
+        if (!res.error && res.data && res.data.createTag) {
           onSelect(res.data.createTag);
         }
         // TODO: handle errors

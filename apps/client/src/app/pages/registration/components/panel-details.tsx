@@ -6,10 +6,17 @@ import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {
   RegistrationFragmentFragment,
-  useCancelRegistrationMutation,
-  useChangeRegisteredEventMutation,
-  useUpdateRegistrationMutation,
+  CancelRegistrationDocument,
+  CancelRegistrationMutation,
+  CancelRegistrationMutationVariables,
+  ChangeRegisteredEventDocument,
+  ChangeRegisteredEventMutation,
+  ChangeRegisteredEventMutationVariables,
+  UpdateRegistrationDocument,
+  UpdateRegistrationMutation,
+  UpdateRegistrationMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../../utils/format-address';
 import { Panel } from '../../../components/panel';
 import { ConfirmTeamUnregisterDialog } from '../../../components/dialogs/confirm-team-unregister';
@@ -36,13 +43,13 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const [changeEvent, setChangeEvent] = useState(false);
   const [changeRegType, setChangeRegType] = useState(false);
 
-  const [unregisterTeam] = useCancelRegistrationMutation({
+  const [unregisterTeam] = useMutation<CancelRegistrationMutation, CancelRegistrationMutationVariables>(CancelRegistrationDocument, {
     onError: () => notify.error('Nepodarilo sa zrušiť registráciu.'),
   });
-  const [switchTeamEvent] = useChangeRegisteredEventMutation({
+  const [switchTeamEvent] = useMutation<ChangeRegisteredEventMutation, ChangeRegisteredEventMutationVariables>(ChangeRegisteredEventDocument, {
     onError: () => notify.error('Nepodarilo sa presunúť tím na iný turnaj'),
   });
-  const [updateRegistration] = useUpdateRegistrationMutation({
+  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
     onError: () => notify.error('Nepodarilo sa zmeniť typ registrácie'),
   });
 

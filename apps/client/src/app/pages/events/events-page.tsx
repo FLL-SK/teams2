@@ -2,8 +2,13 @@ import { Box, Paragraph } from 'grommet';
 import React from 'react';
 import { BasePage } from '../../components/base-page';
 import { EventList } from '../../components/event-list';
-import { useGetEventsQuery } from '../../_generated/graphql';
+import {
+  GetEventsDocument,
+  GetEventsQuery,
+  GetEventsQueryVariables,
+} from '../../_generated/graphql';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { useQuery } from '@apollo/client/react';
 
 interface EventsPageProps {
   responsiveSize?: string;
@@ -11,16 +16,24 @@ interface EventsPageProps {
 
 export function EventsPage(props: EventsPageProps) {
   const { notify } = useNotification();
-  const { data: eventsData, loading: eventsLoading } = useGetEventsQuery({
+  const {
+    data: eventsData,
+    loading: eventsLoading,
+    error: eventsError,
+  } = useQuery<GetEventsQuery, GetEventsQueryVariables>(GetEventsDocument, {
     variables: { filter: { isActive: true } },
-    onError: (e) => notify.error('Nepodarilo sa načítať zoznam turnajov.', e.message),
   });
 
-  const events = eventsData?.getEvents ?? [];
+  const events = eventsData?.getEvents;
 
   return (
     <BasePage title="Turnaje" loading={eventsLoading}>
-      {events.length === 0 && (
+      {eventsError && (
+        <Box pad="medium">
+          <Paragraph>Pri načítaní turnajov nastala chyba: {eventsError.message}</Paragraph>
+        </Box>
+      )}
+      {!eventsError && events && events.length === 0 && (
         <Box pad="medium">
           <Paragraph>Aktuálne ešte nie sú aktívne žiadne turnaje.</Paragraph>
         </Box>

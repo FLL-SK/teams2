@@ -5,7 +5,8 @@ import { SelectProgram } from '../../../components/select-program';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
-import { useGetTagsQuery } from '../../../_generated/graphql';
+import { GetTagsDocument, GetTagsQuery, GetTagsQueryVariables } from '../../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 
 export interface RegistrationListFilterValues {
   tags?: string[];
@@ -30,7 +31,7 @@ interface RegistrationListFilterProps {
 export function RegistrationListFilter(props: RegistrationListFilterProps) {
   const { onClose, show, onChange, values } = props;
 
-  const { data: tagsData, loading: loadingTags } = useGetTagsQuery();
+  const { data: tagsData, loading: loadingTags } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument);
 
   const filterTags = useMemo(() => values.tags ?? [], [values.tags]);
 

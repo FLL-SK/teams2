@@ -1,7 +1,8 @@
 import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useEffect, useState } from 'react';
-import { ProgramListFragmentFragment, useGetProgramsQuery } from '../_generated/graphql';
+import { ProgramListFragmentFragment, GetProgramsDocument, GetProgramsQuery, GetProgramsQueryVariables } from '../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 
 interface SelectProgramProps {
   onSelect: (data: ProgramListFragmentFragment) => void;
@@ -13,7 +14,7 @@ interface SelectProgramProps {
 
 export function SelectProgram(props: SelectProgramProps) {
   const { onSelect, onClose, disabled, value, showOnlyActive = true } = props;
-  const { data, loading } = useGetProgramsQuery({
+  const { data, loading } = useQuery<GetProgramsQuery, GetProgramsQueryVariables>(GetProgramsDocument, {
     variables: { filter: { isActive: showOnlyActive } },
   });
   const [options, setOptions] = useState<ProgramListFragmentFragment[]>([]);

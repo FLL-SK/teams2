@@ -5,9 +5,14 @@ import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
-  useRegistrationClearInvoicedMutation,
-  useRegistrationSetInvoicedMutation,
+  RegistrationClearInvoicedDocument,
+  RegistrationClearInvoicedMutation,
+  RegistrationClearInvoicedMutationVariables,
+  RegistrationSetInvoicedDocument,
+  RegistrationSetInvoicedMutation,
+  RegistrationSetInvoicedMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { SetClearDate } from './set-clear-date';
 import { getAppConfig } from '../../../app-config';
 
@@ -22,8 +27,8 @@ export const FieldInvoiceIssuedOn = (props: {
   const { notify } = useNotification();
 
   const onError = () => notify.error('Nepodarilo sa aktualizovať dátum vystavenia faktúry.');
-  const [setInvoiced] = useRegistrationSetInvoicedMutation({ onError });
-  const [clearInvoiced] = useRegistrationClearInvoicedMutation({ onError });
+  const [setInvoiced] = useMutation<RegistrationSetInvoicedMutation, RegistrationSetInvoicedMutationVariables>(RegistrationSetInvoicedDocument, { onError });
+  const [clearInvoiced] = useMutation<RegistrationClearInvoicedMutation, RegistrationClearInvoicedMutationVariables>(RegistrationClearInvoicedDocument, { onError });
   return (
     <LabelValue label="Faktúra vystavená">
       <SetClearDate

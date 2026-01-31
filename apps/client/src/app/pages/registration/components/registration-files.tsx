@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text } from 'grommet';
 import { FileTile } from '../../../components/file-tile';
-import { useGetRegistrationFilesQuery } from '../../../_generated/graphql';
+import { GetRegistrationFilesDocument, GetRegistrationFilesQuery, GetRegistrationFilesQueryVariables } from '../../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 
 interface RegistrationFilesPanelProps {
   registrationId: string;
@@ -10,7 +11,7 @@ interface RegistrationFilesPanelProps {
 
 export function RegistrationFilesPanel(props: RegistrationFilesPanelProps) {
   const { registrationId, regConfirmed } = props;
-  const { data } = useGetRegistrationFilesQuery({
+  const { data } = useQuery<GetRegistrationFilesQuery, GetRegistrationFilesQueryVariables>(GetRegistrationFilesDocument, {
     variables: { id: registrationId },
     pollInterval: 600000, // get updated urls before they expire});
   });

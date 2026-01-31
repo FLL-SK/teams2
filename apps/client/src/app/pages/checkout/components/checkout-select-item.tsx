@@ -4,8 +4,11 @@ import { ProgramTile } from './program-tile';
 import {
   ProductFragment,
   TeamFragmentFragment,
-  useGetProductsQuery,
+  GetProductsDocument,
+  GetProductsQuery,
+  GetProductsQueryVariables,
 } from '../../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 import { CheckoutDetails } from './types';
 import { ProductTile } from './product-tile';
 
@@ -20,7 +23,7 @@ interface CheckoutSelectProductProps {
 
 export function CheckoutSelectProduct(props: CheckoutSelectProductProps) {
   const { details, onSubmit, nextStep, prevStep, cancel, team } = props;
-  const { data, loading } = useGetProductsQuery({ variables: { teamId: team.id } });
+  const { data, loading } = useQuery<GetProductsQuery, GetProductsQueryVariables>(GetProductsDocument, { variables: { teamId: team.id } });
 
   if (loading) {
     return <Spinner />;

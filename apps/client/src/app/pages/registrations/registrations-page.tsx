@@ -5,11 +5,20 @@ import { ErrorPage } from '../../components/error-page';
 import {
   RegistrationListFragmentFragment,
   TeamFilterInput,
-  useAddTagsToTeamMutation,
-  useGetProgramLazyQuery,
-  useGetProgramRegistrationsLazyQuery,
-  useRemoveTagsFromTeamMutation,
+  AddTagsToTeamDocument,
+  AddTagsToTeamMutation,
+  AddTagsToTeamMutationVariables,
+  GetProgramDocument,
+  GetProgramQuery,
+  GetProgramQueryVariables,
+  GetProgramRegistrationsDocument,
+  GetProgramRegistrationsQuery,
+  GetProgramRegistrationsQueryVariables,
+  RemoveTagsFromTeamDocument,
+  RemoveTagsFromTeamMutation,
+  RemoveTagsFromTeamMutationVariables,
 } from '../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { RegistrationList } from './components/registration-list';
 import { Close, Deliver, Download, Filter, Group, Tag } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';
@@ -41,12 +50,16 @@ export function RegistrationsPage() {
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
   const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
-    useGetProgramRegistrationsLazyQuery({
-      fetchPolicy: 'cache-and-network',
-      onError: (e) => notify.error('Nepodarilo sa získať zoznam registrácií.', e.message),
-    });
+    useLazyQuery<GetProgramRegistrationsQuery, GetProgramRegistrationsQueryVariables>(
+      GetProgramRegistrationsDocument,
+      {
+        fetchPolicy: 'cache-and-network',
+      },
+    );
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
-    useGetProgramLazyQuery({ fetchPolicy: 'cache-and-network' });
+    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument, {
+      fetchPolicy: 'cache-and-network',
+    });
 
   const [searchText, setSearchText] = useState('');
   const [registrations, setRegistrations] = useState<RegistrationListFragmentFragment[]>([]);
@@ -56,8 +69,12 @@ export function RegistrationsPage() {
   const [showTeamSelect, setShowTeamSelect] = useState(false);
   const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([]);
 
-  const [removeTags] = useRemoveTagsFromTeamMutation();
-  const [addTags] = useAddTagsToTeamMutation();
+  const [removeTags] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(
+    RemoveTagsFromTeamDocument,
+  );
+  const [addTags] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(
+    AddTagsToTeamDocument,
+  );
 
   const coachesEmails: string[] = useMemo(
     () =>

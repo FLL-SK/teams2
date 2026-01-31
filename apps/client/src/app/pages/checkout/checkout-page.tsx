@@ -2,7 +2,7 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Spinner } from 'grommet';
 import { useCallback, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
@@ -10,12 +10,23 @@ import {
   AddressInput,
   RegistrationInput,
   UpdateTeamInput,
-  useCreateEventRegistrationMutation,
-  useCreateProgramRegistrationMutation,
-  useGetProgramLazyQuery,
-  useGetTeamLazyQuery,
-  useUpdateTeamMutation,
+  CreateEventRegistrationDocument,
+  CreateEventRegistrationMutation,
+  CreateEventRegistrationMutationVariables,
+  CreateProgramRegistrationDocument,
+  CreateProgramRegistrationMutation,
+  CreateProgramRegistrationMutationVariables,
+  GetProgramDocument,
+  GetProgramQuery,
+  GetProgramQueryVariables,
+  GetTeamDocument,
+  GetTeamQuery,
+  GetTeamQueryVariables,
+  UpdateTeamDocument,
+  UpdateTeamMutation,
+  UpdateTeamMutationVariables,
 } from '../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { CheckoutBillToAddress } from './components/checkout-billto-address';
 import { CheckoutIntro } from './components/checkout-intro';
 import { CheckoutReview } from './components/checkout-review';
@@ -59,22 +70,31 @@ export function CheckoutPage() {
   const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
 
   const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
-    useGetProgramLazyQuery();
+    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument);
 
-  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery({
-      onError: (e) => notify.error('Nepodarilo sa načítať tím.', e.message),
-    });
+  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] = useLazyQuery<
+    GetTeamQuery,
+    GetTeamQueryVariables
+  >(GetTeamDocument);
 
-  const [updateTeam] = useUpdateTeamMutation({
-    onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
-  });
+  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(
+    UpdateTeamDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
+    },
+  );
 
-  const [registerTeam4Event] = useCreateEventRegistrationMutation({
+  const [registerTeam4Event] = useMutation<
+    CreateEventRegistrationMutation,
+    CreateEventRegistrationMutationVariables
+  >(CreateEventRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
-  const [registerTeam4Program] = useCreateProgramRegistrationMutation({
+  const [registerTeam4Program] = useMutation<
+    CreateProgramRegistrationMutation,
+    CreateProgramRegistrationMutationVariables
+  >(CreateProgramRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 

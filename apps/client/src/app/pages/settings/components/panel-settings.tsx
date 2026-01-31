@@ -7,13 +7,19 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   SettingsFragmentFragment,
-  useSendTestEmailMutation,
-  useUpdateSettingsMutation,
+  SendTestEmailDocument,
+  SendTestEmailMutation,
+  SendTestEmailMutationVariables,
+  UpdateSettingsDocument,
+  UpdateSettingsMutation,
+  UpdateSettingsMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../../utils/format-address';
 
 interface PanelSettingsProps {
   settings?: SettingsFragmentFragment | null;
+  error?: Error;
 }
 
 export function PanelSettings(props: PanelSettingsProps) {
@@ -21,17 +27,28 @@ export function PanelSettings(props: PanelSettingsProps) {
   const { notify } = useNotification();
   const [editAddress, setEditAddress] = React.useState(false);
 
-  const [updateSettings] = useUpdateSettingsMutation({
-    onError: (e) => notify.error('Nepodarilo sa uložiť nastavenia.', e.message),
-  });
+  const [updateSettings] = useMutation<UpdateSettingsMutation, UpdateSettingsMutationVariables>(
+    UpdateSettingsDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa uložiť nastavenia.', e.message),
+    },
+  );
 
-  const [sendTestEmail] = useSendTestEmailMutation({
-    onError: (e) => notify.error('Nepodarilo sa odoslať testovací email.', e.message),
-  });
+  const [sendTestEmail] = useMutation<SendTestEmailMutation, SendTestEmailMutationVariables>(
+    SendTestEmailDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa odoslať testovací email.', e.message),
+    },
+  );
 
   return (
     <>
       {!settings && <Spinner />}
+      {!settings && props.error && (
+        <Text color="status-error">
+          Nastala chyba pri načítaní nastavení: {props.error.message}
+        </Text>
+      )}
       {settings && (
         <LabelValueGroup gap="small" labelWidth="300px" direction="row">
           <LabelValue label="Názov organizácie">

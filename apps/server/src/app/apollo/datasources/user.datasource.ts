@@ -3,7 +3,7 @@ import { UserData, userRepository } from '../../models';
 import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../_generated/graphql';
 import { UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
-import { FilterQuery } from 'mongoose';
+import { QueryFilter } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import {
@@ -39,7 +39,7 @@ export class UserDataSource extends BaseDataSource {
   async getUsers(filter: UserFilterInput): Promise<User[]> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get users');
 
-    const q: FilterQuery<UserData> = {};
+    const q: QueryFilter<UserData> = {};
     if (filter) {
       const { includeInactive } = filter;
 

@@ -1,6 +1,6 @@
 import { Application } from 'express';
 import { ApolloServer, ApolloServerOptions } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
+import { expressMiddleware } from '@as-integrations/express5';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 
 import { loadTypedefs } from '@graphql-tools/load';

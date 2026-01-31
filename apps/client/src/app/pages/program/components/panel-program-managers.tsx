@@ -5,9 +5,14 @@ import { Panel } from '../../../components/panel';
 import { UserTags } from '../../../components/user-tags';
 import {
   ProgramFragmentFragment,
-  useAddProgramManagerMutation,
-  useRemoveProgramManagerMutation,
+  AddProgramManagerDocument,
+  AddProgramManagerMutation,
+  AddProgramManagerMutationVariables,
+  RemoveProgramManagerDocument,
+  RemoveProgramManagerMutation,
+  RemoveProgramManagerMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 
 interface PanelProgramManagersProps {
   program: ProgramFragmentFragment;
@@ -18,10 +23,10 @@ export function PanelProgramManagers(props: PanelProgramManagersProps) {
   const { program, canAddManagers } = props;
   const { notify } = useNotification();
 
-  const [addManager] = useAddProgramManagerMutation({
+  const [addManager] = useMutation<AddProgramManagerMutation, AddProgramManagerMutationVariables>(AddProgramManagerDocument, {
     onError: () => notify.error('Nepodarilo sa pridať manažéra.'),
   });
-  const [removeManager] = useRemoveProgramManagerMutation({
+  const [removeManager] = useMutation<RemoveProgramManagerMutation, RemoveProgramManagerMutationVariables>(RemoveProgramManagerDocument, {
     onError: () => notify.error('Nepodarilo sa odstrániť manažéra.'),
   });
 

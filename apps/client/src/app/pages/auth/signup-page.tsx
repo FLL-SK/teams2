@@ -4,7 +4,8 @@ import { Box, Button, CheckBox, Form, FormField, Paragraph, Text } from 'grommet
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BasePage } from '../../components/base-page';
-import { useGetSettingsQuery } from '../../_generated/graphql';
+import { GetSettingsDocument, GetSettingsQuery, GetSettingsQueryVariables } from '../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 import { validateEmail, validatePhone } from '@teams2/common';
 import { AuthSignupData, useAuthenticate } from '@teams2/auth-react';
 
@@ -24,7 +25,7 @@ export function SignupPage() {
   const [message, setMessage] = useState<string>();
   const [formValues, setFormValues] = useState<SignupDataType>();
 
-  const { data } = useGetSettingsQuery();
+  const { data } = useQuery<GetSettingsQuery, GetSettingsQueryVariables>(GetSettingsDocument);
   const url = data?.getSettings?.privacyPolicyUrl ?? '';
 
   //----------------------------------------------------------------------------

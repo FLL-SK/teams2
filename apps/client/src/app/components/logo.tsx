@@ -1,6 +1,7 @@
 import { Box } from 'grommet';
 import React from 'react';
-import { useGetSettingsQuery } from '../_generated/graphql';
+import { GetSettingsDocument, GetSettingsQuery, GetSettingsQueryVariables } from '../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 
 interface LogoProps {
   width?: string;
@@ -9,7 +10,7 @@ interface LogoProps {
 
 export const Logo = (props: LogoProps) => {
   const { height, width } = props;
-  const { data } = useGetSettingsQuery();
+  const { data } = useQuery<GetSettingsQuery, GetSettingsQueryVariables>(GetSettingsDocument);
 
   const url = data?.getSettings?.appLogoUrl ?? '';
 

@@ -29,7 +29,7 @@ import {
   emailFoodOrderUpdated,
   emailFoodOrderRemoved,
 } from '../../utils/emails';
-import { FilterQuery, UpdateQuery } from 'mongoose';
+import { QueryFilter, UpdateQuery } from 'mongoose';
 import { OrderData } from '../../models/order.model';
 import { formatTeamNo } from '../../utils/format-teamNo';
 
@@ -56,7 +56,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async getRegistrations(filter: RegistrationFilter): Promise<Registration[]> {
-    const q: FilterQuery<RegistrationData> = {};
+    const q: QueryFilter<RegistrationData> = {};
     if (filter.active) {
       q.canceledOn = null;
     }
@@ -138,7 +138,7 @@ export class RegistrationDataSource extends BaseDataSource {
     programId: ObjectId,
     includeNotConfirmed?: boolean | null,
   ): Promise<Registration[]> {
-    const q: FilterQuery<RegistrationData> = { programId, canceledOn: null };
+    const q: QueryFilter<RegistrationData> = { programId, canceledOn: null };
     if (includeNotConfirmed === false) {
       q.confirmedOn = { $ne: null };
     }

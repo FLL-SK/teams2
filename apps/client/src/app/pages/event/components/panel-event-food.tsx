@@ -16,7 +16,7 @@ import { EditDateDialog } from '../../../components/dialogs/edit-date-dialog';
 
 interface PanelEventFoodProps {
   event: EventFragmentFragment;
-  registrations: RegisteredTeamFragmentFragment[];
+  registrations?: RegisteredTeamFragmentFragment[];
   onChange?: () => void;
   canEdit?: boolean;
   hideQty?: boolean;
@@ -30,7 +30,7 @@ interface PanelEventFoodProps {
 }
 
 export function PanelEventFood(props: PanelEventFoodProps) {
-  const { event, canEdit, registrations: regs, hideQty } = props;
+  const { event, canEdit, registrations: regs = [], hideQty } = props;
   const [showModifyItemDialog, setShowModifyItemDialog] = React.useState<PricelistItemInput | null>(
     null,
   );
@@ -38,7 +38,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
   const eventFoodOrders = React.useMemo(() => {
     const items = event.foodTypes.map((ft) => ({ id: ft.id, n: ft.n, up: ft.up, qty: 0 }));
-    for (const r of regs ?? []) {
+    for (const r of regs) {
       if (r.foodOrder) {
         for (const i of r.foodOrder.items) {
           const item = items.find((it) => it.id === i.productId);
@@ -120,9 +120,7 @@ export function PanelEventFood(props: PanelEventFoodProps) {
 
           <Button
             label="Export objednávok stravovania"
-            onClick={() =>
-              handleExportFoodOrders(event?.program.name ?? '', event.name, regs ?? [])
-            }
+            onClick={() => handleExportFoodOrders(event?.program.name ?? '', event.name, regs)}
           />
           <Button label="Vystaviť faktúry za stravovanie" onClick={() => props.onIssueInvoices()} />
         </Box>

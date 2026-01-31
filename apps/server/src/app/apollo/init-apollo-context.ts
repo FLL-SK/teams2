@@ -1,4 +1,4 @@
-import { ExpressContextFunctionArgument } from '@apollo/server/express4';
+import { ExpressContextFunctionArgument } from '@as-integrations/express5';
 import { userRepository } from '../models';
 import { UserGuard } from '../utils/user-guard';
 import {
