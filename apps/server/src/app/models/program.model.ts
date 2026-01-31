@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document, ProjectionType, FilterQuery } from 'mongoose';
+import { Schema, model, Model, Document, ProjectionType, QueryFilter } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 
 const Types = Schema.Types;
@@ -99,7 +99,7 @@ schema.static(
 schema.static(
   'findPrograms',
   function (filter: ProgramFilter, projection?: ProjectionType<ProgramData>) {
-    let q: FilterQuery<ProgramData> = {};
+    let q: QueryFilter<ProgramData> = {};
     if (filter.isActive) {
       q = { ...q, startDate: { $lt: new Date() }, endDate: { $gte: new Date() }, deletedOn: null };
     }

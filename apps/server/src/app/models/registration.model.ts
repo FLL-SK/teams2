@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document, FilterQuery } from 'mongoose';
+import { Schema, model, Model, Document, QueryFilter } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { AddressData, addressSchema } from './address.model';
 import { OrderData, orderSchema } from './order.model';
@@ -142,7 +142,7 @@ export interface RegistrationGroup {
 schema.static('groupRegistrations', async function (filter: CountRegistrationsFilter): Promise<
   RegistrationGroup[]
 > {
-  const q: FilterQuery<RegistrationData> = {};
+  const q: QueryFilter<RegistrationData> = {};
   if (typeof filter.active === 'boolean') {
     if (filter.active) {
       q.canceledOn = null;
@@ -220,7 +220,7 @@ schema.static(
       notHavingFoodOrder?: boolean;
     },
   ): Promise<RegistrationData[]> {
-    const q: FilterQuery<RegistrationData> = { eventId };
+    const q: QueryFilter<RegistrationData> = { eventId };
     if (options.confirmed) {
       q.confirmedOn = { $ne: null };
     }

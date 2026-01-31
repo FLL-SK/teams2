@@ -5,7 +5,7 @@ import { TagMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
-import { FilterQuery } from 'mongoose';
+import { QueryFilter } from 'mongoose';
 import Dataloader from 'dataloader';
 
 const logBase = logger('DS:Tag');
@@ -41,7 +41,7 @@ export class TagDataSource extends BaseDataSource {
     if (!this.userGuard.isAdmin()) {
       return [];
     }
-    const q: FilterQuery<TagData> = {};
+    const q: QueryFilter<TagData> = {};
     if (!includeDeleted) {
       q.deletedOn = null;
     }

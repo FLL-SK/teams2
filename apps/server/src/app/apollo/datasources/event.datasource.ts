@@ -19,7 +19,7 @@ import {
 } from '../../_generated/graphql';
 import { EventMapper, UserMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
-import { FilterQuery } from 'mongoose';
+import { QueryFilter } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
 import { emailEventManagerAdded } from '../../utils/emails';
@@ -49,7 +49,7 @@ export class EventDataSource extends BaseDataSource {
 
   async getEvents(filter: EventFilterInput): Promise<Event[]> {
     const log = logBase.extend('getEvents');
-    const q: FilterQuery<Event> = {};
+    const q: QueryFilter<Event> = {};
     if (filter.programId) {
       q.programId = filter.programId;
     }

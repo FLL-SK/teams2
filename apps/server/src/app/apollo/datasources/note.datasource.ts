@@ -5,7 +5,7 @@ import { NoteMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
-import { FilterQuery } from 'mongoose';
+import { QueryFilter } from 'mongoose';
 
 const logBase = logger('DS:Note');
 
@@ -23,7 +23,7 @@ export class NoteDataSource extends BaseDataSource {
       return [];
     }
 
-    const q: FilterQuery<NoteData> = { type, ref };
+    const q: QueryFilter<NoteData> = { type, ref };
     if (!includeDeleted) {
       q.deletedOn = null;
     }

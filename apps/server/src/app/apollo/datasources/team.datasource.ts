@@ -13,7 +13,7 @@ import {
 import { RegistrationMapper, TeamMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 import Dataloader from 'dataloader';
-import { FilterQuery } from 'mongoose';
+import { QueryFilter } from 'mongoose';
 import { logger } from '@teams2/logger';
 
 const logBase = logger('DS:Team');
@@ -42,7 +42,7 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async getTeams(filter: TeamFilterInput): Promise<Team[]> {
-    const q: FilterQuery<TeamData> = {};
+    const q: QueryFilter<TeamData> = {};
     if (!filter.includeInactive) {
       q.deletedOn = null;
     }

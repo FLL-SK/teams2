@@ -48,7 +48,7 @@ const schema = new Schema<UserData, UserModel>(
     gdprAcceptedOn: { type: Types.Date },
     gdprDeclinedOn: { type: Types.Date },
   },
-  { collation: { locale: 'sk', strength: 1 } }
+  { collation: { locale: 'sk', strength: 1 } },
 );
 
 schema.index({ username: 1 }, { unique: true });
@@ -65,14 +65,12 @@ schema.static('findActiveByUsername', function (username: string) {
   return this.findOne({ username, deletedOn: null }).exec();
 });
 
-schema.pre('save', async function (next) {
+schema.pre('save', async function () {
   //'this' refers to the current document about to be saved
   const user = this as UserDocument;
 
   //Replace the plain text password with the hash and then store it
   user.password = await hashPassword(user.password);
-  //Indicates we're done and moves on to the next middleware
-  next();
 });
 
 export const userRepository = model<UserData, UserModel>('User', schema);
