@@ -6,9 +6,14 @@ import { useNotification } from '../../../components/notifications/notification-
 import { Panel } from '../../../components/panel';
 import {
   TeamFragmentFragment,
-  useAddCoachToTeamMutation,
-  useRemoveCoachFromTeamMutation,
+  AddCoachToTeamDocument,
+  AddCoachToTeamMutation,
+  AddCoachToTeamMutationVariables,
+  RemoveCoachFromTeamDocument,
+  RemoveCoachFromTeamMutation,
+  RemoveCoachFromTeamMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { CoachList } from './coach-list';
 
 interface PanelTeamCoachesProps {
@@ -21,11 +26,11 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
   const { notify } = useNotification();
   const [showAddCoachDialog, setShowAddCoachDialog] = useState(false);
 
-  const [addCoach] = useAddCoachToTeamMutation({
+  const [addCoach] = useMutation<AddCoachToTeamMutation, AddCoachToTeamMutationVariables>(AddCoachToTeamDocument, {
     onError: (error) => notify.error('Nepodarilo sa pridať trénera', error.message),
   });
-  const [removeCoach] = useRemoveCoachFromTeamMutation({
-    onError: (error) => notify.error('Nepodarilo sa odstr8ániť trénera', error.message),
+  const [removeCoach] = useMutation<RemoveCoachFromTeamMutation, RemoveCoachFromTeamMutationVariables>(RemoveCoachFromTeamDocument, {
+    onError: (error) => notify.error('Nepodarilo sa odstrániť trénera', error.message),
   });
 
   return (

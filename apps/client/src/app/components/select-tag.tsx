@@ -4,9 +4,14 @@ import { useEffect, useState } from 'react';
 import {
   TagColorType,
   TagFragmentFragment,
-  useCreateTagMutation,
-  useGetTagsQuery,
+  CreateTagDocument,
+  CreateTagMutation,
+  CreateTagMutationVariables,
+  GetTagsDocument,
+  GetTagsQuery,
+  GetTagsQueryVariables,
 } from '../_generated/graphql';
+import { useMutation, useQuery } from '@apollo/client/react';
 
 interface SelectTagProps {
   selected?: string[]; // already selected tags ids
@@ -22,9 +27,9 @@ const defaultColor: TagColorType = 'TC1';
 
 export function SelectTag(props: SelectTagProps) {
   const { onSelect, onClose, disabled, readonly, defaultValue, selected } = props;
-  const { data, loading, refetch } = useGetTagsQuery();
+  const { data, loading, refetch } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument);
   const [options, setOptions] = useState<TagFragmentFragment[]>([]);
-  const [createTag] = useCreateTagMutation({ onCompleted: () => refetch() });
+  const [createTag] = useMutation<CreateTagMutation, CreateTagMutationVariables>(CreateTagDocument, { onCompleted: () => refetch() });
 
   useEffect(() => {
     if (!loading) {

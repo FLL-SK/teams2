@@ -7,11 +7,20 @@ import { Panel } from '../../../components/panel';
 import {
   FileUploadInput,
   ProgramFragmentFragment,
-  useAddProgramFileMutation,
-  useGetProgramFilesQuery,
-  useGetProgramFileUploadUrlLazyQuery,
-  useRemoveFileMutation,
+  AddProgramFileDocument,
+  AddProgramFileMutation,
+  AddProgramFileMutationVariables,
+  GetProgramFilesDocument,
+  GetProgramFilesQuery,
+  GetProgramFilesQueryVariables,
+  GetProgramFileUploadUrlQueryDocument,
+  GetProgramFileUploadUrlQuery,
+  GetProgramFileUploadUrlQueryVariables,
+  RemoveFileDocument,
+  RemoveFileMutation,
+  RemoveFileMutationVariables,
 } from '../../../_generated/graphql';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react';
 import { uploadS3XHR } from '../../../utils/upload-s3-xhr';
 
 interface PanelProgramFilesProps {
@@ -23,14 +32,14 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
   const { program, canEdit } = props;
   const { notify } = useNotification();
 
-  const [getUploadUrl] = useGetProgramFileUploadUrlLazyQuery({
+  const [getUploadUrl] = useLazyQuery<GetProgramFileUploadUrlQuery, GetProgramFileUploadUrlQueryVariables>(GetProgramFileUploadUrlQueryDocument, {
     onError: (e) => notify.error('Nepodarilo sa získať adresu pre uloženie súbora.', e.message),
   });
-  const [addProgramFile] = useAddProgramFileMutation({
+  const [addProgramFile] = useMutation<AddProgramFileMutation, AddProgramFileMutationVariables>(AddProgramFileDocument, {
     onCompleted: () => filesRefetch(),
     onError: (e) => notify.error('Nepodarilo sa uložiť súbor.', e.message),
   });
-  const [removeFile] = useRemoveFileMutation({
+  const [removeFile] = useMutation<RemoveFileMutation, RemoveFileMutationVariables>(RemoveFileDocument, {
     onCompleted: () => filesRefetch(),
     onError: (e) => notify.error('Nepodarilo sa zmazať súbor.', e.message),
   });
@@ -39,7 +48,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
     data: filesData,
     loading: filesLoading,
     refetch: filesRefetch,
-  } = useGetProgramFilesQuery({
+  } = useQuery<GetProgramFilesQuery, GetProgramFilesQueryVariables>(GetProgramFilesDocument, {
     variables: { programId: program.id },
     pollInterval: 600000, // get updated urls before they expire
   });

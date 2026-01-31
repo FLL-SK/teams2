@@ -9,11 +9,20 @@ import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-pan
 import { TagList } from '../../../components/tag-list';
 import {
   TeamListFragmentFragment,
-  useAddTagsToTeamMutation,
-  useCreateNoteMutation,
-  useGetNotesLazyQuery,
-  useRemoveTagsFromTeamMutation,
+  AddTagsToTeamDocument,
+  AddTagsToTeamMutation,
+  AddTagsToTeamMutationVariables,
+  CreateNoteDocument,
+  CreateNoteMutation,
+  CreateNoteMutationVariables,
+  GetNotesQueryDocument,
+  GetNotesQuery,
+  GetNotesQueryVariables,
+  RemoveTagsFromTeamDocument,
+  RemoveTagsFromTeamMutation,
+  RemoveTagsFromTeamMutationVariables,
 } from '../../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../../utils/format-address';
 import { CoachList } from '../../team/components/coach-list';
 
@@ -26,11 +35,11 @@ export function TeamSidebar(props: TeamSidebarProps) {
   const { team, onClose } = props;
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery();
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument);
 
-  const [removeTag] = useRemoveTagsFromTeamMutation();
-  const [addTag] = useAddTagsToTeamMutation();
-  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument);
+  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument);
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch() });
 
   React.useEffect(() => {
     if (team) {

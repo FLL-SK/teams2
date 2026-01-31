@@ -7,9 +7,14 @@ import { Panel } from '../../../components/panel';
 import {
   EventListFragmentFragment,
   ProgramFragmentFragment,
-  useCreateEventMutation,
-  useDeleteEventMutation,
+  CreateEventDocument,
+  CreateEventMutation,
+  CreateEventMutationVariables,
+  DeleteEventDocument,
+  DeleteEventMutation,
+  DeleteEventMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 
 interface PanelProgramEventsProps {
   program: ProgramFragmentFragment;
@@ -23,11 +28,11 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
 
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
 
-  const [createEvent] = useCreateEventMutation({
+  const [createEvent] = useMutation<CreateEventMutation, CreateEventMutationVariables>(CreateEventDocument, {
     onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa vytvoriť turnaj.', e.message),
   });
-  const [deleteEvent] = useDeleteEventMutation({
+  const [deleteEvent] = useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, {
     onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa zrušiť turnaj.', e.message),
   });

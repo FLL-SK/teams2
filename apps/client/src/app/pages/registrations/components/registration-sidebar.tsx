@@ -10,12 +10,23 @@ import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel, SidebarPanelGroup } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
 import {
-  useAddTagsToTeamMutation,
-  useCreateNoteMutation,
-  useGetNotesLazyQuery,
-  useGetRegistrationLazyQuery,
-  useRemoveTagsFromTeamMutation,
+  AddTagsToTeamDocument,
+  AddTagsToTeamMutation,
+  AddTagsToTeamMutationVariables,
+  CreateNoteDocument,
+  CreateNoteMutation,
+  CreateNoteMutationVariables,
+  GetNotesQueryDocument,
+  GetNotesQuery,
+  GetNotesQueryVariables,
+  GetRegistrationQueryDocument,
+  GetRegistrationQuery,
+  GetRegistrationQueryVariables,
+  RemoveTagsFromTeamDocument,
+  RemoveTagsFromTeamMutation,
+  RemoveTagsFromTeamMutationVariables,
 } from '../../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../../utils/format-address';
 
 import { FieldInvoiceIssuedOn } from './field-invoiceIssuedOn';
@@ -39,14 +50,14 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const { registrationId, onClose } = props;
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery();
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument);
 
-  const [fetchRegistration, { data: regData }] = useGetRegistrationLazyQuery();
+  const [fetchRegistration, { data: regData }] = useLazyQuery<GetRegistrationQuery, GetRegistrationQueryVariables>(GetRegistrationQueryDocument);
 
-  const [removeTags] = useRemoveTagsFromTeamMutation();
-  const [addTags] = useAddTagsToTeamMutation();
+  const [removeTags] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument);
+  const [addTags] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument);
 
-  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch() });
 
   React.useEffect(() => {
     if (registrationId) {

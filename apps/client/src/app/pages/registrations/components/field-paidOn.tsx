@@ -5,9 +5,14 @@ import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
-  useRegistrationClearPaidMutation,
-  useRegistrationSetPaidMutation,
+  RegistrationClearPaidDocument,
+  RegistrationClearPaidMutation,
+  RegistrationClearPaidMutationVariables,
+  RegistrationSetPaidDocument,
+  RegistrationSetPaidMutation,
+  RegistrationSetPaidMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldPaidOn = (props: {
@@ -18,8 +23,8 @@ export const FieldPaidOn = (props: {
   const { isAdmin } = useAppUser();
   const { notify } = useNotification();
   const onError = () => notify.error('Nepodarilo sa aktualizovať dátum zaplatenia faktúry.');
-  const [setPaid] = useRegistrationSetPaidMutation({ onError });
-  const [clearPaid] = useRegistrationClearPaidMutation({ onError });
+  const [setPaid] = useMutation<RegistrationSetPaidMutation, RegistrationSetPaidMutationVariables>(RegistrationSetPaidDocument, { onError });
+  const [clearPaid] = useMutation<RegistrationClearPaidMutation, RegistrationClearPaidMutationVariables>(RegistrationClearPaidDocument, { onError });
 
   return (
     <LabelValue label="Zaplatená">

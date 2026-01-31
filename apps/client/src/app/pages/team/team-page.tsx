@@ -11,15 +11,32 @@ import { Panel, PanelGroup } from '../../components/panel';
 import {
   CreateTeamInput,
   UpdateTeamInput,
-  useAddTagsToTeamMutation,
-  useUpdateTeamMutation,
-  useCreateNoteMutation,
-  useDeleteTeamMutation,
-  useUndeleteTeamMutation,
-  useRemoveTagsFromTeamMutation,
-  useGetTeamLazyQuery,
-  useGetNotesLazyQuery,
+  AddTagsToTeamDocument,
+  AddTagsToTeamMutation,
+  AddTagsToTeamMutationVariables,
+  UpdateTeamDocument,
+  UpdateTeamMutation,
+  UpdateTeamMutationVariables,
+  CreateNoteDocument,
+  CreateNoteMutation,
+  CreateNoteMutationVariables,
+  DeleteTeamDocument,
+  DeleteTeamMutation,
+  DeleteTeamMutationVariables,
+  UndeleteTeamDocument,
+  UndeleteTeamMutation,
+  UndeleteTeamMutationVariables,
+  RemoveTagsFromTeamDocument,
+  RemoveTagsFromTeamMutation,
+  RemoveTagsFromTeamMutationVariables,
+  GetTeamQueryDocument,
+  GetTeamQuery,
+  GetTeamQueryVariables,
+  GetNotesQueryDocument,
+  GetNotesQuery,
+  GetNotesQueryVariables,
 } from '../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../utils/format-address';
 import { EditTeamDialog } from '../../components/dialogs/edit-team-dialog';
 import { LabelValueGroup } from '../../components/label-value-group';
@@ -42,25 +59,25 @@ export function TeamPage() {
   const onError = useCallback(() => notify.error('Nepodarilo sa aktualizovať tím.'), [notify]);
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery({
+    useLazyQuery<GetTeamQuery, GetTeamQueryVariables>(GetTeamQueryDocument, {
       fetchPolicy: 'cache-and-network',
       onError: () => notify.error('Nepodarilo sa načítať tím.'),
     });
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery({
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument, {
       fetchPolicy: 'cache-and-network',
       onError: () => notify.error('Nepodarilo sa načítať poznámky.'),
     });
 
-  const [removeTag] = useRemoveTagsFromTeamMutation({ onError });
-  const [addTag] = useAddTagsToTeamMutation({ onError });
+  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument, { onError });
+  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument, { onError });
 
-  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch(), onError });
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch(), onError });
 
-  const [updateTeam] = useUpdateTeamMutation({ onError });
-  const [deleteTeam] = useDeleteTeamMutation({ onError });
-  const [undeleteTeam] = useUndeleteTeamMutation({ onError });
+  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(UpdateTeamDocument, { onError });
+  const [deleteTeam] = useMutation<DeleteTeamMutation, DeleteTeamMutationVariables>(DeleteTeamDocument, { onError });
+  const [undeleteTeam] = useMutation<UndeleteTeamMutation, UndeleteTeamMutationVariables>(UndeleteTeamDocument, { onError });
 
   useEffect(() => {
     if (id) {

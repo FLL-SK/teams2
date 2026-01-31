@@ -8,7 +8,8 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import { Modal } from '../../../components/modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
-import { ProgramFragmentFragment, useUpdateProgramMutation } from '../../../_generated/graphql';
+import { ProgramFragmentFragment, UpdateProgramDocument, UpdateProgramMutation, UpdateProgramMutationVariables } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 
 interface PanelProgramDetailsProps {
   program: ProgramFragmentFragment;
@@ -25,7 +26,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
 
   const { notify } = useNotification();
 
-  const [updateProgram] = useUpdateProgramMutation({
+  const [updateProgram] = useMutation<UpdateProgramMutation, UpdateProgramMutationVariables>(UpdateProgramDocument, {
     onError: () => notify.error('Nepodarilo sa aktualizovať program'),
   });
 

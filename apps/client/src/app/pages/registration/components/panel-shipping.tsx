@@ -4,8 +4,11 @@ import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {
   RegistrationFragmentFragment,
-  useUpdateRegistrationMutation,
+  UpdateRegistrationDocument,
+  UpdateRegistrationMutation,
+  UpdateRegistrationMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { FieldShipmentGroup } from '../../registrations/components/field-shipmentGroup';
 import { FieldShippedOn } from '../../registrations/components/field-shippedOn';
 import { fullAddress } from '../../../utils/format-address';
@@ -26,7 +29,7 @@ export function PanelRegistrationShipping(props: PanelRegistrationShippingProps)
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);
 
-  const [updateRegistration] = useUpdateRegistrationMutation({
+  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
     onError: () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
   });
 

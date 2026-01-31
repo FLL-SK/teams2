@@ -7,9 +7,14 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   SettingsFragmentFragment,
-  useSendTestEmailMutation,
-  useUpdateSettingsMutation,
+  SendTestEmailDocument,
+  SendTestEmailMutation,
+  SendTestEmailMutationVariables,
+  UpdateSettingsDocument,
+  UpdateSettingsMutation,
+  UpdateSettingsMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../../utils/format-address';
 
 interface PanelSettingsProps {
@@ -21,11 +26,11 @@ export function PanelSettings(props: PanelSettingsProps) {
   const { notify } = useNotification();
   const [editAddress, setEditAddress] = React.useState(false);
 
-  const [updateSettings] = useUpdateSettingsMutation({
+  const [updateSettings] = useMutation<UpdateSettingsMutation, UpdateSettingsMutationVariables>(UpdateSettingsDocument, {
     onError: (e) => notify.error('Nepodarilo sa uložiť nastavenia.', e.message),
   });
 
-  const [sendTestEmail] = useSendTestEmailMutation({
+  const [sendTestEmail] = useMutation<SendTestEmailMutation, SendTestEmailMutationVariables>(SendTestEmailDocument, {
     onError: (e) => notify.error('Nepodarilo sa odoslať testovací email.', e.message),
   });
 

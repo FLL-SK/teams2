@@ -6,8 +6,11 @@ import {
   EventBasicFragmentFragment,
   EventListFragmentFragment,
   TeamBasicFragmentFragment,
-  useGetEventsQuery,
+  GetEventsDocument,
+  GetEventsQuery,
+  GetEventsQueryVariables,
 } from '../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 import { Modal } from '../modal';
 import { LabelValue } from '../label-value';
 
@@ -23,7 +26,7 @@ export function ChangeTeamEventDialog(props: ChangeTeamEventDialogProps) {
   const { show, team, event, onClose, onSubmit } = props;
   const [selectedEvent, setSelectedEvent] = useState<EventBasicFragmentFragment>();
 
-  const { data, loading } = useGetEventsQuery({
+  const { data, loading } = useQuery<GetEventsQuery, GetEventsQueryVariables>(GetEventsDocument, {
     variables: { filter: { programId: event.programId, isActive: true } },
   });
 

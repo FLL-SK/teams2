@@ -2,8 +2,11 @@ import { Anchor, Box, Button, Paragraph, Text } from 'grommet';
 import {
   OrderInput,
   TeamRegistrationFragmentFragment,
-  useUpdateRegistrationFoodOrderMutation,
+  UpdateRegistrationFoodOrderDocument,
+  UpdateRegistrationFoodOrderMutation,
+  UpdateRegistrationFoodOrderMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { FieldTeamSize } from '../../registrations/components/field-teamSize';
@@ -41,7 +44,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   const [today] = useState(new Date().toISOString().substring(0, 10));
 
   const { notify } = useNotification();
-  const [updateOrder] = useUpdateRegistrationFoodOrderMutation({
+  const [updateOrder] = useMutation<UpdateRegistrationFoodOrderMutation, UpdateRegistrationFoodOrderMutationVariables>(UpdateRegistrationFoodOrderDocument, {
     onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
   });
 

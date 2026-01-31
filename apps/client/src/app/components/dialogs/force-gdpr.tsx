@@ -3,9 +3,14 @@ import { isNil, omitBy } from 'lodash';
 import React from 'react';
 import {
   UpdateUserInput,
-  useDeclineGdprMutation,
-  useUpdateUserMutation,
+  DeclineGdprDocument,
+  DeclineGdprMutation,
+  DeclineGdprMutationVariables,
+  UpdateUserDocument,
+  UpdateUserMutation,
+  UpdateUserMutationVariables,
 } from '../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { useAppUser } from '../app-user/use-app-user';
 import { EditUserDialog, EditUserDialogFields } from './edit-user-dialog';
 import { useAuthenticate } from '@teams2/auth-react';
@@ -19,8 +24,8 @@ export function ForceGdprDialog(props: ForceGdprDialogProps) {
   const { logout } = useAuthenticate();
   const apolloClient = useApolloClient();
 
-  const [updateUser] = useUpdateUserMutation();
-  const [declineGdpr] = useDeclineGdprMutation();
+  const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument);
+  const [declineGdpr] = useMutation<DeclineGdprMutation, DeclineGdprMutationVariables>(DeclineGdprDocument);
 
   if (!user || !!user.gdprAcceptedOn) {
     return null;
