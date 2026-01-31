@@ -6,16 +6,31 @@ import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import { Panel, PanelGroup } from '../../components/panel';
 import {
-  useCreateNoteMutation,
-  useAddTagsToTeamMutation,
-  useGetRegistrationLazyQuery,
-  useGetNotesLazyQuery,
-  useRemoveTagsFromTeamMutation,
+  CreateNoteDocument,
+  CreateNoteMutation,
+  CreateNoteMutationVariables,
+  AddTagsToTeamDocument,
+  AddTagsToTeamMutation,
+  AddTagsToTeamMutationVariables,
+  GetRegistrationQueryDocument,
+  GetRegistrationQuery,
+  GetRegistrationQueryVariables,
+  GetNotesQueryDocument,
+  GetNotesQuery,
+  GetNotesQueryVariables,
+  RemoveTagsFromTeamDocument,
+  RemoveTagsFromTeamMutation,
+  RemoveTagsFromTeamMutationVariables,
   Address,
   OrderInput,
-  useUpdateRegistrationFoodOrderMutation,
-  useRemoveRegistrationFoodOrderMutation,
+  UpdateRegistrationFoodOrderDocument,
+  UpdateRegistrationFoodOrderMutation,
+  UpdateRegistrationFoodOrderMutationVariables,
+  RemoveRegistrationFoodOrderDocument,
+  RemoveRegistrationFoodOrderMutation,
+  RemoveRegistrationFoodOrderMutationVariables,
 } from '../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
@@ -45,34 +60,34 @@ export function RegistrationPage() {
   const [showFoodOrderModal, setShowFoodOrderModal] = React.useState(false);
   const [confirmFoodOrderRemove, setConfirmFoodOrderRemove] = React.useState(false);
 
-  const [removeTag] = useRemoveTagsFromTeamMutation({
+  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument, {
     onError: (e) => notify.error('Nepodarilo sa odobrať štítok.', e.message),
   });
-  const [addTag] = useAddTagsToTeamMutation({
+  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument, {
     onError: (e) => notify.error('Nepodarilo sa pridať štítok.', e.message),
   });
 
-  const [removeOrder] = useRemoveRegistrationFoodOrderMutation({
+  const [removeOrder] = useMutation<RemoveRegistrationFoodOrderMutation, RemoveRegistrationFoodOrderMutationVariables>(RemoveRegistrationFoodOrderDocument, {
     onError: (e) => notify.error('Nepodarilo sa zrušiť objednávku jedla.', e.message),
   });
 
-  const [updateOrder] = useUpdateRegistrationFoodOrderMutation({
+  const [updateOrder] = useMutation<UpdateRegistrationFoodOrderMutation, UpdateRegistrationFoodOrderMutationVariables>(UpdateRegistrationFoodOrderDocument, {
     onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
   });
 
   const [
     fetchRegistration,
     { data: regData, loading: regLoading, error: regDataError, refetch: regRefetch },
-  ] = useGetRegistrationLazyQuery({
+  ] = useLazyQuery<GetRegistrationQuery, GetRegistrationQueryVariables>(GetRegistrationQueryDocument, {
     onError: (e) => notify.error('Nepodarilo sa načítať registráciu.', e.message),
   });
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useGetNotesLazyQuery({
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument, {
       onError: (e) => notify.error('Nepodarilo sa načítať poznámky.', e.message),
     });
 
-  const [createNote] = useCreateNoteMutation({ onCompleted: () => notesRefetch() });
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch() });
 
   const reg = regData?.getRegistration;
   const invoiceItems = reg?.invoiceItems ?? [];

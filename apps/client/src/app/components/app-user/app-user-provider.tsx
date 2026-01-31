@@ -1,6 +1,7 @@
 import { ApolloError } from '@apollo/client';
 import React, { createContext, useCallback, useEffect } from 'react';
-import { useGetUserLazyQuery, UserFragmentFragment } from '../../_generated/graphql';
+import { GetUserQueryDocument, GetUserQuery, GetUserQueryVariables, UserFragmentFragment } from '../../_generated/graphql';
+import { useLazyQuery } from '@apollo/client/react';
 import { useAuthenticate } from '@teams2/auth-react';
 
 type AppUser = UserFragmentFragment;
@@ -42,7 +43,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
   const { user } = useAuthenticate();
   const [fetchCount, setFetchCount] = React.useState(0);
 
-  const [fetchUser, { data, loading: userLoading, error: userError }] = useGetUserLazyQuery({
+  const [fetchUser, { data, loading: userLoading, error: userError }] = useLazyQuery<GetUserQuery, GetUserQueryVariables>(GetUserQueryDocument, {
     fetchPolicy: 'network-only',
   });
 

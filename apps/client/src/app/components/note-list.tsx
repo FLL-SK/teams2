@@ -2,7 +2,8 @@ import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import styled from 'styled-components';
 import { NoteDetail } from './note-detail';
-import { Note, useDeleteNoteMutation, useUpdateNoteMutation } from '../_generated/graphql';
+import { Note, DeleteNoteDocument, DeleteNoteMutation, DeleteNoteMutationVariables, UpdateNoteDocument, UpdateNoteMutation, UpdateNoteMutationVariables } from '../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { InPlaceMarkdown } from './editors/inplace-markdown';
 
 const Wrapper = styled(Box)`
@@ -21,8 +22,8 @@ interface NoteListProps {
 export function NoteList(props: NoteListProps) {
   const { notes, onCreate, onListChanged, placeholder, disabled, limit = 100 } = props;
 
-  const [updateNoteMutation] = useUpdateNoteMutation();
-  const [deleteNoteMutation] = useDeleteNoteMutation();
+  const [updateNoteMutation] = useMutation<UpdateNoteMutation, UpdateNoteMutationVariables>(UpdateNoteDocument);
+  const [deleteNoteMutation] = useMutation<DeleteNoteMutation, DeleteNoteMutationVariables>(DeleteNoteDocument);
 
   const updateNote = async (note: Note) => {
     const { id, text } = note;

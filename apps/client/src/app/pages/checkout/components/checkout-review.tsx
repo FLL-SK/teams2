@@ -4,9 +4,14 @@ import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import {
   TeamFragmentFragment,
-  useGetEventLazyQuery,
-  useGetProgramLazyQuery,
+  GetEventQueryDocument,
+  GetEventQuery,
+  GetEventQueryVariables,
+  GetProgramQueryDocument,
+  GetProgramQuery,
+  GetProgramQueryVariables,
 } from '../../../_generated/graphql';
+import { useLazyQuery } from '@apollo/client/react';
 import { CheckoutDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { LabelValueGroup } from '../../../components/label-value-group';
@@ -24,8 +29,8 @@ const labelWidth = '180px';
 export function CheckoutReview(props: CheckoutReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
 
-  const [fetchProgram, { data: programData, loading: programLoading }] = useGetProgramLazyQuery();
-  const [fetchEvent, { data: eventData, loading: eventLoading }] = useGetEventLazyQuery();
+  const [fetchProgram, { data: programData, loading: programLoading }] = useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramQueryDocument);
+  const [fetchEvent, { data: eventData, loading: eventLoading }] = useLazyQuery<GetEventQuery, GetEventQueryVariables>(GetEventQueryDocument);
 
   const [acceptedProgramTC, setAcceptedProgramTC] = useState<boolean>(false);
   const [acceptedEventTC, setAcceptedEventTC] = useState<boolean>(false);

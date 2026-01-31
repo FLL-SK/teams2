@@ -5,9 +5,14 @@ import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
-  useRegistrationClearConfirmedMutation,
-  useRegistrationSetConfirmedMutation,
+  RegistrationClearConfirmedDocument,
+  RegistrationClearConfirmedMutation,
+  RegistrationClearConfirmedMutationVariables,
+  RegistrationSetConfirmedDocument,
+  RegistrationSetConfirmedMutation,
+  RegistrationSetConfirmedMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldConfirmedOn = (props: {
@@ -19,8 +24,8 @@ export const FieldConfirmedOn = (props: {
   const { isAdmin } = useAppUser();
   const { notify } = useNotification();
   const onError = () => notify.error('Nepodarilo sa aktualizovať dátum potvrdenia registrácie.');
-  const [setConfirmed] = useRegistrationSetConfirmedMutation({ onError });
-  const [clearConfirmed] = useRegistrationClearConfirmedMutation({ onError });
+  const [setConfirmed] = useMutation<RegistrationSetConfirmedMutation, RegistrationSetConfirmedMutationVariables>(RegistrationSetConfirmedDocument, { onError });
+  const [clearConfirmed] = useMutation<RegistrationClearConfirmedMutation, RegistrationClearConfirmedMutationVariables>(RegistrationClearConfirmedDocument, { onError });
 
   return (
     <LabelValue label="Potvrdená" tip={props.tip}>

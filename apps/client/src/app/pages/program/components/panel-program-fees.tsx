@@ -8,10 +8,17 @@ import { Panel } from '../../../components/panel';
 import {
   InvoiceItemFragmentFragment,
   ProgramFragmentFragment,
-  useCreateInvoiceItemMutation,
-  useDeleteInvoiceItemMutation,
-  useUpdateInvoiceItemMutation,
+  CreateInvoiceItemDocument,
+  CreateInvoiceItemMutation,
+  CreateInvoiceItemMutationVariables,
+  DeleteInvoiceItemDocument,
+  DeleteInvoiceItemMutation,
+  DeleteInvoiceItemMutationVariables,
+  UpdateInvoiceItemDocument,
+  UpdateInvoiceItemMutation,
+  UpdateInvoiceItemMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 
 interface PanelProgramFeesProps {
   program: ProgramFragmentFragment;
@@ -27,15 +34,15 @@ export function PanelProgramFees(props: PanelProgramFeesProps) {
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
-  const [createInvoiceItem] = useCreateInvoiceItemMutation({
+  const [createInvoiceItem] = useMutation<CreateInvoiceItemMutation, CreateInvoiceItemMutationVariables>(CreateInvoiceItemDocument, {
     onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa vytvoriť položku faktúry.', e.message),
   });
-  const [updateInvoiceItem] = useUpdateInvoiceItemMutation({
+  const [updateInvoiceItem] = useMutation<UpdateInvoiceItemMutation, UpdateInvoiceItemMutationVariables>(UpdateInvoiceItemDocument, {
     onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa aktualizovať položku faktúry.', e.message),
   });
-  const [deleteInvoiceItem] = useDeleteInvoiceItemMutation({
+  const [deleteInvoiceItem] = useMutation<DeleteInvoiceItemMutation, DeleteInvoiceItemMutationVariables>(DeleteInvoiceItemDocument, {
     onCompleted: onUpdate,
     onError: (e) => notify.error('Nepodarilo sa vymazať položku faktúry.', e.message),
   });

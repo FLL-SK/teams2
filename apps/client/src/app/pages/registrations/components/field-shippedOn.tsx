@@ -5,9 +5,14 @@ import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
-  useRegistrationClearShippedMutation,
-  useRegistrationSetShippedMutation,
+  RegistrationClearShippedDocument,
+  RegistrationClearShippedMutation,
+  RegistrationClearShippedMutationVariables,
+  RegistrationSetShippedDocument,
+  RegistrationSetShippedMutation,
+  RegistrationSetShippedMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldShippedOn = (props: {
@@ -22,8 +27,8 @@ export const FieldShippedOn = (props: {
     [notify],
   );
 
-  const [setShipped] = useRegistrationSetShippedMutation({ onError });
-  const [clearShipped] = useRegistrationClearShippedMutation({ onError });
+  const [setShipped] = useMutation<RegistrationSetShippedMutation, RegistrationSetShippedMutationVariables>(RegistrationSetShippedDocument, { onError });
+  const [clearShipped] = useMutation<RegistrationClearShippedMutation, RegistrationClearShippedMutationVariables>(RegistrationClearShippedDocument, { onError });
 
   return (
     <LabelValue label="Materiály odoslané">

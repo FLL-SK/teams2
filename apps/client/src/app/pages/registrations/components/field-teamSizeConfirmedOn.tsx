@@ -5,9 +5,14 @@ import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import {
   Registration,
-  useRegistrationClearTeamSizeConfirmedMutation,
-  useRegistrationSetTeamSizeConfirmedMutation,
+  RegistrationClearTeamSizeConfirmedDocument,
+  RegistrationClearTeamSizeConfirmedMutation,
+  RegistrationClearTeamSizeConfirmedMutationVariables,
+  RegistrationSetTeamSizeConfirmedDocument,
+  RegistrationSetTeamSizeConfirmedMutation,
+  RegistrationSetTeamSizeConfirmedMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { SetClearDate } from './set-clear-date';
 
 export const FieldTeamSizeConfirmedOn = (props: {
@@ -24,8 +29,8 @@ export const FieldTeamSizeConfirmedOn = (props: {
     [notify],
   );
 
-  const [setSizeConfirmed] = useRegistrationSetTeamSizeConfirmedMutation({ onError });
-  const [clearSizeConfirmed] = useRegistrationClearTeamSizeConfirmedMutation({ onError });
+  const [setSizeConfirmed] = useMutation<RegistrationSetTeamSizeConfirmedMutation, RegistrationSetTeamSizeConfirmedMutationVariables>(RegistrationSetTeamSizeConfirmedDocument, { onError });
+  const [clearSizeConfirmed] = useMutation<RegistrationClearTeamSizeConfirmedMutation, RegistrationClearTeamSizeConfirmedMutationVariables>(RegistrationClearTeamSizeConfirmedDocument, { onError });
 
   return (
     <LabelValue

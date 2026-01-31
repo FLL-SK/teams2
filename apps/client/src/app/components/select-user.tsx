@@ -1,7 +1,8 @@
 import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
-import { useGetUsersQuery } from '../_generated/graphql';
+import { GetUsersDocument, GetUsersQuery, GetUsersQueryVariables } from '../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 import { formatFullName } from '../utils/format-fullname';
 
 interface UserOption {
@@ -21,7 +22,7 @@ interface SelectUserProps {
 export function SelectUser(props: SelectUserProps) {
   const { onSelect, onClose, selected, clearable } = props;
   const [options, setOptions] = useState<UserOption[]>([]);
-  const { data, loading } = useGetUsersQuery({
+  const { data, loading } = useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, {
     variables: { filter: { includeInactive: false } },
     onCompleted: (data) => setOptions(data.getUsers),
   });

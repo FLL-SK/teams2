@@ -1,6 +1,7 @@
 import React from 'react';
 import { BasePage } from '../../components/base-page';
-import { useGetSettingsQuery } from '../../_generated/graphql';
+import { GetSettingsDocument, GetSettingsQuery, GetSettingsQueryVariables } from '../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
 import { PanelSettings } from './components/panel-settings';
@@ -11,7 +12,7 @@ import { useNotification } from '../../components/notifications/notification-pro
 export function SettingsPage() {
   const { notify } = useNotification();
   const { user, userLoading: loading } = useAppUser();
-  const { data: settingsData } = useGetSettingsQuery({
+  const { data: settingsData } = useQuery<GetSettingsQuery, GetSettingsQueryVariables>(GetSettingsDocument, {
     onError: (e) => notify.error('Nepodarilo sa načítať nastavenia.', e.message),
   });
 

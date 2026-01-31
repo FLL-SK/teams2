@@ -11,12 +11,23 @@ import { useNotification } from '../../../components/notifications/notification-
 import { Panel } from '../../../components/panel';
 import {
   EventFragmentFragment,
-  useArchiveEventMutation,
-  useDeleteEventMutation,
-  useToggleEventFoodOrderEnabledMutation,
-  useUnarchiveEventMutation,
-  useUpdateEventMutation,
+  ArchiveEventDocument,
+  ArchiveEventMutation,
+  ArchiveEventMutationVariables,
+  DeleteEventDocument,
+  DeleteEventMutation,
+  DeleteEventMutationVariables,
+  ToggleEventFoodOrderEnabledDocument,
+  ToggleEventFoodOrderEnabledMutation,
+  ToggleEventFoodOrderEnabledMutationVariables,
+  UnarchiveEventDocument,
+  UnarchiveEventMutation,
+  UnarchiveEventMutationVariables,
+  UpdateEventDocument,
+  UpdateEventMutation,
+  UpdateEventMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { YesNoDialog } from '../../../components/dialogs/yes-no-dialog';
 import { set } from 'lodash';
 
@@ -34,15 +45,15 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
   const [confirmEventDelete, setConfirmEventDelete] = useState(false);
   const [confirmEventArchive, setConfirmEventArchive] = useState(false);
 
-  const [updateEvent] = useUpdateEventMutation({
+  const [updateEvent] = useMutation<UpdateEventMutation, UpdateEventMutationVariables>(UpdateEventDocument, {
     onError: (e) => notify.error('Nepodarilo sa aktualizovať turnaj', e.message),
   });
 
-  const [deleteEvent] = useDeleteEventMutation({
+  const [deleteEvent] = useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, {
     onError: (e) => notify.error('Nepodarilo sa odstrániť turnaj.', e.message),
   });
 
-  const [archiveEvent] = useArchiveEventMutation({
+  const [archiveEvent] = useMutation<ArchiveEventMutation, ArchiveEventMutationVariables>(ArchiveEventDocument, {
     onError: (e) => notify.error('Nepodarilo sa archivovať turnaj.', e.message),
   });
 

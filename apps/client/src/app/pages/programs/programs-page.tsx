@@ -5,7 +5,8 @@ import { ProgramsList } from './components/programs-list';
 import { Add } from 'grommet-icons';
 import { useNotification } from '../../components/notifications/notification-provider';
 import { EditProgramDialog } from '../../components/dialogs/edit-program-dialog';
-import { useCreateProgramMutation, useGetProgramsQuery } from '../../_generated/graphql';
+import { CreateProgramDocument, CreateProgramMutation, CreateProgramMutationVariables, GetProgramsDocument, GetProgramsQuery, GetProgramsQueryVariables } from '../../_generated/graphql';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { useAppUser } from '../../components/app-user/use-app-user';
 
 interface ProgramsPageProps {
@@ -21,11 +22,11 @@ export function ProgramsPage(props: ProgramsPageProps) {
 
   const onError = useCallback(() => notify.error('Nepodarilo sa vytvoriť program.'), [notify]);
 
-  const { data, loading, refetch } = useGetProgramsQuery({
+  const { data, loading, refetch } = useQuery<GetProgramsQuery, GetProgramsQueryVariables>(GetProgramsDocument, {
     onError: (e) => notify.error('Nepodarilo sa načítať programy.', e.message),
   });
 
-  const [createProgram] = useCreateProgramMutation({
+  const [createProgram] = useMutation<CreateProgramMutation, CreateProgramMutationVariables>(CreateProgramDocument, {
     onCompleted: () => refetch(),
     onError,
   });

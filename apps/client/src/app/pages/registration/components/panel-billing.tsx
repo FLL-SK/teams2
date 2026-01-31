@@ -11,10 +11,17 @@ import { useNotification } from '../../../components/notifications/notification-
 import { Panel } from '../../../components/panel';
 import {
   RegistrationFragmentFragment,
-  useCreateRegistrationInvoiceMutation,
-  useEmailRegistrationInvoiceMutation,
-  useUpdateRegistrationMutation,
+  CreateRegistrationInvoiceDocument,
+  CreateRegistrationInvoiceMutation,
+  CreateRegistrationInvoiceMutationVariables,
+  EmailRegistrationInvoiceDocument,
+  EmailRegistrationInvoiceMutation,
+  EmailRegistrationInvoiceMutationVariables,
+  UpdateRegistrationDocument,
+  UpdateRegistrationMutation,
+  UpdateRegistrationMutationVariables,
 } from '../../../_generated/graphql';
+import { useMutation } from '@apollo/client/react';
 import { fullAddress } from '../../../utils/format-address';
 import { FieldInvoiceIssuedOn } from '../../registrations/components/field-invoiceIssuedOn';
 import { FieldPaidOn } from '../../registrations/components/field-paidOn';
@@ -39,13 +46,13 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const [invoiceProcessing, setInvoiceProcessing] = useState<NodeJS.Timeout>();
   const [invoiceBeingSent, setInvoiceBeingSent] = useState<NodeJS.Timeout>();
 
-  const [updateRegistration] = useUpdateRegistrationMutation({
+  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa aktualizovať registráciu.', e.message),
   });
-  const [createInvoice] = useCreateRegistrationInvoiceMutation({
+  const [createInvoice] = useMutation<CreateRegistrationInvoiceMutation, CreateRegistrationInvoiceMutationVariables>(CreateRegistrationInvoiceDocument, {
     onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
   });
-  const [emailInvoice] = useEmailRegistrationInvoiceMutation({
+  const [emailInvoice] = useMutation<EmailRegistrationInvoiceMutation, EmailRegistrationInvoiceMutationVariables>(EmailRegistrationInvoiceDocument, {
     onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
   });
 

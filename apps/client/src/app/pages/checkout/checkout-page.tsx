@@ -10,12 +10,23 @@ import {
   AddressInput,
   RegistrationInput,
   UpdateTeamInput,
-  useCreateEventRegistrationMutation,
-  useCreateProgramRegistrationMutation,
-  useGetProgramLazyQuery,
-  useGetTeamLazyQuery,
-  useUpdateTeamMutation,
+  CreateEventRegistrationDocument,
+  CreateEventRegistrationMutation,
+  CreateEventRegistrationMutationVariables,
+  CreateProgramRegistrationDocument,
+  CreateProgramRegistrationMutation,
+  CreateProgramRegistrationMutationVariables,
+  GetProgramQueryDocument,
+  GetProgramQuery,
+  GetProgramQueryVariables,
+  GetTeamQueryDocument,
+  GetTeamQuery,
+  GetTeamQueryVariables,
+  UpdateTeamDocument,
+  UpdateTeamMutation,
+  UpdateTeamMutationVariables,
 } from '../../_generated/graphql';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { CheckoutBillToAddress } from './components/checkout-billto-address';
 import { CheckoutIntro } from './components/checkout-intro';
 import { CheckoutReview } from './components/checkout-review';
@@ -59,22 +70,22 @@ export function CheckoutPage() {
   const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
 
   const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
-    useGetProgramLazyQuery();
+    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramQueryDocument);
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useGetTeamLazyQuery({
+    useLazyQuery<GetTeamQuery, GetTeamQueryVariables>(GetTeamQueryDocument, {
       onError: (e) => notify.error('Nepodarilo sa načítať tím.', e.message),
     });
 
-  const [updateTeam] = useUpdateTeamMutation({
+  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(UpdateTeamDocument, {
     onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
   });
 
-  const [registerTeam4Event] = useCreateEventRegistrationMutation({
+  const [registerTeam4Event] = useMutation<CreateEventRegistrationMutation, CreateEventRegistrationMutationVariables>(CreateEventRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
-  const [registerTeam4Program] = useCreateProgramRegistrationMutation({
+  const [registerTeam4Program] = useMutation<CreateProgramRegistrationMutation, CreateProgramRegistrationMutationVariables>(CreateProgramRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 

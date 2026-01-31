@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, TextInput } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { ErrorPage } from '../../components/error-page';
-import { useGetUsersQuery, UserListFragmentFragment } from '../../_generated/graphql';
+import { GetUsersDocument, GetUsersQuery, GetUsersQueryVariables, UserListFragmentFragment } from '../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 import { UserList } from './components/user-list';
 import { Close, Filter } from 'grommet-icons';
 import UserSidebar from './components/user-sidebar';
@@ -29,7 +30,7 @@ export function UserListPage() {
     data: usersData,
     loading: usersLoading,
     error: usersError,
-  } = useGetUsersQuery({
+  } = useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, {
     onError: (e) => notify.error('Nepodarilo sa načítať zoznam používateľov.', e.message),
   });
 
