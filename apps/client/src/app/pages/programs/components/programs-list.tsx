@@ -10,7 +10,7 @@ import { ProgramListFragmentFragment } from '../../../_generated/graphql';
 import { constructRegistrationsSearchParams } from '../../registrations/components/registration-list-params';
 
 interface ProgramsListProps {
-  programs: ProgramListFragmentFragment[];
+  programs?: ProgramListFragmentFragment[];
 }
 
 export function ProgramsList(props: ProgramsListProps) {
@@ -18,14 +18,17 @@ export function ProgramsList(props: ProgramsListProps) {
 
   return (
     <Box gap="small">
-      {programs.length === 0 && (
+      {!programs && (
+        <Box pad="medium">
+          <Paragraph>Chyba pri načítaní programov.</Paragraph>
+        </Box>
+      )}
+      {programs && programs.length === 0 && (
         <Box pad="medium">
           <Paragraph>Žiadne programy.</Paragraph>
         </Box>
       )}
-      {programs.map((program) => (
-        <ProgramListRow key={program.id} program={program} />
-      ))}
+      {programs && programs.map((program) => <ProgramListRow key={program.id} program={program} />)}
     </Box>
   );
 }

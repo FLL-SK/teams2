@@ -7,7 +7,7 @@ import { Logo } from './logo';
 import { useAppUser } from './app-user/use-app-user';
 import { getColor } from '../theme';
 import styled from 'styled-components';
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client/react';
 import { useAuthenticate } from '@teams2/auth-react';
 
 interface MenuButtonProps {

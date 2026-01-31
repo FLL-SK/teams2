@@ -8,10 +8,10 @@ import {
   AddTagsToTeamDocument,
   AddTagsToTeamMutation,
   AddTagsToTeamMutationVariables,
-  GetProgramQueryDocument,
+  GetProgramDocument,
   GetProgramQuery,
   GetProgramQueryVariables,
-  GetProgramRegistrationsQueryDocument,
+  GetProgramRegistrationsDocument,
   GetProgramRegistrationsQuery,
   GetProgramRegistrationsQueryVariables,
   RemoveTagsFromTeamDocument,
@@ -50,12 +50,16 @@ export function RegistrationsPage() {
   const [filter, setFilter] = useState<RegistrationListFilterValues>({});
 
   const [fetchRegistrations, { data: regsData, error: regsDataError, loading: regsLoading }] =
-    useLazyQuery<GetProgramRegistrationsQuery, GetProgramRegistrationsQueryVariables>(GetProgramRegistrationsQueryDocument, {
-      fetchPolicy: 'cache-and-network',
-      onError: (e) => notify.error('Nepodarilo sa získať zoznam registrácií.', e.message),
-    });
+    useLazyQuery<GetProgramRegistrationsQuery, GetProgramRegistrationsQueryVariables>(
+      GetProgramRegistrationsDocument,
+      {
+        fetchPolicy: 'cache-and-network',
+      },
+    );
   const [fetchProgram, { data: progData, error: progDataError, loading: progLoading }] =
-    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramQueryDocument, { fetchPolicy: 'cache-and-network' });
+    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument, {
+      fetchPolicy: 'cache-and-network',
+    });
 
   const [searchText, setSearchText] = useState('');
   const [registrations, setRegistrations] = useState<RegistrationListFragmentFragment[]>([]);
@@ -65,8 +69,12 @@ export function RegistrationsPage() {
   const [showTeamSelect, setShowTeamSelect] = useState(false);
   const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([]);
 
-  const [removeTags] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument);
-  const [addTags] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument);
+  const [removeTags] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(
+    RemoveTagsFromTeamDocument,
+  );
+  const [addTags] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(
+    AddTagsToTeamDocument,
+  );
 
   const coachesEmails: string[] = useMemo(
     () =>

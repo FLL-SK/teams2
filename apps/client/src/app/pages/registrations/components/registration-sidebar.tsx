@@ -16,10 +16,10 @@ import {
   CreateNoteDocument,
   CreateNoteMutation,
   CreateNoteMutationVariables,
-  GetNotesQueryDocument,
+  GetNotesDocument,
   GetNotesQuery,
   GetNotesQueryVariables,
-  GetRegistrationQueryDocument,
+  GetRegistrationDocument,
   GetRegistrationQuery,
   GetRegistrationQueryVariables,
   RemoveTagsFromTeamDocument,
@@ -50,14 +50,24 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
   const { registrationId, onClose } = props;
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument);
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument);
 
-  const [fetchRegistration, { data: regData }] = useLazyQuery<GetRegistrationQuery, GetRegistrationQueryVariables>(GetRegistrationQueryDocument);
+  const [fetchRegistration, { data: regData }] = useLazyQuery<
+    GetRegistrationQuery,
+    GetRegistrationQueryVariables
+  >(GetRegistrationDocument);
 
-  const [removeTags] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument);
-  const [addTags] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument);
+  const [removeTags] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(
+    RemoveTagsFromTeamDocument,
+  );
+  const [addTags] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(
+    AddTagsToTeamDocument,
+  );
 
-  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch() });
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
+    CreateNoteDocument,
+    { onCompleted: () => notesRefetch() },
+  );
 
   React.useEffect(() => {
     if (registrationId) {

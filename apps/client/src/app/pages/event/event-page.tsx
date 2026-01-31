@@ -12,13 +12,13 @@ import {
   AddEventManagerDocument,
   AddEventManagerMutation,
   AddEventManagerMutationVariables,
-  GetEventQueryDocument,
+  GetEventDocument,
   GetEventQuery,
   GetEventQueryVariables,
-  GetProgramRegistrationsQueryDocument,
+  GetProgramRegistrationsDocument,
   GetProgramRegistrationsQuery,
   GetProgramRegistrationsQueryVariables,
-  GetRegisteredTeamsQueryDocument,
+  GetRegisteredTeamsDocument,
   GetRegisteredTeamsQuery,
   GetRegisteredTeamsQueryVariables,
   InviteTeamToEventDocument,
@@ -68,65 +68,104 @@ export function EventPage() {
   const { notify } = useNotification();
 
   const [fetchEvent, { data: eventData, loading: eventLoading, error: eventError, refetch }] =
-    useLazyQuery<GetEventQuery, GetEventQueryVariables>(GetEventQueryDocument, {
+    useLazyQuery<GetEventQuery, GetEventQueryVariables>(GetEventDocument, {
       fetchPolicy: 'cache-and-network',
-      onError: (e) => notify.error('Nepodarilo sa načitať údaje o turnaji.', e.message),
     });
 
-  const [fetchRegistrations, { data: regData }] = useLazyQuery<GetRegisteredTeamsQuery, GetRegisteredTeamsQueryVariables>(GetRegisteredTeamsQueryDocument, {
+  const [fetchRegistrations, { data: regData, error: regError }] = useLazyQuery<
+    GetRegisteredTeamsQuery,
+    GetRegisteredTeamsQueryVariables
+  >(GetRegisteredTeamsDocument, {
     fetchPolicy: 'cache-and-network',
-    onError: (e) => notify.error('Nepodarilo sa načitať registrácie pre turnaj.', e.message),
   });
 
-  const [fetchProgramRegistrations, { data: progRegs }] = useLazyQuery<GetProgramRegistrationsQuery, GetProgramRegistrationsQueryVariables>(GetProgramRegistrationsQueryDocument, {
+  const [fetchProgramRegistrations, { data: progRegs, error: progRegsError }] = useLazyQuery<
+    GetProgramRegistrationsQuery,
+    GetProgramRegistrationsQueryVariables
+  >(GetProgramRegistrationsDocument, {
     fetchPolicy: 'cache-and-network',
-    onError: (e) => notify.error('Nepodarilo sa načítať registrácie pre program.', e.message),
   });
 
-  const [undeleteEvent] = useMutation<UndeleteEventMutation, UndeleteEventMutationVariables>(UndeleteEventDocument, {
-    onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
-  });
-  const [addManager] = useMutation<AddEventManagerMutation, AddEventManagerMutationVariables>(AddEventManagerDocument, {
-    onError: (e) => notify.error('Nepodarilo sa pridať manažéra turnaja.', e.message),
-  });
-  const [removeManager] = useMutation<RemoveEventManagerMutation, RemoveEventManagerMutationVariables>(RemoveEventManagerDocument, {
+  const [undeleteEvent] = useMutation<UndeleteEventMutation, UndeleteEventMutationVariables>(
+    UndeleteEventDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
+    },
+  );
+  const [addManager] = useMutation<AddEventManagerMutation, AddEventManagerMutationVariables>(
+    AddEventManagerDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa pridať manažéra turnaja.', e.message),
+    },
+  );
+  const [removeManager] = useMutation<
+    RemoveEventManagerMutation,
+    RemoveEventManagerMutationVariables
+  >(RemoveEventManagerDocument, {
     onError: (e) => notify.error('Nepodarilo sa odstrániť manažéra turnaja.', e.message),
   });
 
-  const [issueFoodInvoices] = useMutation<IssueEventFoodInvoicesMutation, IssueEventFoodInvoicesMutationVariables>(IssueEventFoodInvoicesDocument, {
+  const [issueFoodInvoices] = useMutation<
+    IssueEventFoodInvoicesMutation,
+    IssueEventFoodInvoicesMutationVariables
+  >(IssueEventFoodInvoicesDocument, {
     onError: (e) => notify.error('Nepodarilo sa vystaviť faktúry za stravovanie.', e.message),
   });
 
-  const [updateFoodType] = useMutation<UpdateEventFoodTypeMutation, UpdateEventFoodTypeMutationVariables>(UpdateEventFoodTypeDocument, {
+  const [updateFoodType] = useMutation<
+    UpdateEventFoodTypeMutation,
+    UpdateEventFoodTypeMutationVariables
+  >(UpdateEventFoodTypeDocument, {
     onError: (e) => notify.error('Nepodarilo sa upraviť typ stravovania.', e.message),
   });
 
-  const [addFoodType] = useMutation<AddEventFoodTypeMutation, AddEventFoodTypeMutationVariables>(AddEventFoodTypeDocument, {
-    onError: (e) => notify.error('Nepodarilo sa pridať typ stravovania.', e.message),
-  });
+  const [addFoodType] = useMutation<AddEventFoodTypeMutation, AddEventFoodTypeMutationVariables>(
+    AddEventFoodTypeDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa pridať typ stravovania.', e.message),
+    },
+  );
 
-  const [removeFoodType] = useMutation<RemoveEventFoodTypeMutation, RemoveEventFoodTypeMutationVariables>(RemoveEventFoodTypeDocument, {
+  const [removeFoodType] = useMutation<
+    RemoveEventFoodTypeMutation,
+    RemoveEventFoodTypeMutationVariables
+  >(RemoveEventFoodTypeDocument, {
     onError: (e) => notify.error('Nepodarilo sa odstrániť typ stravovania.', e.message),
   });
 
-  const [updateFoodOrderDeadline] = useMutation<UpdateEventFoodOrderDeadlineMutation, UpdateEventFoodOrderDeadlineMutationVariables>(UpdateEventFoodOrderDeadlineDocument, {
+  const [updateFoodOrderDeadline] = useMutation<
+    UpdateEventFoodOrderDeadlineMutation,
+    UpdateEventFoodOrderDeadlineMutationVariables
+  >(UpdateEventFoodOrderDeadlineDocument, {
     onError: (e) =>
       notify.error('Nepodarilo sa upraviť deadline na objednávky stravovania.', e.message),
   });
 
-  const [inviteTeam] = useMutation<InviteTeamToEventMutation, InviteTeamToEventMutationVariables>(InviteTeamToEventDocument, {
-    onError: (e) => notify.error('Nepodarilo sa pozvať tím na turnaj.', e.message),
-  });
+  const [inviteTeam] = useMutation<InviteTeamToEventMutation, InviteTeamToEventMutationVariables>(
+    InviteTeamToEventDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa pozvať tím na turnaj.', e.message),
+    },
+  );
 
-  const [uninviteTeam] = useMutation<UninviteTeamFromEventMutation, UninviteTeamFromEventMutationVariables>(UninviteTeamFromEventDocument, {
+  const [uninviteTeam] = useMutation<
+    UninviteTeamFromEventMutation,
+    UninviteTeamFromEventMutationVariables
+  >(UninviteTeamFromEventDocument, {
     onError: (e) => notify.error('Nepodarilo sa zrušiť pozvánku tímu na turnaj.', e.message),
   });
 
-  const [unarchiveEvent] = useMutation<UnarchiveEventMutation, UnarchiveEventMutationVariables>(UnarchiveEventDocument, {
-    onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
-  });
+  const [unarchiveEvent] = useMutation<UnarchiveEventMutation, UnarchiveEventMutationVariables>(
+    UnarchiveEventDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa obnoviť turnaj.', e.message),
+    },
+  );
 
-  const [toggleFoodOrderEnabled] = useMutation<ToggleEventFoodOrderEnabledMutation, ToggleEventFoodOrderEnabledMutationVariables>(ToggleEventFoodOrderEnabledDocument, {
+  const [toggleFoodOrderEnabled] = useMutation<
+    ToggleEventFoodOrderEnabledMutation,
+    ToggleEventFoodOrderEnabledMutationVariables
+  >(ToggleEventFoodOrderEnabledDocument, {
     onError: (e) => notify.error('Nepodarilo sa zmeniť stav objednávania jedla.', e.message),
   });
 
@@ -137,7 +176,7 @@ export function EventPage() {
   }, [id, fetchEvent]);
 
   const event = eventData?.getEvent;
-  const regs = regData?.getRegisteredTeams ?? [];
+  const regs = regData?.getRegisteredTeams;
   const isDeleted = !!event?.deletedOn;
   const isArchived = !!event?.archivedOn;
 
@@ -160,6 +199,9 @@ export function EventPage() {
     }
 
     const it: { id: string; name: string; teamNo: string }[] = [];
+    if (!regs || !progRegs) {
+      return it;
+    }
     for (const r of progRegs.getProgramRegistrations) {
       if (!r.team) {
         continue;

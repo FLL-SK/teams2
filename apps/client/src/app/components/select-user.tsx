@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
 import { GetUsersDocument, GetUsersQuery, GetUsersQueryVariables } from '../_generated/graphql';
@@ -24,10 +24,13 @@ export function SelectUser(props: SelectUserProps) {
   const [options, setOptions] = useState<UserOption[]>([]);
   const { data, loading } = useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, {
     variables: { filter: { includeInactive: false } },
-    onCompleted: (data) => setOptions(data.getUsers),
   });
 
   const users = data?.getUsers ?? [];
+
+  useEffect(() => {
+    setOptions(users);
+  }, [users]);
 
   return loading ? (
     <Spinner />

@@ -4,10 +4,10 @@ import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import {
   TeamFragmentFragment,
-  GetEventQueryDocument,
+  GetEventDocument,
   GetEventQuery,
   GetEventQueryVariables,
-  GetProgramQueryDocument,
+  GetProgramDocument,
   GetProgramQuery,
   GetProgramQueryVariables,
 } from '../../../_generated/graphql';
@@ -29,8 +29,14 @@ const labelWidth = '180px';
 export function CheckoutReview(props: CheckoutReviewProps) {
   const { team, details, nextStep, prevStep, cancel } = props;
 
-  const [fetchProgram, { data: programData, loading: programLoading }] = useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramQueryDocument);
-  const [fetchEvent, { data: eventData, loading: eventLoading }] = useLazyQuery<GetEventQuery, GetEventQueryVariables>(GetEventQueryDocument);
+  const [fetchProgram, { data: programData, loading: programLoading }] = useLazyQuery<
+    GetProgramQuery,
+    GetProgramQueryVariables
+  >(GetProgramDocument);
+  const [fetchEvent, { data: eventData, loading: eventLoading }] = useLazyQuery<
+    GetEventQuery,
+    GetEventQueryVariables
+  >(GetEventDocument);
 
   const [acceptedProgramTC, setAcceptedProgramTC] = useState<boolean>(false);
   const [acceptedEventTC, setAcceptedEventTC] = useState<boolean>(false);

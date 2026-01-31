@@ -5,7 +5,11 @@ import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { PanelGroup } from '../../components/panel';
 
-import { GetProgramQueryDocument, GetProgramQuery, GetProgramQueryVariables } from '../../_generated/graphql';
+import {
+  GetProgramDocument,
+  GetProgramQuery,
+  GetProgramQueryVariables,
+} from '../../_generated/graphql';
 import { useLazyQuery } from '@apollo/client/react';
 import { ErrorPage } from '../../components/error-page';
 import { useParams } from 'react-router-dom';
@@ -24,9 +28,8 @@ export function ProgramPage() {
   const [
     fetchProgram,
     { data: programData, loading: programLoading, error, refetch: programRefetch },
-  ] = useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramQueryDocument, {
+  ] = useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument, {
     fetchPolicy: 'cache-and-network',
-    onError: (e) => notify.error('Nepodarilo sa načítať údaje o programe.', e.message),
   });
 
   const { isProgramManager, isAdmin } = useAppUser();

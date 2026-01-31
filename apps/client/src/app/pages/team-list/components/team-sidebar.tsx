@@ -15,7 +15,7 @@ import {
   CreateNoteDocument,
   CreateNoteMutation,
   CreateNoteMutationVariables,
-  GetNotesQueryDocument,
+  GetNotesDocument,
   GetNotesQuery,
   GetNotesQueryVariables,
   RemoveTagsFromTeamDocument,
@@ -35,11 +35,18 @@ export function TeamSidebar(props: TeamSidebarProps) {
   const { team, onClose } = props;
 
   const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument);
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument);
 
-  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument);
-  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument);
-  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch() });
+  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(
+    RemoveTagsFromTeamDocument,
+  );
+  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(
+    AddTagsToTeamDocument,
+  );
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
+    CreateNoteDocument,
+    { onCompleted: () => notesRefetch() },
+  );
 
   React.useEffect(() => {
     if (team) {

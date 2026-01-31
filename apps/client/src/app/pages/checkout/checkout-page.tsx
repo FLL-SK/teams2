@@ -2,7 +2,7 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Spinner } from 'grommet';
 import { useCallback, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
@@ -16,10 +16,10 @@ import {
   CreateProgramRegistrationDocument,
   CreateProgramRegistrationMutation,
   CreateProgramRegistrationMutationVariables,
-  GetProgramQueryDocument,
+  GetProgramDocument,
   GetProgramQuery,
   GetProgramQueryVariables,
-  GetTeamQueryDocument,
+  GetTeamDocument,
   GetTeamQuery,
   GetTeamQueryVariables,
   UpdateTeamDocument,
@@ -70,22 +70,31 @@ export function CheckoutPage() {
   const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
 
   const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
-    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramQueryDocument);
+    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument);
 
-  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useLazyQuery<GetTeamQuery, GetTeamQueryVariables>(GetTeamQueryDocument, {
-      onError: (e) => notify.error('Nepodarilo sa načítať tím.', e.message),
-    });
+  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] = useLazyQuery<
+    GetTeamQuery,
+    GetTeamQueryVariables
+  >(GetTeamDocument);
 
-  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(UpdateTeamDocument, {
-    onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
-  });
+  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(
+    UpdateTeamDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa aktualizovať tím. ', e.message),
+    },
+  );
 
-  const [registerTeam4Event] = useMutation<CreateEventRegistrationMutation, CreateEventRegistrationMutationVariables>(CreateEventRegistrationDocument, {
+  const [registerTeam4Event] = useMutation<
+    CreateEventRegistrationMutation,
+    CreateEventRegistrationMutationVariables
+  >(CreateEventRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 
-  const [registerTeam4Program] = useMutation<CreateProgramRegistrationMutation, CreateProgramRegistrationMutationVariables>(CreateProgramRegistrationDocument, {
+  const [registerTeam4Program] = useMutation<
+    CreateProgramRegistrationMutation,
+    CreateProgramRegistrationMutationVariables
+  >(CreateProgramRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa registrovať tím.', e.message),
   });
 

@@ -13,7 +13,7 @@ import {
   GetProgramFilesDocument,
   GetProgramFilesQuery,
   GetProgramFilesQueryVariables,
-  GetProgramFileUploadUrlQueryDocument,
+  GetProgramFileUploadUrlDocument,
   GetProgramFileUploadUrlQuery,
   GetProgramFileUploadUrlQueryVariables,
   RemoveFileDocument,
@@ -32,17 +32,24 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
   const { program, canEdit } = props;
   const { notify } = useNotification();
 
-  const [getUploadUrl] = useLazyQuery<GetProgramFileUploadUrlQuery, GetProgramFileUploadUrlQueryVariables>(GetProgramFileUploadUrlQueryDocument, {
-    onError: (e) => notify.error('Nepodarilo sa získať adresu pre uloženie súbora.', e.message),
-  });
-  const [addProgramFile] = useMutation<AddProgramFileMutation, AddProgramFileMutationVariables>(AddProgramFileDocument, {
-    onCompleted: () => filesRefetch(),
-    onError: (e) => notify.error('Nepodarilo sa uložiť súbor.', e.message),
-  });
-  const [removeFile] = useMutation<RemoveFileMutation, RemoveFileMutationVariables>(RemoveFileDocument, {
-    onCompleted: () => filesRefetch(),
-    onError: (e) => notify.error('Nepodarilo sa zmazať súbor.', e.message),
-  });
+  const [getUploadUrl, { error: urlError }] = useLazyQuery<
+    GetProgramFileUploadUrlQuery,
+    GetProgramFileUploadUrlQueryVariables
+  >(GetProgramFileUploadUrlDocument);
+  const [addProgramFile] = useMutation<AddProgramFileMutation, AddProgramFileMutationVariables>(
+    AddProgramFileDocument,
+    {
+      onCompleted: () => filesRefetch(),
+      onError: (e) => notify.error('Nepodarilo sa uložiť súbor.', e.message),
+    },
+  );
+  const [removeFile] = useMutation<RemoveFileMutation, RemoveFileMutationVariables>(
+    RemoveFileDocument,
+    {
+      onCompleted: () => filesRefetch(),
+      onError: (e) => notify.error('Nepodarilo sa zmazať súbor.', e.message),
+    },
+  );
 
   const {
     data: filesData,
@@ -58,22 +65,25 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
         const ff: FileUploadInput = { name: f.name, size: f.size, contentType: f.type };
-        getUploadUrl({
+        const r = await getUploadUrl({
           variables: { programId: program.id, input: ff },
-          onCompleted: async (data) => {
-            let success = false;
-            try {
-              success = await uploadS3XHR(f, data.getProgramFileUploadUrl);
-            } catch (e) {
-              notify.error('Nepodarilo sa nahrať súbor.', (e as Error).message);
-              console.error(e);
-            }
-            if (success) {
-              addProgramFile({ variables: { programId: program.id, input: ff } });
-              notify.info('Súbor bol úspešne nahraný.');
-            }
-          },
         });
+        if (r.error || !r.data) {
+          notify.error('Nepodarilo sa získať adresu pre uloženie súbora.', r.error?.message);
+          continue;
+        }
+
+        let success = false;
+        try {
+          success = await uploadS3XHR(f, r.data.getProgramFileUploadUrl);
+        } catch (e) {
+          notify.error('Nepodarilo sa nahrať súbor.', (e as Error).message);
+          console.error(e);
+        }
+        if (success) {
+          addProgramFile({ variables: { programId: program.id, input: ff } });
+          notify.info('Súbor bol úspešne nahraný.');
+        }
       }
     },
     [addProgramFile, getUploadUrl, program.id],

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox, Spinner, Text } from 'grommet';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -29,10 +29,10 @@ import {
   RemoveTagsFromTeamDocument,
   RemoveTagsFromTeamMutation,
   RemoveTagsFromTeamMutationVariables,
-  GetTeamQueryDocument,
+  GetTeamDocument,
   GetTeamQuery,
   GetTeamQueryVariables,
-  GetNotesQueryDocument,
+  GetNotesDocument,
   GetNotesQuery,
   GetNotesQueryVariables,
 } from '../../_generated/graphql';
@@ -58,26 +58,44 @@ export function TeamPage() {
   const { notify } = useNotification();
   const onError = useCallback(() => notify.error('Nepodarilo sa aktualizovať tím.'), [notify]);
 
-  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] =
-    useLazyQuery<GetTeamQuery, GetTeamQueryVariables>(GetTeamQueryDocument, {
-      fetchPolicy: 'cache-and-network',
-      onError: () => notify.error('Nepodarilo sa načítať tím.'),
-    });
+  const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] = useLazyQuery<
+    GetTeamQuery,
+    GetTeamQueryVariables
+  >(GetTeamDocument, { fetchPolicy: 'cache-and-network' });
 
-  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesQueryDocument, {
-      fetchPolicy: 'cache-and-network',
-      onError: () => notify.error('Nepodarilo sa načítať poznámky.'),
-    });
+  const [
+    fetchNotes,
+    { data: notesData, loading: notesLoading, refetch: notesRefetch, error: notesError },
+  ] = useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(RemoveTagsFromTeamDocument, { onError });
-  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(AddTagsToTeamDocument, { onError });
+  const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(
+    RemoveTagsFromTeamDocument,
+    { onError },
+  );
+  const [addTag] = useMutation<AddTagsToTeamMutation, AddTagsToTeamMutationVariables>(
+    AddTagsToTeamDocument,
+    { onError },
+  );
 
-  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(CreateNoteDocument, { onCompleted: () => notesRefetch(), onError });
+  const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
+    CreateNoteDocument,
+    { onCompleted: () => notesRefetch(), onError },
+  );
 
-  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(UpdateTeamDocument, { onError });
-  const [deleteTeam] = useMutation<DeleteTeamMutation, DeleteTeamMutationVariables>(DeleteTeamDocument, { onError });
-  const [undeleteTeam] = useMutation<UndeleteTeamMutation, UndeleteTeamMutationVariables>(UndeleteTeamDocument, { onError });
+  const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(
+    UpdateTeamDocument,
+    { onError },
+  );
+  const [deleteTeam] = useMutation<DeleteTeamMutation, DeleteTeamMutationVariables>(
+    DeleteTeamDocument,
+    { onError },
+  );
+  const [undeleteTeam] = useMutation<UndeleteTeamMutation, UndeleteTeamMutationVariables>(
+    UndeleteTeamDocument,
+    { onError },
+  );
 
   useEffect(() => {
     if (id) {
@@ -197,7 +215,7 @@ export function TeamPage() {
                   <Spinner />
                 ) : (
                   <NoteList
-                    notes={notesData?.getNotes ?? []}
+                    notes={notesData?.getNotes}
                     limit={20}
                     onCreate={(text) =>
                       createNote({ variables: { input: { type: 'team', ref: id, text } } })

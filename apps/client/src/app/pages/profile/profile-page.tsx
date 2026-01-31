@@ -17,7 +17,7 @@ import {
   DeleteUserDocument,
   DeleteUserMutation,
   DeleteUserMutationVariables,
-  GetUserProfileQueryDocument,
+  GetUserProfileDocument,
   GetUserProfileQuery,
   GetUserProfileQueryVariables,
   SetAdminDocument,
@@ -45,30 +45,43 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { notify } = useNotification();
   const { isAdmin, isUser, xOut, isSuperAdmin, user } = useAppUser();
-  const [fetchUser, { data, loading, refetch, error }] = useLazyQuery<GetUserProfileQuery, GetUserProfileQueryVariables>(GetUserProfileQueryDocument, {
-    onError: (e) => notify.error('Nepodarilo sa načítať profil.', e.message),
-  });
+  const [fetchUser, { data, loading, refetch, error }] = useLazyQuery<
+    GetUserProfileQuery,
+    GetUserProfileQueryVariables
+  >(GetUserProfileDocument);
 
   const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
 
-  const [createTeam] = useMutation<CreateTeamMutation, CreateTeamMutationVariables>(CreateTeamDocument, {
-    onCompleted: () => refetch(),
-    onError: (e) => notify.error('Nepodarilo sa vytvoriť tím.', e.message),
-  });
+  const [createTeam] = useMutation<CreateTeamMutation, CreateTeamMutationVariables>(
+    CreateTeamDocument,
+    {
+      onCompleted: () => refetch(),
+      onError: (e) => notify.error('Nepodarilo sa vytvoriť tím.', e.message),
+    },
+  );
   const [setAdmin] = useMutation<SetAdminMutation, SetAdminMutationVariables>(SetAdminDocument, {
     onCompleted: () => refetch(),
     onError: (e) => notify.error('Nepodarilo sa nastaviť admina.', e.message),
   });
-  const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, {
-    onError: (e) => notify.error('Nepodarilo sa aktualizovať profil.', e.message),
-  });
-  const [deleteUser] = useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument, {
-    onError: (e) => notify.error('Nepodarilo sa deaktivovať účet.', e.message),
-  });
-  const [undeleteUser] = useMutation<UndeleteUserMutation, UndeleteUserMutationVariables>(UndeleteUserDocument, {
-    onError: (e) => notify.error('Nepodarilo sa opätovne aktivovať profil.', e.message),
-  });
+  const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(
+    UpdateUserDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa aktualizovať profil.', e.message),
+    },
+  );
+  const [deleteUser] = useMutation<DeleteUserMutation, DeleteUserMutationVariables>(
+    DeleteUserDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa deaktivovať účet.', e.message),
+    },
+  );
+  const [undeleteUser] = useMutation<UndeleteUserMutation, UndeleteUserMutationVariables>(
+    UndeleteUserDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa opätovne aktivovať profil.', e.message),
+    },
+  );
 
   React.useEffect(() => {
     if (id) {

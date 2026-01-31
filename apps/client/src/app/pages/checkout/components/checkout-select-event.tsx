@@ -1,7 +1,12 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { EventListTile } from '../../../components/event-list-tile';
-import { EventListFragmentFragment, GetEventsQueryDocument, GetEventsQuery, GetEventsQueryVariables } from '../../../_generated/graphql';
+import {
+  EventListFragmentFragment,
+  GetEventsDocument,
+  GetEventsQuery,
+  GetEventsQueryVariables,
+} from '../../../_generated/graphql';
 import { useLazyQuery } from '@apollo/client/react';
 import { CheckoutDetails } from './types';
 import { ColorType } from 'grommet/utils';
@@ -17,9 +22,12 @@ interface CheckoutSelectEventProps {
 
 export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
   const { details, onSubmit, nextStep, prevStep, cancel, ignoreEvents = [] } = props;
-  const [fetchEvents, { data, loading }] = useLazyQuery<GetEventsQuery, GetEventsQueryVariables>(GetEventsQueryDocument, {
-    fetchPolicy: 'network-only',
-  });
+  const [fetchEvents, { data, loading }] = useLazyQuery<GetEventsQuery, GetEventsQueryVariables>(
+    GetEventsDocument,
+    {
+      fetchPolicy: 'network-only',
+    },
+  );
   const [today] = React.useState(new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
 
   React.useEffect(() => {
