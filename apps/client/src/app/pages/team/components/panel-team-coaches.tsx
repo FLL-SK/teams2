@@ -30,7 +30,7 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
     onError: (error) => notify.error('Nepodarilo sa pridať trénera', error.message),
   });
   const [removeCoach] = useMutation<RemoveCoachFromTeamMutation, RemoveCoachFromTeamMutationVariables>(RemoveCoachFromTeamDocument, {
-    onError: (error) => notify.error('Nepodarilo sa odstr8ániť trénera', error.message),
+    onError: (error) => notify.error('Nepodarilo sa odstrániť trénera', error.message),
   });
 
   return (
