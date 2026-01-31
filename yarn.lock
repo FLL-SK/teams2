@@ -13273,7 +13273,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grommet-icons@npm:^4.12.4, grommet-icons@npm:^4.14.0":
+"grommet-icons@npm:^4.14.0":
   version: 4.14.0
   resolution: "grommet-icons@npm:4.14.0"
   peerDependencies:
@@ -13284,7 +13284,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grommet@npm:^2.46.1":
+"grommet@npm:^2.52.0":
   version: 2.52.0
   resolution: "grommet@npm:2.52.0"
   dependencies:
@@ -19045,7 +19045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.4.0, rxjs@npm:^7.5.1, rxjs@npm:^7.8.0":
+"rxjs@npm:^7.4.0, rxjs@npm:^7.5.1, rxjs@npm:^7.8.0, rxjs@npm:^7.8.2":
   version: 7.8.2
   resolution: "rxjs@npm:7.8.2"
   dependencies:
@@ -20645,8 +20645,8 @@ __metadata:
     flat: "npm:^6.0.1"
     graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
-    grommet: "npm:^2.46.1"
-    grommet-icons: "npm:^4.12.4"
+    grommet: "npm:^2.52.0"
+    grommet-icons: "npm:^4.14.0"
     jest: "npm:^30.0.5"
     jest-environment-jsdom: "npm:^30.0.5"
     jest-environment-node: "npm:^29.7.0"
@@ -20672,6 +20672,7 @@ __metadata:
     react-virtualized: "npm:^9.22.6"
     react-virtualized-auto-sizer: "npm:^1.0.26"
     regenerator-runtime: "npm:^0.14.1"
+    rxjs: "npm:^7.8.2"
     styled-components: "npm:^6.3.8"
     stylis: "npm:^4.3.6"
     ts-jest: "npm:^29.4.6"
