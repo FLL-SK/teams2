@@ -3,7 +3,7 @@ dotenv.config();
 
 import cors from 'cors';
 import morgan from 'morgan';
-import { command } from 'yargs';
+import yargs from 'yargs';
 import { configureAuth } from './app/configure-auth';
 import { getServerConfig } from './server-config';
 import { bootstrapMongoDB, testDbSeed } from './app/db';
@@ -90,7 +90,7 @@ async function seedTestData() {
   await testDbSeed();
 }
 
-const argv = command('testseed', 'Perform test-db-seed').help().alias('help', 'h').argv;
+const argv = yargs().command('testseed', 'Perform test-db-seed').help().alias('help', 'h').argv;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 if (argv._.includes('testseed')) {
