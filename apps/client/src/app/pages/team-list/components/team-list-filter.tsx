@@ -3,7 +3,8 @@ import React, { useCallback, useState } from 'react';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel } from '../../../components/sidebar-panel';
 import { TagList } from '../../../components/tag-list';
-import { useGetTagsQuery } from '../../../_generated/graphql';
+import { GetTagsDocument, GetTagsQuery, GetTagsQueryVariables } from '../../../_generated/graphql';
+import { useQuery } from '@apollo/client/react';
 
 export interface TeamListFilterValues {
   tags?: string[];
@@ -21,7 +22,7 @@ interface TeamListFilterProps {
 export function TeamListFilter(props: TeamListFilterProps) {
   const { onClose, show, onChange, values } = props;
   const [filterTags, setFilterTags] = useState<string[]>(values.tags ?? []);
-  const { data: tagsData } = useGetTagsQuery();
+  const { data: tagsData } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument);
 
   const addTagToFilter = useCallback(
     (id: string) => {

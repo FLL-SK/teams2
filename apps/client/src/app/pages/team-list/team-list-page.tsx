@@ -5,7 +5,9 @@ import { ErrorPage } from '../../components/error-page';
 import {
   TeamFilterInput,
   TeamListFragmentFragment,
-  useGetTeamsLazyQuery,
+  GetTeamsQuery,
+  GetTeamsQueryVariables,
+  GetTeamsDocument,
 } from '../../_generated/graphql';
 import { TeamList } from './components/team-list';
 import { Close, Filter } from 'grommet-icons';
@@ -18,6 +20,7 @@ import {
   parseTeamListSearchParams,
 } from './components/team-list-params';
 import { useNotification } from '../../components/notifications/notification-provider';
+import { useLazyQuery } from '@apollo/client/react';
 
 export function TeamListPage() {
   const { isAdmin } = useAppUser();
@@ -28,9 +31,7 @@ export function TeamListPage() {
   const [filter, setFilter] = useState<TeamListFilterValues>({});
 
   const [fetchTeams, { data: teamsData, error: teamsDataError, loading: teamsLoading }] =
-    useGetTeamsLazyQuery({
-      onError: (e) => notify.error('Nepodarilo sa načítať zoznam tímov.', e.message),
-    });
+    useLazyQuery<GetTeamsQuery, GetTeamsQueryVariables>(GetTeamsDocument);
 
   const [searchText, setSearchText] = useState('');
   const [searchTextEditing, setSearchTextEditing] = useState('');
