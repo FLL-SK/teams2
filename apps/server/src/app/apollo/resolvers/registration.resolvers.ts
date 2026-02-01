@@ -10,7 +10,6 @@ import {
   registerTeamToProgram,
 } from '../../domains/registration';
 import { changeRegisteredEvent } from '../../domains/event';
-import { OrderMapper } from '../mappers/order.mapper';
 
 export const queryResolvers: QueryResolvers<ApolloContext> = {
   getRegistration: async (_parent, { id }, { dataSources }) =>

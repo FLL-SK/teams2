@@ -20,7 +20,7 @@ import {
 } from '../../_generated/graphql';
 import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { RegistrationList } from './components/registration-list';
-import { Close, Deliver, Download, Filter, Group, Tag } from 'grommet-icons';
+import { Close, Deliver, Filter, Group, Tag } from 'grommet-icons';
 import RegistrationSidebar from './components/registration-sidebar';
 import { BasePage } from '../../components/base-page';
 import RegistrationListFilter, {

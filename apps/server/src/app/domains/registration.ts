@@ -30,6 +30,7 @@ import {
   emailTeamUnregisteredFromProgram,
 } from '../utils/emails';
 import { appPath } from '@teams2/common';
+import { QueryFilter } from 'mongoose';
 
 const logLib = logger('domain:Registration');
 
@@ -200,6 +201,23 @@ export async function cancelRegistration(
   ) {
     log.debug('Not authorized to cancel registration %s', id);
     return { errors: [{ code: 'not_authorized' }] };
+  }
+
+  // check if there are any event registrations linked to this program registration
+  if (!reg.eventId && reg.programId) {
+    const q: QueryFilter<RegistrationData> = {
+      programId: reg.programId,
+      teamId: reg.teamId,
+      eventId: { $ne: null },
+      canceledOn: null,
+    };
+    const ereg = await registrationRepository.find(q).lean().exec();
+    if (ereg.length > 0) {
+      log.debug('Cannot cancel program registration %s, linked event registrations exist', id);
+      return {
+        errors: [{ code: 'cannot_cancel', message: 'Existujú prepojené registrácie na turnaje' }],
+      };
+    }
   }
 
   const registration = await dataSources.registration.cancelRegistration(id);

@@ -43,13 +43,31 @@ export function PanelRegistrationDetails(props: PanelRegistrationDetailsProps) {
   const [changeEvent, setChangeEvent] = useState(false);
   const [changeRegType, setChangeRegType] = useState(false);
 
-  const [unregisterTeam] = useMutation<CancelRegistrationMutation, CancelRegistrationMutationVariables>(CancelRegistrationDocument, {
-    onError: () => notify.error('Nepodarilo sa zrušiť registráciu.'),
+  const [unregisterTeam] = useMutation<
+    CancelRegistrationMutation,
+    CancelRegistrationMutationVariables
+  >(CancelRegistrationDocument, {
+    onError: (e) => notify.error('Nepodarilo sa zrušiť registráciu.', e.message),
+    onCompleted: (r) => {
+      if (r.cancelRegistration.errors && r.cancelRegistration.errors.length > 0) {
+        for (const err of r.cancelRegistration.errors) {
+          notify.error(`Nepodarilo sa zrušiť registráciu: ${err.message}`);
+        }
+      } else {
+        notify.info('Registrácia úspešne zrušená.');
+      }
+    },
   });
-  const [switchTeamEvent] = useMutation<ChangeRegisteredEventMutation, ChangeRegisteredEventMutationVariables>(ChangeRegisteredEventDocument, {
+  const [switchTeamEvent] = useMutation<
+    ChangeRegisteredEventMutation,
+    ChangeRegisteredEventMutationVariables
+  >(ChangeRegisteredEventDocument, {
     onError: () => notify.error('Nepodarilo sa presunúť tím na iný turnaj'),
   });
-  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
+  const [updateRegistration] = useMutation<
+    UpdateRegistrationMutation,
+    UpdateRegistrationMutationVariables
+  >(UpdateRegistrationDocument, {
     onError: () => notify.error('Nepodarilo sa zmeniť typ registrácie'),
   });
 
