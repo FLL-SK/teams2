@@ -11,6 +11,7 @@ const log = logger('btsMongo');
 export async function bootstrapMongoDB(): Promise<void> {
   try {
     await mongoose.connect(getServerConfig().mongoDBUri);
+    mongoose.set('updatePipeline', true);
     log.info('Connected successfully to MongoDB server');
     await preSeed();
     await upgrade();
