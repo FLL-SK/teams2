@@ -86,30 +86,30 @@ export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
           <Grid columns={['1fr', '1fr']} gap={{ column: 'medium', row: 'none' }}>
             <GridFormField
               name="teams"
-              label={`Počet tímov, ktoré sa zapoja do FIRST LEGO League v rámci tejto registrácie: ${formData.teams}`}
+              label={`Počet tímov, ktoré sa zapoja do programu v rámci tejto registrácie: ${formData.teams}`}
               required
               area="auto / span 2"
             >
               <Box pad="small">
                 <RangeInput name="teams" min={1} max={30} />
                 <Paragraph size="small" fill>
-                  Počet tímov, ktoré sa zapoja do FIRST LEGO League v rámci tejto registrácie.
-                  Podujatia (turnaja/festivalu) sa môže zúčastniť jeden z týchto tímov.
+                  Počet tímov, ktoré sa zapoja do programu v rámci tejto registrácie. Podujatia
+                  (turnaja/festivalu) sa môže zúčastniť jeden z týchto tímov.
                 </Paragraph>
               </Box>
             </GridFormField>
             <GridFormField
               name="children"
-              label={`Počet detí, ktoré sa zapoja do FIRST LEGO League v rámci tejto registrácie: ${formData.children}`}
+              label={`Počet detí, ktoré sa zapoja do programu v rámci tejto registrácie: ${formData.children}`}
               required
               area="auto / span 2"
             >
               <Box pad="small">
                 <RangeInput name="children" min={5} max={200} />
                 <Paragraph size="small" fill>
-                  Počet detí, ktoré sa zapoja do FIRST LEGO League v rámci tejto registrácie.
-                  Súťažne sa podujatia (turnaja/festivalu) sa môže zúčastniť iba deti jedného tímu.
-                  Nesúťažne môžu prísť všetky.
+                  Počet detí, ktoré sa zapoja do programu vrámci tejto registrácie. Súťažne sa
+                  podujatia (turnaja/festivalu) môžu zúčastniť iba deti jedného tímu. Nesúťažne môžu
+                  prísť všetky.
                 </Paragraph>
               </Box>
             </GridFormField>
