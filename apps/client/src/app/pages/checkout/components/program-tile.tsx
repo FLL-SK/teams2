@@ -46,7 +46,7 @@ export function ProgramTile(props: ProgramTileProps) {
             )}
             {showNotice && <Text color={maxColor}>{notice}</Text>}
           </Box>
-          <Markdown>{program.description ?? ''}</Markdown>
+          <Markdown options={{ wrapper: 'React.Fragment' }}>{program.description ?? ''}</Markdown>
         </Box>
       </Box>
     </Container>

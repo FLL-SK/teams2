@@ -71,5 +71,16 @@
   },
   "nxCloudAccessToken": "ZjhiYTI3MTYtMzJiZS00OThjLWE2ZjMtNjA3ZGU0ZTI3ODNmfHJlYWQtd3JpdGU=",
   "neverConnectToCloud": true,
-  "analytics": false
+  "analytics": false,
+  "plugins": [
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "serveTargetName": "serve"
+      }
+    }
+  ]
 }
