@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, CheckBox, Markdown, Spinner, Text } from 'grommet';
+import { Box, Button, CheckBox, Spinner, Text } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';
 import {
@@ -15,6 +15,7 @@ import { useLazyQuery } from '@apollo/client/react';
 import { CheckoutDetails } from './types';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { LabelValueGroup } from '../../../components/label-value-group';
+import { MD } from '../../../components/md';
 
 interface CheckoutReviewProps {
   team: TeamFragmentFragment;
@@ -157,22 +158,22 @@ export function CheckoutReview(props: CheckoutReviewProps) {
       <Panel title="Podmienky" gap="small">
         <LabelValue label="Podmienky programu" labelWidth={labelWidth}>
           <Box background="light-2" flex pad="small">
-            <Markdown>
+            <MD>
               {program.conditions && program.conditions.length > 0
                 ? program.conditions
                 : 'Neboli špecifikované žiadne podmienky.'}
-            </Markdown>
+            </MD>
           </Box>
         </LabelValue>
 
         {event && (
           <LabelValue label="Podmienky turnaja" labelWidth={labelWidth}>
             <Box background="light-2" flex pad="small">
-              <Markdown>
+              <MD>
                 {event.conditions && event.conditions.length > 0
                   ? event.conditions
                   : 'Neboli špecifikované žiadne podmienky.'}
-              </Markdown>
+              </MD>
             </Box>
           </LabelValue>
         )}

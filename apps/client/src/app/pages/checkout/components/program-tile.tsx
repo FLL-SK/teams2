@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, Markdown, Text } from 'grommet';
+import { Box, Text } from 'grommet';
 import { BorderType } from 'grommet/utils';
 import styled from 'styled-components';
 import { ProgramListFragmentFragment } from '../../../_generated/graphql';
 import { getColor } from '../../../theme';
+import { MD } from '../../../components/md';
 
 interface ProgramTileProps {
   program: ProgramListFragmentFragment;
@@ -46,7 +47,7 @@ export function ProgramTile(props: ProgramTileProps) {
             )}
             {showNotice && <Text color={maxColor}>{notice}</Text>}
           </Box>
-          <Markdown options={{ wrapper: 'React.Fragment' }}>{program.description ?? ''}</Markdown>
+          <MD>{program.description ?? ''}</MD>
         </Box>
       </Box>
     </Container>

@@ -13720,6 +13720,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"markdown-to-jsx@npm:^9.8.2":
+  version: 9.8.2
+  resolution: "markdown-to-jsx@npm:9.8.2"
+  peerDependencies:
+    react: ">= 16.0.0"
+    solid-js: ">=1.0.0"
+    vue: ">=3.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-native:
+      optional: true
+    solid-js:
+      optional: true
+    vue:
+      optional: true
+  checksum: 10/9dcc47db476e5c7a9e969326e4482b250ca716e0944c22d664b918a7f4a71457cb6178fb2057ff253914ca954c520d1d94577ae701b1ac713a13ffc25c0705fe
+  languageName: node
+  linkType: hard
+
 "material-colors@npm:^1.2.1":
   version: 1.2.6
   resolution: "material-colors@npm:1.2.6"
@@ -17254,6 +17274,7 @@ __metadata:
     jiti: "npm:2.4.2"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.17.23"
+    markdown-to-jsx: "npm:^9.8.2"
     mongodb: "npm:^7.4.0"
     mongoose: "npm:^9.7.2"
     morgan: "npm:^1.10.1"

@@ -1,6 +1,6 @@
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Markdown, Text } from 'grommet';
+import { Anchor, Box, Button, Text } from 'grommet';
 import React, { useState, useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditEventDialog } from '../../../components/dialogs/edit-event-dialog';
@@ -17,19 +17,13 @@ import {
   DeleteEventDocument,
   DeleteEventMutation,
   DeleteEventMutationVariables,
-  ToggleEventFoodOrderEnabledDocument,
-  ToggleEventFoodOrderEnabledMutation,
-  ToggleEventFoodOrderEnabledMutationVariables,
-  UnarchiveEventDocument,
-  UnarchiveEventMutation,
-  UnarchiveEventMutationVariables,
   UpdateEventDocument,
   UpdateEventMutation,
   UpdateEventMutationVariables,
 } from '../../../_generated/graphql';
 import { useMutation } from '@apollo/client/react';
 import { YesNoDialog } from '../../../components/dialogs/yes-no-dialog';
-import { set } from 'lodash';
+import { MD } from '../../../components/md';
 
 interface PanelEventDetailsProps {
   event: EventFragmentFragment;
@@ -45,17 +39,26 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
   const [confirmEventDelete, setConfirmEventDelete] = useState(false);
   const [confirmEventArchive, setConfirmEventArchive] = useState(false);
 
-  const [updateEvent] = useMutation<UpdateEventMutation, UpdateEventMutationVariables>(UpdateEventDocument, {
-    onError: (e) => notify.error('Nepodarilo sa aktualizovať turnaj', e.message),
-  });
+  const [updateEvent] = useMutation<UpdateEventMutation, UpdateEventMutationVariables>(
+    UpdateEventDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa aktualizovať turnaj', e.message),
+    },
+  );
 
-  const [deleteEvent] = useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, {
-    onError: (e) => notify.error('Nepodarilo sa odstrániť turnaj.', e.message),
-  });
+  const [deleteEvent] = useMutation<DeleteEventMutation, DeleteEventMutationVariables>(
+    DeleteEventDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa odstrániť turnaj.', e.message),
+    },
+  );
 
-  const [archiveEvent] = useMutation<ArchiveEventMutation, ArchiveEventMutationVariables>(ArchiveEventDocument, {
-    onError: (e) => notify.error('Nepodarilo sa archivovať turnaj.', e.message),
-  });
+  const [archiveEvent] = useMutation<ArchiveEventMutation, ArchiveEventMutationVariables>(
+    ArchiveEventDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa archivovať turnaj.', e.message),
+    },
+  );
 
   const handleDeleteEvent = useCallback(() => {
     if (event?.registrationsCount === 0) {
@@ -99,7 +102,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
               {(event?.conditions ?? '').length > 0 ? (
                 <>
                   <Box flex height={{ max: '200px' }} overflow={'auto'}>
-                    <Markdown>{event?.conditions ?? ''}</Markdown>
+                    <MD>{event?.conditions ?? ''}</MD>
                   </Box>
                   <Anchor label="Zobraz" onClick={() => setShowEventTerms(true)} />
                 </>
@@ -157,7 +160,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
         showButton
       >
         <Box flex pad="medium" height={{ max: '100%' }} overflow="auto">
-          <Markdown>{event?.conditions ?? ''}</Markdown>
+          <MD>{event?.conditions ?? ''}</MD>
         </Box>
       </Modal>
       {confirmEventDelete && (

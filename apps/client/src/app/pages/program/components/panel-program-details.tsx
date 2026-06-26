@@ -1,5 +1,6 @@
 import { formatDate } from '@teams2/dateutils';
-import { Anchor, Box, Button, Markdown } from 'grommet';
+import { Anchor, Box, Button } from 'grommet';
+
 import React, { useState } from 'react';
 import { EditColorDialog } from '../../../components/dialogs/edit-color-dialog';
 import { EditProgramDialog } from '../../../components/dialogs/edit-program-dialog';
@@ -8,8 +9,14 @@ import { LabelValueGroup } from '../../../components/label-value-group';
 import { Modal } from '../../../components/modal';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
-import { ProgramFragmentFragment, UpdateProgramDocument, UpdateProgramMutation, UpdateProgramMutationVariables } from '../../../_generated/graphql';
+import {
+  ProgramFragmentFragment,
+  UpdateProgramDocument,
+  UpdateProgramMutation,
+  UpdateProgramMutationVariables,
+} from '../../../_generated/graphql';
 import { useMutation } from '@apollo/client/react';
+import { MD } from '../../../components/md';
 
 interface PanelProgramDetailsProps {
   program: ProgramFragmentFragment;
@@ -26,9 +33,12 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
 
   const { notify } = useNotification();
 
-  const [updateProgram] = useMutation<UpdateProgramMutation, UpdateProgramMutationVariables>(UpdateProgramDocument, {
-    onError: () => notify.error('Nepodarilo sa aktualizovať program'),
-  });
+  const [updateProgram] = useMutation<UpdateProgramMutation, UpdateProgramMutationVariables>(
+    UpdateProgramDocument,
+    {
+      onError: () => notify.error('Nepodarilo sa aktualizovať program'),
+    },
+  );
 
   return (
     <Panel title="Detaily programu" gap="medium">
@@ -72,13 +82,13 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
             height={{ max: '200px' }}
             overflow={{ vertical: 'auto' }}
           >
-            <Markdown>{program.description ?? ''}</Markdown>
+            <MD>{program.description ?? ''}</MD>
           </Box>
         </LabelValue>
         <LabelValue label="Podmienky">
           <Box background="light-2" flex pad="small">
             <Box flex height={{ max: '200px' }} overflow={{ vertical: 'auto' }}>
-              <Markdown>{program.conditions ?? ''}</Markdown>
+              <MD>{program.conditions ?? ''}</MD>
             </Box>
             <Anchor label="Zobraz" onClick={() => setShowProgramTerms(true)} />
           </Box>
@@ -116,7 +126,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         showButton
       >
         <Box flex pad="medium" height={{ max: '100%' }} overflow={'auto'}>
-          <Markdown>{program.conditions ?? ''}</Markdown>
+          <MD>{program.conditions ?? ''}</MD>
         </Box>
       </Modal>
     </Panel>
