@@ -40,7 +40,7 @@ export function ProgramTile(props: ProgramTileProps) {
         <Box width="50px" height={{ min: '50px' }} background={program.color ?? 'light-5'} />
         <Box width="100%">
           <Box direction="row" justify="between">
-            <Text>{program.name}</Text>
+            <Text size="large">{program.name}</Text>
             {disabled && (
               <Text color="status-warning">Do tohto programu sa už nemôžete prihlásiť.</Text>
             )}
