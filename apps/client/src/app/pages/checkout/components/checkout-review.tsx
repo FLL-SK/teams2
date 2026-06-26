@@ -105,8 +105,9 @@ export function CheckoutReview(props: CheckoutReviewProps) {
         <InvoiceItemList items={items} />
         <Box>
           <Text>
-            Toto sú štandardné poplatky. Prípadné zľavy, napr. ak vám bol poskytnutý grant budú
-            zohľadnené vo faktúre.
+            Zobrazené sú vybrané štandardné jednotkové poplatky, cena Vašej registrácie sa určí na
+            základe zvoleného počtu tímov, detí, súprav, ako aj pridelených grantov a bude uvedená
+            na faktúre.
           </Text>
         </Box>
       </Panel>
