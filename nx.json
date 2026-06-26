@@ -33,6 +33,11 @@
         "{workspaceRoot}/tools/eslint-rules/**/*"
       ],
       "cache": true
+    },
+    "@nx/vite:build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "namedInputs": {
@@ -56,7 +61,7 @@
       "application": {
         "style": "styled-components",
         "linter": "eslint",
-        "bundler": "webpack",
+        "bundler": "vite",
         "babel": true
       },
       "component": {
@@ -74,12 +79,14 @@
   "analytics": false,
   "plugins": [
     {
-      "plugin": "@nx/webpack/plugin",
+      "plugin": "@nx/vite/plugin",
       "options": {
         "buildTargetName": "build",
+        "serveTargetName": "serve",
         "previewTargetName": "preview",
         "serveStaticTargetName": "serve-static",
-        "serveTargetName": "serve"
+        "devTargetName": "dev",
+        "typecheckTargetName": "typecheck"
       }
     }
   ]

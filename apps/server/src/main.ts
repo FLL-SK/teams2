@@ -25,6 +25,8 @@ async function server() {
   log.info(`Debug: ${process.env.DEBUG}`);
   const app = express();
 
+  app.use(morgan('tiny'));
+
   // CORS configuration
   const corsOptions = {
     origin: getServerConfig().clientAppRootUrlsForCORS,
@@ -32,11 +34,9 @@ async function server() {
     credentials: false,
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
   };
-
   log.info('Configuring CORS ... %o', corsOptions);
-
-  app.use(morgan('tiny'));
   app.use(cors(corsOptions));
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
