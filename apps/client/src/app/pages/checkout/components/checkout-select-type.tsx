@@ -30,9 +30,9 @@ interface FormDataType {
 }
 
 const getEmptyForm = (details: CheckoutDetails): FormDataType => ({
-  teams: details.teamsImpacted ?? 0,
-  children: details.childrenImpacted ?? 0,
-  setCount: details.setCount ?? 0,
+  teams: details.teamsImpacted ?? 1,
+  children: details.childrenImpacted ?? 5,
+  setCount: details.setCount ?? 1,
 });
 
 const GridFormField = styled(FormField)<{ area?: string }>`
