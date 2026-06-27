@@ -65,7 +65,15 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
           label="Koniec"
           value={program.endDate ? formatDate(program.endDate) : 'neurčený'}
         />
-        <LabelValue label="ClassPack povolený" value={program.classPackEnabled ? 'áno' : '-'} />
+        <LabelValue
+          label="Registrácia normálna"
+          value={program.regTypesAllowed?.includes('NORMAL') ? 'áno' : '-'}
+        />
+
+        <LabelValue
+          label="Registrácia ClassPack"
+          value={program.regTypesAllowed?.includes('CLASS_PACK') ? 'áno' : '-'}
+        />
         <LabelValue
           label="Maximálny počet tímov"
           value={program.maxTeams ? program.maxTeams.toString() : 'neurčený'}
@@ -108,7 +116,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
         show={showProgramEditDialog}
         program={program}
         onClose={() => setShowProgramEditDialog(false)}
-        onSubmit={(values) => updateProgram({ variables: { id: program.id, input: values } })}
+        onSubmit={(input) => updateProgram({ variables: { id: program.id, input } })}
       />
       <EditColorDialog
         show={editColor}

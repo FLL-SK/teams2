@@ -9,11 +9,6 @@
 # import * from "./file.graphql"
 # import * from "./order.graphql"
 
-enum RegistrationType {
-  NORMAL
-  CLASS_PACK
-}
-
 type Registration implements INode {
   id: ID!
   programId: ID!

@@ -3,6 +3,9 @@ import { DeleteResult, ObjectId } from 'mongodb';
 
 const Types = Schema.Types;
 
+export const RegistrationTypeArray = ['NORMAL', 'CLASS_PACK'] as const;
+export type RegistrationType = (typeof RegistrationTypeArray)[number];
+
 export interface ProgramData {
   _id?: ObjectId;
   name: string;
@@ -24,6 +27,7 @@ export interface ProgramData {
   deletedBy?: ObjectId;
 
   classPackEnabled?: boolean;
+  regTypesAllowed: RegistrationType[];
 }
 
 export type ProgramDocument = (Document<unknown, unknown, ProgramData> & ProgramData) | null;
@@ -59,6 +63,7 @@ const schema = new Schema<ProgramData, ProgramModel>(
     group: { type: Types.String },
 
     classPackEnabled: { type: Types.Boolean, default: false },
+    regTypesAllowed: { type: [Types.String], default: ['NORMAL'], enum: RegistrationTypeArray },
 
     startDate: { type: Types.Date, required: true },
     endDate: { type: Types.Date, required: true },

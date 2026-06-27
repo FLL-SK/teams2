@@ -2,10 +2,9 @@ import { Schema, model, Model, Document, QueryFilter } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { AddressData, addressSchema } from './address.model';
 import { OrderData, orderSchema } from './order.model';
+import { RegistrationType } from './program.model';
 
 const Types = Schema.Types;
-
-export type RegistrationType = 'NORMAL' | 'CLASS_PACK';
 
 export interface RegistrationData {
   _id?: ObjectId;

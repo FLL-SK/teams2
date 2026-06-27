@@ -11,7 +11,7 @@ fragment ProgramBasicFragment on Program {
   maxTeamSize
   teamRegSequence
   group
-  classPackEnabled
+  regTypesAllowed
 
   managersIds
 

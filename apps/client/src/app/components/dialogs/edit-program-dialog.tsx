@@ -9,6 +9,8 @@ import {
   Grid,
   TextArea,
   TextInput,
+  Text,
+  CheckBoxGroup,
 } from 'grommet';
 import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../_generated/graphql';
@@ -32,7 +34,8 @@ interface FormFields {
   endDate: string;
   maxTeams?: number;
   maxTeamSize?: number;
-  classPackEnabled?: boolean;
+  regNormalEnabled?: boolean;
+  regClassPackEnabled?: boolean;
 }
 
 export function EditProgramDialog(props: EditProgramDialogProps) {
@@ -47,6 +50,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
     name: '',
     startDate: '',
     endDate: '',
+    regNormalEnabled: true,
   });
 
   useEffect(() => {
@@ -59,8 +63,11 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       endDate: toZonedDateString(program?.endDate) ?? '',
       maxTeams: program?.maxTeams ?? 0,
       maxTeamSize: program?.maxTeamSize ?? 0,
-      classPackEnabled: program?.classPackEnabled ?? false,
+      regNormalEnabled: program?.regTypesAllowed?.includes('NORMAL') ?? true,
+      regClassPackEnabled: program?.regTypesAllowed?.includes('CLASS_PACK') ?? false,
     });
+    setTeamCountLimited(!!program?.maxTeams && program.maxTeams > 0);
+    setTeamSizeLimited(!!program?.maxTeamSize && program.maxTeamSize > 0);
   }, [program]);
 
   if (!show) {
@@ -74,11 +81,21 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       endDate: toUtcDateString(value.endDate) ?? '',
       maxTeams: teamCountLimited && value.maxTeams ? Number(value.maxTeams) : 0,
       maxTeamSize: teamSizeLimited && value.maxTeamSize ? Number(value.maxTeamSize) : 0,
-      classPackEnabled: value.classPackEnabled ?? false,
+      regTypesAllowed: [
+        ...(value.regNormalEnabled ? ['NORMAL'] : []),
+        ...(value.regClassPackEnabled ? ['CLASS_PACK'] : []),
+      ],
     };
+    delete result.regNormalEnabled;
+    delete result.regClassPackEnabled;
     await onSubmit(result);
     onClose();
   };
+
+  const regValidError =
+    !formValues.regNormalEnabled && !formValues.regClassPackEnabled
+      ? 'Musí byť povolený aspoň jeden typ registrácie.'
+      : undefined;
 
   return (
     <Modal
@@ -86,6 +103,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
       onClose={onClose}
       width="large"
       height="auto"
+      overflow="scroll"
     >
       <Form
         onSubmit={handleSubmit}
@@ -107,8 +125,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
           <FormField label="Koniec programu" name="endDate">
             <DateInput name="endDate" format="dd.mm.yyyy" />
           </FormField>
-          <CheckBox label="Povoliť ClassPack" name="classPackEnabled" />
-          <br />
+
           <CheckBox
             label="Obmedziť počet tímov"
             checked={teamCountLimited}
@@ -118,7 +135,7 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
             <TextInput type="number" name="maxTeams" />
           </FormField>
           <CheckBox
-            label="Obmedziť veľkosť tímu tímov"
+            label="Obmedziť veľkosť tímu"
             checked={teamSizeLimited}
             onChange={() => setTeamSizeLimited(!teamSizeLimited)}
           />
@@ -126,6 +143,19 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
             <TextInput type="number" name="maxTeamSize" />
           </FormField>
         </Grid>
+        <CheckBox label="Registrácia Normálna" name="regNormalEnabled" color="status-critical" />
+        <CheckBox
+          label="Registrácia ClassPack"
+          name="regClassPackEnabled"
+          color="status-critical"
+        />
+
+        {regValidError && (
+          <>
+            <Text color="status-critical">{regValidError}</Text>
+            <br />
+          </>
+        )}
 
         <FormField label="Popis" name="description">
           <TextArea rows={5} name="description" />
@@ -136,7 +166,12 @@ export function EditProgramDialog(props: EditProgramDialogProps) {
 
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />
-          <Button primary type="submit" label={!program ? 'Vytvoriť' : 'Uložiť'} />
+          <Button
+            primary
+            type="submit"
+            label={!program ? 'Vytvoriť' : 'Uložiť'}
+            disabled={!!regValidError}
+          />
         </Box>
       </Form>
     </Modal>

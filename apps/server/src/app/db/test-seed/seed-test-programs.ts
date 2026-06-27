@@ -29,6 +29,7 @@ export const seedTestProgramData: TestSeedData[] = [
     ],
     conditions: '*Program1 conditions*\n1. condition 1\n2. condtion 2\n3. condition 3',
     teamRegSequence: 1,
+    regTypesAllowed: ['NORMAL', 'CLASS_PACK'],
   },
   {
     name: 'Program2',
@@ -40,6 +41,7 @@ export const seedTestProgramData: TestSeedData[] = [
 
     invoiceItems: [{ lineNo: 1, text: 'Item21', unitPrice: 21, quantity: 1 }],
     teamRegSequence: 1,
+    regTypesAllowed: ['CLASS_PACK'],
   },
   {
     name: 'Program3-not active',
@@ -50,6 +52,7 @@ export const seedTestProgramData: TestSeedData[] = [
     managers: ['devtest+progmgr2@fll.sk'],
     invoiceItems: [],
     teamRegSequence: 1,
+    regTypesAllowed: ['NORMAL'],
   },
 ];
 
@@ -66,14 +69,17 @@ export async function seedTestPrograms() {
       startDate: addDays(new Date(), d.startOffset),
       endDate: addDays(new Date(), d.endOffset),
       teamRegSequence: d.teamRegSequence,
+      regTypesAllowed: d.regTypesAllowed ?? ['NORMAL'],
     };
 
     const nu = new programRepository(p);
 
-    for (const username of d.managers) {
-      const u = await userRepository.findOne({ username });
-      if (u) {
-        nu.managersIds.push(u._id);
+    if (d.managers) {
+      for (const username of d.managers) {
+        const u = await userRepository.findOne({ username });
+        if (u) {
+          nu.managersIds.push(u._id);
+        }
       }
     }
 

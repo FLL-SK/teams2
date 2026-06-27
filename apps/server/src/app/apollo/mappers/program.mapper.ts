@@ -7,30 +7,30 @@ export const ProgramMapper = {
       return null;
     }
     const u: Omit<Required<Program>, '__typename'> = {
-      id: program._id,
+      id: program._id!,
 
       name: program.name,
-      description: program.description,
+      description: program.description ?? null,
 
-      logoUrl: program.logoUrl,
-      color: program.color,
+      logoUrl: program.logoUrl ?? null,
+      color: program.color ?? null,
 
-      conditions: program.conditions,
+      conditions: program.conditions ?? null,
 
       startDate: program.startDate,
       endDate: program.endDate,
 
-      maxTeams: program.maxTeams,
-      maxTeamSize: program.maxTeamSize,
+      maxTeams: program.maxTeams ?? null,
+      maxTeamSize: program.maxTeamSize ?? null,
       teamRegSequence: program.teamRegSequence,
 
-      group: program.group,
-      classPackEnabled: program.classPackEnabled,
+      group: program.group ?? null,
+      regTypesAllowed: program.regTypesAllowed,
 
-      managersIds: program.managersIds,
+      managersIds: program.managersIds ?? [],
 
-      deletedOn: program.deletedOn,
-      deletedBy: program.deletedBy,
+      deletedOn: program.deletedOn ?? null,
+      deletedBy: program.deletedBy ?? null,
 
       invoiceItems: [],
       managers: [],
@@ -55,7 +55,7 @@ export const ProgramMapper = {
       id: program.id,
       type: 'PROGRAM',
       name: program.name,
-      group: program.group,
+      group: program.group ?? '',
       note: null,
       price: 0,
     };

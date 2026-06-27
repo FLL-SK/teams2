@@ -39,14 +39,33 @@ const GridFormField = styled(FormField)<{ area?: string }>`
   grid-area: ${(props) => props.area};
 `;
 
+type ProgramRegOption = { label: string; value: RegistrationType };
 export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
   const { details, onSubmit, nextStep, prevStep, cancel } = props;
   const [regType, setRegType] = React.useState<RegistrationType>('NORMAL');
   const [formData, setFormData] = React.useState<FormDataType>(getEmptyForm(details));
+  const [options, setOptions] = React.useState<ProgramRegOption[]>([]);
 
   React.useEffect(() => {
     if (details.type) {
       setRegType(details.type);
+    }
+    if (details.program?.regTypesAllowed) {
+      const opts: ProgramRegOption[] = details.program.regTypesAllowed.map((type) => {
+        switch (type) {
+          case 'NORMAL':
+            return { label: 'normálna', value: 'NORMAL' };
+          case 'CLASS_PACK':
+            return { label: 'class-pack', value: 'CLASS_PACK' };
+          default:
+            console.warn(`Unknown registration type: ${type}`);
+            return { label: type, value: type };
+        }
+      });
+      setOptions(opts);
+      if (opts.length === 1) {
+        setRegType(opts[0].value);
+      }
     }
     setFormData(getEmptyForm(details));
   }, [details]);
@@ -57,10 +76,7 @@ export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
 
       <RadioButtonGroup
         name="type"
-        options={[
-          { label: 'normálna', value: 'NORMAL' },
-          { label: 'class-pack', value: 'CLASS_PACK' },
-        ]}
+        options={options}
         value={regType}
         onChange={(event) => setRegType(event.target.value as RegistrationType)}
       />
