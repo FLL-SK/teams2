@@ -31,7 +31,7 @@ interface FormDataType {
 
 const getEmptyForm = (details: CheckoutDetails): FormDataType => ({
   teams: details.teamsImpacted ?? 1,
-  children: details.childrenImpacted ?? 5,
+  children: details.childrenImpacted ?? details.program?.maxTeamSize ?? 2,
   setCount: details.setCount ?? 1,
 });
 
@@ -121,7 +121,7 @@ export function CheckoutSelectType(props: CheckoutSelectTypeProps) {
               area="auto / span 2"
             >
               <Box pad="small">
-                <RangeInput name="children" min={5} max={200} />
+                <RangeInput name="children" min={2} max={200} />
                 <Paragraph size="small" fill>
                   Počet detí, ktoré sa zapoja do programu vrámci tejto registrácie. Súťažne sa
                   podujatia (turnaja/festivalu) môžu zúčastniť iba deti jedného tímu. Nesúťažne môžu
