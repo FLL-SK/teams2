@@ -20,6 +20,9 @@ export function MD(props: {
           p: {
             component: (props) => <p {...props} style={{ maxWidth: '100%' }} />,
           },
+          a: {
+            component: (props) => <a {...props} target="_blank" rel="noopener noreferrer" />,
+          },
           ...components,
         },
       }}
