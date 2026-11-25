@@ -20,7 +20,7 @@ import { emailProgramManagerAdded } from '../../utils/emails';
 const logBase = logger('DS:Program');
 
 export class ProgramDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Program, string>;
+  declare private loader: Dataloader<string, Program, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));

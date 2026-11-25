@@ -6,6 +6,10 @@
     "sourceMap": true,
     "declaration": false,
     "target": "es2023",
+    // pôvodná sémantika class fields (priradenie v konštruktore) – pri target >= ES2022 by inak
+    // deklarácie polí v podtriedach prepísali hodnoty nastavené v konštruktore predka (#276,
+    // napr. DataLoadery v BaseDataSource._initialize())
+    "useDefineForClassFields": false,
     "module": "esnext",
     "moduleResolution": "bundler",
     "lib": ["es2023", "dom", "dom.iterable"],

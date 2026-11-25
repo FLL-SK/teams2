@@ -28,7 +28,7 @@ import { issueFoodInvoices, modifyFoodType } from '../../domains/event';
 const logBase = logger('DS:Event');
 
 export class EventDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Event, string>;
+  declare private loader: Dataloader<string, Event, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));

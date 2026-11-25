@@ -36,7 +36,7 @@ import { formatTeamNo } from '../../utils/format-teamNo';
 const logBase = logger('DS:Registration');
 
 export class RegistrationDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Registration, string>;
+  declare private loader: Dataloader<string, Registration, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));

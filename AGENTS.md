@@ -149,6 +149,7 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 - Mazanie je spravidla „soft delete“ (`deletedOn`, `deletedBy`) s možnosťou obnovenia (`restore…`).
 - ID v serveri sú `ObjectId` (codegen mapuje GraphQL `ID` na `mongodb#ObjectId`), na klientovi `string`.
 - Logger: `const log = logger('DS:Tag'); log.extend('metoda')`.
+- Polia, ktoré nastavuje konštruktor predka (napr. DataLoader v `BaseDataSource._initialize()`), deklaruj ako `declare private loader: …` – inak ich pri `target` ≥ ES2022 (sémantika „define“, Vitest/oxc) prepíše inicializácia poľa podtriedy na `undefined`.
 - UI: komponenty Grommet, štýly cez styled-components, notifikácie cez `useNotification`, chyby mutácií cez `utils/handle_mutation_error.ts`.
 
 ## Testy

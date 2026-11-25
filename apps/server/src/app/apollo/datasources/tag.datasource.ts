@@ -11,9 +11,9 @@ import Dataloader from 'dataloader';
 const logBase = logger('DS:Tag');
 
 export class TagDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Tag, string>;
+  declare private loader: Dataloader<string, Tag, string>;
 
-  protected _initialize() {
+  protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
   }
 

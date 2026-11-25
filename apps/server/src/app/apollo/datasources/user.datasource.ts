@@ -15,7 +15,7 @@ import {
 const logBase = logger('DS:User');
 
 export class UserDataSource extends BaseDataSource {
-  private loader: Dataloader<string, User, string>;
+  declare private loader: Dataloader<string, User, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));

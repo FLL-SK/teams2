@@ -19,7 +19,7 @@ import { logger } from '@teams2/logger';
 const logBase = logger('DS:Team');
 
 export class TeamDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Team, string>;
+  declare private loader: Dataloader<string, Team, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
