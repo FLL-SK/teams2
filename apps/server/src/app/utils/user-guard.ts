@@ -27,11 +27,45 @@ export class UserGuard {
     return this.user ? this.user._id : null;
   }
 
-  getManagedEvents() {
+  /** ID tímov, ktoré používateľ trénuje (načíta sa raz pre požiadavku) */
+  async getCoachedTeams(): Promise<string[]> {
+    if (!this.user) {
+      return [];
+    }
+    if (!this.coachOfTeams) {
+      this.coachOfTeams =
+        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
+          t._id.toString(),
+        ) ?? [];
+    }
+    return this.coachOfTeams;
+  }
+
+  /** ID turnajov, ktoré používateľ spravuje (načíta sa raz pre požiadavku) */
+  async getManagedEvents(): Promise<string[]> {
+    if (!this.user) {
+      return [];
+    }
+    if (!this.eventManagerOfEvents) {
+      this.eventManagerOfEvents =
+        (await eventRepository.findEventsManagedByUser(this.user._id, { _id: 1 }))?.map((e) =>
+          e._id.toString(),
+        ) ?? [];
+    }
     return this.eventManagerOfEvents;
   }
 
-  getManagedPrograms() {
+  /** ID programov, ktoré používateľ spravuje (načíta sa raz pre požiadavku) */
+  async getManagedPrograms(): Promise<string[]> {
+    if (!this.user) {
+      return [];
+    }
+    if (!this.programManagerOfPrograms) {
+      this.programManagerOfPrograms =
+        (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>
+          p._id.toString(),
+        ) ?? [];
+    }
     return this.programManagerOfPrograms;
   }
 
@@ -52,81 +86,57 @@ export class UserGuard {
   }
 
   async isCoach(teamId: ObjectId) {
-    if (!this.user) {
+    if (!teamId) {
       return false;
     }
-    if (!this.coachOfTeams) {
-      this.coachOfTeams =
-        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
-          t._id.toString(),
-        ) ?? [];
-    }
-    return this.coachOfTeams.includes(teamId.toString());
+    return (await this.getCoachedTeams()).includes(teamId.toString());
   }
 
   async isCoachOfRegisteredTeamForEvent(eventId: ObjectId) {
-    if (!this.user) {
+    const coachOfTeams = await this.getCoachedTeams();
+    if (coachOfTeams.length === 0) {
       return false;
     }
-    if (!this.coachOfTeams) {
-      this.coachOfTeams =
-        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
-          t._id.toString(),
-        ) ?? [];
-    }
-    const teams = await registrationRepository.find({
+    // aktívna registrácia na turnaj niektorého z trénovaných tímov
+    const count = await registrationRepository.countDocuments({
       eventId: eventId,
-      teamId: { $in: this.coachOfTeams },
+      teamId: { $in: coachOfTeams.map((t) => new ObjectId(t)) },
+      canceledOn: null,
     });
-    return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
+    return count > 0;
   }
 
   async isCoachOfRegisteredTeamForProgram(programId: ObjectId) {
-    if (!this.user) {
+    const coachOfTeams = await this.getCoachedTeams();
+    if (coachOfTeams.length === 0) {
       return false;
     }
-    if (!this.coachOfTeams) {
-      this.coachOfTeams =
-        (await teamRepository.findTeamsCoachedByUser(this.user._id, { _id: 1 }))?.map((t) =>
-          t._id.toString(),
-        ) ?? [];
-    }
-    const teams = await registrationRepository.find({
+    // potvrdená (a nezrušená) registrácia niektorého z trénovaných tímov do programu
+    const count = await registrationRepository.countDocuments({
       programId: programId,
-      teamId: { $in: this.coachOfTeams.map((t) => new ObjectId(t)) },
+      teamId: { $in: coachOfTeams.map((t) => new ObjectId(t)) },
       confirmedOn: { $ne: null },
+      canceledOn: null,
     });
-    return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
+    return count > 0;
   }
 
   async isEventManager(eventId: ObjectId) {
-    if (!this.user) {
+    if (!eventId) {
       return false;
     }
-    if (!this.eventManagerOfEvents) {
-      this.eventManagerOfEvents =
-        (await eventRepository.findEventsManagedByUser(this.user._id, { _id: 1 }))?.map((e) =>
-          e._id.toString(),
-        ) ?? [];
-    }
-    return this.eventManagerOfEvents.includes(eventId.toString());
+    return (await this.getManagedEvents()).includes(eventId.toString());
   }
 
   async isProgramManager(programId: ObjectId) {
-    if (!this.user) {
+    if (!programId) {
       return false;
     }
-    if (!this.programManagerOfPrograms) {
-      this.programManagerOfPrograms =
-        (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>
-          p._id.toString(),
-        ) ?? [];
-    }
-    return this.programManagerOfPrograms.includes(programId.toString());
+    return (await this.getManagedPrograms()).includes(programId.toString());
   }
 
   async isProgramManagerForEvent(eventId: ObjectId) {
-    if (!this.user) {
+    if (!this.user || !eventId) {
       return false;
     }
 
@@ -135,13 +145,7 @@ export class UserGuard {
     if (!event) {
       return false;
     }
-    if (!this.programManagerOfPrograms) {
-      this.programManagerOfPrograms =
-        (await programRepository.findProgramsManagedByUser(this.user._id, { _id: 1 }))?.map((p) =>
-          p._id.toString(),
-        ) ?? [];
-    }
-    return this.programManagerOfPrograms.includes(event.programId.toString());
+    return this.isProgramManager(event.programId);
   }
 
   notAuthorized(context?: string) {

@@ -96,12 +96,21 @@ export class RegistrationDataSource extends BaseDataSource {
   async cancelRegistration(id: ObjectId): Promise<Registration> {
     const registration = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
+      (await this.userGuard.isCoach(registration.teamId)) ||
+      (await this.userGuard.isProgramManager(registration.programId)) ||
+      (await this.userGuard.isEventManager(registration.eventId)) ||
       this.userGuard.notAuthorized('Cancel registration');
+
+    // objednávka jedla sa ruší spolu s registráciou (oprávnenie je už overené vyššie –
+    // removeFoodOrder má prísnejšie pravidlá a pre správcu programu by zlyhal)
+    const hadFoodOrder = !!registration.foodOrder;
     registration.canceledOn = new Date();
     registration.canceledBy = this.context.user._id;
+    registration.foodOrder = null;
     await registration.save();
-    await this.removeFoodOrder(id);
+    if (hadFoodOrder) {
+      void emailFoodOrderRemoved(registration, this.context.user.username);
+    }
 
     return RegistrationMapper.toRegistration(registration);
   }
@@ -243,7 +252,7 @@ export class RegistrationDataSource extends BaseDataSource {
     const r = await registrationRepository.findById(id).exec();
 
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (await this.userGuard.isCoach(r.teamId)) ||
       this.userGuard.notAuthorized('Set team size');
 
     r.girlCount = input.girlCount;
@@ -261,12 +270,12 @@ export class RegistrationDataSource extends BaseDataSource {
   async setTeamSizeConfirmedOn(id: ObjectId, date: Date): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (await this.userGuard.isCoach(r.teamId)) ||
       this.userGuard.notAuthorized('Set team size confirmed on');
     r.sizeConfirmedOn = date;
     await r.save();
 
-    emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+    void emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
 
     return RegistrationMapper.toRegistration(r);
   }
@@ -274,7 +283,7 @@ export class RegistrationDataSource extends BaseDataSource {
   async clearTeamSizeConfirmedOn(id: ObjectId): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (await this.userGuard.isCoach(r.teamId)) ||
       this.userGuard.notAuthorized('Clear team size confirmed on');
     r.sizeConfirmedOn = null;
     await r.save();
@@ -312,9 +321,14 @@ export class RegistrationDataSource extends BaseDataSource {
     r = await registrationRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
 
     if (r.eventId) {
-      emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+      void emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
     } else {
-      emailProgramRegistrationConfirmed(r._id, r.programId, r.teamId, this.context.user.username);
+      void emailProgramRegistrationConfirmed(
+        r._id,
+        r.programId,
+        r.teamId,
+        this.context.user.username,
+      );
     }
     return RegistrationMapper.toRegistration(r);
   }
@@ -376,7 +390,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.foodOrder = no;
     await r.save();
 
-    emailFoodOrderUpdated(r, this.context.user.username);
+    void emailFoodOrderUpdated(r, this.context.user.username);
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }
@@ -390,13 +404,18 @@ export class RegistrationDataSource extends BaseDataSource {
 
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(r.eventId)) ||
-      ((await this.userGuard.isCoach(r.teamId)) && !r.foodOrder.invoicedOn) ||
+      ((await this.userGuard.isCoach(r.teamId)) && !r.foodOrder?.invoicedOn) ||
       this.userGuard.notAuthorized('Remove food order');
+
+    if (!r.foodOrder) {
+      // nie je čo odstrániť – bez zmeny a bez e-mailu
+      return { registration: RegistrationMapper.toRegistration(r) };
+    }
 
     r.foodOrder = null;
     await r.save();
 
-    emailFoodOrderRemoved(r, this.context.user.username);
+    void emailFoodOrderRemoved(r, this.context.user.username);
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }

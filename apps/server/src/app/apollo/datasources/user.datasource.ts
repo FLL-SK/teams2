@@ -82,7 +82,7 @@ export class UserDataSource extends BaseDataSource {
       emailUserAcceptedGdprToAdmin(nu.username);
     }
     if (nu && usernameChanged) {
-      emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id);
+      void emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id);
     }
 
     return { user: UserMapper.toUser(nu) };

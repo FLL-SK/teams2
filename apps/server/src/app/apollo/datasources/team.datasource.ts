@@ -1,5 +1,11 @@
 import { BaseDataSource } from './_base.datasource';
-import { registrationRepository, TeamData, teamRepository, userRepository } from '../../models';
+import {
+  RegistrationData,
+  registrationRepository,
+  TeamData,
+  teamRepository,
+  userRepository,
+} from '../../models';
 import {
   CreateTeamInput,
   TeamPayload,
@@ -240,17 +246,24 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async isTeamRegisteredOnEventManagedByLoggedInUser(teamId: ObjectId): Promise<boolean> {
-    const reg = await registrationRepository
-      .findOne({
-        teamId,
-        $or: [
-          { eventId: this.context.userGuard.getManagedEvents() },
-          { programId: this.context.userGuard.getManagedPrograms() },
-        ],
-      })
-      .lean()
-      .exec();
+    const [events, programs] = await Promise.all([
+      this.userGuard.getManagedEvents(),
+      this.userGuard.getManagedPrograms(),
+    ]);
+    // prázdny zoznam do filtra neposielať – `{ eventId: undefined }` by zodpovedalo
+    // každej registrácii do programu (bez turnaja)
+    const or: QueryFilter<RegistrationData>[] = [];
+    if (events.length > 0) {
+      or.push({ eventId: { $in: events.map((id) => new ObjectId(id)) } });
+    }
+    if (programs.length > 0) {
+      or.push({ programId: { $in: programs.map((id) => new ObjectId(id)) } });
+    }
+    if (or.length === 0) {
+      return false;
+    }
 
+    const reg = await registrationRepository.findOne({ teamId, $or: or }).lean().exec();
     return reg !== null;
   }
 }

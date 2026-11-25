@@ -141,7 +141,7 @@ export class EventDataSource extends BaseDataSource {
         { returnDocument: 'after' },
       )
       .exec();
-    emailEventManagerAdded(eventId, userId);
+    void emailEventManagerAdded(eventId, userId);
     return EventMapper.toEvent(event);
   }
 
