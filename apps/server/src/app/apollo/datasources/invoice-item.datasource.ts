@@ -78,7 +78,7 @@ export class InvoiceItemDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update invoice item');
 
     const newItem = await invoiceItemRepository
-      .findOneAndUpdate({ _id: itemId }, { $set: { ...item } }, { new: true })
+      .findOneAndUpdate({ _id: itemId }, { $set: { ...item } }, { returnDocument: 'after' })
       .exec();
     return InvoiceItemMapper.toInvoiceItem(newItem);
   }

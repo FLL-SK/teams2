@@ -43,7 +43,9 @@ export class NoteDataSource extends BaseDataSource {
   async updateNote(id: ObjectId, input: NoteUpdateInput): Promise<Note> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update note');
 
-    const note = await noteRepository.findByIdAndUpdate(id, input, { new: true }).exec();
+    const note = await noteRepository
+      .findByIdAndUpdate(id, input, { returnDocument: 'after' })
+      .exec();
     return NoteMapper.toNote(note);
   }
 
@@ -51,7 +53,7 @@ export class NoteDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete note');
 
     const note = await noteRepository
-      .findByIdAndUpdate(id, { deletedOn: new Date() }, { new: true })
+      .findByIdAndUpdate(id, { deletedOn: new Date() }, { returnDocument: 'after' })
       .exec();
     return NoteMapper.toNote(note);
   }

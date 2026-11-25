@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
   const r = await registrationRepository.findOneAndUpdate(
     { invoiceRef },
     { paidOn: new Date() },
-    { new: true }
+    { returnDocument: 'after' },
   );
 
   if (!r) {

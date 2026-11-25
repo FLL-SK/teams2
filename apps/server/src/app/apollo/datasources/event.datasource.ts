@@ -90,7 +90,9 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Update event');
     const u: Partial<EventData> = input;
-    const nu = await eventRepository.findByIdAndUpdate(eventId, u, { new: true }).exec();
+    const nu = await eventRepository
+      .findByIdAndUpdate(eventId, u, { returnDocument: 'after' })
+      .exec();
     return { event: EventMapper.toEvent(nu) };
   }
 
@@ -105,7 +107,9 @@ export class EventDataSource extends BaseDataSource {
       return null;
     }
     const u: Partial<EventData> = { deletedOn: new Date(), deletedBy: this.context.user._id };
-    const ne = await eventRepository.findByIdAndUpdate(eventId, u, { new: true }).exec();
+    const ne = await eventRepository
+      .findByIdAndUpdate(eventId, u, { returnDocument: 'after' })
+      .exec();
     return EventMapper.toEvent(ne);
   }
 
@@ -114,7 +118,9 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Undelete event');
     const u: Partial<EventData> = { deletedOn: null, deletedBy: this.context.user._id };
-    const ne = await eventRepository.findByIdAndUpdate(eventId, u, { new: true }).exec();
+    const ne = await eventRepository
+      .findByIdAndUpdate(eventId, u, { returnDocument: 'after' })
+      .exec();
     return EventMapper.toEvent(ne);
   }
 
@@ -129,7 +135,11 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Add event manager');
     const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { $addToSet: { managersIds: userId } }, { new: true })
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $addToSet: { managersIds: userId } },
+        { returnDocument: 'after' },
+      )
       .exec();
     emailEventManagerAdded(eventId, userId);
     return EventMapper.toEvent(event);
@@ -141,19 +151,21 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Remove event manager');
     const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { $pull: { managersIds: userId } }, { new: true })
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $pull: { managersIds: userId } },
+        { returnDocument: 'after' },
+      )
       .exec();
     return EventMapper.toEvent(event);
   }
 
   async getEventManagers(eventId: ObjectId): Promise<User[]> {
-    if (
-      !(
-        this.userGuard.isAdmin() ||
-        (await this.userGuard.isEventManager(eventId)) ||
-        (await this.userGuard.isProgramManagerForEvent(eventId))
-      )
-    ) {
+    if (!(
+      this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManagerForEvent(eventId))
+    )) {
       return [];
     }
 
@@ -182,7 +194,11 @@ export class EventDataSource extends BaseDataSource {
       this.userGuard.notAuthorized('Add food type');
     const foodType = { n: 'Nový typ stravy', up: 0 };
     const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { $push: { foodTypes: foodType } }, { new: true })
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $push: { foodTypes: foodType } },
+        { returnDocument: 'after' },
+      )
       .exec();
     if (!event) {
       throw new Error('Event not found');
@@ -209,7 +225,7 @@ export class EventDataSource extends BaseDataSource {
       .findOneAndUpdate(
         { _id: eventId },
         { $pull: { foodTypes: { _id: foodTypeId } } },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .exec();
     if (!event) {
@@ -242,7 +258,11 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Update food order deadline');
     const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { $set: { foodOrderDeadline: deadline } }, { new: true })
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $set: { foodOrderDeadline: deadline } },
+        { returnDocument: 'after' },
+      )
       .exec();
     if (!event) {
       throw new Error('Event not found');
@@ -256,7 +276,11 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Invite team');
     const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { $addToSet: { invitedTeamsIds: teamId } }, { new: true })
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $addToSet: { invitedTeamsIds: teamId } },
+        { returnDocument: 'after' },
+      )
       .exec();
     if (!event) {
       throw new Error('Event not found');
@@ -270,7 +294,11 @@ export class EventDataSource extends BaseDataSource {
       (await this.userGuard.isProgramManagerForEvent(eventId)) ||
       this.userGuard.notAuthorized('Uninvite team');
     const event = await eventRepository
-      .findOneAndUpdate({ _id: eventId }, { $pull: { invitedTeamsIds: teamId } }, { new: true })
+      .findOneAndUpdate(
+        { _id: eventId },
+        { $pull: { invitedTeamsIds: teamId } },
+        { returnDocument: 'after' },
+      )
       .exec();
     if (!event) {
       throw new Error('Event not found');

@@ -85,7 +85,7 @@ schema.static('incrementTeamRegSequence', async function (programId: ObjectId) {
   const program = await this.findOneAndUpdate(
     { _id: programId },
     { $inc: { teamRegSequence: 1 } },
-    { new: true },
+    { returnDocument: 'after' },
   ).exec();
   if (!program) {
     throw new Error(`Program not found: ${programId}`);

@@ -73,7 +73,10 @@ export class UserDataSource extends BaseDataSource {
       u.username = input.username;
     }
 
-    const nu = await userRepository.findOneAndUpdate({ _id: id }, u, { new: true }).lean().exec();
+    const nu = await userRepository
+      .findOneAndUpdate({ _id: id }, u, { returnDocument: 'after' })
+      .lean()
+      .exec();
 
     if (input.gdprAccepted && !user.gdprAcceptedOn) {
       emailUserAcceptedGdprToAdmin(nu.username);
@@ -91,7 +94,7 @@ export class UserDataSource extends BaseDataSource {
       .findByIdAndUpdate(
         id,
         { deletedOn: new Date(), deletedBy: this.context.user._id },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .lean()
       .exec();
@@ -101,7 +104,11 @@ export class UserDataSource extends BaseDataSource {
   async undeleteUser(id: ObjectId): Promise<User> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Undelete user');
     const u = await userRepository
-      .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { $unset: { deletedOn: null, deletedBy: null } },
+        { returnDocument: 'after' },
+      )
       .lean()
       .exec();
     return UserMapper.toUser(u);
@@ -127,7 +134,7 @@ export class UserDataSource extends BaseDataSource {
       .findOneAndUpdate(
         { _id: id, gdprDeclinedOn: null },
         { gdprDeclinedOn: new Date() },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .lean()
       .exec();
