@@ -98,12 +98,19 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(registration.teamId)) ||
       (await this.userGuard.isProgramManager(registration.programId)) ||
-      (registration.eventId && (await this.userGuard.isEventManager(registration.eventId))) ||
+      (await this.userGuard.isEventManager(registration.eventId)) ||
       this.userGuard.notAuthorized('Cancel registration');
+
+    // objednávka jedla sa ruší spolu s registráciou (oprávnenie je už overené vyššie –
+    // removeFoodOrder má prísnejšie pravidlá a pre správcu programu by zlyhal)
+    const hadFoodOrder = !!registration.foodOrder;
     registration.canceledOn = new Date();
     registration.canceledBy = this.context.user._id;
+    registration.foodOrder = null;
     await registration.save();
-    await this.removeFoodOrder(id);
+    if (hadFoodOrder) {
+      void emailFoodOrderRemoved(registration, this.context.user.username);
+    }
 
     return RegistrationMapper.toRegistration(registration);
   }
@@ -397,8 +404,13 @@ export class RegistrationDataSource extends BaseDataSource {
 
     this.userGuard.isAdmin() ||
       (await this.userGuard.isEventManager(r.eventId)) ||
-      ((await this.userGuard.isCoach(r.teamId)) && !r.foodOrder.invoicedOn) ||
+      ((await this.userGuard.isCoach(r.teamId)) && !r.foodOrder?.invoicedOn) ||
       this.userGuard.notAuthorized('Remove food order');
+
+    if (!r.foodOrder) {
+      // nie je čo odstrániť – bez zmeny a bez e-mailu
+      return { registration: RegistrationMapper.toRegistration(r) };
+    }
 
     r.foodOrder = null;
     await r.save();

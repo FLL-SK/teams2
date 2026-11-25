@@ -203,6 +203,10 @@ export async function cancelRegistration(
     return { errors: [{ code: 'not_authorized' }] };
   }
 
+  if (reg.canceledOn) {
+    return { errors: [{ code: 'already_canceled', message: 'Registrácia už bola zrušená' }] };
+  }
+
   // check if there are any event registrations linked to this program registration
   if (!reg.eventId && reg.programId) {
     const q: QueryFilter<RegistrationData> = {

@@ -20,6 +20,8 @@ const { registrationFindById, fileFind, groupRegistrations, getSignedUrlForUploa
   }),
 );
 
+vi.mock('../utils/mailer', () => ({ sendEmail: vi.fn(async () => undefined) }));
+
 vi.mock('../utils/aws-s3', () => ({
   getSignedUrlForUpload,
   getSignedUrlForDownload: vi.fn(),
@@ -83,6 +85,23 @@ describe('autorizácia s asynchrónnymi kontrolami (regresia #279)', () => {
         await ds.cancelRegistration(doc._id);
         expect(doc.save).toHaveBeenCalled();
       }
+    });
+
+    it('cancelRegistration odstráni objednávku jedla aj pre správcu programu', async () => {
+      const doc = { ...registrationDoc(), foodOrder: { invoicedOn: new Date() } };
+      registrationFindById.mockReturnValue({ exec: async () => doc });
+      const ds = new RegistrationDataSource({ context: deniedContext({ isProgramManager: true }) });
+      await ds.cancelRegistration(doc._id);
+      expect(doc.save).toHaveBeenCalled();
+      expect(doc.foodOrder).toBeNull();
+    });
+
+    it('removeFoodOrder bez objednávky nič neuloží (tréner, registrácia do programu)', async () => {
+      const doc = { ...registrationDoc(), eventId: undefined, foodOrder: undefined };
+      registrationFindById.mockReturnValue({ exec: async () => doc });
+      const ds = new RegistrationDataSource({ context: deniedContext({ isCoach: true }) });
+      await expect(ds.removeFoodOrder(doc._id)).resolves.toBeTruthy();
+      expect(doc.save).not.toHaveBeenCalled();
     });
 
     it('setTeamSize odmietne cudzieho trénera', async () => {
@@ -183,6 +202,14 @@ describe('autorizácia s asynchrónnymi kontrolami (regresia #279)', () => {
       const notConfirmed = run({}, { isCoach: true });
       await notConfirmed.result;
       expect(notConfirmed.dsCancel).toHaveBeenCalled();
+    });
+
+    it('už zrušenú registráciu odmietne', async () => {
+      const { result, dsCancel } = run({ canceledOn: new Date() } as never, {
+        isEventManager: true,
+      });
+      expect((await result)?.errors?.[0]?.code).toBe('already_canceled');
+      expect(dsCancel).not.toHaveBeenCalled();
     });
 
     it('správca turnaja zruší aj potvrdenú registráciu', async () => {
