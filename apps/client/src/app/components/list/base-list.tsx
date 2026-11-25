@@ -1,5 +1,6 @@
 import React from 'react';
-import { List, AutoSizer, ListRowProps, ListProps } from 'react-virtualized';
+import { List, ListProps, RowRendererParams } from 'react-virtualized';
+import { AutoSizer } from 'react-virtualized-auto-sizer';
 import 'react-virtualized/styles.css';
 import { ListRow } from '../../components/list/list-row';
 import { ReactNode } from 'react';
@@ -10,6 +11,7 @@ import { ListHeaderRow } from './list-header-row';
 import { EdgeSizeType } from 'grommet/utils';
 
 interface BaseListProps<T = unknown> extends Omit<ListProps, 'height' | 'width' | 'rowRenderer'> {
+  rowCount: number;
   rowGetter: (index: number) => T | null;
   onEmptyList?: () => ReactNode;
   renderRow: (data: T) => ReactNode;
@@ -34,14 +36,9 @@ const ContentPanel = styled(Box)`
   width: 100%;
 `;
 
-function getRowClassName({ index }: { index: number }) {
-  if (index < 0) {
-    return 'ReactVirtualized__Table__row-header';
-  }
-  return index % 2 === 0
-    ? 'ReactVirtualized__Table__row team-list__row'
-    : 'ReactVirtualized__Table__row--odd team-list__row';
-}
+// rovnaké správanie ako AutoSizer z react-virtualized 9 – obal nemá vlastnú veľkosť,
+// meria sa rodičovský element
+const autoSizerStyle = { width: 0, height: 0, overflow: 'visible' } as const;
 
 export function BaseList<T = unknown>(props: BaseListProps<T>) {
   const {
@@ -54,27 +51,29 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
     columnGap: gap,
     onRowSelect,
     actionsJustifyContent,
-    key,
     ...listProps
   } = props;
 
-  const rowRenderer = (props: ListRowProps) => {
+  const rowRenderer = (props: RowRendererParams) => {
     // eslint-disable-next-line react/prop-types
     const { index, /*isScrolling,*/ style } = props;
 
     const data = rowGetter(index);
     if (!data) {
-      return 'no data';
+      return (
+        <div key={props.key} style={style}>
+          no data
+        </div>
+      );
     }
     return (
       <ListRow<T>
-        {...props}
+        key={props.key}
         style={style}
         cols={cols}
         gap={gap}
         value={data}
         onSelect={onRowSelect}
-        key={props.key}
       >
         {renderRow(data)}
       </ListRow>
@@ -87,22 +86,23 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
       <ContentPanel>
         {rowCount === 0 && props.onEmptyList && props.onEmptyList()}
         {rowCount > 0 && (
-          <AutoSizer>
-            {({ width, height }) => (
-              <List
-                {...listProps}
-                height={height}
-                width={width}
-                headerHeight={0}
-                rowHeight={rowHeight}
-                rowClassName={getRowClassName}
-                rowCount={rowCount}
-                rowGetter={rowGetter}
-                rowRenderer={rowRenderer}
-                estimatedRowSize={1000}
-              />
-            )}
-          </AutoSizer>
+          <AutoSizer
+            style={autoSizerStyle}
+            renderProp={({ width, height }) =>
+              width !== undefined &&
+              height !== undefined && (
+                <List
+                  {...listProps}
+                  height={height}
+                  width={width}
+                  rowHeight={rowHeight}
+                  rowCount={rowCount}
+                  rowRenderer={rowRenderer}
+                  estimatedRowSize={1000}
+                />
+              )
+            }
+          />
         )}
       </ContentPanel>
     </Box>

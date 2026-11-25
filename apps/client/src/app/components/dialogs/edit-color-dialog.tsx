@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button } from 'grommet';
 import { Modal } from '../modal';
 
-import { SketchPicker } from 'react-color';
+import { HexColorInput, HexColorPicker } from 'react-colorful';
 
 interface EditColorDialogProps {
   title?: string;
@@ -28,7 +28,10 @@ export function EditColorDialog(props: EditColorDialogProps) {
   return (
     <Modal title={title ?? 'Vybrať farbu'} onClose={onClose} width="medium">
       <form onSubmit={handleSubmit} target="_self">
-        <SketchPicker color={formColor} onChangeComplete={({ hex }) => setFormColor(hex)} />
+        <Box gap="small" margin={{ bottom: 'medium' }}>
+          <HexColorPicker color={formColor} onChange={setFormColor} />
+          <HexColorInput color={formColor} onChange={setFormColor} prefixed aria-label="Farba" />
+        </Box>
 
         <Box direction="row" gap="medium" justify="end">
           <Button plain onClick={onClose} label="Zrušiť" hoverIndicator />

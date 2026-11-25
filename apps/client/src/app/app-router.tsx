@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 import { LoginPage } from './pages/auth/login-page';
 import { ForgotPasswordPage } from './pages/auth/forgot-password-page';
 import { ProfilePage } from './pages/profile/profile-page';
@@ -23,7 +23,7 @@ import { appPath } from '@teams2/common';
 
 /** stránka dostupná iba prihlásenému používateľovi – neprihláseného presmeruje na prihlásenie
  * a po prihlásení ho vráti späť (napr. link na registráciu z e-mailu) */
-const authed = (page: JSX.Element) => (
+const authed = (page: React.JSX.Element) => (
   <RequireAuth wait={<div>Loading...</div>} loginUri={appPath.login()}>
     {page}
   </RequireAuth>

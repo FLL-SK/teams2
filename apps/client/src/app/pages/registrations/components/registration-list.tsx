@@ -21,7 +21,7 @@ import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
 import styled from 'styled-components';
 import { formatDate } from '@teams2/dateutils';
-import { Index } from 'react-virtualized';
+type Index = { index: number };
 import { formatTeamSize } from '../../../utils/format-teamsize';
 import { TagPill } from '../../../components/tag-pill';
 

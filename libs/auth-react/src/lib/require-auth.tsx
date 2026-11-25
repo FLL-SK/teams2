@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router';
 import { useAuthenticate } from './use-authenticate';
 
 export const RequireAuth = ({
@@ -7,8 +7,8 @@ export const RequireAuth = ({
   wait,
   loginUri,
 }: {
-  children: JSX.Element;
-  wait: JSX.Element;
+  children: React.JSX.Element;
+  wait: React.JSX.Element;
   loginUri: string;
 }) => {
   const { isAuthenticated, isInitializing } = useAuthenticate();

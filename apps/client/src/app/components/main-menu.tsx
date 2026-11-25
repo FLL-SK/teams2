@@ -1,7 +1,7 @@
 import React from 'react';
 import { appPath } from '@teams2/common';
 import { Nav, Sidebar, Button, Box, Text } from 'grommet';
-import { Location, useLocation, useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router';
 import { UserFragmentFragment } from '../_generated/graphql';
 import { Logo } from './logo';
 import { useAppUser } from './app-user/use-app-user';
@@ -11,7 +11,7 @@ import { useApolloClient } from '@apollo/client/react';
 import { useAuthenticate } from '@teams2/auth-react';
 
 interface MenuButtonProps {
-  icon?: JSX.Element;
+  icon?: React.JSX.Element;
   path?: string;
   title: string;
   from?: Location;

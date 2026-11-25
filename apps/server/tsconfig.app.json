@@ -1,8 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "module": "ES2020",
     "types": ["node"]
   },
   "exclude": ["vitest.config.mts", "**/*.spec.ts", "**/*.test.ts"],

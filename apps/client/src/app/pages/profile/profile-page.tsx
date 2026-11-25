@@ -3,7 +3,7 @@ import { appPath } from '@teams2/common';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
 import { LabelValue } from '../../components/label-value';

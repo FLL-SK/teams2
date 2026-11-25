@@ -7,7 +7,7 @@ import { BaseList } from '../../../components/list/base-list';
 import { appPath } from '@teams2/common';
 import { fullAddress } from '../../../utils/format-address';
 import styled from 'styled-components';
-import { Index } from 'react-virtualized';
+type Index = { index: number };
 import { TagPill } from '../../../components/tag-pill';
 
 type TeamListProps = {

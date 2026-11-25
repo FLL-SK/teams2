@@ -12,7 +12,7 @@ import {
 } from '../../_generated/graphql';
 import { useLazyQuery } from '@apollo/client/react';
 import { ErrorPage } from '../../components/error-page';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { PanelProgramDetails } from './components/panel-program-details';
 import { PanelProgramFees } from './components/panel-program-fees';

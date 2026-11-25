@@ -14,7 +14,7 @@ import {
   Text,
 } from 'grommet';
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '@teams2/auth-react';
 

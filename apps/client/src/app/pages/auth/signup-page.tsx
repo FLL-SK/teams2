@@ -2,9 +2,13 @@ import React, { useEffect } from 'react';
 
 import { Box, Button, CheckBox, Form, FormField, Paragraph, Text } from 'grommet';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { BasePage } from '../../components/base-page';
-import { GetSettingsDocument, GetSettingsQuery, GetSettingsQueryVariables } from '../../_generated/graphql';
+import {
+  GetSettingsDocument,
+  GetSettingsQuery,
+  GetSettingsQueryVariables,
+} from '../../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
 import { validateEmail, validatePhone } from '@teams2/common';
 import { AuthSignupData, useAuthenticate } from '@teams2/auth-react';

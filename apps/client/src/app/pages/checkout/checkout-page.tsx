@@ -2,7 +2,7 @@ import React from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Spinner } from 'grommet';
 import { useCallback, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';
@@ -152,9 +152,9 @@ export function CheckoutPage() {
         shipTo: data.shipTo,
       };
       if (input.type === 'CLASS_PACK') {
-        input.impactedTeamCount = Number(data.teamsImpacted) ?? 1;
-        input.impactedChildrenCount = Number(data.childrenImpacted) ?? 1;
-        input.setCount = Number(data.setCount) ?? 1;
+        input.impactedTeamCount = Number(data.teamsImpacted);
+        input.impactedChildrenCount = Number(data.childrenImpacted);
+        input.setCount = Number(data.setCount);
       }
 
       let resultData: MutationData;

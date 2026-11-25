@@ -15,7 +15,7 @@ import {
   Text,
 } from 'grommet';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { BasePage } from '../../components/base-page';
 import { useAuthenticate } from '@teams2/auth-react';
 
@@ -23,7 +23,7 @@ export function ForgotPasswordPage() {
   const navigate = useNavigate();
   const { forgotPassword } = useAuthenticate();
   const [error, setError] = useState<string>();
-  const [message, setMessage] = useState<JSX.Element>();
+  const [message, setMessage] = useState<React.JSX.Element>();
 
   const handleRequestPasswordReset = async ({ value }: { value: { username: string } }) => {
     const resp = await forgotPassword(value.username);

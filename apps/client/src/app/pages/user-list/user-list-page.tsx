@@ -19,7 +19,7 @@ import {
   constructUserListSearchParams,
   parseUserListSearchParams,
 } from './components/user-list-params';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { useNotification } from '../../components/notifications/notification-provider';
 
 export function UserListPage() {

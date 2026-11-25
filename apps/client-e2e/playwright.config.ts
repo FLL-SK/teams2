@@ -19,7 +19,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'yarn nx run client:serve',
+    command: 'pnpm dev:client',
     url: baseURL,
     cwd: '../../',
     reuseExistingServer: !process.env['CI'],
