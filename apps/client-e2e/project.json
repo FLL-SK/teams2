@@ -3,24 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/client-e2e/src",
   "projectType": "application",
-  "targets": {
-    "e2e": {
-      "executor": "@nx/cypress:cypress",
-      "options": {
-        "cypressConfig": "apps/client-e2e/cypress.json",
-        "devServerTarget": "client:serve:development"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "client:serve:production"
-        }
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    }
-  },
   "tags": [],
   "implicitDependencies": ["client"]
 }
