@@ -2,6 +2,7 @@ import { getServerConfig } from '../../../server-config';
 import { SettingsData, settingsRepository, UserData, userRepository } from '../../models';
 import { hashPassword } from '../../utils/hash-password';
 import debugLib from 'debug';
+import { logger } from '@teams2/logger';
 
 export async function preSeed() {
   const debug = debugLib('preseed');
@@ -11,13 +12,17 @@ export async function preSeed() {
 }
 
 async function preSeedAdmin() {
-  const sa = await userRepository
-    .findOne({ username: getServerConfig().app.superadminUsername })
-    .exec();
+  const username = getServerConfig().app.superadminUsername;
+  if (!username) {
+    // bez SUPERADMIN_USERNAME by sa hľadal/vytváral používateľ bez mena a štart servera by zlyhal
+    logger('preseed').warn('SUPERADMIN_USERNAME is not set, skipping superadmin preseed');
+    return;
+  }
+  const sa = await userRepository.findOne({ username }).exec();
   if (!sa) {
     const nsa: UserData = {
-      username: getServerConfig().app.superadminUsername,
-      password: await hashPassword(getServerConfig().app.superadminUsername),
+      username,
+      password: await hashPassword(username),
       firstName: 'Super',
       lastName: 'Admin',
       isAdmin: true,

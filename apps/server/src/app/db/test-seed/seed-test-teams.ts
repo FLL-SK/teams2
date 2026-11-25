@@ -81,7 +81,10 @@ export const seedTestTeamsData: TestSeedData[] = [
 
 const log = logger('testseed:Teams');
 
-export async function seedTestTeams() {
+/**
+ * @param generatedTeams počet ďalších vygenerovaných tímov (Team100, Team101, …) – napr. pre test stránkovania
+ */
+export async function seedTestTeams(generatedTeams = 0) {
   for (const d of seedTestTeamsData) {
     const t: TeamData = {
       name: d.name,
@@ -130,7 +133,7 @@ export async function seedTestTeams() {
 
   // generate teams
   const u = await userRepository.findByUsername('devtest+coach3@fll.sk');
-  for (let i = 100; i <= 500; i++) {
+  for (let i = 100; i < 100 + generatedTeams; i++) {
     const t: TeamData = {
       name: `Team${i}`,
       coachesIds: [u._id],

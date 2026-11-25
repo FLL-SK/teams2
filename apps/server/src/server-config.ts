@@ -14,7 +14,9 @@ export function getServerConfig() {
 
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
 
-    graphQLSchemaPath: nodeEnv === 'development' ? './dist/schema.graphql' : './schema.graphql',
+    graphQLSchemaPath:
+      process.env.APP_GRAPHQL_SCHEMA ??
+      (nodeEnv === 'development' ? './dist/schema.graphql' : './schema.graphql'),
     email: {
       from: process.env.APP_EMAIL_FROM,
     },

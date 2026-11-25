@@ -2,7 +2,18 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "resolveJsonModule": true,
-    "types": ["vitest/globals", "node"]
+    "types": [
+      "vitest/globals",
+      "node"
+    ],
+    "jsx": "react-jsx"
   },
-  "include": ["vitest.config.mts", "**/*.test.ts", "**/*.spec.ts", "**/*.d.ts"]
+  "include": [
+    "vitest.config.mts",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.d.ts",
+    "vitest.integration.config.mts",
+    "src/test/**/*.ts"
+  ]
 }

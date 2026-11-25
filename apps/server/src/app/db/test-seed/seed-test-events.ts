@@ -8,7 +8,6 @@ import {
 } from '../../models';
 import { addDays } from 'date-fns';
 import { logger } from '@teams2/logger';
-import { admin_username } from './seed-test-users';
 
 type TestSeedData = Omit<EventData, 'programId'> & {
   managers?: string[];
@@ -63,7 +62,6 @@ export const seedTestEventData: TestSeedData[] = [
 const log = logger('testseed:Events');
 
 export async function seedTestEvents() {
-  const adminUser = await userRepository.findOne({ email: admin_username }).exec();
   for (const d of seedTestEventData) {
     const p = await programRepository.findOne({ name: d.program }).lean().exec();
     if (!p) {

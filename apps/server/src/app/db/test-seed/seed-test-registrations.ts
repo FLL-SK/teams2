@@ -76,7 +76,43 @@ export const seedTestRegistrationData: TestSeedData[] = [
   },
 ];
 
+export const seedTestProgramRegistrationData: {
+  program: string;
+  team: string;
+  teamNo?: string;
+  confirmed: boolean;
+}[] = [
+  { program: 'Program1', team: 'Team1', teamNo: '001', confirmed: true },
+  { program: 'Program1', team: 'Team2', confirmed: false },
+];
+
 const log = logger('testseed:Registrations');
+
+export async function seedTestProgramRegistrations() {
+  const adminUser = await userRepository.findOne({ username: admin_username }).exec();
+  for (const d of seedTestProgramRegistrationData) {
+    const p = await programRepository.findOne({ name: d.program }).exec();
+    const t = await teamRepository.findOne({ name: d.team }).exec();
+    if (!p || !t) {
+      throw new Error(`Program ${d.program} or team ${d.team} not found`);
+    }
+    const r = await registrationRepository.create({
+      programId: p._id,
+      teamId: t._id,
+      teamNo: d.teamNo,
+      billTo: t.billTo ?? t.address,
+      shipTo: t.shipTo ?? t.billTo ?? t.address,
+      createdOn: addDays(new Date(), -30),
+      createdBy: t.coachesIds[0] ?? adminUser._id,
+      confirmedOn: d.confirmed ? addDays(new Date(), -29) : undefined,
+      confirmedBy: d.confirmed ? adminUser._id : undefined,
+      type: 'NORMAL',
+      teamsImpacted: 1,
+      setCount: 1,
+    });
+    log.debug(`Program registration created program=%s team=%s id=%s`, d.program, d.team, r._id);
+  }
+}
 
 export async function seedTestRegistrations() {
   const q: Partial<UserData> = { username: admin_username };
