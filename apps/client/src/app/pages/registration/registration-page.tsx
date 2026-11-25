@@ -30,7 +30,7 @@ import {
   RemoveRegistrationFoodOrderMutation,
   RemoveRegistrationFoodOrderMutationVariables,
 } from '../../_generated/graphql';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 
 import { TagList } from '../../components/tag-list';
 import { NoteList } from '../../components/note-list';
@@ -87,13 +87,24 @@ export function RegistrationPage() {
     onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
   });
 
-  const [
-    fetchRegistration,
-    { data: regData, loading: regLoading, error: regDataError, refetch: regRefetch },
-  ] = useLazyQuery<GetRegistrationQuery, GetRegistrationQueryVariables>(GetRegistrationDocument);
+  const {
+    data: regData,
+    loading: regLoading,
+    error: regDataError,
+    refetch: regRefetch,
+  } = useQuery<GetRegistrationQuery, GetRegistrationQueryVariables>(GetRegistrationDocument, {
+    variables: { id: id ?? '' },
+    skip: !id,
+  });
 
-  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
-    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument);
+  const {
+    data: notesData,
+    loading: notesLoading,
+    refetch: notesRefetch,
+  } = useQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument, {
+    variables: { type: 'registration', ref: id ?? '' },
+    skip: !id,
+  });
 
   const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
     CreateNoteDocument,
@@ -102,13 +113,6 @@ export function RegistrationPage() {
 
   const reg = regData?.getRegistration;
   const invoiceItems = reg?.invoiceItems ?? [];
-
-  React.useEffect(() => {
-    if (id) {
-      fetchRegistration({ variables: { id } });
-      fetchNotes({ variables: { type: 'registration', ref: id } });
-    }
-  }, [id, fetchRegistration, fetchNotes]);
 
   const handleOrder = React.useCallback(
     (data: {
@@ -171,6 +175,10 @@ export function RegistrationPage() {
 
   if (!id || (regDataError && !regLoading)) {
     return <ErrorPage title="Chyba pri získavaní dát o registrácii." />;
+  }
+
+  if (!regLoading && regData && !reg) {
+    return <ErrorPage title="Registrácia sa nenašla." />;
   }
 
   if (!userLoading && !regLoading && !isAdmin() && !isTeamCoach(reg?.teamId)) {
