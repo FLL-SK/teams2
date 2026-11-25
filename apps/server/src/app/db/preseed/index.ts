@@ -1,6 +1,6 @@
 import { getServerConfig } from '../../../server-config';
 import { SettingsData, settingsRepository, UserData, userRepository } from '../../models';
-import { hashPassword } from '../../utils/hash-password';
+import { randomBytes } from 'node:crypto';
 import debugLib from 'debug';
 import { logger } from '@teams2/logger';
 
@@ -11,7 +11,7 @@ export async function preSeed() {
   await preseedSettings();
 }
 
-async function preSeedAdmin() {
+export async function preSeedAdmin() {
   const username = getServerConfig().app.superadminUsername;
   if (!username) {
     // bez SUPERADMIN_USERNAME by sa hľadal/vytváral používateľ bez mena a štart servera by zlyhal
@@ -20,9 +20,11 @@ async function preSeedAdmin() {
   }
   const sa = await userRepository.findOne({ username }).exec();
   if (!sa) {
+    // náhodné heslo (zahashuje ho hook pre('save')) – superadmin si ho nastaví cez
+    // „Zabudnuté heslo“. Predtým bolo heslo = username a zahashovalo sa dvakrát. #281
     const nsa: UserData = {
       username,
-      password: await hashPassword(username),
+      password: randomBytes(32).toString('base64url'),
       firstName: 'Super',
       lastName: 'Admin',
       isAdmin: true,
@@ -30,10 +32,10 @@ async function preSeedAdmin() {
       createdOn: new Date(),
     };
     await userRepository.create(nsa);
-  } else {
-    sa.isSuperAdmin = true;
-    sa.isAdmin = true;
-    await sa.save();
+    logger('preseed').info('Superadmin %s created – set the password via "forgot password"', username);
+  } else if (!sa.isSuperAdmin || !sa.isAdmin) {
+    // iba príznaky – heslo sa nemení (predtým sa pri každom štarte prehashovalo cez save()) #281
+    await userRepository.updateOne({ _id: sa._id }, { isSuperAdmin: true, isAdmin: true }).exec();
   }
 }
 

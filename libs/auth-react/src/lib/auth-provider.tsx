@@ -105,11 +105,10 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     if (!token) {
       return {};
     }
-    const url = new URL(authApiUrl);
-    const params = { token };
-    url.search = new URLSearchParams(params).toString();
-
-    const response = await fetch(url.toString());
+    // token v hlavičke, nie v URL – URL končí v logoch servera a proxy (#281, #282)
+    const response = await fetch(authApiUrl, {
+      headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+    });
     if (!response.ok) {
       return {};
     }

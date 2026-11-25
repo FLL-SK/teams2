@@ -11,6 +11,9 @@ export function getServerConfig() {
     nodeEnv,
     host: process.env.APP_HOST ?? 'localhost',
     port: process.env.PORT ? Number(process.env.PORT) : 5000,
+    // počet dôveryhodných reverzných proxy pred serverom (Express `trust proxy`) – v produkcii
+    // je server za nginx proxy; bez toho by mali všetci klienti IP proxy (rate limiting, logy)
+    trustProxy: parseTrustProxy(process.env.APP_TRUST_PROXY),
 
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
 
@@ -47,6 +50,18 @@ export function getServerConfig() {
       superadminUsername: process.env.SUPERADMIN_USERNAME,
     },
   };
+}
+
+/** `APP_TRUST_PROXY`: číslo (počet proxy), `true`/`false`; predvolene 1 */
+export function parseTrustProxy(value: string | undefined): number | boolean {
+  if (value === undefined || value.trim() === '') {
+    return 1;
+  }
+  const v = value.trim().toLowerCase();
+  if (v === 'true') return true;
+  if (v === 'false') return false;
+  const n = Number(v);
+  return Number.isInteger(n) && n >= 0 ? n : 1;
 }
 
 export type ServerConfig = ReturnType<typeof getServerConfig>;

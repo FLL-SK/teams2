@@ -25,6 +25,8 @@ export interface CreateAppOptions {
 export async function createApp(options: CreateAppOptions = {}): Promise<Express> {
   const { assetsPath, logRequests = true } = options;
   const app = express();
+  // za reverznou proxy (nginx) – správna IP klienta pre rate limiting a logy (#281)
+  app.set('trust proxy', getServerConfig().trustProxy);
 
   if (logRequests) {
     // bez query stringu – môže obsahovať tokeny a tajné kľúče (#282)

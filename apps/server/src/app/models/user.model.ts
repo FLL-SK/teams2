@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document } from 'mongoose';
+import { Schema, model, Model, Document, Query, UpdateQuery } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { hashPassword } from '../utils/hash-password';
 
@@ -18,6 +18,8 @@ export interface UserData {
   isAdmin?: boolean;
   isSuperAdmin?: boolean;
   lastLoginOn?: Date;
+  /** čas poslednej zmeny hesla – prihlasovacie tokeny vydané skôr sú neplatné (#281) */
+  passwordChangedOn?: Date;
   gdprAcceptedOn?: Date;
   gdprDeclinedOn?: Date;
 }
@@ -45,6 +47,7 @@ const schema = new Schema<UserData, UserModel>(
     isAdmin: { type: Types.Boolean },
     isSuperAdmin: { type: Types.Boolean },
     lastLoginOn: { type: Types.Date },
+    passwordChangedOn: { type: Types.Date },
     gdprAcceptedOn: { type: Types.Date },
     gdprDeclinedOn: { type: Types.Date },
   },
@@ -61,16 +64,46 @@ schema.static('clean', function () {
   return this.deleteMany().exec();
 });
 
-schema.static('findActiveByUsername', function (username: string) {
+schema.static('findActiveByUsername', async function (username: string) {
+  // ochrana pred operátormi MongoDB z neoverených vstupov (napr. `{ "$ne": null }` v tele požiadavky)
+  if (typeof username !== 'string' || !username) {
+    return null;
+  }
   return this.findOne({ username, deletedOn: null }).exec();
 });
 
-schema.pre('save', async function () {
-  //'this' refers to the current document about to be saved
-  const user = this as UserDocument;
+/**
+ * Hashuje heslo iba pri jeho zmene – inak by každé `save()` zahashovalo už zahashované heslo
+ * a používateľ by sa neprihlásil. #281
+ */
+export async function hashPasswordOnSave(this: Document & UserData) {
+  if (!this.isModified('password')) {
+    return;
+  }
+  this.password = await hashPassword(this.password);
+  if (!this.isNew) {
+    this.passwordChangedOn = new Date();
+  }
+}
 
-  //Replace the plain text password with the hash and then store it
-  user.password = await hashPassword(user.password);
-});
+/**
+ * `findOneAndUpdate` / `updateOne` nespúšťajú hook `save` – ak update mení heslo, zahashuje ho,
+ * aby sa heslo nikdy neuložilo ako čistý text. #281
+ */
+export async function hashPasswordOnUpdate(this: Query<unknown, UserData>) {
+  const update = this.getUpdate() as UpdateQuery<UserData> | null;
+  if (!update) {
+    return;
+  }
+  const target = typeof update.$set?.password === 'string' ? update.$set : update;
+  if (typeof target.password !== 'string') {
+    return;
+  }
+  target.password = await hashPassword(target.password);
+  target.passwordChangedOn = new Date();
+}
+
+schema.pre('save', hashPasswordOnSave);
+schema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], hashPasswordOnUpdate);
 
 export const userRepository = model<UserData, UserModel>('User', schema);

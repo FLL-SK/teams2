@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 import { QueryFilter } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
+import { MIN_PASSWORD_LENGTH, validatePassword } from '@teams2/common';
 import {
   emailUserAcceptedGdprToAdmin,
   emailUsernameChanged,
@@ -118,8 +119,17 @@ export class UserDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       this.userGuard.isSelf(id) ||
       this.userGuard.notAuthorized('Change password');
-    const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
-    return UserMapper.toUser(u);
+    if (!validatePassword(password)) {
+      throw new Error(`Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.`);
+    }
+    // cez save() – hook pre('save') heslo zahashuje a nastaví passwordChangedOn (#281)
+    const u = await userRepository.findById(id).exec();
+    if (!u) {
+      return null;
+    }
+    u.password = password;
+    await u.save();
+    return UserMapper.toUser(u.toObject());
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {

@@ -37,6 +37,13 @@ export const validateEmail = (email: string): boolean => {
   return re.test(s);
 };
 
+/** minimálna dĺžka hesla (#281) */
+export const MIN_PASSWORD_LENGTH = 8;
+
+/** heslo musí byť reťazec s aspoň MIN_PASSWORD_LENGTH znakmi (nepočítajú sa medzery na okrajoch) */
+export const validatePassword = (password: unknown): password is string =>
+  typeof password === 'string' && password.trim().length >= MIN_PASSWORD_LENGTH;
+
 export const validatePhone = (phone: string): boolean => {
   const s = String(phone).replace(/\s/g, '').toLowerCase();
   const rIntl = /^[+]?[0-9]{0,3}\(?[0-9]{2,3}\)?[0-9]{5,8}$/;
