@@ -111,10 +111,11 @@ pnpm dev:server         # iba server / pnpm dev:client – iba klient
 pnpm build:all          # generate + build servera aj klienta do dist/
 pnpm test               # testy všetkých projektov (vitest run)
 pnpm test --project server   # testy jedného projektu (server|client|common|dateutils|logger|auth-node|auth-react|scripts)
+pnpm test:integration   # integračné testy servera (MongoDB v pamäti)
 pnpm e2e                # E2E testy (Playwright, API je mockované)
 pnpm lint               # lint celého repozitára (eslint .)
 pnpm typecheck          # typová kontrola všetkých projektov (napr. `pnpm typecheck client`)
-pnpm testseed           # naplnenie DB testovacími dátami
+pnpm testseed           # vyčistenie a naplnenie DB testovacími dátami (iba NODE_ENV=development)
 ```
 
 Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, prázdny riadok na konci súboru (`.editorconfig`). Lint: ESLint 9 (jeden `eslint.config.mjs` v koreni).
@@ -124,7 +125,7 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 - Server číta premenné z `.env` v koreni (dotenv). Predvolené hodnoty sú v `apps/server/src/server-config.ts` (napr. `APP_MONGODB=mongodb://localhost/teams2`, port `5000`, `APP_CLIENT_ROOT_URL=http://localhost:4200`).
 - Dôležité premenné: `APP_JWT_SECRET`, `APP_MONGODB`, `APP_CLIENT_ROOT_URL` (môže byť zoznam oddelený čiarkou – CORS), `APP_EMAIL_FROM`, `AWS_*` (S3/SES), `SF_*` (SuperFaktúra), `SUPERADMIN_USERNAME`, `TEAMS_ADMIN_EMAIL`, `DEBUG`, `NODE_ENV`. Úplný zoznam pre produkciu je v `docker-compose.yaml`.
 - Logovanie sa zapína cez `DEBUG` (napr. `DEBUG=*` alebo `DEBUG=DS:*`).
-- Pri štarte servera sa spúšťa `db/preseed` a `db/upgrade` – migrácie dát píš ako idempotentné funkcie do `apps/server/src/app/db/upgrade/index.ts`.
+- Pri štarte servera sa spúšťa `db/preseed` (superadmin z `SUPERADMIN_USERNAME` – ak chýba, preskočí sa –, nastavenia) a `db/upgrade` – migrácie dát píš ako idempotentné funkcie do `apps/server/src/app/db/upgrade/index.ts`.
 
 ## Konvencie a vzory v kóde
 
@@ -168,8 +169,20 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
   - pri logike v datasources/domains testy s mockovanými repository / `UserGuard` (vrátane kontroly oprávnení),
   - pri komponentoch klienta test renderovania a kľúčového správania,
   - pri oprave chyby regresný test, ktorý na pôvodnom kóde zlyhá.
-- Testy nesmú vyžadovať reálnu MongoDB, AWS ani SuperFaktúru – externé závislosti mockuj.
+- Testy nesmú vyžadovať reálnu (bežiacu) MongoDB, AWS ani SuperFaktúru – externé závislosti mockuj. MongoDB v pamäti (integračné testy nižšie) je povolená.
 - Spúšťanie: `pnpm test --project <projekt>`, všetko `pnpm test`, watch režim `pnpm test:watch`. Pred testami servera/klienta musí byť spustený `pnpm generate`.
+
+### Integračné testy servera – MongoDB v pamäti
+
+- Testujú celý server: Express + passport/JWT + Apollo + datasources + Mongoose nad skutočnou MongoDB (**8.0.16**, rovnaká ako v produkcii) cez `mongodb-memory-server-core`.
+- Súbory `*.int.spec.ts` (`apps/server/src/test/integration/`, prípadne vedľa testovaného kódu), konfigurácia `apps/server/vitest.integration.config.mts`. Bežné `pnpm test` ich nespúšťa.
+- Spúšťanie: `pnpm test:integration` (konkrétny súbor: `pnpm test:integration permissions`). Prvé spustenie stiahne binárku `mongod` (~100 MB) do `~/.cache/mongodb-binaries`. Logy servera zapneš cez `DEBUG_TESTS=1`.
+- Pomocníci (`apps/server/src/test/`):
+  - `startTestServer()` – vlastná databáza pre testovací súbor, test seed, server na náhodnom porte; vracia `data` (ID a prihlasovacie údaje zo seedu), `loginAs()` (skutočný `POST /auth`), `gql()` a `stop()`,
+  - `client-documents.ts` – GraphQL dokumenty klienta (`apps/client/graphql`), testy volajú server rovnakými dotazmi ako aplikácia.
+- Test seed (`apps/server/src/app/db/test-seed`) – `seedTestData()` vytvorí používateľov (admin, tréneri, správcovia turnajov a programov), tímy, tagy, programy, turnaje, registrácie a poznámky. Pri zmene modelov ho udržuj funkčný (kontroluje ho `test-seed.int.spec.ts`).
+- AWS (SES, S3) je mockované v `src/test/setup.ts` (`sendEmail` je `vi.fn()` – dá sa kontrolovať).
+- Integračný test pridaj pri zmene autorizácie, resolverov/datasources alebo dotazov do DB. Pri kontrole oprávnení over aj stav v DB, nielen chybovú hlášku.
 
 ### E2E testy – Playwright
 

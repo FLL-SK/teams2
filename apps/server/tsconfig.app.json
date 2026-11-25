@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "exclude": ["vitest.config.mts", "**/*.spec.ts", "**/*.test.ts"],
+  "exclude": ["vitest.config.mts", "**/*.spec.ts", "**/*.test.ts", "src/test/**"],
   "include": ["**/*.ts"]
 }

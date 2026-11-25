@@ -9,6 +9,7 @@ import globals from 'globals';
 export default defineConfig([
   globalIgnores([
     '**/node_modules',
+    '.claude',
     '**/dist',
     '**/_generated',
     'tmp',
