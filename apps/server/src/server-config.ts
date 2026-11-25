@@ -48,3 +48,38 @@ export function getServerConfig() {
     },
   };
 }
+
+export type ServerConfig = ReturnType<typeof getServerConfig>;
+
+/** kľúče konfigurácie, ktorých hodnota je tajomstvo (porovnáva sa bez ohľadu na veľkosť písmen) */
+const SECRET_KEY_PATTERN = /secret|apikey|api_key|password|accesskeyid/i;
+
+/** zamaskuje prihlasovacie údaje v URI, napr. mongodb://user:heslo@host → mongodb://user:***@host */
+export function maskUriCredentials(uri: string): string {
+  return uri.replace(/^([a-z][a-z0-9+.-]*:\/\/[^:/@]+):[^@/]*@/i, '$1:***@');
+}
+
+/**
+ * Vráti kópiu konfigurácie vhodnú na logovanie – tajomstvá (JWT secret, AWS a SuperFaktúra kľúče,
+ * platobný kľúč) sú nahradené `***`, z URI sú odstránené heslá. #282
+ */
+export function maskConfig<T>(value: T, key = ''): T {
+  if (value === null || value === undefined) {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => maskConfig(v, key)) as T;
+  }
+  if (typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, maskConfig(v, k)]),
+    ) as T;
+  }
+  if (typeof value === 'string') {
+    if (SECRET_KEY_PATTERN.test(key) || /payment.?key/i.test(key)) {
+      return (value ? '***' : value) as T;
+    }
+    return maskUriCredentials(value) as T;
+  }
+  return value;
+}

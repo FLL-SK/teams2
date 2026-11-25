@@ -5,6 +5,6 @@ import { logger } from '@teams2/logger';
 export function requestPassworReset(username: string) {
   const log = logger('utils:passResetRq');
   const token = createPasswordResetToken(username);
-  log.debug('username=%s token=%s ', username, token);
+  log.debug('username=%s', username);
   emailPasswordReset(username, token);
 }

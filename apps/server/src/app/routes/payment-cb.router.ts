@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   const invoiceRef = (req.query.invoice_id as string) ?? 'undefined';
   const secret_key = (req.query.secret_key as string) ?? 'undefined';
   const log = logLib.extend('cb');
-  log.debug('invoiceId=%s secret_key=%s', invoiceRef, secret_key);
+  log.debug('invoiceId=%s', invoiceRef);
 
   if (getServerConfig().invoicing.sf.payment_secret_key !== secret_key) {
     log.error('invalid secret_key request from %s', req.ip.toString());

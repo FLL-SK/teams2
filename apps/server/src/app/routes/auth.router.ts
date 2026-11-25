@@ -38,7 +38,7 @@ router.get('/', (req, res) => {
   const token = (req.query.token as string) ?? 'undefined';
   const log = logLib.extend('verify');
   const au = verifyToken(token);
-  log.debug('token=%s au=%o', token, au);
+  log.debug('au=%o', au);
   if (au) {
     log.info('Authenticated %o', au);
     return login(au, res);
@@ -70,7 +70,7 @@ router.post('/reset', async function (req, res) {
   const log = logLib.extend('post/reset');
 
   const au = verifyToken(token);
-  log.debug('user password reset=%o pwd=%s token=%s', au, password, token);
+  log.debug('user password reset=%o', au);
 
   const u = await userRepository.findActiveByUsername(au.username);
   if (u) {

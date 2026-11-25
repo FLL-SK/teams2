@@ -3,7 +3,7 @@ dotenv.config({ quiet: true });
 
 import path from 'node:path';
 import yargs from 'yargs';
-import { getServerConfig } from './server-config';
+import { getServerConfig, maskConfig } from './server-config';
 import { bootstrapMongoDB, testDbSeed } from './app/db';
 import { createApp } from './app/create-app';
 import { logger } from '@teams2/logger';
@@ -13,7 +13,7 @@ const log = logger('main');
 async function server() {
   const port = getServerConfig().port;
   log.info('Starting server ...');
-  log.info('Config: %o', getServerConfig());
+  log.info('Config: %o', maskConfig(getServerConfig()));
   log.info(`Environment: ${process.env.NODE_ENV}`);
   log.info(`Debug: ${process.env.DEBUG}`);
 
