@@ -1,5 +1,4 @@
-/// <reference types='vitest' />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tsConfigPaths from 'vite-tsconfig-paths';
 
@@ -38,5 +37,13 @@ export default defineConfig(() => ({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+  },
+  test: {
+    name: 'client',
+    environment: 'jsdom',
+    globals: true,
+    include: ['src/**/*.{spec,test}.{ts,tsx}'],
+    passWithNoTests: true,
+    reporters: ['default'],
   },
 }));

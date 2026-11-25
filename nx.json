@@ -12,19 +12,6 @@
       "inputs": ["default", "^production"],
       "cache": true
     },
-    "@nx/jest:jest": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-      "cache": true,
-      "options": {
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
-    },
     "@nx/eslint:lint": {
       "inputs": [
         "default",
@@ -38,6 +25,10 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "test": {
+      "inputs": ["default", "^production"],
+      "cache": true
     }
   },
   "namedInputs": {
@@ -47,7 +38,7 @@
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/vitest.config.[cm]ts",
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/src/test-setup.[jt]s"
     ]
@@ -70,7 +61,7 @@
       "library": {
         "style": "styled-components",
         "linter": "eslint",
-        "unitTestRunner": "jest"
+        "unitTestRunner": "vitest"
       }
     }
   },
@@ -87,6 +78,19 @@
         "serveStaticTargetName": "serve-static",
         "devTargetName": "dev",
         "typecheckTargetName": "typecheck"
+      }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testTargetName": "test",
+        "testMode": "run"
+      }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
       }
     }
   ]

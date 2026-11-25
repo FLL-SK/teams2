@@ -27,12 +27,12 @@ const mockFetchResponse = () =>
   }) as unknown as Response;
 
 describe('AuthedApolloProvider', () => {
-  let fetchMock: jest.Mock;
+  let fetchMock: ReturnType<typeof vi.fn>;
   const originalFetch = global.fetch;
 
   beforeEach(() => {
     clients.length = 0;
-    fetchMock = jest.fn(async () => mockFetchResponse());
+    fetchMock = vi.fn(async () => mockFetchResponse());
     global.fetch = fetchMock as unknown as typeof fetch;
   });
 

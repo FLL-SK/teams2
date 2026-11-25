@@ -52,7 +52,7 @@ Repozitár: <https://github.com/FLL-SK/teams2>, hlavná vetva `main`.
   - `@teams2/common` – zdieľané typy a chybové kódy,
   - `@teams2/dateutils` – práca s dátumami (date-fns),
   - `@teams2/logger` – logovanie (nad knižnicou `debug`).
-- **E2E**: `apps/client-e2e` (Cypress, prakticky nevyužívané).
+- **Testy**: Vitest (jednotkové a komponentové testy), Playwright (E2E, `apps/client-e2e`).
 
 ## Štruktúra repozitára
 
@@ -103,6 +103,7 @@ yarn start:dev          # vývojový server (server :5000) + klient (vite, :4200
 yarn build:all          # generate + build servera aj klienta do dist/
 yarn test               # testy všetkých projektov (nx run-many --target=test)
 yarn nx test server     # testy jedného projektu (server|client|common|dateutils|logger|auth-node|auth-react)
+yarn nx e2e client-e2e   # E2E testy (Playwright, API je mockované)
 yarn nx lint client     # lint jedného projektu
 yarn nx run client:typecheck   # typová kontrola klienta
 yarn testseed           # naplnenie DB testovacími dátami
@@ -144,16 +145,31 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 
 ## Testy
 
-- Testovací framework: **Jest** (`@nx/jest`), konfigurácia `jest.config.ts` v každom projekte, preset `jest.preset.js`.
-  - server a `libs/*` (node): `ts-jest`, prostredie `node`,
-  - klient: `babel-jest`, React Testing Library (`@testing-library/react`).
+### Jednotkové a komponentové testy – Vitest
+
+- Framework: **Vitest 4** (`globals: true` – `describe`/`it`/`expect`/`vi` netreba importovať). Jest sa v repozitári nepoužíva.
+- Konfigurácia: `vitest.config.mts` v každom projekte (`libs/*`, `apps/server`), klient má sekciu `test` priamo v `apps/client/vite.config.mts`. Aliasy `@teams2/*` sa riešia cez `resolve.tsconfigPaths`.
+  - server a `libs/*`: prostredie `node`; `dateutils` beží s `TZ=Europe/Bratislava`,
+  - klient a `auth-react`: prostredie `jsdom`, React Testing Library (`@testing-library/react`), Apollo `MockLink` / `MockedProvider`.
+- Cieľ `test` sa v Nx odvodzuje automaticky pluginom `@nx/vitest` (`nx.json`, `testMode: run`) – v `project.json` ho nedefinuj.
+- Mockovanie: `vi.mock(...)`, `vi.fn()`. Ťažké podradené komponenty pri teste stránky nahraď jednoduchými stubmi.
 - Testy sa umiestňujú vedľa testovaného súboru ako `*.spec.ts` / `*.spec.tsx`.
-- Momentálne je pokrytie testami minimálne (iba v `libs/`). **Ku každej zmene pridaj testy**, minimálne:
+- **Ku každej zmene pridaj testy**, minimálne:
   - jednotkové testy čistých funkcií (utils, mappers, domains, dateutils, formátovanie, exporty),
   - pri logike v datasources/domains testy s mockovanými repository / `UserGuard` (vrátane kontroly oprávnení),
-  - pri komponentoch klienta test renderovania a kľúčového správania.
+  - pri komponentoch klienta test renderovania a kľúčového správania,
+  - pri oprave chyby regresný test, ktorý na pôvodnom kóde zlyhá.
 - Testy nesmú vyžadovať reálnu MongoDB, AWS ani SuperFaktúru – externé závislosti mockuj.
-- Spúšťanie: `yarn nx test <projekt>`, všetko `yarn test`. Pred testami servera/klienta musí byť spustený `yarn generate`.
+- Spúšťanie: `yarn nx test <projekt>`, všetko `yarn test`, watch režim `npx vitest` v adresári projektu. Pred testami servera/klienta musí byť spustený `yarn generate`.
+
+### E2E testy – Playwright
+
+- Projekt `apps/client-e2e`, konfigurácia `apps/client-e2e/playwright.config.ts`, testy v `apps/client-e2e/src/*.spec.ts`. Cieľ `e2e` odvodzuje plugin `@nx/playwright`.
+- Playwright si sám spustí klienta (`yarn nx run client:serve`, port 4200), prípadne použije už bežiaci.
+- API servera (`http://localhost:5000` – `/auth` aj `/graphql`) sa v testoch **mockuje** cez `mockApi()` z `apps/client-e2e/src/support/mock-api.ts` (odpovede GraphQL podľa názvu operácie, voliteľne prihlásený používateľ). E2E testy teda nepotrebujú server ani MongoDB.
+- Pred prvým spustením: `npx playwright install chromium`.
+- Spúšťanie: `yarn nx e2e client-e2e`; výstupy (report, trace) sú v `dist/.playwright/apps/client-e2e`.
+- E2E test pridaj pri zmenách v toku používateľa naprieč stránkami (navigácia, prihlásenie, priame linky) – napr. `registration.spec.ts` pre #269.
 
 ## CI/CD a nasadenie
 

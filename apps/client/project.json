@@ -37,13 +37,6 @@
         "buildTarget": "client:build"
       }
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/client/jest.config.ts"
-      }
-    },
     "preview": {
       "defaultConfiguration": "development",
       "configurations": {

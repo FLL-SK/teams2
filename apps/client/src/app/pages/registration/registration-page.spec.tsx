@@ -9,7 +9,7 @@ import { AppUserContext, AppUserContextData } from '../../components/app-user/ap
 import { GetNotesDocument, GetRegistrationDocument } from '../../_generated/graphql';
 
 // heavy child components are replaced by simple stubs - the test focuses on data loading
-jest.mock('../../components/base-page', () => ({
+vi.mock('../../components/base-page', () => ({
   BasePage: ({ title, children }: { title?: string; children: React.ReactNode }) => (
     <div>
       <h1>{title}</h1>
@@ -17,22 +17,22 @@ jest.mock('../../components/base-page', () => ({
     </div>
   ),
 }));
-jest.mock('./components/panel-details', () => ({
+vi.mock('./components/panel-details', () => ({
   PanelRegistrationDetails: ({ registration }: { registration: { teamNo: string } }) => (
     <div>detail registrácie {registration.teamNo}</div>
   ),
 }));
-jest.mock('./components/panel-billing', () => ({ PanelRegistrationBilling: () => null }));
-jest.mock('./components/panel-shipping', () => ({ PanelRegistrationShipping: () => null }));
-jest.mock('./components/panel-invoice-items', () => ({
+vi.mock('./components/panel-billing', () => ({ PanelRegistrationBilling: () => null }));
+vi.mock('./components/panel-shipping', () => ({ PanelRegistrationShipping: () => null }));
+vi.mock('./components/panel-invoice-items', () => ({
   PanelRegistrationInvoiceItems: () => null,
 }));
-jest.mock('./components/registration-files', () => ({ RegistrationFilesPanel: () => null }));
-jest.mock('../team/components/coach-list', () => ({ CoachList: () => null }));
-jest.mock('../../components/tag-list', () => ({ TagList: () => null }));
-jest.mock('../../components/note-list', () => ({ NoteList: () => null }));
-jest.mock('../../components/notifications/notification-provider', () => ({
-  useNotification: () => ({ notify: { error: jest.fn(), info: jest.fn() } }),
+vi.mock('./components/registration-files', () => ({ RegistrationFilesPanel: () => null }));
+vi.mock('../team/components/coach-list', () => ({ CoachList: () => null }));
+vi.mock('../../components/tag-list', () => ({ TagList: () => null }));
+vi.mock('../../components/note-list', () => ({ NoteList: () => null }));
+vi.mock('../../components/notifications/notification-provider', () => ({
+  useNotification: () => ({ notify: { error: vi.fn(), info: vi.fn() } }),
 }));
 
 const REG_ID = 'reg-1';
