@@ -18,6 +18,8 @@ Tento súbor je jediný zdroj inštrukcií pre všetkých AI agentov (Claude Cod
    - v novej vetve vytvorenej z `main`.
 2. **Issue** – ku každej zmene vytvor issue v GitHube (`gh issue create`, repozitár `FLL-SK/teams2`), pokiaľ už neexistuje. Na issue sa odkazuj v commitoch (napr. `… #123`) a v PR (`Closes #123`).
 3. **Plán** – keď začneš zmenu riešiť, najprv priprav plán implementácie (ktoré súbory, aké zmeny, aké testy) a **opýtaj sa používateľa, či môžeš implementovať podľa navrhnutého plánu**. Bez súhlasu neimplementuj.
+   - Keď používateľ plán odsúhlasí, **zapíš ho do issue** – do popisu issue (`gh issue edit <číslo> --body-file …`, pôvodný text zachovaj) ako sekciu `## Plán implementácie` s tasklistom (`- [ ] …`), prípadne aj s krátkym popisom príčiny/riešenia.
+   - Počas implementácie **priebežne aktualizuj issue**: po dokončení položky ju v taskliste odfajkni (`- [x] …`) a pri významnejších krokoch (napr. zmena plánu, výsledky testov, vytvorený PR) pridaj komentár so stavom plnenia (`gh issue comment`).
 4. **Testy** – ku každej zmene napíš alebo uprav testy (pozri sekciu [Testy](#testy)).
 5. **Overenie** – pred commitom spusti testy, lint a build dotknutých projektov a výsledok poctivo uveď.
 6. **Commit a PR** – máš oprávnenie commitovať, pushovať, vytvárať issues a PR v GitHube. Do `main` priamo nepushuj; zmeny idú cez PR. PR nemerguj bez výslovného pokynu používateľa.
