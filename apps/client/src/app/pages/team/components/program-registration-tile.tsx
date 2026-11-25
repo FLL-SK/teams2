@@ -4,7 +4,7 @@ import { Registration, TeamRegistrationFragmentFragment } from '../../../_genera
 import { appPath } from '@teams2/common';
 import { RegistrationFilesPanel } from '../../registration/components/registration-files';
 import { EventRegistrationTile } from './event-registration-tile';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 interface ProgramRegistrationTileProps {
   registration: TeamRegistrationFragmentFragment;

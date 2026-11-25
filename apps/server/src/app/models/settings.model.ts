@@ -40,7 +40,7 @@ schema.static('get', function () {
 });
 
 schema.static('put', function (data: Partial<SettingsData>) {
-  return this.findOneAndUpdate({}, data, { new: true }).exec();
+  return this.findOneAndUpdate({}, data, { returnDocument: 'after' }).exec();
 });
 
 export const settingsRepository = model<SettingsData, SettingsModel>('Setting', schema);

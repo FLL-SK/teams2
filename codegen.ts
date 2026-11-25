@@ -1,5 +1,14 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
+const clientScalars = {
+  DateTime: 'string',
+  Url: 'string',
+  HumanId: 'string',
+  Email: 'string',
+  ID: 'string',
+  ErrorCode: 'string',
+};
+
 const config: CodegenConfig = {
   overwrite: true,
   schema: './dist/schema.graphql',
@@ -38,10 +47,20 @@ const config: CodegenConfig = {
         contextType: '../apollo/apollo-context#ApolloContext',
       },
     },
+    // typy celej schémy (objektové typy ako Registration, Address, … používa klient priamo)
+    'apps/client/src/app/_generated/schema.ts': {
+      plugins: ['typescript'],
+      config: {
+        scalars: clientScalars,
+        enumsAsTypes: true,
+        avoidOptionals: false,
+      },
+    },
     'apps/client/src/app/_generated/graphql.tsx': {
       documents: 'apps/client/graphql/**/*.graphql',
       plugins: [
-        'typescript',
+        // typescript-operations (od v6) generuje aj vstupné typy a enumy použité v operáciách,
+        // ostatné typy schémy sa preexportujú zo schema.ts (lokálne deklarácie majú prednosť)
         'typescript-operations',
         {
           'typescript-react-apollo': {
@@ -59,18 +78,13 @@ const config: CodegenConfig = {
               '/* eslint-disable @typescript-eslint/no-explicit-any */',
               '/* eslint-disable @typescript-eslint/ban-types */',
               '/* eslint-disable @typescript-eslint/explicit-module-boundary-types */',
+              "export * from './schema';",
             ].join('\n'),
           },
         },
       ],
       config: {
-        scalars: {
-          DateTime: 'string',
-          Url: 'string',
-          HumanId: 'string',
-          Email: 'string',
-          ID: 'string',
-        },
+        scalars: clientScalars,
         enumsAsTypes: true,
         avoidOptionals: false,
       },

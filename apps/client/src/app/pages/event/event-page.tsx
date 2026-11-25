@@ -54,7 +54,7 @@ import {
 } from '../../_generated/graphql';
 import { useLazyQuery, useMutation } from '@apollo/client/react';
 
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { PanelEventDetails } from './components/panel-details';
 import { PanelEventFees } from './components/panel-event-fees';

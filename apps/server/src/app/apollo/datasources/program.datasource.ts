@@ -20,7 +20,7 @@ import { emailProgramManagerAdded } from '../../utils/emails';
 const logBase = logger('DS:Program');
 
 export class ProgramDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Program, string>;
+  declare private loader: Dataloader<string, Program, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
@@ -67,7 +67,7 @@ export class ProgramDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update program');
 
     const u: Partial<ProgramData> = input;
-    const nu = await programRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+    const nu = await programRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
     return { program: ProgramMapper.toProgram(nu) };
   }
 
@@ -92,7 +92,7 @@ export class ProgramDataSource extends BaseDataSource {
 
     const u: UpdateQuery<ProgramData> = { $addToSet: { managersIds: userId } };
     const program = await programRepository
-      .findOneAndUpdate({ _id: programId }, u, { new: true })
+      .findOneAndUpdate({ _id: programId }, u, { returnDocument: 'after' })
       .exec();
 
     emailProgramManagerAdded(programId, userId); // send email notification
@@ -104,7 +104,11 @@ export class ProgramDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove program manager');
 
     const program = await programRepository
-      .findOneAndUpdate({ _id: programId }, { $pull: { managersIds: userId } }, { new: true })
+      .findOneAndUpdate(
+        { _id: programId },
+        { $pull: { managersIds: userId } },
+        { returnDocument: 'after' },
+      )
       .exec();
     return ProgramMapper.toProgram(program);
   }

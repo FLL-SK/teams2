@@ -37,7 +37,7 @@ export function EditPricelistItemDialog(props: EditPricelistItemDialogProps) {
     onSubmit &&
       (await onSubmit({
         ...value,
-        up: Number(value.up) ?? 0,
+        up: Number(value.up),
       }));
     onClose();
   };

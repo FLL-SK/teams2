@@ -111,22 +111,22 @@ schema.static(
 
 schema.static('archiveEvent', function (eventId: ObjectId, userId: ObjectId) {
   const u: Partial<EventData> = { archivedOn: new Date(), archivedBy: userId };
-  return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
+  return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });
 
 schema.static('deleteEvent', function (eventId: ObjectId, userId: ObjectId) {
   const u: Partial<EventData> = { deletedOn: new Date(), deletedBy: userId };
-  return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
+  return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });
 
 schema.static('undeleteEvent', function (eventId: ObjectId, userId: ObjectId) {
   const u: Partial<EventData> = { deletedOn: null, deletedBy: null };
-  return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
+  return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });
 
 schema.static('unarchiveEvent', function (eventId: ObjectId, userId: ObjectId) {
   const u: Partial<EventData> = { archivedOn: null, archivedBy: null };
-  return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
+  return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });
 
 schema.static(
@@ -146,7 +146,7 @@ schema.static(
       },
     ];
 
-    return this.findByIdAndUpdate(eventId, u, { new: true }).exec();
+    return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
   },
 );
 

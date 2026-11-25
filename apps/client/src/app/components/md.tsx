@@ -8,6 +8,7 @@ import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
  */
 export function MD(props: {
   children: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   components?: Record<string, React.ComponentType<any>>;
   options?: MarkdownToJSX.Options;
 }) {

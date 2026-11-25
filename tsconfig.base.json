@@ -2,41 +2,30 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
+    "noEmit": true,
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2020",
+    "target": "es2023",
+    // pôvodná sémantika class fields (priradenie v konštruktore) – pri target >= ES2022 by inak
+    // deklarácie polí v podtriedach prepísali hodnoty nastavené v konštruktore predka (#276,
+    // napr. DataLoadery v BaseDataSource._initialize())
+    "useDefineForClassFields": false,
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "moduleResolution": "bundler",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "types": [],
+    "strict": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
     "paths": {
-      "@teams2/auth-node": [
-        "libs/auth-node/src/index.ts"
-      ],
-      "@teams2/auth-react": [
-        "libs/auth-react/src/index.ts"
-      ],
-      "@teams2/common": [
-        "libs/common/src/index.ts"
-      ],
-      "@teams2/dateutils": [
-        "libs/dateutils/src/index.ts"
-      ],
-      "@teams2/logger": [
-        "libs/logger/src/index.ts"
-      ]
+      "@teams2/auth-node": ["./libs/auth-node/src/index.ts"],
+      "@teams2/auth-react": ["./libs/auth-react/src/index.ts"],
+      "@teams2/common": ["./libs/common/src/index.ts"],
+      "@teams2/dateutils": ["./libs/dateutils/src/index.ts"],
+      "@teams2/logger": ["./libs/logger/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp", "dist"]
 }

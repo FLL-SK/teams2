@@ -1,7 +1,11 @@
 import React from 'react';
 import { Text } from 'grommet';
 import { FileTile } from '../../../components/file-tile';
-import { GetRegistrationFilesDocument, GetRegistrationFilesQuery, GetRegistrationFilesQueryVariables } from '../../../_generated/graphql';
+import {
+  GetRegistrationFilesDocument,
+  GetRegistrationFilesQuery,
+  GetRegistrationFilesQueryVariables,
+} from '../../../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
 
 interface RegistrationFilesPanelProps {
@@ -11,20 +15,23 @@ interface RegistrationFilesPanelProps {
 
 export function RegistrationFilesPanel(props: RegistrationFilesPanelProps) {
   const { registrationId, regConfirmed } = props;
-  const { data } = useQuery<GetRegistrationFilesQuery, GetRegistrationFilesQueryVariables>(GetRegistrationFilesDocument, {
-    variables: { id: registrationId },
-    pollInterval: 600000, // get updated urls before they expire});
-  });
+  const { data } = useQuery<GetRegistrationFilesQuery, GetRegistrationFilesQueryVariables>(
+    GetRegistrationFilesDocument,
+    {
+      variables: { id: registrationId },
+      pollInterval: 600000, // get updated urls before they expire});
+    },
+  );
 
   const files = data?.getRegistrationFiles ?? [];
 
   return files.length === 0 ? (
     regConfirmed ? (
-      <Text>'Žiadne súbory.'</Text>
+      <Text>Žiadne súbory.</Text>
     ) : (
       <Text>
-        'Vaša registrácia ešte nebola potvrdená. Súbory budú dostupné až po potvrdení vašej
-        registrácie.'
+        Vaša registrácia ešte nebola potvrdená. Súbory budú dostupné až po potvrdení vašej
+        registrácie.
       </Text>
     )
   ) : (

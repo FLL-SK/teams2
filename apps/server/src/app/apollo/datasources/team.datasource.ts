@@ -19,7 +19,7 @@ import { logger } from '@teams2/logger';
 const logBase = logger('DS:Team');
 
 export class TeamDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Team, string>;
+  declare private loader: Dataloader<string, Team, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
@@ -85,7 +85,7 @@ export class TeamDataSource extends BaseDataSource {
       (await this.userGuard.isCoach(id)) ||
       this.userGuard.notAuthorized('Update team');
 
-    const u = await teamRepository.findByIdAndUpdate(id, input, { new: true }).exec();
+    const u = await teamRepository.findByIdAndUpdate(id, input, { returnDocument: 'after' }).exec();
     return { team: TeamMapper.toTeam(u) };
   }
 
@@ -98,7 +98,7 @@ export class TeamDataSource extends BaseDataSource {
       .findByIdAndUpdate(
         id,
         { deletedOn: new Date(), deletedBy: this.context.user._id },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .exec();
     return TeamMapper.toTeam(u);
@@ -110,7 +110,11 @@ export class TeamDataSource extends BaseDataSource {
       this.userGuard.notAuthorized('Undelete team');
 
     const u = await teamRepository
-      .findByIdAndUpdate(id, { $unset: { deletedOn: null, deletedBy: null } }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { $unset: { deletedOn: null, deletedBy: null } },
+        { returnDocument: 'after' },
+      )
       .exec();
     return TeamMapper.toTeam(u);
   }
@@ -138,7 +142,7 @@ export class TeamDataSource extends BaseDataSource {
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { coachesIds: u._id } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return TeamMapper.toTeam(t);
   }
@@ -151,7 +155,7 @@ export class TeamDataSource extends BaseDataSource {
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pull: { coachesIds: coachId } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return TeamMapper.toTeam(t);
   }
@@ -200,7 +204,7 @@ export class TeamDataSource extends BaseDataSource {
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $addToSet: { tagIds } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return TeamMapper.toTeam(t);
   }
@@ -211,7 +215,7 @@ export class TeamDataSource extends BaseDataSource {
     const t = await teamRepository.findByIdAndUpdate(
       { _id: teamId },
       { $pullAll: { tagIds: tagIds } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return TeamMapper.toTeam(t);
   }

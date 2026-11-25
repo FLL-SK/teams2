@@ -16,4 +16,3 @@ export class BaseDataSource {
     // override this method to initialize the data source
   }
 }
-

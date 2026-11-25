@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, BoxExtendedProps } from 'grommet';
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import styled, { css } from 'styled-components';
 import { getColor } from '../../theme';
 

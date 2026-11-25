@@ -1,68 +1,48 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nx from "@nx/eslint-plugin";
-import { fixupConfigRules } from "@eslint/compat";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig, globalIgnores } from 'eslint/config';
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import prettier from 'eslint-config-prettier';
+import globals from 'globals';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-export default defineConfig([globalIgnores(["**/*", "**/node_modules", "**/_generated"]), {
-    plugins: {
-        "@nx": nx,
+export default defineConfig([
+  globalIgnores([
+    '**/node_modules',
+    '**/dist',
+    '**/_generated',
+    'tmp',
+    'coverage',
+    'graphql.schema.json',
+    'apps/client/public/assets/variables.js',
+  ]),
+  js.configs.recommended,
+  tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: { ...globals.node },
     },
-}, {
-    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-
     rules: {
-        "@nx/enforce-module-boundaries": ["error", {
-            enforceBuildableLibDependency: true,
-            allow: [],
-
-            depConstraints: [{
-                sourceTag: "*",
-                onlyDependOnLibsWithTags: ["*"],
-            }],
-        }],
+      '@typescript-eslint/no-unused-vars': 'warn',
+      // vzor autorizácie: `this.userGuard.isAdmin() || this.userGuard.notAuthorized('…')`
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        { allowShortCircuit: true, allowTernary: true },
+      ],
     },
-}, {
-    files: ["**/*.ts", "**/*.tsx"],
-    extends: compat.extends("plugin:@nx/typescript"),
-
+  },
+  {
+    files: ['apps/client/**/*.{ts,tsx,js,jsx}', 'libs/auth-react/**/*.{ts,tsx,js,jsx}'],
+    extends: [react.configs.flat.recommended, react.configs.flat['jsx-runtime']],
+    plugins: { 'react-hooks': reactHooks },
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+    settings: { react: { version: 'detect' } },
     rules: {
-        "@typescript-eslint/no-extra-semi": "error",
-        "no-extra-semi": "off",
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
     },
-}, {
-    files: ["**/*.js", "**/*.jsx"],
-    extends: compat.extends("plugin:@nx/javascript"),
-
-    rules: {
-        "@typescript-eslint/no-extra-semi": "error",
-        "no-extra-semi": "off",
-    },
-}, {
-    files: ["**/*.jsx", "**/*.tsx"],
-
-    extends: fixupConfigRules(
-        compat.extends("plugin:react/recommended", "plugin:react-hooks/recommended"),
-    ),
-
-    rules: {
-        "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "warn",
-    },
-}, {
-    files: ["**/*.ts", "**/*.tsx"],
-
-    rules: {
-        "@typescript-eslint/no-unused-vars": "warn",
-    },
-}]);
+  },
+  prettier,
+]);

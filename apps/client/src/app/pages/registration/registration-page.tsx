@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Paragraph, Spinner, Text, TextArea } from 'grommet';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';

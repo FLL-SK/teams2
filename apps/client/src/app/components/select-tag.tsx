@@ -75,7 +75,7 @@ export function SelectTag(props: SelectTagProps) {
           onSearch={(s: string) =>
             setOptions([
               ...(!readonly && (data?.getTags ?? []).findIndex((o) => o.label === s) < 0
-                ? [{ id: createTagIndicator, label: s, color: defaultColor }]
+                ? [{ id: createTagIndicator, label: s, color: defaultColor, deletedOn: null }]
                 : []),
               ...(data?.getTags ?? []).filter((o) => o.label.includes(s)),
             ])

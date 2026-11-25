@@ -26,7 +26,7 @@ import { BasePage } from '../../components/base-page';
 import RegistrationListFilter, {
   RegistrationListFilterValues,
 } from './components/registration-list-filter';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { exportRegistrationsForShipping } from '../../utils/export-registrations-for-shipping';
 import {
   constructRegistrationsSearchParams,

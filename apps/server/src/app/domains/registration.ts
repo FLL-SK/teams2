@@ -135,7 +135,7 @@ export async function emailRegistrationInvoice(
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
     { invoiceSentOn: new Date() },
-    { new: true },
+    { returnDocument: 'after' },
   );
 
   return { registration: RegistrationMapper.toRegistration(ni) };
@@ -513,7 +513,7 @@ export async function issueFoodInvoice(registrationId: ObjectId): Promise<Regist
   };
 
   const nr = await registrationRepository.findOneAndUpdate({ _id: registrationId }, u, {
-    new: true,
+    returnDocument: 'after',
   });
   return { registration: RegistrationMapper.toRegistration(nr) };
 }
@@ -580,7 +580,7 @@ export async function emailFoodInvoice(
   const ni = await registrationRepository.findOneAndUpdate(
     { _id: id },
     { 'foodOrder.sentOn': new Date() },
-    { new: true },
+    { returnDocument: 'after' },
   );
 
   return { registration: RegistrationMapper.toRegistration(ni) };

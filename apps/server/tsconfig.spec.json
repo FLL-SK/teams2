@@ -1,9 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "types": ["vitest/globals", "node"]
   },

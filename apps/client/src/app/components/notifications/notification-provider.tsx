@@ -64,7 +64,7 @@ function dispatchNotification(
   return [];
 }
 
-export const NotificationProvider = (props: { children?: ReactNode }): JSX.Element => {
+export const NotificationProvider = (props: { children?: ReactNode }): React.JSX.Element => {
   const { children } = props;
   const [state, dispatch] = useReducer(dispatchNotification, []);
 

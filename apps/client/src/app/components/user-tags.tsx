@@ -3,7 +3,7 @@ import { appPath } from '@teams2/common';
 import { Button } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { SelectUser } from './select-user';
 import { Tag } from './tag';
 

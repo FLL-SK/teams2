@@ -52,7 +52,7 @@ export function EditTeamSizeDialog(props: EditTeamSizeDialogProps) {
           required
           autoFocus
           onChange={({ target }) =>
-            setFormValues({ ...formValues, girlCount: Number(target.value) ?? 0 })
+            setFormValues({ ...formValues, girlCount: Number(target.value) })
           }
         />
         <FormField
@@ -61,7 +61,7 @@ export function EditTeamSizeDialog(props: EditTeamSizeDialogProps) {
           type="number"
           required
           onChange={({ target }) =>
-            setFormValues({ ...formValues, boyCount: Number(target.value) ?? 0 })
+            setFormValues({ ...formValues, boyCount: Number(target.value) })
           }
         />
         <FormField
@@ -70,7 +70,7 @@ export function EditTeamSizeDialog(props: EditTeamSizeDialogProps) {
           type="number"
           required
           onChange={({ target }) =>
-            setFormValues({ ...formValues, coachCount: Number(target.value) ?? 0 })
+            setFormValues({ ...formValues, coachCount: Number(target.value) })
           }
         />
         <Box direction="row" gap="medium" justify="end">

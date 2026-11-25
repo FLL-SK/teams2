@@ -14,7 +14,7 @@ import { Close, Filter } from 'grommet-icons';
 import TeamSidebar from './components/team-sidebar';
 import { BasePage } from '../../components/base-page';
 import TeamListFilter, { TeamListFilterValues } from './components/team-list-filter';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import {
   constructTeamListSearchParams,
   parseTeamListSearchParams,

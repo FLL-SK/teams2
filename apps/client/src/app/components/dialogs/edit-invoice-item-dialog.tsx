@@ -42,9 +42,9 @@ export function EditInvoiceItemDialog(props: EditInvoiceItemDialogProps) {
     onSubmit &&
       (await onSubmit({
         ...value,
-        lineNo: Number(value.lineNo) ?? 1,
-        quantity: Number(value.quantity) ?? 1,
-        unitPrice: Number(value.unitPrice) ?? 1,
+        lineNo: Number(value.lineNo),
+        quantity: Number(value.quantity),
+        unitPrice: Number(value.unitPrice),
       }));
     onClose();
   };

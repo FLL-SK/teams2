@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox, Spinner, Text } from 'grommet';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
 import { ErrorPage } from '../../components/error-page';

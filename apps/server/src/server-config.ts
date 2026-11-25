@@ -10,7 +10,7 @@ export function getServerConfig() {
   return {
     nodeEnv,
     host: process.env.APP_HOST ?? 'localhost',
-    port: process.env.PORT ? Number(process.env.PORT) ?? 5000 : 5000,
+    port: process.env.PORT ? Number(process.env.PORT) : 5000,
 
     mongoDBUri: process.env.APP_MONGODB ?? 'mongodb://localhost/teams2',
 

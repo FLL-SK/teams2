@@ -36,7 +36,7 @@ import { formatTeamNo } from '../../utils/format-teamNo';
 const logBase = logger('DS:Registration');
 
 export class RegistrationDataSource extends BaseDataSource {
-  private loader: Dataloader<string, Registration, string>;
+  declare private loader: Dataloader<string, Registration, string>;
 
   protected override _initialize() {
     this.loader = new Dataloader(this.loaderFn.bind(this));
@@ -88,7 +88,7 @@ export class RegistrationDataSource extends BaseDataSource {
       setCount: input.setCount,
     };
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, u, { new: true })
+      .findByIdAndUpdate(id, u, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -161,7 +161,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set invoiced on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { invoiceIssuedOn, invoiceRef }, { new: true })
+      .findByIdAndUpdate(id, { invoiceIssuedOn, invoiceRef }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -180,7 +180,7 @@ export class RegistrationDataSource extends BaseDataSource {
       },
     };
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, q, { new: true })
+      .findByIdAndUpdate(id, q, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -189,7 +189,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear invoiced on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { invoiceIssuedOn: null }, { new: true })
+      .findByIdAndUpdate(id, { invoiceIssuedOn: null }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -198,7 +198,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set paid on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { paidOn }, { new: true })
+      .findByIdAndUpdate(id, { paidOn }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -207,7 +207,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear paid on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { paidOn: null }, { new: true })
+      .findByIdAndUpdate(id, { paidOn: null }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -216,7 +216,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set shipped on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { shippedOn }, { new: true })
+      .findByIdAndUpdate(id, { shippedOn }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -225,7 +225,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear shipped on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { shippedOn: null }, { new: true })
+      .findByIdAndUpdate(id, { shippedOn: null }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -234,7 +234,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set shipment group');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { shipmentGroup }, { new: true })
+      .findByIdAndUpdate(id, { shipmentGroup }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
@@ -309,7 +309,7 @@ export class RegistrationDataSource extends BaseDataSource {
       confirmedOn,
       teamNo,
     };
-    r = await registrationRepository.findByIdAndUpdate(id, u, { new: true }).exec();
+    r = await registrationRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
 
     if (r.eventId) {
       emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
@@ -323,7 +323,7 @@ export class RegistrationDataSource extends BaseDataSource {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear confirmed on');
 
     const registration = await registrationRepository
-      .findByIdAndUpdate(id, { confirmedOn: null }, { new: true })
+      .findByIdAndUpdate(id, { confirmedOn: null }, { returnDocument: 'after' })
       .exec();
     return RegistrationMapper.toRegistration(registration);
   }
