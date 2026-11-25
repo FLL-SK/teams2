@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, Page, test } from '@playwright/test';
 import { mockApi } from './support/mock-api';
 
 const REG_ID = '6abe44940f366db7e0149602';
@@ -98,24 +98,60 @@ const registration = {
   invoiceItems: [],
 };
 
-test('priamy link na registráciu (napr. z e-mailu) zobrazí detail registrácie #269', async ({
-  page,
-}) => {
-  const api = await mockApi(page, {
-    user: USER,
-    graphql: {
-      getUser: () => ({ getUser: adminUser }),
-      getRegistration: () => ({ getRegistration: registration }),
-      getNotes: () => ({ getNotes: [] }),
-      getRegistrationFiles: () => ({ getRegistrationFiles: [] }),
-      getRegistrationsCount: () => ({ getRegistrationsCount: 0 }),
-    },
-  });
+const graphql = {
+  getUser: () => ({ getUser: adminUser }),
+  getRegistration: () => ({ getRegistration: registration }),
+  getNotes: () => ({ getNotes: [] }),
+  getRegistrationFiles: () => ({ getRegistrationFiles: [] }),
+  getRegistrationsCount: () => ({ getRegistrationsCount: 0 }),
+};
 
-  await page.goto(`/registration/${REG_ID}`);
-
+const expectRegistrationDetail = async (page: Page) => {
   await expect(page.getByText('Registrácia do programu')).toBeVisible();
   await expect(page.getByText('Testovací tím').first()).toBeVisible();
   await expect(page.getByText('T-042').first()).toBeVisible();
-  expect(api.operations).toContain('getRegistration');
+  await expect(page.getByText('Chyba pri získavaní dát o registrácii.')).toHaveCount(0);
+};
+
+test.describe('priamy link na registráciu (napr. z e-mailu) #269', () => {
+  test('prihlásený používateľ uvidí detail registrácie', async ({ page }) => {
+    const api = await mockApi(page, { user: USER, graphql });
+
+    await page.goto(`/registration/${REG_ID}`);
+
+    await expectRegistrationDetail(page);
+    expect(api.operations).toContain('getRegistration');
+    expect(api.unauthorized).toEqual([]);
+  });
+
+  test('neprihlásený používateľ sa najprv prihlási a potom uvidí detail registrácie', async ({
+    page,
+  }) => {
+    const api = await mockApi(page, { user: USER, loggedIn: false, graphql });
+
+    await page.goto(`/registration/${REG_ID}`);
+
+    await expect(page).toHaveURL(/\/login$/);
+    await page.locator('input[name="username"]').fill(USER.username);
+    await page.locator('input[name="password"]').fill('heslo');
+    await page.getByRole('button', { name: 'Prihlásiť sa' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/registration/${REG_ID}$`));
+    await expectRegistrationDetail(page);
+    expect(api.operations).toContain('getRegistration');
+    expect(api.unauthorized).not.toContain('getRegistration');
+  });
 });
+
+for (const path of ['/event/6abe44940f366db7e0149200', '/program/6abe44940f366db7e0149300']) {
+  test(`neprihlásený používateľ je z ${path.split('/')[1]} presmerovaný na prihlásenie`, async ({
+    page,
+  }) => {
+    const api = await mockApi(page);
+
+    await page.goto(path);
+
+    await expect(page).toHaveURL(/\/login$/);
+    expect(api.unauthorized).toEqual([]);
+  });
+}
