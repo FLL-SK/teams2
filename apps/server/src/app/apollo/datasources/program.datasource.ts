@@ -95,7 +95,7 @@ export class ProgramDataSource extends BaseDataSource {
       .findOneAndUpdate({ _id: programId }, u, { returnDocument: 'after' })
       .exec();
 
-    emailProgramManagerAdded(programId, userId); // send email notification
+    void emailProgramManagerAdded(programId, userId); // send email notification
 
     return ProgramMapper.toProgram(program);
   }

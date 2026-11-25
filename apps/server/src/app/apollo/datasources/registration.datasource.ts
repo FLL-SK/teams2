@@ -96,7 +96,7 @@ export class RegistrationDataSource extends BaseDataSource {
   async cancelRegistration(id: ObjectId): Promise<Registration> {
     const registration = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(registration.teamId) ||
+      (await this.userGuard.isCoach(registration.teamId)) ||
       this.userGuard.notAuthorized('Cancel registration');
     registration.canceledOn = new Date();
     registration.canceledBy = this.context.user._id;
@@ -243,7 +243,7 @@ export class RegistrationDataSource extends BaseDataSource {
     const r = await registrationRepository.findById(id).exec();
 
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (await this.userGuard.isCoach(r.teamId)) ||
       this.userGuard.notAuthorized('Set team size');
 
     r.girlCount = input.girlCount;
@@ -261,12 +261,12 @@ export class RegistrationDataSource extends BaseDataSource {
   async setTeamSizeConfirmedOn(id: ObjectId, date: Date): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (await this.userGuard.isCoach(r.teamId)) ||
       this.userGuard.notAuthorized('Set team size confirmed on');
     r.sizeConfirmedOn = date;
     await r.save();
 
-    emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+    void emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
 
     return RegistrationMapper.toRegistration(r);
   }
@@ -274,7 +274,7 @@ export class RegistrationDataSource extends BaseDataSource {
   async clearTeamSizeConfirmedOn(id: ObjectId): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
-      this.userGuard.isCoach(r.teamId) ||
+      (await this.userGuard.isCoach(r.teamId)) ||
       this.userGuard.notAuthorized('Clear team size confirmed on');
     r.sizeConfirmedOn = null;
     await r.save();
@@ -312,9 +312,14 @@ export class RegistrationDataSource extends BaseDataSource {
     r = await registrationRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
 
     if (r.eventId) {
-      emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+      void emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
     } else {
-      emailProgramRegistrationConfirmed(r._id, r.programId, r.teamId, this.context.user.username);
+      void emailProgramRegistrationConfirmed(
+        r._id,
+        r.programId,
+        r.teamId,
+        this.context.user.username,
+      );
     }
     return RegistrationMapper.toRegistration(r);
   }
@@ -376,7 +381,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.foodOrder = no;
     await r.save();
 
-    emailFoodOrderUpdated(r, this.context.user.username);
+    void emailFoodOrderUpdated(r, this.context.user.username);
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }
@@ -396,7 +401,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.foodOrder = null;
     await r.save();
 
-    emailFoodOrderRemoved(r, this.context.user.username);
+    void emailFoodOrderRemoved(r, this.context.user.username);
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }

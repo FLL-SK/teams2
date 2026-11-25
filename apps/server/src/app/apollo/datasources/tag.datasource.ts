@@ -28,7 +28,7 @@ export class TagDataSource extends BaseDataSource {
     if (!id) return null;
     const log = logBase.extend('getTag');
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get tag');
-    const tag = this.loader.load(id.toString());
+    const tag = await this.loader.load(id.toString());
     if (!tag) {
       log.warn('getTag %s not found', id.toString());
     }

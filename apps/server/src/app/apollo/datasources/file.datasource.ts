@@ -14,7 +14,7 @@ export class FileDataSource extends BaseDataSource {
   async getProgramFiles(programId: ObjectId, checkAccess = true): Promise<File[]> {
     !checkAccess ||
       this.userGuard.isAdmin() ||
-      this.userGuard.isCoachOfRegisteredTeamForProgram(programId) ||
+      (await this.userGuard.isCoachOfRegisteredTeamForProgram(programId)) ||
       this.userGuard.notAuthorized('Get program files');
 
     const files = await fileRepository
@@ -27,7 +27,7 @@ export class FileDataSource extends BaseDataSource {
   async getEventFiles(eventId: ObjectId, checkAccess = true): Promise<File[]> {
     !checkAccess ||
       this.userGuard.isAdmin() ||
-      this.userGuard.isCoachOfRegisteredTeamForEvent(eventId) ||
+      (await this.userGuard.isCoachOfRegisteredTeamForEvent(eventId)) ||
       this.userGuard.notAuthorized('Get event files');
 
     const files = await fileRepository

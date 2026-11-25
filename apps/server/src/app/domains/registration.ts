@@ -228,9 +228,9 @@ export async function cancelRegistration(
 
   // email notifications
   if (registration.eventId) {
-    emailTeamUnregisteredFromEvent(registration.id);
+    void emailTeamUnregisteredFromEvent(registration.id);
   } else {
-    emailTeamUnregisteredFromProgram(registration.id);
+    void emailTeamUnregisteredFromProgram(registration.id);
   }
 
   return { registration };
@@ -273,7 +273,7 @@ export async function registerTeamToEvent(
 
   try {
     // email notifications
-    emailTeamRegisteredForEvent(registration._id);
+    void emailTeamRegisteredForEvent(registration._id);
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -325,7 +325,7 @@ export async function registerTeamToProgram(
 
   try {
     // email notifications
-    emailTeamRegisteredForProgram(registration._id);
+    void emailTeamRegisteredForProgram(registration._id);
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -367,7 +367,7 @@ export async function createEventRegistration(
 ): Promise<RegistrationData> {
   const log = logLib.extend('createEventRegistration');
   ctx.userGuard.isAdmin() ||
-    ctx.userGuard.isCoach(teamId) ||
+    (await ctx.userGuard.isCoach(teamId)) ||
     ctx.userGuard.notAuthorized('Create event registration');
 
   // check if team is not already registered
@@ -422,7 +422,7 @@ export async function createProgramRegistration(
 ): Promise<RegistrationData> {
   const log = logLib.extend('createProgramRegistration');
   ctx.userGuard.isAdmin() ||
-    ctx.userGuard.isCoach(teamId) ||
+    (await ctx.userGuard.isCoach(teamId)) ||
     ctx.userGuard.notAuthorized('Create program registration');
 
   // check if team is not already registered
@@ -623,7 +623,7 @@ export async function modifyFoodOrderItem(
 
   await reg.save();
 
-  notifyFoodItemChanged(reg, oldItem, item, changedBy);
+  void notifyFoodItemChanged(reg, oldItem, item, changedBy);
 }
 
 export async function notifyFoodItemChanged(
@@ -658,7 +658,7 @@ export async function notifyFoodItemChanged(
   const regUrl =
     getServerConfig().clientAppRootUrl + appPath.registration(registration._id.toHexString());
 
-  emailFoodItemChanged({
+  void emailFoodItemChanged({
     emails: coachEmails,
     eventName: event.name,
     programName: program.name,

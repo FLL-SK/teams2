@@ -74,11 +74,13 @@ export class UserGuard {
           t._id.toString(),
         ) ?? [];
     }
-    const teams = await registrationRepository.find({
+    // aktívna registrácia na turnaj niektorého z trénovaných tímov
+    const count = await registrationRepository.countDocuments({
       eventId: eventId,
-      teamId: { $in: this.coachOfTeams },
+      teamId: { $in: this.coachOfTeams.map((t) => new ObjectId(t)) },
+      canceledOn: null,
     });
-    return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
+    return count > 0;
   }
 
   async isCoachOfRegisteredTeamForProgram(programId: ObjectId) {
@@ -91,12 +93,14 @@ export class UserGuard {
           t._id.toString(),
         ) ?? [];
     }
-    const teams = await registrationRepository.find({
+    // potvrdená (a nezrušená) registrácia niektorého z trénovaných tímov do programu
+    const count = await registrationRepository.countDocuments({
       programId: programId,
       teamId: { $in: this.coachOfTeams.map((t) => new ObjectId(t)) },
       confirmedOn: { $ne: null },
+      canceledOn: null,
     });
-    return teams.some((t) => this.coachOfTeams.includes(t._id.toString()));
+    return count > 0;
   }
 
   async isEventManager(eventId: ObjectId) {

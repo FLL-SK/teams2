@@ -23,7 +23,7 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
       username: user.username,
     };
     const uq: Partial<UserData> = { lastLoginOn: new Date() };
-    userRepository.findOneAndUpdate(u, uq).exec();
+    void userRepository.findOneAndUpdate(u, uq).exec();
     const token = createToken(user);
 
     res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days

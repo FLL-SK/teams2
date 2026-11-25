@@ -32,6 +32,21 @@ export default defineConfig([
     },
   },
   {
+    // lint s typovými informáciami pre server – zachytí napr. Promise v podmienke
+    // (`guard.isCoach(id) || guard.notAuthorized()` bez await, #279)
+    files: ['apps/server/src/**/*.ts', 'libs/auth-node/src/**/*.ts'],
+    languageOptions: {
+      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksConditionals: true, checksVoidReturn: false },
+      ],
+    },
+  },
+  {
     files: ['apps/client/**/*.{ts,tsx,js,jsx}', 'libs/auth-react/**/*.{ts,tsx,js,jsx}'],
     extends: [react.configs.flat.recommended, react.configs.flat['jsx-runtime']],
     plugins: { 'react-hooks': reactHooks },

@@ -4,7 +4,7 @@ import { createToken, loginOkFn, verifyToken } from './passport-jwt-auth';
 import { debugLib } from './_debug';
 import { AuthUser } from './types';
 
-const router:express.Router = express.Router();
+const router: express.Router = express.Router();
 export default router;
 
 const debug = debugLib.extend('router');
@@ -17,7 +17,7 @@ const login = (user: AuthUser, res: express.Response, err?: Error) => {
   }
   try {
     if (loginOkFn) {
-      loginOkFn(user);
+      void loginOkFn(user);
     }
     const token = createToken(user);
     res.cookie('refreshToken', token, { maxAge: 43200000, httpOnly: true }); // valid for 30 days

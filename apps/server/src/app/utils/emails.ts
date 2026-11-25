@@ -29,7 +29,7 @@ interface EmailMessageProps {
 }
 
 export function emailMessage({ to, subject, title, text, cc }: EmailMessageProps) {
-  msgFromTemplate(title, text).then((html) =>
+  void msgFromTemplate(title, text).then((html) =>
     sendEmail({ to, subject, html, cc })
       .then(() => {
         logLib.debug('emailMessage: email sent');
@@ -42,7 +42,7 @@ export function emailMessage({ to, subject, title, text, cc }: EmailMessageProps
 
 export function emailPasswordReset(email: string, token: string) {
   // send email
-  msgPasswordReset(email, token).then((html) =>
+  void msgPasswordReset(email, token).then((html) =>
     sendEmail({ to: email, subject: 'Password reset', html })
       .then(() => {
         logLib.debug('emailPasswordReset: email sent');
@@ -64,7 +64,7 @@ export function emailUserSignupToAdmin(to: string) {
   const subject = `Nový účet ${to}`;
   const title = subject;
   const text = `Účet pre email ${to} bol vytvorený.`;
-  getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
+  void getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
 }
 
 export function emailEventChangedToCoach(options: EventChangeNotifyOptions & { teamName: string }) {
@@ -129,7 +129,7 @@ export async function emailEventManagerAdded(eventId: ObjectId, userId: ObjectId
   const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér turnaja ${ev.name}.\nViac informácií o turnaji nájdete tu ${eventUrl}`;
 
   // send to admin
-  getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
+  void getAppSettings().then((s) => emailMessage({ to: s.sysEmail, subject, title, text }));
 
   // send to event managers
   const eventManagers = await userRepository
@@ -149,7 +149,7 @@ export async function emailProgramManagerAdded(programId: ObjectId, userId: Obje
   const text = `Používateľ ${user.username} (${user.firstName} ${user.lastName}) bol pridaný ako manažér programu ${prg.name}.\nViac informácií o programe nájdete tu ${url}`;
 
   // send to admin
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (s.sysEmail) {
       emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
@@ -169,7 +169,7 @@ export function emailUserAcceptedGdprToAdmin(userEmail: string) {
   const subject = `Akceptované GDPR ${userEmail}`;
   const title = subject;
   const text = `Používateľ ${userEmail} akceptoval GDPR.`;
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (s.sysEmail) {
       emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
@@ -182,7 +182,7 @@ export function emailUserRejectedGdprToAdmin(userEmail: string) {
   const subject = `Odmietnuté GDPR ${userEmail}`;
   const title = subject;
   const text = `Používateľ ${userEmail} odmietol GDPR.`;
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (s.sysEmail) {
       emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
@@ -207,7 +207,7 @@ export async function emailTeamSizeConfirmed(
   const text = `Používateľ ${confirmedBy} potvrdil veľkosť tímu ${team.name} pre turnaj ${event.name}.\nDetaily registrácie nájdete tu ${regUrl}`;
 
   // email to admin
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (s.sysEmail) {
       emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
@@ -245,7 +245,7 @@ export async function emailFoodOrderUpdated(registration: RegistrationData, upda
     `Poznámka: ${registration.foodOrder.note}`;
 
   // email to admin
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (s.sysEmail) {
       emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
@@ -272,7 +272,7 @@ export async function emailFoodOrderRemoved(registration: RegistrationData, remo
   const text = `Používateľ ${removedBy} zrušil stravovanie pre tím ${team.name}.\nDetaily registrácie nájdete tu ${registrationUrl}`;
 
   // email to admin
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (s.sysEmail) {
       emailMessage({ to: s.sysEmail, subject, title, text });
     } else {
@@ -306,7 +306,7 @@ export async function emailEventRegistrationConfirmed(
 
   // email to admin
 
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (!s.sysEmail) {
       log.error('emailRegistrationConfirmed: no sysEmail in settings');
       return;
@@ -351,7 +351,7 @@ export async function emailProgramRegistrationConfirmed(
 
   // email to admin
 
-  getAppSettings().then((s) => {
+  void getAppSettings().then((s) => {
     if (!s.sysEmail) {
       log.error('emailRegistrationConfirmed: no sysEmail in settings');
       return;
@@ -577,7 +577,7 @@ export async function emailUsernameChanged(
     `Váš profil je dostupný tu ${profileUrl}`;
   emailMessage({ to: oldUsername, subject, title, text });
   emailMessage({ to: newUsername, subject, title, text });
-  getAppSettings().then((s) =>
+  void getAppSettings().then((s) =>
     emailMessage({
       to: s.sysEmail,
       subject,
