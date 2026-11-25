@@ -43,23 +43,29 @@ Repozitár: <https://github.com/FLL-SK/teams2>, hlavná vetva `main`.
 
 ## Technológie
 
-- **Monorepo Nx 23**, balíčkovač **Yarn 4** (`.yarn/releases`, `nodeLinker: node-modules`), **Node.js ≥ 22**, TypeScript 5.
-- **Server** (`apps/server`): Express 5, Apollo Server 5 (GraphQL), Mongoose 9 / MongoDB, Passport (JWT + local), DataLoader, AWS SDK (S3, SES), build cez esbuild.
-- **Klient** (`apps/client`): React 18, Vite, Grommet (UI komponenty), styled-components, Apollo Client 4, React Router 6, markdown-to-jsx, xlsx.
+- **Monorepo bez build systému** – jeden spoločný `package.json`, balíčkovač **pnpm 12** (`pnpm-workspace.yaml` obsahuje iba nastavenia, napr. `allowBuilds`), **Node.js 26 LTS** (`.nvmrc`), **TypeScript 6.0**.
+  - Node 26 už neobsahuje corepack – pnpm nainštaluj cez `npm i -g pnpm@<verzia z packageManager>` (alebo `fnm`/`volta`).
+- **Server** (`apps/server`): Express 5, Apollo Server 5 (GraphQL, `graphql` 16), Mongoose 9 / MongoDB driver 7 (produkcia: MongoDB 8.0), Passport (JWT + local), DataLoader, AWS SDK (S3, SES). Build cez esbuild (`scripts/build-server.mjs`), vývoj cez `tsx watch`.
+- **Klient** (`apps/client`): React 19, Vite 8, Grommet (UI komponenty), styled-components 6, Apollo Client 4, React Router 8 (balík `react-router`), react-virtualized 10 + react-virtualized-auto-sizer, react-colorful, markdown-to-jsx, xlsx.
 - **Knižnice** (`libs/*`, aliasy v `tsconfig.base.json`):
   - `@teams2/auth-node` – autentifikácia na serveri (passport, JWT, auth router),
   - `@teams2/auth-react` – autentifikácia na klientovi (provider, `RequireAuth`, Apollo provider s tokenom),
   - `@teams2/common` – zdieľané typy a chybové kódy,
   - `@teams2/dateutils` – práca s dátumami (date-fns),
   - `@teams2/logger` – logovanie (nad knižnicou `debug`).
-- **Testy**: Vitest (jednotkové a komponentové testy), Playwright (E2E, `apps/client-e2e`).
+- **Testy**: Vitest 5 (jednotkové a komponentové testy), Playwright (E2E, `apps/client-e2e`).
+- **Lint**: ESLint 9 (flat config `eslint.config.mjs` v koreni, typescript-eslint, eslint-plugin-react, react-hooks). ESLint 10 zatiaľ nie – `eslint-plugin-react` ho nepodporuje.
 
 ## Štruktúra repozitára
 
 ```
 contract/                 GraphQL schéma (zdroj pravdy API), schema.graphql importuje ostatné
 scripts/build-schema.ts   zlúči contract/*.graphql do dist/schema.graphql
+scripts/build-server.mjs  build servera (esbuild) do dist/apps/server
+scripts/typecheck.mjs     typová kontrola všetkých tsconfig.{app,lib,spec}.json
 codegen.ts                GraphQL codegen -> typy pre server aj klienta
+vitest.config.mts         zoznam Vitest projektov (apps/server, apps/client, libs/*, scripts)
+eslint.config.mjs         ESLint konfigurácia pre celý repozitár
 apps/server/src/
   main.ts                 štart servera (a príkaz `testseed`)
   server-config.ts        konfigurácia z premenných prostredia
@@ -86,10 +92,11 @@ tools/docker-web-server/  nginx konfigurácia a štartovacie skripty klientskéh
 
 ## Generovaný kód
 
-- Súbory `apps/server/src/app/_generated/graphql.ts`, `apps/client/src/app/_generated/graphql.tsx`, `dist/schema.graphql` a `graphql.schema.json` sú **generované a necommitujú sa** (`.gitignore`).
+- Súbory `apps/server/src/app/_generated/graphql.ts`, `apps/client/src/app/_generated/graphql.tsx`, `apps/client/src/app/_generated/schema.ts`, `dist/schema.graphql` a `graphql.schema.json` sú **generované a necommitujú sa** (`.gitignore`).
+- Klient: `schema.ts` obsahuje typy celej schémy (plugin `typescript`), `graphql.tsx` typy operácií a dokumenty (`typescript-operations` + `typescript-react-apollo`) a preexportuje `schema.ts` – importuj vždy z `_generated/graphql`.
 - Po čerstvom klone a **po každej zmene v `contract/` alebo v `apps/client/graphql/`** spusti:
   ```bash
-  yarn generate
+  pnpm generate
   ```
   (= `gql:schema` + `gql:codegen`). Bez toho nepôjde build, testy ani typová kontrola.
 - Generované súbory nikdy neupravuj ručne.
@@ -97,19 +104,20 @@ tools/docker-web-server/  nginx konfigurácia a štartovacie skripty klientskéh
 ## Bežné príkazy
 
 ```bash
-yarn install            # inštalácia závislostí
-yarn generate           # vygenerovanie GraphQL schémy a typov
-yarn start:dev          # vývojový server (server :5000) + klient (vite, :4200)
-yarn build:all          # generate + build servera aj klienta do dist/
-yarn test               # testy všetkých projektov (nx run-many --target=test)
-yarn nx test server     # testy jedného projektu (server|client|common|dateutils|logger|auth-node|auth-react)
-yarn nx e2e client-e2e   # E2E testy (Playwright, API je mockované)
-yarn nx lint client     # lint jedného projektu
-yarn nx run client:typecheck   # typová kontrola klienta
-yarn testseed           # naplnenie DB testovacími dátami
+pnpm install            # inštalácia závislostí
+pnpm generate           # vygenerovanie GraphQL schémy a typov
+pnpm start:dev          # vývojový server (tsx watch, :5000) + klient (vite, :4200)
+pnpm dev:server         # iba server / pnpm dev:client – iba klient
+pnpm build:all          # generate + build servera aj klienta do dist/
+pnpm test               # testy všetkých projektov (vitest run)
+pnpm test --project server   # testy jedného projektu (server|client|common|dateutils|logger|auth-node|auth-react|scripts)
+pnpm e2e                # E2E testy (Playwright, API je mockované)
+pnpm lint               # lint celého repozitára (eslint .)
+pnpm typecheck          # typová kontrola všetkých projektov (napr. `pnpm typecheck client`)
+pnpm testseed           # naplnenie DB testovacími dátami
 ```
 
-Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, prázdny riadok na konci súboru (`.editorconfig`). Lint: ESLint 9 (`eslint.config.mjs` + `.eslintrc.json` v projektoch).
+Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, prázdny riadok na konci súboru (`.editorconfig`). Lint: ESLint 9 (jeden `eslint.config.mjs` v koreni).
 
 ## Lokálny vývoj a konfigurácia
 
@@ -123,12 +131,12 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 ### Pridanie / zmena funkcionality v API (typický postup)
 
 1. Uprav GraphQL schému v `contract/<doména>.graphql` (používa `extend type Query/Mutation`).
-2. `yarn generate`.
+2. `pnpm generate`.
 3. Mongoose model v `apps/server/src/app/models/` (ak treba nové polia).
 4. Mapper v `apps/server/src/app/apollo/mappers/`.
 5. Logika a **autorizácia** v datasource `apps/server/src/app/apollo/datasources/<doména>.datasource.ts`; zložitejšia doménová logika v `apps/server/src/app/domains/`.
 6. Resolver v `apps/server/src/app/apollo/resolvers/` – iba deleguje na `dataSources.<doména>`.
-7. Klient: operácia v `apps/client/graphql/<doména>/*.graphql` (+ fragment v `_fragments/`), `yarn generate`, použitie cez `useQuery`/`useMutation` z `@apollo/client/react` s vygenerovanými `…Document` a typmi `…Query`/`…Mutation`/`…Variables`.
+7. Klient: operácia v `apps/client/graphql/<doména>/*.graphql` (+ fragment v `_fragments/`), `pnpm generate`, použitie cez `useQuery`/`useMutation` z `@apollo/client/react` s vygenerovanými `…Document` a typmi `…Query`/`…Mutation`/`…Variables`. Routing cez `react-router` (nie `react-router-dom`).
 
 ### Autorizácia
 
@@ -147,11 +155,11 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 
 ### Jednotkové a komponentové testy – Vitest
 
-- Framework: **Vitest 4** (`globals: true` – `describe`/`it`/`expect`/`vi` netreba importovať). Jest sa v repozitári nepoužíva.
-- Konfigurácia: `vitest.config.mts` v každom projekte (`libs/*`, `apps/server`), klient má sekciu `test` priamo v `apps/client/vite.config.mts`. Aliasy `@teams2/*` sa riešia cez `resolve.tsconfigPaths`.
+- Framework: **Vitest 5** (`globals: true` – `describe`/`it`/`expect`/`vi` netreba importovať). Jest sa v repozitári nepoužíva.
+- Konfigurácia: koreňový `vitest.config.mts` vymenúva projekty (`test.projects`), každý projekt má vlastný `vitest.config.mts` (`libs/*`, `apps/server`, `scripts`), klient má sekciu `test` priamo v `apps/client/vite.config.mts`. Aliasy `@teams2/*` sa riešia cez `resolve.tsconfigPaths`.
   - server a `libs/*`: prostredie `node`; `dateutils` beží s `TZ=Europe/Bratislava`,
   - klient a `auth-react`: prostredie `jsdom`, React Testing Library (`@testing-library/react`), Apollo `MockLink` / `MockedProvider`.
-- Cieľ `test` sa v Nx odvodzuje automaticky pluginom `@nx/vitest` (`nx.json`, `testMode: run`) – v `project.json` ho nedefinuj.
+- Nový projekt s testami pridaj do `test.projects` v koreňovom `vitest.config.mts`.
 - Mockovanie: `vi.mock(...)`, `vi.fn()`. Ťažké podradené komponenty pri teste stránky nahraď jednoduchými stubmi.
 - Testy sa umiestňujú vedľa testovaného súboru ako `*.spec.ts` / `*.spec.tsx`.
 - **Ku každej zmene pridaj testy**, minimálne:
@@ -160,22 +168,24 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
   - pri komponentoch klienta test renderovania a kľúčového správania,
   - pri oprave chyby regresný test, ktorý na pôvodnom kóde zlyhá.
 - Testy nesmú vyžadovať reálnu MongoDB, AWS ani SuperFaktúru – externé závislosti mockuj.
-- Spúšťanie: `yarn nx test <projekt>`, všetko `yarn test`, watch režim `npx vitest` v adresári projektu. Pred testami servera/klienta musí byť spustený `yarn generate`.
+- Spúšťanie: `pnpm test --project <projekt>`, všetko `pnpm test`, watch režim `pnpm test:watch`. Pred testami servera/klienta musí byť spustený `pnpm generate`.
 
 ### E2E testy – Playwright
 
-- Projekt `apps/client-e2e`, konfigurácia `apps/client-e2e/playwright.config.ts`, testy v `apps/client-e2e/src/*.spec.ts`. Cieľ `e2e` odvodzuje plugin `@nx/playwright`.
-- Playwright si sám spustí klienta (`yarn nx run client:serve`, port 4200), prípadne použije už bežiaci.
+- Projekt `apps/client-e2e`, konfigurácia `apps/client-e2e/playwright.config.ts`, testy v `apps/client-e2e/src/*.spec.ts`.
+- Playwright si sám spustí klienta (`pnpm dev:client`, port 4200), prípadne použije už bežiaci.
 - API servera (`http://localhost:5000` – `/auth` aj `/graphql`) sa v testoch **mockuje** cez `mockApi()` z `apps/client-e2e/src/support/mock-api.ts` (odpovede GraphQL podľa názvu operácie, voliteľne prihlásený používateľ). E2E testy teda nepotrebujú server ani MongoDB.
-- Pred prvým spustením: `npx playwright install chromium`.
-- Spúšťanie: `yarn nx e2e client-e2e`; výstupy (report, trace) sú v `dist/.playwright/apps/client-e2e`.
+- Pred prvým spustením: `pnpm exec playwright install chromium`.
+- Spúšťanie: `pnpm e2e` (konkrétny súbor: `pnpm e2e team-list`); výstupy (report, trace) sú v `dist/.playwright/apps/client-e2e`.
 - E2E test pridaj pri zmenách v toku používateľa naprieč stránkami (navigácia, prihlásenie, priame linky) – napr. `registration.spec.ts` pre #269.
 
 ## CI/CD a nasadenie
 
-- `.github/workflows/build+deploy.yaml`: pri **pushi do `main`** sa spustí `yarn install --immutable`, `yarn build:all`, zostavia sa Docker obrazy `fllsk/tms-client` a `fllsk/tms-server` (`Dockerfile.client`, `Dockerfile.server`), pushnú sa na Docker Hub a **nasadia na produkčný server** (`docker-compose.yaml`).
+- `.github/workflows/build+deploy.yaml`: pri **pushi do `main`** sa nainštaluje pnpm (`pnpm/action-setup`, verzia z `packageManager`) a Node podľa `.nvmrc`, spustí sa `pnpm install --frozen-lockfile`, `pnpm build:all`, zostavia sa Docker obrazy `fllsk/tms-client` a `fllsk/tms-server` (`Dockerfile.client`, `Dockerfile.server`), pushnú sa na Docker Hub a **nasadia na produkčný server** (`docker-compose.yaml`).
 - CI nespúšťa testy ani lint – over ich lokálne pred vytvorením PR.
-- Pri zmene závislostí aktualizuj `yarn.lock` (CI používa `--immutable`).
+- Pri zmene závislostí aktualizuj `pnpm-lock.yaml` (CI používa `--frozen-lockfile`).
+- Server image (`Dockerfile.server`, `node:26-slim`) inštaluje iba produkčné závislosti (`pnpm install --prod`) – balíky potrebné za behu servera musia byť v `dependencies`, nástroje a klientske knižnice v `devDependencies`.
+- Pri zmene verzie Node uprav `.nvmrc`, `engines` v `package.json`, `Dockerfile.server` a `target` v `scripts/build-server.mjs`.
 
 ## Konvencie pre Git a GitHub
 
