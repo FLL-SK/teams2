@@ -44,13 +44,12 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
   const [today] = useState(new Date().toISOString().substring(0, 10));
 
   const { notify } = useNotification();
-  const [updateOrder] = useMutation<UpdateRegistrationFoodOrderMutation, UpdateRegistrationFoodOrderMutationVariables>(UpdateRegistrationFoodOrderDocument, {
+  const [updateOrder] = useMutation<
+    UpdateRegistrationFoodOrderMutation,
+    UpdateRegistrationFoodOrderMutationVariables
+  >(UpdateRegistrationFoodOrderDocument, {
     onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
   });
-
-  if (!registration.event) {
-    return null;
-  }
 
   const canOrderFood: { status: boolean; msg: string } = useMemo(() => {
     if (registration.canceledOn) {
@@ -108,6 +107,11 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     },
     [registration],
   );
+
+  // hooky musia byť volané vždy (rules-of-hooks), preto až za nimi
+  if (!registration.event) {
+    return null;
+  }
 
   return (
     <Box>

@@ -145,7 +145,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const request: any = {
       Email: {
-        invoice_id: Number(options.id) ?? 0,
+        invoice_id: Number(options.id),
         to: encodeURIComponent(options.to),
         pdf_language: 'slo',
       },
