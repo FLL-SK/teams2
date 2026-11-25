@@ -1,21 +1,19 @@
 # Description: Dockerfile for server
 
-FROM node:22-slim
+FROM node:26-slim
+
+# Node 25+ už neobsahuje corepack – pnpm sa inštaluje cez npm (verzia podľa package.json)
+RUN npm install -g pnpm@12.23.0 && npm cache clean --force
 
 RUN mkdir -p /server
 
 WORKDIR /server
 
-# copy project package files
-COPY package.json .
-COPY yarn.lock .
+# copy project package files and pnpm configuration
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# copy yarn configuration files
-COPY .yarn ./.yarn
-COPY .yarnrc.yml .
-
-# install dependencies
-RUN yarn workspaces focus --production --all
+# install production dependencies only
+RUN pnpm install --prod --frozen-lockfile && pnpm store prune
 
 # copy server files
 COPY dist/apps/server .

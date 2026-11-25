@@ -1,2 +1,7 @@
-.yarn/cache
-.yarn/install-state.gz
+node_modules
+.git
+.nx
+.vscode
+tmp
+coverage
+dist/.playwright
