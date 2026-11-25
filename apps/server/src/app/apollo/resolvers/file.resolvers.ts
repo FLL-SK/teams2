@@ -1,6 +1,5 @@
 import { QueryResolvers, MutationResolvers, File } from '../../_generated/graphql';
-import { getSignedUrlForDownload, getSignedUrlForUpload } from '../../utils/aws-s3';
-import { storagePath } from '../../utils/storage-path';
+import { getSignedUrlForDownload } from '../../utils/aws-s3';
 import { ApolloContext } from '../apollo-context';
 import { Resolver } from '../type-resolver';
 
@@ -9,16 +8,10 @@ export const queryResolvers: QueryResolvers<ApolloContext> = {
     dataSources.file.getProgramFiles(programId),
   getEventFiles: async (_parent, { eventId }, { dataSources }) =>
     dataSources.file.getEventFiles(eventId),
-  getProgramFileUploadUrl: async (_parent, { programId, input }, _ds) =>
-    getSignedUrlForUpload(
-      storagePath(input.name, 'programDoc', programId.toString()),
-      input.contentType,
-    ),
-  getEventFileUploadUrl: async (_parent, { eventId, input }, _ds) =>
-    getSignedUrlForUpload(
-      storagePath(input.name, 'eventDoc', eventId.toString()),
-      input.contentType,
-    ),
+  getProgramFileUploadUrl: async (_parent, { programId, input }, { dataSources }) =>
+    dataSources.file.getProgramFileUploadUrl(programId, input),
+  getEventFileUploadUrl: async (_parent, { eventId, input }, { dataSources }) =>
+    dataSources.file.getEventFileUploadUrl(eventId, input),
 };
 
 export const typeResolver: Resolver<File> = {

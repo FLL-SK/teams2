@@ -97,6 +97,8 @@ export class RegistrationDataSource extends BaseDataSource {
     const registration = await registrationRepository.findById(id).exec();
     this.userGuard.isAdmin() ||
       (await this.userGuard.isCoach(registration.teamId)) ||
+      (await this.userGuard.isProgramManager(registration.programId)) ||
+      (registration.eventId && (await this.userGuard.isEventManager(registration.eventId))) ||
       this.userGuard.notAuthorized('Cancel registration');
     registration.canceledOn = new Date();
     registration.canceledBy = this.context.user._id;

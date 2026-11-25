@@ -5,7 +5,7 @@ import { FileMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
 import { logger } from '@teams2/logger';
-import { deleteFileFromBucket } from '../../utils/aws-s3';
+import { deleteFileFromBucket, getSignedUrlForUpload } from '../../utils/aws-s3';
 import { storagePath } from '../../utils/storage-path';
 
 const logBase = logger('DS:File');
@@ -35,6 +35,23 @@ export class FileDataSource extends BaseDataSource {
       .sort({ name: 1 })
       .exec();
     return files.map(FileMapper.toFile);
+  }
+
+  // nahrávať súbory môže iba admin – rovnako ako addProgramFile/addEventFile
+  async getProgramFileUploadUrl(programId: ObjectId, input: FileUploadInput): Promise<string> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get program file upload URL');
+    return getSignedUrlForUpload(
+      storagePath(input.name, 'programDoc', programId.toString()),
+      input.contentType,
+    );
+  }
+
+  async getEventFileUploadUrl(eventId: ObjectId, input: FileUploadInput): Promise<string> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get event file upload URL');
+    return getSignedUrlForUpload(
+      storagePath(input.name, 'eventDoc', eventId.toString()),
+      input.contentType,
+    );
   }
 
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {

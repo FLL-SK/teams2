@@ -192,13 +192,13 @@ export async function cancelRegistration(
   const log = logLib.extend('cancelRegistration');
   const reg = await dataSources.registration.getRegistration(id);
 
-  if (
-    !userGuard.isAdmin() &&
-    reg.canceledOn &&
-    !((await userGuard.isCoach(reg.teamId)) && !reg.confirmedOn) &&
-    !(reg.programId && (await userGuard.isProgramManager(reg.programId))) &&
-    !(reg.eventId && (await userGuard.isEventManager(reg.eventId)))
-  ) {
+  // zrušiť môže admin, tréner tímu (iba nepotvrdenú registráciu), správca programu alebo turnaja
+  const canCancel =
+    userGuard.isAdmin() ||
+    ((await userGuard.isCoach(reg.teamId)) && !reg.confirmedOn) ||
+    (reg.programId && (await userGuard.isProgramManager(reg.programId))) ||
+    (reg.eventId && (await userGuard.isEventManager(reg.eventId)));
+  if (!canCancel) {
     log.debug('Not authorized to cancel registration %s', id);
     return { errors: [{ code: 'not_authorized' }] };
   }
