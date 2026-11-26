@@ -54,3 +54,8 @@ jobs:
 
       - name: Build
         run: pnpm compile
+
+      # informačne – známe zraniteľnosti produkčných závislostí (PR kvôli nim nezlyhá)
+      - name: Audit
+        run: pnpm audit --prod
+        continue-on-error: true
