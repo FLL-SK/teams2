@@ -48,7 +48,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
         variables: { id: details.program.id ?? details.event?.programId },
       });
     }
-  }, [details.program, fetchProgram]);
+  }, [details.program, details.event?.programId, fetchProgram]);
 
   React.useEffect(() => {
     if (details.event) {

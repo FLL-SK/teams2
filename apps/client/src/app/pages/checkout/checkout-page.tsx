@@ -104,7 +104,7 @@ export function CheckoutPage() {
   React.useEffect(() => {
     const tid = searchParams.get('teamId');
     setTeamId(tid);
-    setCheckoutDetails({ ...checkoutDetails, teamId: tid ?? 'x' });
+    setCheckoutDetails((c) => ({ ...c, teamId: tid ?? 'x' }));
     setProgramId(searchParams.get('programId'));
   }, [searchParams]);
 
@@ -122,7 +122,8 @@ export function CheckoutPage() {
         variables: { id: programId },
       }).then((r) => {
         if (r.data?.getProgram) {
-          setCheckoutDetails({ ...checkoutDetails, program: r.data.getProgram });
+          const program = r.data.getProgram;
+          setCheckoutDetails((c) => ({ ...c, program }));
           setIsRegisteringForEvent(true);
         }
       });
@@ -187,7 +188,7 @@ export function CheckoutPage() {
 
       setStep('success');
     },
-    [notify, registerTeam4Event, teamId, isRegisteringForEvent],
+    [notify, registerTeam4Event, registerTeam4Program, teamId, isRegisteringForEvent],
   );
 
   if (!canShop) {

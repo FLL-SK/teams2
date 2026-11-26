@@ -86,7 +86,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
         }
       }
     },
-    [addProgramFile, getUploadUrl, program.id],
+    [addProgramFile, getUploadUrl, notify, program.id],
   );
 
   const files = filesData?.getProgramFiles ?? [];
