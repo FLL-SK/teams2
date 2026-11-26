@@ -28,4 +28,21 @@ export const UserMapper = {
     };
     return u;
   },
+
+  /** používateľ bez kontaktných údajov – pre toho, kto nemá právo ich vidieť (#289) */
+  toPublicUser(user: User | null | undefined): User | null {
+    if (!user) {
+      return null;
+    }
+    return {
+      ...user,
+      username: '',
+      phone: '',
+      isAdmin: null,
+      isSuperAdmin: null,
+      lastLoginOn: null,
+      gdprAcceptedOn: null,
+      deletedBy: null,
+    };
+  },
 };

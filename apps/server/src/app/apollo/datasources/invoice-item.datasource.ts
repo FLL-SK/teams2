@@ -1,5 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
-import { InvoiceItemData, invoiceItemRepository } from '../../models';
+import { InvoiceItemData, invoiceItemRepository, registrationRepository } from '../../models';
 import { InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../_generated/graphql';
 import { InvoiceItemMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
@@ -36,7 +36,12 @@ export class InvoiceItemDataSource extends BaseDataSource {
   }
 
   async getRegistrationInvoiceItems(registrationId: ObjectId): Promise<InvoiceItem[]> {
-    if (!this.userGuard.isLoggedIn() && !this.userGuard.isAdmin()) {
+    // fakturačné položky registrácie – rovnaké pravidlá ako čítanie registrácie (#289)
+    const reg = await registrationRepository
+      .findById(registrationId, { teamId: 1, programId: 1, eventId: 1 })
+      .lean()
+      .exec();
+    if (!reg || !(await this.userGuard.canReadRegistration(reg))) {
       return [];
     }
 

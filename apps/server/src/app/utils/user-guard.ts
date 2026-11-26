@@ -12,6 +12,8 @@ export class UserGuard {
   protected coachOfTeams?: string[];
   protected eventManagerOfEvents?: string[];
   protected programManagerOfPrograms?: string[];
+  protected contactVisibleUserIds?: Promise<Set<string>>;
+  protected managedTeamIds?: Promise<Set<string>>;
   protected message: string;
 
   constructor(user: UserDataNoPassword, message?: string) {
@@ -74,7 +76,8 @@ export class UserGuard {
   }
 
   isAdmin() {
-    return this.user ? (this.user.isAdmin ?? this.user.isSuperAdmin ?? false) : false;
+    // superadmin je vždy aj admin, aj keď má explicitne `isAdmin: false` (#280)
+    return this.user ? !!(this.user.isAdmin || this.user.isSuperAdmin) : false;
   }
 
   isLoggedIn() {
@@ -146,6 +149,130 @@ export class UserGuard {
       return false;
     }
     return this.isProgramManager(event.programId);
+  }
+
+  /** spravuje používateľ niektorý turnaj v programe? (napr. kvôli pozvánkam tímov programu) */
+  async isEventManagerInProgram(programId: ObjectId) {
+    if (!this.user || !programId) {
+      return false;
+    }
+    if (this.isAdmin() || (await this.isProgramManager(programId))) {
+      return true;
+    }
+    const events = await this.getManagedEvents();
+    if (events.length === 0) {
+      return false;
+    }
+    const e = await eventRepository.exists({
+      _id: { $in: events.map((id) => new ObjectId(id)) },
+      programId,
+    });
+    return !!e;
+  }
+
+  /** filter aktívnych registrácií na turnaje / do programov, ktoré používateľ spravuje (alebo null) */
+  protected async managedRegistrationsFilter() {
+    const [events, programs] = await Promise.all([
+      this.getManagedEvents(),
+      this.getManagedPrograms(),
+    ]);
+    // prázdny zoznam do filtra neposielať – `{ eventId: undefined }` by zodpovedalo každej registrácii do programu
+    const or: Record<string, unknown>[] = [];
+    if (events.length > 0) {
+      or.push({ eventId: { $in: events.map((id) => new ObjectId(id)) } });
+    }
+    if (programs.length > 0) {
+      or.push({ programId: { $in: programs.map((id) => new ObjectId(id)) } });
+    }
+    return or.length > 0 ? { canceledOn: null, $or: or } : null;
+  }
+
+  /**
+   * ID tímov registrovaných (aktívne) na turnaj alebo do programu, ktorý používateľ spravuje.
+   * Načíta sa raz pre požiadavku.
+   */
+  async getManagedTeams(): Promise<Set<string>> {
+    if (this.managedTeamIds === undefined) {
+      this.managedTeamIds = (async () => {
+        const q = this.user ? await this.managedRegistrationsFilter() : null;
+        if (!q) {
+          return new Set<string>();
+        }
+        const teamIds: ObjectId[] = await registrationRepository.distinct('teamId', q).exec();
+        return new Set(teamIds.map((id) => id.toString()));
+      })();
+    }
+    return this.managedTeamIds;
+  }
+
+  /** tím je registrovaný na turnaj / do programu, ktorý používateľ spravuje */
+  async isManagerOfTeam(teamId: ObjectId) {
+    if (!teamId) {
+      return false;
+    }
+    return (await this.getManagedTeams()).has(teamId.toString());
+  }
+
+  /**
+   * Smie používateľ čítať adresy a kontakty tímu? Admin, tréner tímu a správca turnaja/programu,
+   * na ktorom je tím registrovaný. #289
+   */
+  async canReadTeamDetails(teamId: ObjectId) {
+    return this.isAdmin() || (await this.isCoach(teamId)) || (await this.isManagerOfTeam(teamId));
+  }
+
+  /**
+   * Smie používateľ čítať registráciu? Admin, tréner tímu, správca programu a pri registrácii
+   * na turnaj aj správca turnaja. #289
+   */
+  async canReadRegistration(reg: {
+    teamId?: ObjectId | null;
+    programId?: ObjectId | null;
+    eventId?: ObjectId | null;
+  }) {
+    if (!this.user) {
+      return false;
+    }
+    return (
+      this.isAdmin() ||
+      (await this.isCoach(reg.teamId)) ||
+      (await this.isProgramManager(reg.programId)) ||
+      (await this.isEventManager(reg.eventId))
+    );
+  }
+
+  /**
+   * ID používateľov, ktorých kontakt (e-mail, telefón) smie používateľ vidieť: spolutréneri
+   * jeho tímov a tréneri tímov registrovaných na turnaj / do programu, ktorý spravuje. #289
+   */
+  protected async getContactVisibleUserIds(): Promise<Set<string>> {
+    if (this.contactVisibleUserIds === undefined) {
+      this.contactVisibleUserIds = (async () => {
+        const teamIds = new Set([
+          ...(await this.getCoachedTeams()),
+          ...(await this.getManagedTeams()),
+        ]);
+        if (teamIds.size === 0) {
+          return new Set<string>();
+        }
+        const coachIds: ObjectId[] = await teamRepository
+          .distinct('coachesIds', { _id: { $in: [...teamIds].map((id) => new ObjectId(id)) } })
+          .exec();
+        return new Set(coachIds.map((id) => id.toString()));
+      })();
+    }
+    return this.contactVisibleUserIds;
+  }
+
+  /** smie používateľ čítať kontakt (e-mail, telefón) iného používateľa? #289 */
+  async canReadUserContact(userId: ObjectId) {
+    if (!this.user || !userId) {
+      return false;
+    }
+    if (this.isAdmin() || this.isSelf(userId)) {
+      return true;
+    }
+    return (await this.getContactVisibleUserIds()).has(userId.toString());
   }
 
   notAuthorized(context?: string) {

@@ -28,4 +28,31 @@ export const TeamMapper = {
     };
     return u;
   },
+
+  /**
+   * Verejná podoba tímu pre používateľa bez práva čítať detaily (#289): názov tímu,
+   * názov organizácie a mesto; bez adries, kontaktov, trénerov a tagov.
+   */
+  toPublicTeam(team: Team | null | undefined): Team | null {
+    if (!team) {
+      return null;
+    }
+    return {
+      ...team,
+      coachesIds: [],
+      tagIds: [],
+      address: {
+        id: team.address?.id ?? null,
+        name: team.address?.name ?? '',
+        city: team.address?.city ?? '',
+        street: '',
+        zip: '',
+        countryCode: team.address?.countryCode ?? null,
+      },
+      billTo: null,
+      shipTo: null,
+      useBillTo: null,
+      deletedBy: null,
+    };
+  },
 };

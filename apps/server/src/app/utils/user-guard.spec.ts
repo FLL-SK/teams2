@@ -7,17 +7,23 @@ const {
   countDocuments,
   findEventsManagedByUser,
   findProgramsManagedByUser,
+  registrationDistinct,
+  teamDistinct,
+  eventExists,
 } = vi.hoisted(() => ({
   findTeamsCoachedByUser: vi.fn(),
   countDocuments: vi.fn(),
   findEventsManagedByUser: vi.fn(),
   findProgramsManagedByUser: vi.fn(),
+  registrationDistinct: vi.fn(),
+  teamDistinct: vi.fn(),
+  eventExists: vi.fn(),
 }));
 
 vi.mock('../models', () => ({
-  teamRepository: { findTeamsCoachedByUser },
-  registrationRepository: { countDocuments },
-  eventRepository: { findEventsManagedByUser },
+  teamRepository: { findTeamsCoachedByUser, distinct: teamDistinct },
+  registrationRepository: { countDocuments, distinct: registrationDistinct },
+  eventRepository: { findEventsManagedByUser, exists: eventExists },
   programRepository: { findProgramsManagedByUser },
 }));
 
@@ -97,5 +103,72 @@ describe('UserGuard', () => {
     expect(await g.isCoachOfRegisteredTeamForProgram(new ObjectId())).toBe(false);
     expect(await g.isCoachOfRegisteredTeamForEvent(new ObjectId())).toBe(false);
     expect(countDocuments).not.toHaveBeenCalled();
+  });
+
+  describe('oprávnenia na čítanie (#280, #289)', () => {
+    const managedTeamId = new ObjectId();
+    const coId = new ObjectId();
+    const managedCoachId = new ObjectId();
+
+    beforeEach(() => {
+      registrationDistinct.mockReturnValue({ exec: async () => [managedTeamId] });
+      teamDistinct.mockReturnValue({ exec: async () => [coId, managedCoachId] });
+    });
+
+    it('superadmin je admin aj s isAdmin: false', () => {
+      expect(new UserGuard({ ...user, isSuperAdmin: true, isAdmin: false }).isAdmin()).toBe(true);
+      expect(new UserGuard({ ...user, isAdmin: false }).isAdmin()).toBe(false);
+    });
+
+    it('getManagedTeams – tímy aktívne registrované na spravovaných turnajoch/programoch, raz za požiadavku', async () => {
+      const g = new UserGuard(user);
+      expect(await g.isManagerOfTeam(managedTeamId)).toBe(true);
+      expect(await g.isManagerOfTeam(otherTeamId)).toBe(false);
+      expect(registrationDistinct).toHaveBeenCalledTimes(1);
+      expect(registrationDistinct).toHaveBeenCalledWith('teamId', {
+        canceledOn: null,
+        $or: [{ eventId: { $in: [managedEventId] } }, { programId: { $in: [managedProgramId] } }],
+      });
+    });
+
+    it('bez spravovaných turnajov a programov sa registrácie nehľadajú', async () => {
+      findEventsManagedByUser.mockResolvedValue([]);
+      findProgramsManagedByUser.mockResolvedValue([]);
+      expect(await new UserGuard(user).isManagerOfTeam(managedTeamId)).toBe(false);
+      expect(registrationDistinct).not.toHaveBeenCalled();
+    });
+
+    it('canReadRegistration – tréner tímu, správca programu alebo turnaja', async () => {
+      const g = new UserGuard(user);
+      const foreign = { teamId: otherTeamId, programId: new ObjectId(), eventId: new ObjectId() };
+      expect(await g.canReadRegistration(foreign)).toBe(false);
+      expect(await g.canReadRegistration({ ...foreign, teamId: coachTeamId })).toBe(true);
+      expect(await g.canReadRegistration({ ...foreign, programId: managedProgramId })).toBe(true);
+      expect(await g.canReadRegistration({ ...foreign, eventId: managedEventId })).toBe(true);
+      expect(await new UserGuard(null).canReadRegistration(foreign)).toBe(false);
+    });
+
+    it('canReadUserContact – sám, spolutréner, tréner tímu na spravovanom turnaji, admin', async () => {
+      const g = new UserGuard(user);
+      expect(await g.canReadUserContact(user._id!)).toBe(true);
+      expect(await g.canReadUserContact(coId)).toBe(true);
+      expect(await g.canReadUserContact(managedCoachId)).toBe(true);
+      expect(await g.canReadUserContact(new ObjectId())).toBe(false);
+      expect(teamDistinct).toHaveBeenCalledWith('coachesIds', {
+        _id: { $in: expect.arrayContaining([coachTeamId, managedTeamId]) },
+      });
+      expect(
+        await new UserGuard({ ...user, isAdmin: true }).canReadUserContact(new ObjectId()),
+      ).toBe(true);
+    });
+
+    it('isEventManagerInProgram – správca turnaja v danom programe', async () => {
+      const programId = new ObjectId();
+      eventExists.mockResolvedValue({ _id: managedEventId });
+      expect(await new UserGuard(user).isEventManagerInProgram(programId)).toBe(true);
+      expect(eventExists).toHaveBeenCalledWith({ _id: { $in: [managedEventId] }, programId });
+      eventExists.mockResolvedValue(null);
+      expect(await new UserGuard(user).isEventManagerInProgram(programId)).toBe(false);
+    });
   });
 });

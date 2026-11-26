@@ -51,8 +51,21 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async getRegistration(id: ObjectId): Promise<Registration> {
     if (!id) return null;
-    const reg = this.loader.load(id.toString());
+    const reg = await this.loader.load(id.toString());
+    // registráciu vidí iba admin, tréner tímu a správca programu/turnaja (#289)
+    if (!reg || !(await this.userGuard.canReadRegistration(reg))) {
+      return null;
+    }
     return reg;
+  }
+
+  /** ponechá iba registrácie, ktoré smie používateľ čítať (#289) */
+  private async onlyReadable(regs: Registration[]): Promise<Registration[]> {
+    if (this.userGuard.isAdmin()) {
+      return regs;
+    }
+    const allowed = await Promise.all(regs.map((r) => this.userGuard.canReadRegistration(r)));
+    return regs.filter((_r, i) => allowed[i]);
   }
 
   async getRegistrations(filter: RegistrationFilter): Promise<Registration[]> {
@@ -70,7 +83,7 @@ export class RegistrationDataSource extends BaseDataSource {
       q.teamId = filter.teamId;
     }
     const regs = await registrationRepository.find(q).exec();
-    return regs.map(RegistrationMapper.toRegistration);
+    return this.onlyReadable(regs.map(RegistrationMapper.toRegistration));
   }
 
   async getRegistrationGroups(filter: RegistrationFilter): Promise<RegistrationGroup[]> {
@@ -135,7 +148,7 @@ export class RegistrationDataSource extends BaseDataSource {
       .find({ eventId, canceledOn: null })
       .sort({ createdOn: 1 })
       .exec();
-    return regs.map(RegistrationMapper.toRegistration);
+    return this.onlyReadable(regs.map(RegistrationMapper.toRegistration));
   }
 
   async getEventRegistrationsCount(eventId: ObjectId): Promise<number> {
@@ -152,7 +165,12 @@ export class RegistrationDataSource extends BaseDataSource {
       q.confirmedOn = { $ne: null };
     }
     const regs = await registrationRepository.find(q).sort({ createdOn: 1 }).exec();
-    return regs.map(RegistrationMapper.toRegistration);
+    const mapped = regs.map(RegistrationMapper.toRegistration);
+    // správca turnaja v programe potrebuje zoznam registrovaných tímov na pozvánky (turnaj na pozvanie)
+    if (await this.userGuard.isEventManagerInProgram(programId)) {
+      return mapped;
+    }
+    return this.onlyReadable(mapped);
   }
 
   async getProgramRegistrationsCount(programId: ObjectId): Promise<number> {
@@ -425,12 +443,19 @@ export class RegistrationDataSource extends BaseDataSource {
     includeCoaches?: boolean,
   ): Promise<RegisteredTeamPayload[]> {
     const regs = await registrationRepository.find({ eventId, canceledOn: null }).exec();
+    // zoznam tímov na turnaji vidí každý prihlásený; adresu, platbu a objednávku jedla
+    // iba admin, správca turnaja/programu a tréner daného tímu (#289)
+    const isManager =
+      this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManagerForEvent(eventId));
     const teams: RegisteredTeamPayload[] = [];
     for (const reg of regs) {
       const team = await teamRepository.findById(reg.teamId).exec();
       if (!team) {
         continue;
       }
+      const showDetails = isManager || (await this.userGuard.isCoach(reg.teamId));
       const t: RegisteredTeamPayload = {
         id: reg._id,
         teamId: team._id,
@@ -460,13 +485,19 @@ export class RegistrationDataSource extends BaseDataSource {
         coaches: [],
         foodOrder: OrderMapper.toOrder(reg.foodOrder),
       };
+      if (!showDetails) {
+        t.paidOn = null;
+        t.foodOrder = null;
+        t.address = {
+          id: team.address?._id,
+          name: team.address?.name ?? '',
+          city: team.address?.city ?? '',
+          street: '',
+          zip: '',
+        };
+      }
 
-      if (
-        includeCoaches &&
-        (this.userGuard.isAdmin() ||
-          (await this.userGuard.isEventManager(eventId)) ||
-          (await this.userGuard.isProgramManagerForEvent(eventId)))
-      ) {
+      if (includeCoaches && isManager) {
         const c = await userRepository
           .find({ _id: { $in: team.coachesIds }, deletedOn: null }, { _id: 1 })
           .sort({ username: 1 })

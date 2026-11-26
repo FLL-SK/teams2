@@ -46,7 +46,10 @@ describe('BaseDataSource – DataLoadery inicializované v _initialize()', () =>
       ],
     });
 
-    const ds = new UserDataSource({ context });
+    // používateľ smie vidieť kontakt (napr. sám seba) – inak by getUser skryl e-mail (#289)
+    const ds = new UserDataSource({
+      context: { userGuard: { canReadUserContact: async () => true } } as unknown as ApolloContext,
+    });
     const user = await ds.getUser(id);
 
     expect(userFind).toHaveBeenCalledTimes(1);

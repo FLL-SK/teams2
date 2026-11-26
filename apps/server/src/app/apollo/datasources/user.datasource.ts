@@ -6,7 +6,7 @@ import { ObjectId } from 'mongodb';
 import { QueryFilter } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
-import { MIN_PASSWORD_LENGTH, validatePassword } from '@teams2/common';
+import { MIN_PASSWORD_LENGTH, validateEmail, validatePassword } from '@teams2/common';
 import {
   emailUserAcceptedGdprToAdmin,
   emailUsernameChanged,
@@ -34,7 +34,11 @@ export class UserDataSource extends BaseDataSource {
     const log = logBase.extend('getUser');
     log.debug('id: %s', id);
     const u = await this.loader.load(id.toString());
-    return u;
+    // e-mail a telefón iba pre oprávnených (#289) – platí aj pre type resolvery (Team.coaches …)
+    if (!u || (await this.userGuard.canReadUserContact(id))) {
+      return u;
+    }
+    return UserMapper.toPublicUser(u);
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
@@ -64,13 +68,23 @@ export class UserDataSource extends BaseDataSource {
     };
 
     const user = await userRepository.findById(id).lean().exec();
-    const usernameChanged = input.username && input.username !== user.username;
+    if (!user) {
+      throw new Error('User not found');
+    }
 
     if (input.gdprAccepted && !user.gdprAcceptedOn) {
       u.gdprAcceptedOn = new Date();
       u.gdprDeclinedOn = null;
     }
-    if (input.username && input.usernameOverride) {
+    // zmena username (= prihlasovací e-mail) iba adminom a iba na platný e-mail (#280);
+    // JWT nesie username, takže zmena by používateľovi zneplatnila prihlásenie
+    const usernameChanged =
+      !!input.username && !!input.usernameOverride && input.username !== user.username;
+    if (usernameChanged) {
+      this.userGuard.isAdmin() || this.userGuard.notAuthorized('Change username');
+      if (!validateEmail(input.username)) {
+        throw new Error('Username shall be valid email address.');
+      }
       u.username = input.username;
     }
 

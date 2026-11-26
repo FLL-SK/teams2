@@ -38,6 +38,8 @@ export async function createRegistrationInvoice(
   registrationId: ObjectId,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
+  // pred odoslaním faktúry do SuperFaktúry – predtým sa oprávnenie overilo až po vytvorení faktúry (#280)
+  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Create registration invoice');
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
@@ -86,6 +88,7 @@ export async function emailRegistrationInvoice(
   id: ObjectId,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
+  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Email registration invoice'); // #280
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('emailInv');
@@ -191,6 +194,10 @@ export async function cancelRegistration(
   const { dataSources, userGuard } = ctx;
   const log = logLib.extend('cancelRegistration');
   const reg = await dataSources.registration.getRegistration(id);
+  if (!reg) {
+    // neexistuje alebo ju používateľ nesmie čítať (#289)
+    return { errors: [{ code: 'not_authorized' }] };
+  }
 
   // zrušiť môže admin, tréner tímu (iba nepotvrdenú registráciu), správca programu alebo turnaja
   const canCancel =
@@ -536,6 +543,11 @@ export async function emailFoodInvoice(
     log.error('registration not found %s', id);
     return { errors: [{ code: 'registration_not_found' }] };
   }
+  // rovnako ako vystavenie faktúr za jedlo (issueFoodInvoices) – #280
+  ctx.userGuard.isAdmin() ||
+    (await ctx.userGuard.isEventManager(registration.eventId)) ||
+    (await ctx.userGuard.isProgramManagerForEvent(registration.eventId)) ||
+    ctx.userGuard.notAuthorized('Email food invoice');
   if (!registration.foodOrder?.invoiceRef) {
     log.error('food order invoice not found %s', id);
     return { errors: [{ code: 'food_invoice_not_found' }] };
