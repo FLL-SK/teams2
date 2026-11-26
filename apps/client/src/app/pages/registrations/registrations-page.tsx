@@ -167,7 +167,7 @@ export function RegistrationsPage() {
     }
 
     if (flt.programId) {
-      fetchRegistrations({ variables: { programId: flt.programId } });
+      void fetchRegistrations({ variables: { programId: flt.programId } });
     }
 
     setFilter(flt);
@@ -176,7 +176,7 @@ export function RegistrationsPage() {
   // get registrations for selected program
   useEffect(() => {
     if (filter.programId) {
-      fetchProgram({ variables: { id: filter.programId } });
+      void fetchProgram({ variables: { id: filter.programId } });
     }
   }, [fetchProgram, filter.programId]);
 

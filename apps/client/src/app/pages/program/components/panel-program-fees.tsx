@@ -94,11 +94,11 @@ export function PanelProgramFees(props: PanelProgramFeesProps) {
         }}
         onSubmit={(values) => {
           if (invoiceItemAdd || !values.id) {
-            createInvoiceItem({
+            void createInvoiceItem({
               variables: { type: 'program', refId: program.id, item: omit(values, 'id') },
             });
           } else {
-            updateInvoiceItem({
+            void updateInvoiceItem({
               variables: { id: values.id, item: values },
             });
           }

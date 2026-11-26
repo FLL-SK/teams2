@@ -1,4 +1,4 @@
-import { errorCodeToMessage } from './error-codes';
+import { errorCodeToMessage, isErrorCode } from './error-codes';
 
 describe('errorCodeToMessage (#290)', () => {
   it('známy kód vráti celú správu (nie jeden znak)', () => {
@@ -34,5 +34,11 @@ describe('errorCodeToMessage (#290)', () => {
     ]) {
       expect(errorCodeToMessage(code)).not.toMatch(/^Chyba /);
     }
+  });
+
+  it('isErrorCode rozpozná iba známe kódy (#298)', () => {
+    expect(isErrorCode('team_already_registered')).toBe(true);
+    expect(isErrorCode('Error')).toBe(false);
+    expect(isErrorCode('toString')).toBe(false);
   });
 });

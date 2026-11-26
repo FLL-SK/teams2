@@ -39,14 +39,14 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
   const [addProgramFile] = useMutation<AddProgramFileMutation, AddProgramFileMutationVariables>(
     AddProgramFileDocument,
     {
-      onCompleted: () => filesRefetch(),
+      onCompleted: () => void filesRefetch(),
       onError: (e) => notify.error('Nepodarilo sa uložiť súbor.', e.message),
     },
   );
   const [removeFile] = useMutation<RemoveFileMutation, RemoveFileMutationVariables>(
     RemoveFileDocument,
     {
-      onCompleted: () => filesRefetch(),
+      onCompleted: () => void filesRefetch(),
       onError: (e) => notify.error('Nepodarilo sa zmazať súbor.', e.message),
     },
   );
@@ -81,7 +81,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
           console.error(e);
         }
         if (success) {
-          addProgramFile({ variables: { programId: program.id, input: ff } });
+          void addProgramFile({ variables: { programId: program.id, input: ff } });
           notify.info('Súbor bol úspešne nahraný.');
         }
       }

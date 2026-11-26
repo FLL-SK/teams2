@@ -40,7 +40,7 @@ export function SelectUser(props: SelectUserProps) {
       options={options}
       labelKey={(u) => `(${u.username}) ${formatFullName(u.firstName, u.lastName)}`}
       onChange={({ option }) => {
-        onSelect && onSelect(option);
+        onSelect?.(option);
         onClose();
       }}
       onClose={() => {

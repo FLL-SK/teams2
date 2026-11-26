@@ -1,4 +1,11 @@
-const errorMessages: Record<string, string> = {
+/**
+ * Kódy chýb a ich správy pre používateľa.
+ *
+ * Konvencia (#298): porušenie biznis pravidla, ktoré vie používateľ vyriešiť, server vracia
+ * v `errors[]` payloadu mutácie s kódom odtiaľto. Chýbajúce oprávnenie a neočakávané chyby sú
+ * GraphQL chyby (`extensions.code`, napr. `FORBIDDEN`).
+ */
+const errorMessages = {
   error: 'Vyskytla sa chyba',
   not_authorized: 'Nemáte oprávnenie na vykonanie tejto akcie.',
   wrong_input: 'Nesprávne vstupy.',
@@ -33,13 +40,21 @@ const errorMessages: Record<string, string> = {
   food_invoice_not_found: 'Faktúra za jedlo sa nenašla.',
   food_invoice_post_error: 'Faktúru za jedlo sa nepodarilo vystaviť.',
   food_invoice_email_error: 'Faktúru za jedlo sa nepodarilo odoslať e-mailom.',
-};
+} as const satisfies Record<string, string>;
+
+/** kód chyby známy klientovi aj serveru */
+export type ErrorCode = keyof typeof errorMessages;
+
+/** kód GraphQL chyby (`extensions.code`) pri chýbajúcom oprávnení */
+export const FORBIDDEN_ERROR_CODE = 'FORBIDDEN';
+
+export function isErrorCode(code: string): code is ErrorCode {
+  return Object.prototype.hasOwnProperty.call(errorMessages, code);
+}
 
 /** chybový kód (napr. z payloadu mutácie) → správa pre používateľa */
 export function errorCodeToMessage(code: string, context?: string | null): string {
-  const msg = Object.prototype.hasOwnProperty.call(errorMessages, code)
-    ? errorMessages[code]
-    : undefined;
+  const msg = isErrorCode(code) ? errorMessages[code] : undefined;
   // predtým `msg[1]` – vrátilo iba druhý znak správy (#290)
   return (msg ?? `Chyba ${code}.`) + (context ? ` (${context})` : '');
 }

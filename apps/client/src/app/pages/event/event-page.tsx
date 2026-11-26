@@ -172,7 +172,7 @@ export function EventPage() {
 
   React.useEffect(() => {
     if (id) {
-      fetchEvent({ variables: { id } });
+      void fetchEvent({ variables: { id } });
     }
   }, [id, fetchEvent]);
 
@@ -188,7 +188,7 @@ export function EventPage() {
 
   React.useEffect(() => {
     if (id) {
-      fetchRegistrations({
+      void fetchRegistrations({
         variables: { eventId: id, includeCoaches: canEdit },
       });
     }
@@ -203,7 +203,7 @@ export function EventPage() {
 
   React.useEffect(() => {
     if (event?.programId && event?.invitationOnly) {
-      fetchProgramRegistrations({ variables: { programId: event.programId } });
+      void fetchProgramRegistrations({ variables: { programId: event.programId } });
     }
   }, [event, fetchProgramRegistrations]);
 
@@ -274,7 +274,7 @@ export function EventPage() {
                     );
                   }
                 }
-                refetch();
+                void refetch();
               } else {
                 notify.info('Neboli vystavené žiadne nové faktúry za stravovanie.');
               }

@@ -171,4 +171,54 @@ describe('UserGuard', () => {
       expect(await new UserGuard(user).isEventManagerInProgram(programId)).toBe(false);
     });
   });
+
+  describe('require (#297)', () => {
+    it('prejde, ak prejde aspoň jedna kontrola, a ďalšie už nevyhodnocuje', async () => {
+      const g = new UserGuard(user);
+      const later = vi.fn().mockResolvedValue(true);
+      await expect(g.require('Akcia', true, later)).resolves.toBeUndefined();
+      expect(later).not.toHaveBeenCalled();
+    });
+
+    it('vyhodnocuje kontroly postupne – sync hodnota aj (async) funkcia', async () => {
+      const g = new UserGuard(user);
+      const order: string[] = [];
+      const first = vi.fn(() => {
+        order.push('first');
+        return false;
+      });
+      const second = vi.fn(async () => {
+        order.push('second');
+        return true;
+      });
+      const third = vi.fn(() => true);
+      await g.require('Akcia', false, first, second, third);
+      expect(order).toEqual(['first', 'second']);
+      expect(third).not.toHaveBeenCalled();
+    });
+
+    it('asynchrónna kontrola sa naozaj čaká – false z Promise nie je pravdivý (#279)', async () => {
+      const g = new UserGuard(user);
+      await expect(g.require('Update team', () => g.isCoach(otherTeamId))).rejects.toThrow(
+        'Not authorized: Update team',
+      );
+      await expect(g.require('Update team', () => g.isCoach(coachTeamId))).resolves.toBeUndefined();
+    });
+
+    it('zamietne, ak neprejde žiadna kontrola (aj bez kontrol)', async () => {
+      const g = new UserGuard(user);
+      await expect(
+        g.require(
+          'Delete team',
+          false,
+          () => false,
+          async () => false,
+        ),
+      ).rejects.toThrow('(coach@example.com) Not authorized: Delete team');
+      await expect(g.require('Delete team')).rejects.toThrow('Not authorized: Delete team');
+      await expect(new UserGuard(null).require('Delete team', () => false)).rejects.toThrow(
+        '(not-logged-in) Not authorized: Delete team',
+      );
+    });
+  });
 });

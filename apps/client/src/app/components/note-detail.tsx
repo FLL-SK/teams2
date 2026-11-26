@@ -129,7 +129,7 @@ export function NoteDetail(props: NoteDetailProps) {
                 primary
                 label="Potvrdiť"
                 onClick={() => {
-                  onUpdate && onUpdate({ ...note, text: mdText || '' });
+                  onUpdate?.({ ...note, text: mdText || '' });
                   setEditing(false);
                   setMdText('');
                 }}

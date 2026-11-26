@@ -110,7 +110,7 @@ export function CheckoutPage() {
 
   React.useEffect(() => {
     if (teamId) {
-      fetchTeam({
+      void fetchTeam({
         variables: { id: teamId },
       });
     }
@@ -118,7 +118,7 @@ export function CheckoutPage() {
 
   React.useEffect(() => {
     if (programId) {
-      fetchProgram({
+      void fetchProgram({
         variables: { id: programId },
       }).then((r) => {
         if (r.data?.getProgram) {

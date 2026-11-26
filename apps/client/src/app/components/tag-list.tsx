@@ -41,7 +41,7 @@ export function TagList(props: TagListProps) {
           <SelectTag
             selected={tags.map((t) => t.id)}
             onSelect={(t) => {
-              onAdd && onAdd(t);
+              onAdd?.(t);
               setIsAdding(false);
             }}
             onClose={() => setIsAdding(false)}

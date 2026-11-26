@@ -49,6 +49,7 @@ import { useNotification } from '../../components/notifications/notification-pro
 import { fullAddress } from '../../utils/format-address';
 import { formatContact } from '../../utils/format-contact';
 import { emptyOrder, FoodOrderModal } from '../../components/food-order-modal';
+import { handleMutationErrors } from '../../utils/handle_mutation_error';
 import { YesNoDialog } from '../../components/dialogs/yes-no-dialog';
 
 const columnWidth = '460px';
@@ -84,6 +85,12 @@ export function RegistrationPage() {
     UpdateRegistrationFoodOrderMutation,
     UpdateRegistrationFoodOrderMutationVariables
   >(UpdateRegistrationFoodOrderDocument, {
+    onCompleted: (d) =>
+      handleMutationErrors(
+        d.updateRegistrationFoodOrder,
+        'Nepodarilo sa upraviť objednávku jedla.',
+        notify.error,
+      ),
     onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
   });
 
@@ -108,7 +115,7 @@ export function RegistrationPage() {
 
   const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
     CreateNoteDocument,
-    { onCompleted: () => notesRefetch() },
+    { onCompleted: () => void notesRefetch() },
   );
 
   const reg = regData?.getRegistration;
@@ -146,7 +153,7 @@ export function RegistrationPage() {
         o.shipTo = { ...data.shipTo };
       }
 
-      updateOrder({
+      void updateOrder({
         variables: {
           id: reg.id,
           order: o,
@@ -352,8 +359,18 @@ export function RegistrationPage() {
               title="Zrušiť objednávku jedla"
               message="Naozaj chcete zrušiť objednávku jedla?"
               onYes={async () => {
-                await removeOrder({ variables: { id: reg.id } });
-                notify.info('Objednávka jedla bola zrušená.');
+                const r = await removeOrder({ variables: { id: reg.id } });
+                // predtým „zrušená“ aj po chybe (onError) alebo s chybou v payloade (#298)
+                if (
+                  !r.error &&
+                  !handleMutationErrors(
+                    r.data?.removeRegistrationFoodOrder,
+                    'Nepodarilo sa zrušiť objednávku jedla.',
+                    notify.error,
+                  )
+                ) {
+                  notify.info('Objednávka jedla bola zrušená.');
+                }
               }}
               onClose={() => setConfirmFoodOrderRemove(false)}
             />

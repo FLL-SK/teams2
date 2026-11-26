@@ -68,7 +68,7 @@ export function ManageEventInvitesDialog(props: ManageEventInvitesDialogProps) {
               label={'(' + team.teamNo + ') ' + team.name}
               onClick={() => {
                 setShowSelectTeam(false);
-                onInvite && onInvite(team.id);
+                onInvite?.(team.id);
               }}
               disabled={event.invitedTeamsIds.some((t) => t === team.id)}
             />

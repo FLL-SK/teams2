@@ -52,7 +52,8 @@ describe('pravidlá registrácie (#283, #287)', () => {
     expect(first?.registration?.confirmedOn ?? null).toBeNull();
 
     const second = await registerToProgram('admin', teams.Team1, programs.Program2);
-    expect(errorCodes(second)).toContain('team_already_registered');
+    // presne tieto kódy – predtým `throw { name }`, pri inej chybe sa vracal kód "Error" (#298)
+    expect(errorCodes(second)).toEqual(['registration_failed', 'team_already_registered']);
     const active = await registrationRepository.countDocuments({
       teamId: teams.Team1,
       programId: programs.Program2,

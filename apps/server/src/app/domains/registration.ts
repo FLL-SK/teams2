@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { fireAndForget } from '../utils/fire-and-forget';
+import { DomainError, failureErrors } from '../utils/domain-error';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
@@ -41,7 +42,7 @@ export async function createRegistrationInvoice(
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   // pred odoslaním faktúry do SuperFaktúry – predtým sa oprávnenie overilo až po vytvorení faktúry (#280)
-  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Create registration invoice');
+  await ctx.userGuard.require('Create registration invoice', ctx.userGuard.isAdmin());
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
@@ -90,7 +91,7 @@ export async function emailRegistrationInvoice(
   id: ObjectId,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
-  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Email registration invoice'); // #280
+  await ctx.userGuard.require('Email registration invoice', ctx.userGuard.isAdmin()); // #280
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('emailInv');
@@ -279,7 +280,7 @@ export async function registerTeamToEvent(
       return { errors: [{ code: 'registration_failed' }] };
     }
   } catch (e) {
-    return { errors: [{ code: 'registration_failed' }, { code: e.name }] };
+    return { errors: failureErrors('registration_failed', e, log) };
   }
 
   try {
@@ -287,16 +288,11 @@ export async function registerTeamToEvent(
     await copyInvoiceItemsToRegistration(registration._id);
   } catch (e) {
     log.error('Failed to copy invoice items to registration %s', registration._id);
-    return { errors: [{ code: 'registration_failed_to_copy_items' }, { code: e.name }] };
+    return { errors: failureErrors('registration_failed_to_copy_items', e, log) };
   }
 
-  try {
-    // email notifications
-    fireAndForget(emailTeamRegisteredForEvent(registration._id), 'emailTeamRegisteredForEvent');
-  } catch (e) {
-    log.error('Failed to send email to team %s', teamId);
-    return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
-  }
+  // e-mailové notifikácie – chyby odoslania zachytí a zaloguje fireAndForget
+  fireAndForget(emailTeamRegisteredForEvent(registration._id), 'emailTeamRegisteredForEvent');
 
   return { registration: RegistrationMapper.toRegistration(registration) };
 }
@@ -325,13 +321,7 @@ export async function registerTeamToProgram(
       return { errors: [{ code: 'registration_failed' }] };
     }
   } catch (e) {
-    log.error(
-      'Error while registering team %s to program %s. Error: %s',
-      teamId,
-      programId,
-      e.message,
-    );
-    return { errors: [{ code: 'registration_failed' }, { code: e.name }] };
+    return { errors: failureErrors('registration_failed', e, log) };
   }
 
   try {
@@ -339,16 +329,11 @@ export async function registerTeamToProgram(
     await copyInvoiceItemsToRegistration(registration._id);
   } catch (e) {
     log.error('Failed to copy invoice items to registration %s', registration._id);
-    return { errors: [{ code: 'registration_failed_to_copy_items' }, { code: e.name }] };
+    return { errors: failureErrors('registration_failed_to_copy_items', e, log) };
   }
 
-  try {
-    // email notifications
-    fireAndForget(emailTeamRegisteredForProgram(registration._id), 'emailTeamRegisteredForProgram');
-  } catch (e) {
-    log.error('Failed to send email to team %s', teamId);
-    return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
-  }
+  // e-mailové notifikácie – chyby odoslania zachytí a zaloguje fireAndForget
+  fireAndForget(emailTeamRegisteredForProgram(registration._id), 'emailTeamRegisteredForProgram');
 
   return { registration: RegistrationMapper.toRegistration(registration) };
 }
@@ -385,14 +370,14 @@ export async function createEventRegistration(
   ctx: ApolloContext,
 ): Promise<RegistrationData> {
   const log = logLib.extend('createEventRegistration');
-  ctx.userGuard.isAdmin() ||
-    (await ctx.userGuard.isCoach(teamId)) ||
-    ctx.userGuard.notAuthorized('Create event registration');
+  await ctx.userGuard.require('Create event registration', ctx.userGuard.isAdmin(), () =>
+    ctx.userGuard.isCoach(teamId),
+  );
 
   // tím už má aktívnu registráciu na turnaj – potvrdenú aj nepotvrdenú (#287);
   // groupRegistrations bez onlyUnconfirmed započítaval iba potvrdené registrácie
   if (await registrationRepository.exists({ eventId, teamId, canceledOn: null })) {
-    throw { name: 'team_already_registered' };
+    throw new DomainError('team_already_registered');
   }
 
   const event = await eventRepository.findById(eventId).exec();
@@ -406,12 +391,12 @@ export async function createEventRegistration(
   });
   if (ruleError) {
     log.warn('Event registration rejected teamId=%s eventId=%s %s', teamId, eventId, ruleError);
-    throw { name: ruleError };
+    throw new DomainError(ruleError);
   }
 
   const team = await teamRepository.findById(teamId).exec();
   if (!team) {
-    throw { name: 'team_not_found' };
+    throw new DomainError('team_not_found');
   }
 
   const newReg: RegistrationData = {
@@ -439,13 +424,13 @@ export async function createProgramRegistration(
   ctx: ApolloContext,
 ): Promise<RegistrationData> {
   const log = logLib.extend('createProgramRegistration');
-  ctx.userGuard.isAdmin() ||
-    (await ctx.userGuard.isCoach(teamId)) ||
-    ctx.userGuard.notAuthorized('Create program registration');
+  await ctx.userGuard.require('Create program registration', ctx.userGuard.isAdmin(), () =>
+    ctx.userGuard.isCoach(teamId),
+  );
 
   // tím už má aktívnu registráciu do programu – potvrdenú aj nepotvrdenú (#287)
   if (await registrationRepository.exists({ programId, teamId, eventId: null, canceledOn: null })) {
-    throw { name: 'team_already_registered' };
+    throw new DomainError('team_already_registered');
   }
 
   const program = await programRepository.findById(programId).exec();
@@ -465,12 +450,12 @@ export async function createProgramRegistration(
       programId,
       ruleError,
     );
-    throw { name: ruleError };
+    throw new DomainError(ruleError);
   }
 
   const team = await teamRepository.findById(teamId).exec();
   if (!team) {
-    throw { name: 'team_not_found' };
+    throw new DomainError('team_not_found');
   }
 
   const newReg: RegistrationData = {
@@ -565,10 +550,12 @@ export async function emailFoodInvoice(
     return { errors: [{ code: 'registration_not_found' }] };
   }
   // rovnako ako vystavenie faktúr za jedlo (issueFoodInvoices) – #280
-  ctx.userGuard.isAdmin() ||
-    (await ctx.userGuard.isEventManager(registration.eventId)) ||
-    (await ctx.userGuard.isProgramManagerForEvent(registration.eventId)) ||
-    ctx.userGuard.notAuthorized('Email food invoice');
+  await ctx.userGuard.require(
+    'Email food invoice',
+    ctx.userGuard.isAdmin(),
+    () => ctx.userGuard.isEventManager(registration.eventId),
+    () => ctx.userGuard.isProgramManagerForEvent(registration.eventId),
+  );
   if (!registration.foodOrder?.invoiceRef) {
     log.error('food order invoice not found %s', id);
     return { errors: [{ code: 'food_invoice_not_found' }] };

@@ -54,13 +54,12 @@ export function EditEventDialog(props: EditEventDialogProps) {
   }
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    onSubmit &&
-      (await onSubmit({
-        ...value,
-        date: toUtcDateString(value.date),
-        registrationEnd: toUtcDateString(value.registrationEnd),
-        maxTeams: Number(value.maxTeams),
-      }));
+    await onSubmit?.({
+      ...value,
+      date: toUtcDateString(value.date),
+      registrationEnd: toUtcDateString(value.registrationEnd),
+      maxTeams: Number(value.maxTeams),
+    });
     onClose();
   };
 

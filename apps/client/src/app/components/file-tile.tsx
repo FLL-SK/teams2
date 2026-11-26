@@ -38,7 +38,7 @@ export function FileTile(props: FileTileProps) {
           icon={<Close size="small" />}
           onClick={(e) => {
             e.stopPropagation();
-            onDelete && onDelete(file);
+            onDelete?.(file);
           }}
         />
       </ListRow2>

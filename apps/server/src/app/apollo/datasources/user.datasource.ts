@@ -43,7 +43,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get users');
+    await this.userGuard.require('Get users', this.userGuard.isAdmin());
 
     const q: QueryFilter<UserData> = {};
     if (filter) {
@@ -58,9 +58,11 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async updateUser(id: ObjectId, input: UpdateUserInput): Promise<UserPayload> {
-    this.userGuard.isAdmin() ||
-      this.userGuard.isSelf(id) ||
-      this.userGuard.notAuthorized('Update user');
+    await this.userGuard.require(
+      'Update user',
+      this.userGuard.isAdmin(),
+      this.userGuard.isSelf(id),
+    );
 
     const u: Partial<UserData> = {
       firstName: input.firstName,
@@ -82,7 +84,7 @@ export class UserDataSource extends BaseDataSource {
     const usernameChanged =
       !!input.username && !!input.usernameOverride && input.username !== user.username;
     if (usernameChanged) {
-      this.userGuard.isAdmin() || this.userGuard.notAuthorized('Change username');
+      await this.userGuard.require('Change username', this.userGuard.isAdmin());
       if (!validateEmail(input.username)) {
         throw new Error('Username shall be valid email address.');
       }
@@ -108,7 +110,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async deleteUser(id: ObjectId): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete user');
+    await this.userGuard.require('Delete user', this.userGuard.isAdmin());
     const u = await userRepository
       .findByIdAndUpdate(
         id,
@@ -121,7 +123,7 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async undeleteUser(id: ObjectId): Promise<User> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Undelete user');
+    await this.userGuard.require('Undelete user', this.userGuard.isAdmin());
     const u = await userRepository
       .findByIdAndUpdate(
         id,
@@ -134,9 +136,11 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async changePassword(id: ObjectId, password: string): Promise<User> {
-    this.userGuard.isAdmin() ||
-      this.userGuard.isSelf(id) ||
-      this.userGuard.notAuthorized('Change password');
+    await this.userGuard.require(
+      'Change password',
+      this.userGuard.isAdmin(),
+      this.userGuard.isSelf(id),
+    );
     if (!validatePassword(password)) {
       throw new Error(`Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.`);
     }
@@ -151,13 +155,13 @@ export class UserDataSource extends BaseDataSource {
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {
-    this.userGuard.isSuperAdmin() || this.userGuard.notAuthorized('Set admin');
+    await this.userGuard.require('Set admin', this.userGuard.isSuperAdmin());
     const u = await userRepository.findByIdAndUpdate(id, { isAdmin }).lean().exec();
     return UserMapper.toUser(u);
   }
 
   async declineGdpr(id: ObjectId): Promise<User> {
-    this.userGuard.isSelf(id) || this.userGuard.notAuthorized('Decline GDPR');
+    await this.userGuard.require('Decline GDPR', this.userGuard.isSelf(id));
     const u = await userRepository
       .findOneAndUpdate(
         { _id: id, gdprDeclinedOn: null },

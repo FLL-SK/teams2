@@ -54,7 +54,7 @@ export function EditUserDialog(props: EditUserDialogProps) {
       return;
     }
     setDoSubmit(false);
-    onSubmit({
+    void onSubmit({
       ...formValues,
       // predtým sa porovnával usernameOverride (boolean) s username – vždy pravda (#294)
       usernameOverride: formValues?.username !== user?.username ? isAdmin() : false,

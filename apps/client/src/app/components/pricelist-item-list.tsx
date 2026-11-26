@@ -39,7 +39,7 @@ export function PricelistItemList(props: PricelistItemListProps) {
             editable
               ? (e) => {
                   e.stopPropagation();
-                  onClick && onClick(item);
+                  onClick?.(item);
                 }
               : undefined
           }

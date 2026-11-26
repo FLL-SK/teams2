@@ -148,9 +148,9 @@ const Footer = () => {
         <MenuButton
           title={'Odhlásiť sa'}
           onClick={() => {
-            navigate('/');
+            void navigate('/');
             logout();
-            apolloClient.clearStore();
+            void apolloClient.clearStore();
           }}
         />
       )}

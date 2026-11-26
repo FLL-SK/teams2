@@ -37,7 +37,7 @@ export function ForceGdprDialog(_props: ForceGdprDialogProps) {
   const handleDecline = async () => {
     await declineGdpr({ variables: { id: user.id } });
     logout();
-    apolloClient.clearStore();
+    void apolloClient.clearStore();
   };
 
   const handleSubmit = async (data: EditUserDialogFields) => {

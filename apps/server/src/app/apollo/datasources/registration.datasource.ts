@@ -91,7 +91,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async updateRegistration(id: ObjectId, input: RegistrationInput): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update registration');
+    await this.userGuard.require('Update registration', this.userGuard.isAdmin());
     const u: UpdateQuery<RegistrationData> = {
       type: input.type,
       childrenImpacted: input.impactedChildrenCount,
@@ -106,11 +106,13 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async cancelRegistration(id: ObjectId): Promise<Registration> {
     const registration = await registrationRepository.findById(id).exec();
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isCoach(registration.teamId)) ||
-      (await this.userGuard.isProgramManager(registration.programId)) ||
-      (await this.userGuard.isEventManager(registration.eventId)) ||
-      this.userGuard.notAuthorized('Cancel registration');
+    await this.userGuard.require(
+      'Cancel registration',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isCoach(registration.teamId),
+      () => this.userGuard.isProgramManager(registration.programId),
+      () => this.userGuard.isEventManager(registration.eventId),
+    );
 
     // objednávka jedla sa ruší spolu s registráciou (oprávnenie je už overené vyššie –
     // removeFoodOrder má prísnejšie pravidlá a pre správcu programu by zlyhal)
@@ -130,7 +132,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async changeRegisteredEvent(regId: ObjectId, newEventId: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Change registered event');
+    await this.userGuard.require('Change registered event', this.userGuard.isAdmin());
     const registration = await registrationRepository.findById(regId).exec();
     const newEvent = await eventRepository.findById(newEventId).exec();
     if (!newEvent) {
@@ -186,7 +188,7 @@ export class RegistrationDataSource extends BaseDataSource {
     invoiceIssuedOn?: Date,
     invoiceRef?: string,
   ): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set invoiced on');
+    await this.userGuard.require('Set invoiced on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { invoiceIssuedOn, invoiceRef }, { returnDocument: 'after' })
@@ -199,7 +201,7 @@ export class RegistrationDataSource extends BaseDataSource {
     invoiceIssuedOn?: Date,
     invoiceRef?: string,
   ): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set invoiced on');
+    await this.userGuard.require('Set invoiced on', this.userGuard.isAdmin());
 
     const q: UpdateQuery<RegistrationData> = {
       foodOrder: {
@@ -214,7 +216,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearInvoicedOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear invoiced on');
+    await this.userGuard.require('Clear invoiced on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { invoiceIssuedOn: null }, { returnDocument: 'after' })
@@ -223,7 +225,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setPaidOn(id: ObjectId, paidOn: Date): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set paid on');
+    await this.userGuard.require('Set paid on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { paidOn }, { returnDocument: 'after' })
@@ -232,7 +234,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearPaidOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear paid on');
+    await this.userGuard.require('Clear paid on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { paidOn: null }, { returnDocument: 'after' })
@@ -241,7 +243,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setShippedOn(id: ObjectId, shippedOn: Date): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set shipped on');
+    await this.userGuard.require('Set shipped on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { shippedOn }, { returnDocument: 'after' })
@@ -250,7 +252,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearShippedOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear shipped on');
+    await this.userGuard.require('Clear shipped on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { shippedOn: null }, { returnDocument: 'after' })
@@ -259,7 +261,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async setShipmentGroup(id: ObjectId, shipmentGroup: string): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set shipment group');
+    await this.userGuard.require('Set shipment group', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { shipmentGroup }, { returnDocument: 'after' })
@@ -269,10 +271,9 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async setTeamSize(id: ObjectId, input: TeamSizeInput): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
-
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isCoach(r.teamId)) ||
-      this.userGuard.notAuthorized('Set team size');
+    await this.userGuard.require('Set team size', this.userGuard.isAdmin(), () =>
+      this.userGuard.isCoach(r.teamId),
+    );
 
     r.girlCount = input.girlCount;
     r.boyCount = input.boyCount;
@@ -288,9 +289,9 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async setTeamSizeConfirmedOn(id: ObjectId, date: Date): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isCoach(r.teamId)) ||
-      this.userGuard.notAuthorized('Set team size confirmed on');
+    await this.userGuard.require('Set team size confirmed on', this.userGuard.isAdmin(), () =>
+      this.userGuard.isCoach(r.teamId),
+    );
     r.sizeConfirmedOn = date;
     await r.save();
 
@@ -304,16 +305,16 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async clearTeamSizeConfirmedOn(id: ObjectId): Promise<Registration> {
     const r = await registrationRepository.findById(id).exec();
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isCoach(r.teamId)) ||
-      this.userGuard.notAuthorized('Clear team size confirmed on');
+    await this.userGuard.require('Clear team size confirmed on', this.userGuard.isAdmin(), () =>
+      this.userGuard.isCoach(r.teamId),
+    );
     r.sizeConfirmedOn = null;
     await r.save();
     return RegistrationMapper.toRegistration(r);
   }
 
   async setConfirmedOn(id: ObjectId, confirmedOn: Date): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Set confirmed on');
+    await this.userGuard.require('Set confirmed on', this.userGuard.isAdmin());
 
     let r = await registrationRepository.findById(id).exec();
 
@@ -357,7 +358,7 @@ export class RegistrationDataSource extends BaseDataSource {
   }
 
   async clearConfirmedOn(id: ObjectId): Promise<Registration> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Clear confirmed on');
+    await this.userGuard.require('Clear confirmed on', this.userGuard.isAdmin());
 
     const registration = await registrationRepository
       .findByIdAndUpdate(id, { confirmedOn: null }, { returnDocument: 'after' })
@@ -390,12 +391,14 @@ export class RegistrationDataSource extends BaseDataSource {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    this.userGuard.isAdmin() ||
-      ((await this.userGuard.isCoach(r.teamId)) &&
-        (e.foodOrderDeadline ? e.foodOrderDeadline.getTime() >= today.getTime() : true)) ||
-      isEvtMgr ||
-      this.userGuard.notAuthorized('Update food order');
+    await this.userGuard.require(
+      'Update food order',
+      this.userGuard.isAdmin(),
+      async () =>
+        (await this.userGuard.isCoach(r.teamId)) &&
+        (e.foodOrderDeadline ? e.foodOrderDeadline.getTime() >= today.getTime() : true),
+      isEvtMgr,
+    );
 
     const createdOn = r.foodOrder?.createdOn ?? new Date();
     const no: OrderData = {
@@ -422,11 +425,12 @@ export class RegistrationDataSource extends BaseDataSource {
     if (!r) {
       throw new Error('Registration not found');
     }
-
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(r.eventId)) ||
-      ((await this.userGuard.isCoach(r.teamId)) && !r.foodOrder?.invoicedOn) ||
-      this.userGuard.notAuthorized('Remove food order');
+    await this.userGuard.require(
+      'Remove food order',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(r.eventId),
+      async () => (await this.userGuard.isCoach(r.teamId)) && !r.foodOrder?.invoicedOn,
+    );
 
     if (!r.foodOrder) {
       // nie je čo odstrániť – bez zmeny a bez e-mailu

@@ -7,7 +7,7 @@ const errorMessage = 'Wrong ID format.';
 
 function parse(value?: string | number | null) {
   if (value) {
-    if (typeof value === 'object' && Object.keys(value).length == 0) {
+    if (typeof value === 'object' && Object.keys(value).length === 0) {
       // handling of undefined
       return null;
     }

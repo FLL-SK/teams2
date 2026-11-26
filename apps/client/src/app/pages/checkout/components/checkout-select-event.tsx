@@ -32,7 +32,7 @@ export function CheckoutSelectEvent(props: CheckoutSelectEventProps) {
 
   React.useEffect(() => {
     if (details.program) {
-      fetchEvents({
+      void fetchEvents({
         variables: { filter: { programId: details.program.id, isActive: true } },
       });
     }

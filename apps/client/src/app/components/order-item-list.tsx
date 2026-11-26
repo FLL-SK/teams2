@@ -33,7 +33,7 @@ export function OrderItemList(props: OrderItemListProps) {
             editable
               ? (e) => {
                   e.stopPropagation();
-                  onClick && onClick(item);
+                  onClick?.(item);
                 }
               : undefined
           }

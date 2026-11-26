@@ -121,6 +121,15 @@ pnpm testseed           # vyčistenie a naplnenie DB testovacími dátami (iba N
 
 Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, prázdny riadok na konci súboru (`.editorconfig`). Lint: ESLint 9 (jeden `eslint.config.mjs` v koreni). Lint aj formátovanie kontroluje CI pri PR (`pr-check.yaml`) – pred commitom spusti `pnpm lint` a `pnpm format:check`. Zámerne nepoužité parametre a premenné pomenuj s prefixom `_` (napr. `(_parent, args)`).
 
+Pravidlá lintu, na ktoré treba myslieť (#302):
+
+- `no-floating-promises` (typová kontrola v celom repozitári) – Promise treba `await`-nuť, ošetriť (`.catch`) alebo zámerné „spusti a nečakaj“ označiť `void` (napr. `void refetch()`, `void navigate('/')`; mutácie s `onError` chybu nevyhodia),
+- `no-misused-promises` – žiadny Promise v podmienke; v klientovi je async handler v JSX atribúte povolený, v `onCompleted` a pod. použi `() => void refetch()`,
+- `eqeqeq: smart` – `===`, `==` iba pri `x == null`; ObjectId porovnávaj cez `.equals()`,
+- `no-console` na serveri a v `libs` – použi `@teams2/logger`.
+
+**Pre-commit hook** (`simple-git-hooks` + `lint-staged`) sa nainštaluje pri `pnpm install` (skript `prepare`) a na zmenených súboroch spustí Prettier a ESLint. Ručne: `pnpm exec simple-git-hooks`; výnimočne preskočiť: `SKIP_SIMPLE_GIT_HOOKS=1 git commit …`. Typovú kontrolu a testy hook nespúšťa.
+
 ## Lokálny vývoj a konfigurácia
 
 - Server číta premenné z `.env` v koreni (dotenv). Predvolené hodnoty sú v `apps/server/src/server-config.ts` (napr. `APP_MONGODB=mongodb://localhost/teams2`, port `5000`, `APP_CLIENT_ROOT_URL=http://localhost:4200`).
@@ -143,8 +152,16 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 ### Autorizácia
 
 - Kontroly oprávnení sú v datasources cez `this.userGuard` (`apps/server/src/app/utils/user-guard.ts`): `isSuperAdmin`, `isAdmin`, `isCoach(teamId)`, `isEventManager(eventId)`, `isProgramManager(programId)`, `isSelf(userId)` atď.
-- Vzor: `this.userGuard.isAdmin() || this.userGuard.notAuthorized('Popis akcie');`
+- Vzor: `await this.userGuard.require('Popis akcie', this.userGuard.isAdmin(), () => this.userGuard.isCoach(teamId));` – kontroly sa vyhodnocujú postupne a lenivo, stačí jedna pravdivá; inak sa vyhodí `notAuthorized`. Asynchrónnu kontrolu odovzdaj ako funkciu (`() => guard.isCoach(id)`), nie ako `Promise` – typová kontrola to vynúti (#279, #297).
+- Výrazy bez príkazu (`a || guard.notAuthorized()`, `cb && cb()`) lint nepovoľuje – použi `require`, `if` alebo `cb?.()`.
 - `/graphql` je dostupné iba s platným JWT; nová funkcionalita musí vždy explicitne overiť oprávnenia.
+
+### Chyby (#298)
+
+- **Chýbajúce oprávnenie a neočakávané chyby** sú GraphQL chyby. `notAuthorized` / `require` vyhadzujú `GraphQLError` s `extensions.code = 'FORBIDDEN'`; klient (link v `libs/auth-react`) jej správu nahradí slovenskou hláškou a zobrazí sa cez `onError` mutácie/dotazu. Výnimka: registrácie (`domains/registration.ts`) z historických dôvodov vracajú `not_authorized` v payloade.
+- **Porušenie biznis pravidla**, ktoré vie používateľ vyriešiť (tím je už registrovaný, turnaj je plný, …), sa vracia v `errors[]` payloadu mutácie. Kódy a správy sú v `libs/common/src/lib/error-codes.ts` (typ `ErrorCode`) – nový kód pridaj tam aj so správou.
+- V doménovej logike vyhoď `new DomainError(code)` (`apps/server/src/app/utils/domain-error.ts`) a na úrovni mutácie ho preveď cez `failureErrors(code, e, log)` – nie `throw { name: '…' }`.
+- Klient: pri mutácii, ktorá vracia `errors`, vždy zavolaj `handleMutationErrors` (napr. v `onCompleted`) a správu o úspechu zobraz, iba ak chyby neboli.
 
 ### Ďalšie zvyklosti
 
@@ -197,7 +214,7 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 ## CI/CD a nasadenie
 
 - `.github/workflows/build+deploy.yaml`: pri **pushi do `main`** sa nainštaluje pnpm (`pnpm/action-setup`, verzia z `packageManager`) a Node podľa `.nvmrc`, spustí sa `pnpm install --frozen-lockfile`, `pnpm build:all`, zostavia sa Docker obrazy `fllsk/tms-client` a `fllsk/tms-server` (`Dockerfile.client`, `Dockerfile.server`), pushnú sa na Docker Hub a **nasadia na produkčný server** (`docker-compose.yaml`).
-- CI nespúšťa testy ani lint – over ich lokálne pred vytvorením PR.
+- `.github/workflows/pr-check.yaml`: pri PR spustí `generate`, lint, `format:check`, typecheck, unit aj integračné testy, build a `pnpm audit --prod` (informatívne). E2E testy CI nespúšťa – over ich lokálne.
 - Pri zmene závislostí aktualizuj `pnpm-lock.yaml` (CI používa `--frozen-lockfile`).
 - Server image (`Dockerfile.server`, `node:26-slim`) inštaluje iba produkčné závislosti (`pnpm install --prod`) – balíky potrebné za behu servera musia byť v `dependencies`, nástroje a klientske knižnice v `devDependencies`.
 - Pri zmene verzie Node uprav `.nvmrc`, `engines` v `package.json`, `Dockerfile.server` a `target` v `scripts/build-server.mjs`.

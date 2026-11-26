@@ -79,7 +79,7 @@ export function TeamPage() {
 
   const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
     CreateNoteDocument,
-    { onCompleted: () => notesRefetch(), onError },
+    { onCompleted: () => void notesRefetch(), onError },
   );
 
   const [updateTeam] = useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(
@@ -97,8 +97,8 @@ export function TeamPage() {
 
   useEffect(() => {
     if (id) {
-      fetchTeam({ variables: { id } });
-      fetchNotes({
+      void fetchTeam({ variables: { id } });
+      void fetchNotes({
         variables: { type: 'team', ref: id },
       });
     }
@@ -122,7 +122,7 @@ export function TeamPage() {
         zip: data.zip,
       },
     };
-    updateTeam({ variables: { id, input } });
+    void updateTeam({ variables: { id, input } });
   };
 
   if (!id || teamError) {

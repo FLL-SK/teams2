@@ -1,4 +1,6 @@
 import { ObjectId } from 'mongodb';
+import { GraphQLError } from 'graphql';
+import { FORBIDDEN_ERROR_CODE } from '@teams2/common';
 import {
   eventRepository,
   programRepository,
@@ -6,6 +8,9 @@ import {
   teamRepository,
   UserDataNoPassword,
 } from '../models';
+
+/** kontrola oprávnenia pre `UserGuard.require` – hodnota alebo (asynchrónna) funkcia */
+export type GuardCheck = boolean | (() => boolean | Promise<boolean>);
 
 export class UserGuard {
   protected user?: UserDataNoPassword;
@@ -275,11 +280,36 @@ export class UserGuard {
     return (await this.getContactVisibleUserIds()).has(userId.toString());
   }
 
-  notAuthorized(context?: string) {
-    throw new Error(
+  /**
+   * Overí, že aspoň jedna z kontrol prejde, inak vyhodí `notAuthorized(action)`.
+   *
+   * Kontroly sa vyhodnocujú postupne a lenivo – ďalšia sa spustí, iba ak predchádzajúca neprešla.
+   * Asynchrónnu kontrolu treba odovzdať ako funkciu:
+   *
+   * ```ts
+   * await this.userGuard.require('Update event',
+   *   this.userGuard.isAdmin(),
+   *   () => this.userGuard.isEventManager(eventId));
+   * ```
+   *
+   * Priamy `Promise` sa zámerne nepovoľuje – bez `await` by bol vždy pravdivý (#279, #297).
+   */
+  async require(action: string, ...checks: GuardCheck[]): Promise<void> {
+    for (const check of checks) {
+      if (typeof check === 'function' ? await check() : check) {
+        return;
+      }
+    }
+    this.notAuthorized(action);
+  }
+
+  /** vyhodí GraphQL chybu s `extensions.code = 'FORBIDDEN'` (#298) */
+  notAuthorized(context?: string): never {
+    throw new GraphQLError(
       `(${this.user ? this.user.username : 'not-logged-in'}) ${this.message}${
         context ? `: ${context}` : ''
       }`,
+      { extensions: { code: FORBIDDEN_ERROR_CODE } },
     );
   }
 }

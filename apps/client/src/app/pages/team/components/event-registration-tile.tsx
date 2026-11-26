@@ -16,6 +16,7 @@ import { appPath } from '@teams2/common';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { useCallback, useMemo, useState } from 'react';
 import { emptyOrder, FoodOrderModal } from '../../../components/food-order-modal';
+import { handleMutationErrors } from '../../../utils/handle_mutation_error';
 import { useNotification } from '../../../components/notifications/notification-provider';
 
 interface EventRegistrationTileProps {
@@ -48,6 +49,12 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
     UpdateRegistrationFoodOrderMutation,
     UpdateRegistrationFoodOrderMutationVariables
   >(UpdateRegistrationFoodOrderDocument, {
+    onCompleted: (d) =>
+      handleMutationErrors(
+        d.updateRegistrationFoodOrder,
+        'Nepodarilo sa upraviť objednávku jedla.',
+        notify.error,
+      ),
     onError: (e) => notify.error('Nepodarilo sa upraviť objednávku jedla.', e.message),
   });
 
@@ -99,7 +106,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
         o.shipTo = { ...data.shipTo };
       }
 
-      updateOrder({
+      void updateOrder({
         variables: {
           id: registration.id,
           order: o,

@@ -9,7 +9,7 @@ import { QueryFilter } from 'mongoose';
 export class NoteDataSource extends BaseDataSource {
   async getNote(id: ObjectId): Promise<Note> {
     if (!id) return null;
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get note');
+    await this.userGuard.require('Get note', this.userGuard.isAdmin());
 
     const note = await noteRepository.findById(id).exec();
     return NoteMapper.toNote(note);
@@ -29,7 +29,7 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async createNote(input: NoteCreateInput): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create note');
+    await this.userGuard.require('Create note', this.userGuard.isAdmin());
 
     const createdBy = this.context.user._id;
     const n: NoteData = { ...input, createdOn: new Date(), createdBy };
@@ -38,7 +38,7 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async updateNote(id: ObjectId, input: NoteUpdateInput): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update note');
+    await this.userGuard.require('Update note', this.userGuard.isAdmin());
 
     const note = await noteRepository
       .findByIdAndUpdate(id, input, { returnDocument: 'after' })
@@ -47,7 +47,7 @@ export class NoteDataSource extends BaseDataSource {
   }
 
   async deleteNote(id: ObjectId): Promise<Note> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete note');
+    await this.userGuard.require('Delete note', this.userGuard.isAdmin());
 
     const note = await noteRepository
       .findByIdAndUpdate(id, { deletedOn: new Date() }, { returnDocument: 'after' })

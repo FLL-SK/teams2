@@ -49,7 +49,7 @@ export function TeamListPage() {
     setSearchText(flt.query ?? '');
     setSearchTextEditing(flt.query ?? '');
 
-    fetchTeams({ variables: { filter: f } });
+    void fetchTeams({ variables: { filter: f } });
     setFilter(flt);
   }, [fetchTeams, searchParams]);
 
