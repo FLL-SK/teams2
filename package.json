@@ -32,6 +32,7 @@
     "lint": "eslint .",
     "typecheck": "node scripts/typecheck.mjs",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "testseed": "tsx --tsconfig apps/server/tsconfig.app.json apps/server/src/main.ts testseed"
   },
   "dependencies": {
