@@ -1,4 +1,3 @@
-import React from 'react';
 import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Text, Tip } from 'grommet';
 import { Calendar, Close, Group } from 'grommet-icons';

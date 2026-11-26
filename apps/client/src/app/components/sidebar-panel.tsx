@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Collapsible } from 'grommet';
 import { Down, Next } from 'grommet-icons';
 import { GapType } from 'grommet/utils';

@@ -2,13 +2,10 @@ import { BaseDataSource } from './_base.datasource';
 import { settingsRepository } from '../../models';
 import { Settings, UpdateSettingsInput } from '../../_generated/graphql';
 
-import { logger } from '@teams2/logger';
 import { SettingsMapper } from '../mappers/settings.mapper';
 import { validateEmail } from '@teams2/common';
 import { sendEmail } from '../../utils/mailer';
 import { msgFromTemplate } from '../../utils/messages';
-
-const logBase = logger('DS:Settings');
 
 export class SettingsDataSource extends BaseDataSource {
   async get(): Promise<Settings> {

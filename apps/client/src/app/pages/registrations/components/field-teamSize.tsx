@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, Text, Tip } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
@@ -12,7 +12,6 @@ import {
 } from '../../../_generated/graphql';
 import { useMutation } from '@apollo/client/react';
 import { formatTeamSize } from '../../../utils/format-teamsize';
-import { WidthType } from 'grommet/utils';
 
 export const FieldTeamSize = (props: {
   registration: Pick<Registration, 'id' | 'boyCount' | 'girlCount' | 'coachCount' | 'teamId'>;

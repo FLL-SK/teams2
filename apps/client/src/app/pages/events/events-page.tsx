@@ -1,5 +1,4 @@
 import { Box, Paragraph } from 'grommet';
-import React from 'react';
 import { BasePage } from '../../components/base-page';
 import { EventList } from '../../components/event-list';
 import {
@@ -7,15 +6,13 @@ import {
   GetEventsQuery,
   GetEventsQueryVariables,
 } from '../../_generated/graphql';
-import { useNotification } from '../../components/notifications/notification-provider';
 import { useQuery } from '@apollo/client/react';
 
 interface EventsPageProps {
   responsiveSize?: string;
 }
 
-export function EventsPage(props: EventsPageProps) {
-  const { notify } = useNotification();
+export function EventsPage(_props: EventsPageProps) {
   const {
     data: eventsData,
     loading: eventsLoading,

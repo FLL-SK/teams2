@@ -1,5 +1,4 @@
 import { Box } from 'grommet';
-import React from 'react';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
 import { UserTags } from '../../../components/user-tags';

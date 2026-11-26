@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Paragraph } from 'grommet';
 import { LabelValue } from '../../../components/label-value';
 import { Panel } from '../../../components/panel';

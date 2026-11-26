@@ -1,7 +1,7 @@
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button, Text } from 'grommet';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditEventDialog } from '../../../components/dialogs/edit-event-dialog';
 import { LabelValue } from '../../../components/label-value';

@@ -1,8 +1,5 @@
-import React from 'react';
-import { Box, Button, Table, TableBody, TableCell, TableHeader, TableRow, Text } from 'grommet';
+import { Button, Table, TableBody, TableCell, TableHeader, TableRow, Text } from 'grommet';
 import { OrderFragmentFragment } from '../_generated/graphql';
-import { JustifiedText } from './justified-text';
-import { ListHeader2, ListRow2 } from './list-row';
 import { Close } from 'grommet-icons';
 
 interface OrderItemListProps {

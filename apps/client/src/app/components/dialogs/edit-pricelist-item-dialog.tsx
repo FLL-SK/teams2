@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box, Button, Form, FormField, TextInput, Text } from 'grommet';
 import { useState } from 'react';
 import { Modal } from '../modal';

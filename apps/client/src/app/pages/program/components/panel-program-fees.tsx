@@ -1,6 +1,6 @@
 import { Box, Button, Text } from 'grommet';
 import { omit } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { EditInvoiceItemDialog } from '../../../components/dialogs/edit-invoice-item-dialog';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { useNotification } from '../../../components/notifications/notification-provider';

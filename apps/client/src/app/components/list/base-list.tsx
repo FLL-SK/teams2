@@ -1,11 +1,9 @@
-import React from 'react';
 import { List, ListProps, RowRendererParams } from 'react-virtualized';
 import { AutoSizer } from 'react-virtualized-auto-sizer';
 import 'react-virtualized/styles.css';
 import { ListRow } from '../../components/list/list-row';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
-import { breakpoints } from '../../theme';
 import { Box } from 'grommet';
 import { ListHeaderRow } from './list-header-row';
 import { EdgeSizeType } from 'grommet/utils';
@@ -23,13 +21,6 @@ interface BaseListProps<T = unknown> extends Omit<ListProps, 'height' | 'width' 
   actionsJustifyContent?: string;
   footerPanel?: ReactNode | null;
 }
-
-const Container = styled.div<{ heightOffset: number }>`
-  /*max-width: ${breakpoints.tablet};*/
-  /*height: calc(100% - ${(p) => p.heightOffset}px);*/
-  height: 100%;
-  width: 100%;
-`;
 
 const ContentPanel = styled(Box)`
   height: 90%;
@@ -55,7 +46,6 @@ export function BaseList<T = unknown>(props: BaseListProps<T>) {
   } = props;
 
   const rowRenderer = (props: RowRendererParams) => {
-    // eslint-disable-next-line react/prop-types
     const { index, /*isScrolling,*/ style } = props;
 
     const data = rowGetter(index);

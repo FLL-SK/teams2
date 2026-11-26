@@ -72,14 +72,14 @@ export function EventPage() {
       fetchPolicy: 'cache-and-network',
     });
 
-  const [fetchRegistrations, { data: regData, error: regError }] = useLazyQuery<
+  const [fetchRegistrations, { data: regData }] = useLazyQuery<
     GetRegisteredTeamsQuery,
     GetRegisteredTeamsQueryVariables
   >(GetRegisteredTeamsDocument, {
     fetchPolicy: 'cache-and-network',
   });
 
-  const [fetchProgramRegistrations, { data: progRegs, error: progRegsError }] = useLazyQuery<
+  const [fetchProgramRegistrations, { data: progRegs }] = useLazyQuery<
     GetProgramRegistrationsQuery,
     GetProgramRegistrationsQueryVariables
   >(GetProgramRegistrationsDocument, {

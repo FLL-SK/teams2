@@ -1,4 +1,3 @@
-import React from 'react';
 import { BasePage } from '../../components/base-page';
 import {
   GetSettingsDocument,

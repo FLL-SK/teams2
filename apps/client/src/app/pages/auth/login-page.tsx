@@ -1,4 +1,3 @@
-import React from 'react';
 import { appPath } from '@teams2/common';
 import {
   Anchor,

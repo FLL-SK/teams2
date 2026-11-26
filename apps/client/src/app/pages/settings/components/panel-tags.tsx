@@ -1,5 +1,4 @@
 import { Spinner } from 'grommet';
-import React from 'react';
 
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { TagList } from '../../../components/tag-list';

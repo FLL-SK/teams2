@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { useNotification } from './notification-provider';
 import { Notification } from './notification';

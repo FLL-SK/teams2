@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Paragraph } from 'grommet';
 
 import { Contact, CheckoutDetails } from './types';

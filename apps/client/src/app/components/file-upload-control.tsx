@@ -1,5 +1,5 @@
 import { Box, Button, FileInput } from 'grommet';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ListRow2 } from './list-row';
 
 interface FileUploadControlProps {

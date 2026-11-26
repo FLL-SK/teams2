@@ -54,10 +54,9 @@ type CheckoutStep =
   | 'error';
 
 export function CheckoutPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [teamId, setTeamId] = useState<string | null>(null);
   const [programId, setProgramId] = useState<string | null>(null);
-  const [eventId, setEventId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { notify } = useNotification();
@@ -69,8 +68,9 @@ export function CheckoutPage() {
   });
   const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
 
-  const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
-    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument);
+  const [fetchProgram] = useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(
+    GetProgramDocument,
+  );
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] = useLazyQuery<
     GetTeamQuery,
@@ -106,7 +106,6 @@ export function CheckoutPage() {
     setTeamId(tid);
     setCheckoutDetails({ ...checkoutDetails, teamId: tid ?? 'x' });
     setProgramId(searchParams.get('programId'));
-    setEventId(searchParams.get('eventId'));
   }, [searchParams]);
 
   React.useEffect(() => {

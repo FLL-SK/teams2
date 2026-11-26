@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, CheckBox, Form, FormField, Paragraph } from 'grommet';
 import { Modal } from '../modal';
 import {
@@ -10,7 +10,6 @@ import { useQuery } from '@apollo/client/react';
 import { validateEmail, validatePhone } from '@teams2/common';
 import { useAppUser } from '../app-user/use-app-user';
 import { YesNoDialog } from './yes-no-dialog';
-import { set } from 'lodash';
 
 interface EditUserDialogProps {
   user?: EditUserDialogFields | null;

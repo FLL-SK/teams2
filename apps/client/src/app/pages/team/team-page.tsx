@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { appPath } from '@teams2/common';
 import { Box, Button, CheckBox, Spinner, Text } from 'grommet';
 import { useState } from 'react';
@@ -63,12 +63,10 @@ export function TeamPage() {
     GetTeamQueryVariables
   >(GetTeamDocument, { fetchPolicy: 'cache-and-network' });
 
-  const [
-    fetchNotes,
-    { data: notesData, loading: notesLoading, refetch: notesRefetch, error: notesError },
-  ] = useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument, {
-    fetchPolicy: 'cache-and-network',
-  });
+  const [fetchNotes, { data: notesData, loading: notesLoading, refetch: notesRefetch }] =
+    useLazyQuery<GetNotesQuery, GetNotesQueryVariables>(GetNotesDocument, {
+      fetchPolicy: 'cache-and-network',
+    });
 
   const [removeTag] = useMutation<RemoveTagsFromTeamMutation, RemoveTagsFromTeamMutationVariables>(
     RemoveTagsFromTeamDocument,

@@ -1,5 +1,5 @@
 import { toUtcDateString } from '@teams2/dateutils';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';

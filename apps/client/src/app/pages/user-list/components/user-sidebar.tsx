@@ -1,4 +1,3 @@
-import React from 'react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { ClosableSidebar } from '../../../components/sidebar';

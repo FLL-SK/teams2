@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, Text } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditShipmentGroupDialog } from '../../../components/dialogs/edit-shipment-group-dialog';

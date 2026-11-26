@@ -19,12 +19,10 @@ import {
   constructTeamListSearchParams,
   parseTeamListSearchParams,
 } from './components/team-list-params';
-import { useNotification } from '../../components/notifications/notification-provider';
 import { useLazyQuery } from '@apollo/client/react';
 
 export function TeamListPage() {
   const { isAdmin } = useAppUser();
-  const { notify } = useNotification();
   const [selectedTeam, setSelectedTeam] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();

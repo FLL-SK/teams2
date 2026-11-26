@@ -1,6 +1,5 @@
 import { useApolloClient } from '@apollo/client/react';
 import { isNil, omitBy } from 'lodash';
-import React from 'react';
 import {
   UpdateUserInput,
   DeclineGdprDocument,
@@ -19,7 +18,7 @@ interface ForceGdprDialogProps {
   show?: boolean;
 }
 
-export function ForceGdprDialog(props: ForceGdprDialogProps) {
+export function ForceGdprDialog(_props: ForceGdprDialogProps) {
   const { user } = useAppUser();
   const { logout } = useAuthenticate();
   const apolloClient = useApolloClient();

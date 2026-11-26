@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Text, Tip } from 'grommet';
 import { ReactNode } from 'react';
 import { LabelValueGroupContext } from './label-value-group';

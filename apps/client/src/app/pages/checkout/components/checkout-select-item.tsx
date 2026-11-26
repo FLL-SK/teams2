@@ -1,6 +1,4 @@
-import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
-import { ProgramTile } from './program-tile';
 import {
   ProductFragment,
   TeamFragmentFragment,

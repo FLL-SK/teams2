@@ -1,6 +1,6 @@
 import { Box, Button } from 'grommet';
 import { Add } from 'grommet-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { EditEmailDialog } from '../../../components/dialogs/edit-email-dialog';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';

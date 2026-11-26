@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
 import { GetUsersDocument, GetUsersQuery, GetUsersQueryVariables } from '../_generated/graphql';

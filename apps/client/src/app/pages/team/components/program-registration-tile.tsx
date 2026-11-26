@@ -1,4 +1,3 @@
-import React from 'react';
 import { Anchor, Box, Button, Text } from 'grommet';
 import { Registration, TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
 import { appPath } from '@teams2/common';

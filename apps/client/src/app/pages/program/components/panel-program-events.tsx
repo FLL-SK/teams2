@@ -1,5 +1,5 @@
 import { Box, Button } from 'grommet';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { EditEventDialog } from '../../../components/dialogs/edit-event-dialog';
 import { EventList } from '../../../components/event-list';
 import { useNotification } from '../../../components/notifications/notification-provider';

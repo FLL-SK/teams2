@@ -1,6 +1,4 @@
-import { NestedObjectLeaves } from '@teams2/common';
 import { json2Aoa, Json2AoaInputType } from './json-to-aoa';
-import { saveXlsx } from './save-xlsx';
 import { ArrayOfArraysOfAny } from './def-aoa';
 import { saveCsv } from './save-csv';
 
@@ -14,8 +12,6 @@ interface ExportSourceType {
   teamCountry: string;
   teamRegion: string;
 }
-
-type ExportFieldKey = NestedObjectLeaves<ExportSourceType>;
 
 //TODO: add "id" field typechecking
 export const fields: Json2AoaInputType<ExportSourceType>[] = [

@@ -1,5 +1,5 @@
 import { Anchor, Box, Paragraph, Text } from 'grommet';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {

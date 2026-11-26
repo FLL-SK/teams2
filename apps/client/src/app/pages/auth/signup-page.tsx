@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { Box, Button, CheckBox, Form, FormField, Paragraph, Text } from 'grommet';
 import { useState } from 'react';

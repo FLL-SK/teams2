@@ -4,10 +4,6 @@ import { InvoiceItem, InvoiceItemInput, InvoiceItemType } from '../../_generated
 import { InvoiceItemMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
-import { logger } from '@teams2/logger';
-
-const logBase = logger('DS:Invoice');
-
 export class InvoiceItemDataSource extends BaseDataSource {
   async getEventInvoiceItems(eventId: ObjectId): Promise<InvoiceItem[]> {
     if (!this.userGuard.isLoggedIn()) {

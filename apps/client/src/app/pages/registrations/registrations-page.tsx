@@ -35,13 +35,11 @@ import {
 import { MultitagPanel } from './components/multitag-panel';
 import { Modal } from '../../components/modal';
 import { handleExportRegisteredTeams } from './components/handle-export-regs';
-import { useNotification } from '../../components/notifications/notification-provider';
 
 const localStoreFilterEntry = 'registrations-filter';
 
 export function RegistrationsPage() {
   const { isAdmin } = useAppUser();
-  const { notify } = useNotification();
   const [selectedReg, setSelectedReg] = useState<string>();
   const [showFilter, setShowFilter] = useState(false);
   const [showCoachesEmails, setShowCoachesEmails] = useState(false);

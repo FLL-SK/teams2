@@ -2,7 +2,6 @@ import { BaseDataSource } from './_base.datasource';
 import { fireAndForget } from '../../utils/fire-and-forget';
 import {
   eventRepository,
-  ProgramData,
   programRepository,
   RegistrationData,
   RegistrationGroup,
@@ -21,7 +20,6 @@ import {
 } from '../../_generated/graphql';
 import { OrderMapper, RegistrationMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
-import { logger } from '@teams2/logger';
 import Dataloader from 'dataloader';
 import {
   emailTeamSizeConfirmed,
@@ -34,8 +32,6 @@ import { QueryFilter, UpdateQuery } from 'mongoose';
 import { OrderData } from '../../models/order.model';
 import { formatTeamNo } from '../../utils/format-teamNo';
 import { priceFoodOrderItems } from '../../domains/registration-rules';
-
-const logBase = logger('DS:Registration');
 
 export class RegistrationDataSource extends BaseDataSource {
   declare private loader: Dataloader<string, Registration, string>;

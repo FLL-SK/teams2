@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, Image, Spinner, Text } from 'grommet';
+import { Anchor, Box, Image, Spinner, Text } from 'grommet';
 import React from 'react';
 import { EditAddressDialog } from '../../../components/dialogs/edit-address-dialog';
 import { InplaceTextEdit } from '../../../components/editors/inplace-text';

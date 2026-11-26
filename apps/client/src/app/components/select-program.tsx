@@ -1,4 +1,3 @@
-import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useEffect, useState } from 'react';
 import {

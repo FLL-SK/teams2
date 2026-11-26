@@ -152,7 +152,7 @@ const passportLoginStrategy = () => {
           return cb(null, false);
         }
         return cb(null, user);
-      } catch (err) {
+      } catch {
         return cb(new Error('Auth server error'), false);
       }
     },

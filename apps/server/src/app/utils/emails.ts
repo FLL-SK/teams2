@@ -4,7 +4,6 @@ import { getServerConfig } from '../../server-config';
 import {
   eventRepository,
   OrderData,
-  PricelistEntryData,
   programRepository,
   RegistrationData,
   registrationRepository,

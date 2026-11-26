@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Text } from 'grommet';
 import styled from 'styled-components';
 import { NoteDetail } from './note-detail';
@@ -40,7 +39,7 @@ export function NoteList(props: NoteListProps) {
 
   const updateNote = async (note: Note) => {
     const { id, text } = note;
-    const response = await updateNoteMutation({ variables: { id, input: { text } } });
+    await updateNoteMutation({ variables: { id, input: { text } } });
   };
 
   const deleteNote = async (note: Note) => {

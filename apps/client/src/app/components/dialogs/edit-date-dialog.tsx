@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, DateInput, Form, FormField, TextInput } from 'grommet';
+import { useEffect, useState } from 'react';
+import { Box, Button, DateInput, Form, FormField } from 'grommet';
 import { Modal } from '../modal';
-import { validateEmail } from '@teams2/common';
 
 interface EditDateDialogProps {
   title?: string;

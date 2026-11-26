@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import { FileFragmentFragment } from '../_generated/graphql';
 import { ListRow2 } from './list-row';

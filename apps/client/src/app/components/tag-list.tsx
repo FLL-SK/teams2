@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button } from 'grommet';
 import { Add } from 'grommet-icons';
 import { useState } from 'react';

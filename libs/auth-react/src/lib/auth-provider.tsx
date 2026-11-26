@@ -246,7 +246,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
         });
 
         return response.ok;
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -261,7 +261,7 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
       try {
         const response = await postAuth(url.toString(), { password, token });
         return response.ok;
-      } catch (error) {
+      } catch {
         return false;
       }
     },

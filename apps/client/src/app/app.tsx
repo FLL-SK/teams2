@@ -7,7 +7,7 @@ import { AppUserContextProvider } from './components/app-user/app-user-provider'
 import { NotificationProvider } from './components/notifications/notification-provider';
 import { AuthContext, AuthContextProvider, AuthedApolloProvider } from '@teams2/auth-react';
 
-const ApolloWrapper = ({ children }: { children?: React.ReactNode }) => {
+const ApolloWrapper = () => {
   const token = React.useContext(AuthContext).token;
   return (
     <AuthedApolloProvider apiUri={`${appConfig.apiUrl}/graphql`} apiToken={token}>

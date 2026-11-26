@@ -1,6 +1,6 @@
 import { Box } from 'grommet';
 import { DirectionType, GapType } from 'grommet/utils';
-import React, { createContext, ReactNode } from 'react';
+import { createContext, ReactNode } from 'react';
 
 interface LabelValueGroupProps {
   labelWidth?: string;

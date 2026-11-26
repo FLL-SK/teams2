@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   TextArea,
   TextInput,
   Text,
-  CheckBoxGroup,
 } from 'grommet';
 import { useState } from 'react';
 import { ProgramListFragmentFragment } from '../../_generated/graphql';
