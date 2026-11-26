@@ -31,6 +31,7 @@ import {
 } from '../utils/emails';
 import { appPath } from '@teams2/common';
 import { QueryFilter } from 'mongoose';
+import { checkEventRegistration, checkProgramRegistration } from './registration-rules';
 
 const logLib = logger('domain:Registration');
 
@@ -381,25 +382,24 @@ export async function createEventRegistration(
     (await ctx.userGuard.isCoach(teamId)) ||
     ctx.userGuard.notAuthorized('Create event registration');
 
-  // check if team is not already registered
-  const r = await registrationRepository.groupRegistrations({ eventId, teamId, active: true });
-  log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
-  if (r.length > 0) {
+  // tím už má aktívnu registráciu na turnaj – potvrdenú aj nepotvrdenú (#287);
+  // groupRegistrations bez onlyUnconfirmed započítaval iba potvrdené registrácie
+  if (await registrationRepository.exists({ eventId, teamId, canceledOn: null })) {
     throw { name: 'team_already_registered' };
   }
 
   const event = await eventRepository.findById(eventId).exec();
-  if (!event) {
-    log.warn('Event not found teamId=%s eventId=%s', teamId.toHexString(), eventId.toHexString());
-    throw { name: 'event_not_found' };
-  }
-
-  if (
-    event.maxTeams &&
-    (await registrationRepository.groupRegistrations({ eventId, active: true })).length >=
-      event.maxTeams
-  ) {
-    throw { name: 'event_full' };
+  // kapacita podľa aktívnych registrácií (aj nepotvrdených) – rovnako ako počet v klientovi
+  const activeRegistrations = event
+    ? await registrationRepository.countDocuments({ eventId, canceledOn: null }).exec()
+    : 0;
+  // termín, pozvánky, kapacita, zmazaný/archivovaný turnaj – predtým kontroloval iba klient (#283)
+  const ruleError = checkEventRegistration(event, teamId, activeRegistrations, {
+    isAdmin: ctx.userGuard.isAdmin(),
+  });
+  if (ruleError) {
+    log.warn('Event registration rejected teamId=%s eventId=%s %s', teamId, eventId, ruleError);
+    throw { name: ruleError };
   }
 
   const team = await teamRepository.findById(teamId).exec();
@@ -436,15 +436,29 @@ export async function createProgramRegistration(
     (await ctx.userGuard.isCoach(teamId)) ||
     ctx.userGuard.notAuthorized('Create program registration');
 
-  // check if team is not already registered
-  const r = await registrationRepository.groupRegistrations({
-    programId,
-    teamId,
-    active: true,
-  });
-  log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
-  if (r.length > 0) {
+  // tím už má aktívnu registráciu do programu – potvrdenú aj nepotvrdenú (#287)
+  if (await registrationRepository.exists({ programId, teamId, eventId: null, canceledOn: null })) {
     throw { name: 'team_already_registered' };
+  }
+
+  const program = await programRepository.findById(programId).exec();
+  const activeRegistrations = program
+    ? await registrationRepository
+        .countDocuments({ programId, eventId: null, canceledOn: null })
+        .exec()
+    : 0;
+  // aktívny program, povolený typ registrácie, kapacita (#283)
+  const ruleError = checkProgramRegistration(program, input.type, activeRegistrations, {
+    isAdmin: ctx.userGuard.isAdmin(),
+  });
+  if (ruleError) {
+    log.warn(
+      'Program registration rejected teamId=%s programId=%s %s',
+      teamId,
+      programId,
+      ruleError,
+    );
+    throw { name: ruleError };
   }
 
   const team = await teamRepository.findById(teamId).exec();

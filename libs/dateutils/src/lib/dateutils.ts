@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
-import { TZDateMini, tz } from '@date-fns/tz';
+import { format, startOfDay } from 'date-fns';
+import { TZDate, TZDateMini, tz } from '@date-fns/tz';
 import { sk } from 'date-fns/locale';
 
 const timeZone = 'Europe/Bratislava';
@@ -34,4 +34,9 @@ export function formatDateTimeRelative(date: Date | string | number): string {
     return format(new Date(date), 'EEEE HH:mm', { locale: sk });
   }
   return formatDateTime(date);
+}
+
+/** začiatok dnešného dňa (polnoc) v časovom pásme Europe/Bratislava – rovnako ako „dnes“ v klientovi */
+export function startOfTodayInTimeZone(now: Date | number = Date.now()): Date {
+  return new Date(startOfDay(new TZDate(new Date(now).getTime(), timeZone)).getTime());
 }

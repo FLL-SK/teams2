@@ -32,6 +32,7 @@ import {
 import { QueryFilter, UpdateQuery } from 'mongoose';
 import { OrderData } from '../../models/order.model';
 import { formatTeamNo } from '../../utils/format-teamNo';
+import { priceFoodOrderItems } from '../../domains/registration-rules';
 
 const logBase = logger('DS:Registration');
 
@@ -394,16 +395,14 @@ export class RegistrationDataSource extends BaseDataSource {
 
     const createdOn = r.foodOrder?.createdOn ?? new Date();
     const no: OrderData = {
-      ...orderData,
+      note: orderData.note,
+      billTo: orderData.billTo,
+      shipTo: orderData.shipTo,
+      // cena a názov z cenníka turnaja, nie od klienta (#283); položky s množstvom 0 sa vynechajú
+      items: priceFoodOrderItems(orderData.items ?? [], e.foodTypes ?? []),
       createdOn,
       updatedOn: new Date(),
     };
-    // remove items with quantity 0
-    no.items = no.items.filter((i) => i.quantity > 0);
-    // round prices to 2 decimal places
-    no.items.forEach((i) => {
-      i.price = Math.round(i.quantity * i.unitPrice * 100) / 100;
-    });
 
     r.foodOrder = no;
     await r.save();
