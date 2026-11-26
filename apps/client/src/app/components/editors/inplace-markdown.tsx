@@ -1,4 +1,5 @@
 import { Anchor, Box, Markdown, TextArea } from 'grommet';
+import { SAFE_MARKDOWN_OPTIONS } from '../md';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
@@ -42,7 +43,7 @@ export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
       event.preventDefault();
       doSubmit();
     },
-    [doSubmit]
+    [doSubmit],
   );
 
   const handleKeyDown = useCallback(
@@ -55,13 +56,15 @@ export function InPlaceMarkdown(props: InPlaceMarkdownProps) {
         doCancel();
       }
     },
-    [doCancel, doSubmit]
+    [doCancel, doSubmit],
   );
 
   if (!editing) {
     return (
       <Container onClick={() => setEditing(true)} hoverIndicator>
-        <Markdown>{value ?? placeholder ?? 'kliknutím editovať'}</Markdown>
+        <Markdown options={SAFE_MARKDOWN_OPTIONS}>
+          {value ?? placeholder ?? 'kliknutím editovať'}
+        </Markdown>
       </Container>
     );
   }

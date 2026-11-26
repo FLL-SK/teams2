@@ -1,5 +1,5 @@
 import cors from 'cors';
-import morgan from 'morgan';
+import helmet from 'helmet';
 import passport from 'passport';
 import express, { Express } from 'express';
 import { logger } from '@teams2/logger';
@@ -8,6 +8,7 @@ import { getServerConfig } from '../server-config';
 import { bootstrapApolloServer } from './apollo/bootstrap-apollo-server';
 import { buildRootRouter } from './routes';
 import { initSettingsLoader } from './utils/settings';
+import { requestLogger } from './utils/request-log';
 
 const log = logger('app');
 
@@ -25,9 +26,15 @@ export interface CreateAppOptions {
 export async function createApp(options: CreateAppOptions = {}): Promise<Express> {
   const { assetsPath, logRequests = true } = options;
   const app = express();
+  // za reverznou proxy (nginx) – správna IP klienta pre rate limiting a logy (#281)
+  app.set('trust proxy', getServerConfig().trustProxy);
+  // bezpečnostné hlavičky (#284); logo v /public sa vkladá do klienta a e-mailov z iných domén
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+  app.disable('x-powered-by');
 
   if (logRequests) {
-    app.use(morgan('tiny'));
+    // bez query stringu – môže obsahovať tokeny a tajné kľúče (#282)
+    app.use(requestLogger());
   }
 
   // CORS configuration
@@ -56,7 +63,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Express
       if (user) {
         req.user = user;
       } else {
-        log.warn('Unauthorized request /graphql from ip=%s body=%o', req.ip.toString(), req.body);
+        log.warn('Unauthorized request /graphql from ip=%s', req.ip ?? '-');
 
         return res.status(401).send('Unauthorized');
       }

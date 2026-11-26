@@ -34,7 +34,7 @@ const schema = new Schema<FileData, FileModel>(
   { collation: { locale: 'sk', strength: 1 } },
 );
 
-schema.index({ ttype: 1, ref: 1 });
+schema.index({ type: 1, ref: 1 }); // predtým preklep `ttype` – index na neexistujúcom poli (#285)
 
 schema.static('clean', function () {
   return this.deleteMany().exec();

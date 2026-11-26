@@ -10,7 +10,12 @@ import {
   GetSettingsQueryVariables,
 } from '../../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
-import { validateEmail, validatePhone } from '@teams2/common';
+import {
+  MIN_PASSWORD_LENGTH,
+  validateEmail,
+  validatePassword,
+  validatePhone,
+} from '@teams2/common';
 import { AuthSignupData, useAuthenticate } from '@teams2/auth-react';
 
 export interface SignupDataType extends AuthSignupData {
@@ -87,7 +92,17 @@ export function SignupPage() {
                 validateEmail(f) ? true : { status: 'error', message: 'Nesprávny email.' }
               }
             />
-            <FormField label="Heslo" name="password" type="password" required />
+            <FormField
+              label="Heslo"
+              name="password"
+              type="password"
+              required
+              validate={(f: string) =>
+                validatePassword(f)
+                  ? true
+                  : { status: 'error', message: `Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.` }
+              }
+            />
             <FormField
               label="Heslo znova"
               name="passwordConfirm"

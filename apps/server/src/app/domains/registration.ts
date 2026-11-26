@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { fireAndForget } from '../utils/fire-and-forget';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
@@ -31,6 +32,7 @@ import {
 } from '../utils/emails';
 import { appPath } from '@teams2/common';
 import { QueryFilter } from 'mongoose';
+import { checkEventRegistration, checkProgramRegistration } from './registration-rules';
 
 const logLib = logger('domain:Registration');
 
@@ -38,6 +40,8 @@ export async function createRegistrationInvoice(
   registrationId: ObjectId,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
+  // pred odoslaním faktúry do SuperFaktúry – predtým sa oprávnenie overilo až po vytvorení faktúry (#280)
+  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Create registration invoice');
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
@@ -86,6 +90,7 @@ export async function emailRegistrationInvoice(
   id: ObjectId,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
+  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Email registration invoice'); // #280
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('emailInv');
@@ -191,6 +196,10 @@ export async function cancelRegistration(
   const { dataSources, userGuard } = ctx;
   const log = logLib.extend('cancelRegistration');
   const reg = await dataSources.registration.getRegistration(id);
+  if (!reg) {
+    // neexistuje alebo ju používateľ nesmie čítať (#289)
+    return { errors: [{ code: 'not_authorized' }] };
+  }
 
   // zrušiť môže admin, tréner tímu (iba nepotvrdenú registráciu), správca programu alebo turnaja
   const canCancel =
@@ -232,9 +241,15 @@ export async function cancelRegistration(
 
   // email notifications
   if (registration.eventId) {
-    void emailTeamUnregisteredFromEvent(registration.id);
+    fireAndForget(
+      emailTeamUnregisteredFromEvent(registration.id),
+      'emailTeamUnregisteredFromEvent',
+    );
   } else {
-    void emailTeamUnregisteredFromProgram(registration.id);
+    fireAndForget(
+      emailTeamUnregisteredFromProgram(registration.id),
+      'emailTeamUnregisteredFromProgram',
+    );
   }
 
   return { registration };
@@ -277,7 +292,7 @@ export async function registerTeamToEvent(
 
   try {
     // email notifications
-    void emailTeamRegisteredForEvent(registration._id);
+    fireAndForget(emailTeamRegisteredForEvent(registration._id), 'emailTeamRegisteredForEvent');
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -329,7 +344,7 @@ export async function registerTeamToProgram(
 
   try {
     // email notifications
-    void emailTeamRegisteredForProgram(registration._id);
+    fireAndForget(emailTeamRegisteredForProgram(registration._id), 'emailTeamRegisteredForProgram');
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -374,25 +389,24 @@ export async function createEventRegistration(
     (await ctx.userGuard.isCoach(teamId)) ||
     ctx.userGuard.notAuthorized('Create event registration');
 
-  // check if team is not already registered
-  const r = await registrationRepository.groupRegistrations({ eventId, teamId, active: true });
-  log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
-  if (r.length > 0) {
+  // tím už má aktívnu registráciu na turnaj – potvrdenú aj nepotvrdenú (#287);
+  // groupRegistrations bez onlyUnconfirmed započítaval iba potvrdené registrácie
+  if (await registrationRepository.exists({ eventId, teamId, canceledOn: null })) {
     throw { name: 'team_already_registered' };
   }
 
   const event = await eventRepository.findById(eventId).exec();
-  if (!event) {
-    log.warn('Event not found teamId=%s eventId=%s', teamId.toHexString(), eventId.toHexString());
-    throw { name: 'event_not_found' };
-  }
-
-  if (
-    event.maxTeams &&
-    (await registrationRepository.groupRegistrations({ eventId, active: true })).length >=
-      event.maxTeams
-  ) {
-    throw { name: 'event_full' };
+  // kapacita podľa aktívnych registrácií (aj nepotvrdených) – rovnako ako počet v klientovi
+  const activeRegistrations = event
+    ? await registrationRepository.countDocuments({ eventId, canceledOn: null }).exec()
+    : 0;
+  // termín, pozvánky, kapacita, zmazaný/archivovaný turnaj – predtým kontroloval iba klient (#283)
+  const ruleError = checkEventRegistration(event, teamId, activeRegistrations, {
+    isAdmin: ctx.userGuard.isAdmin(),
+  });
+  if (ruleError) {
+    log.warn('Event registration rejected teamId=%s eventId=%s %s', teamId, eventId, ruleError);
+    throw { name: ruleError };
   }
 
   const team = await teamRepository.findById(teamId).exec();
@@ -429,15 +443,29 @@ export async function createProgramRegistration(
     (await ctx.userGuard.isCoach(teamId)) ||
     ctx.userGuard.notAuthorized('Create program registration');
 
-  // check if team is not already registered
-  const r = await registrationRepository.groupRegistrations({
-    programId,
-    teamId,
-    active: true,
-  });
-  log.debug('Registrations count teamId=%s count=%d', teamId.toHexString(), r);
-  if (r.length > 0) {
+  // tím už má aktívnu registráciu do programu – potvrdenú aj nepotvrdenú (#287)
+  if (await registrationRepository.exists({ programId, teamId, eventId: null, canceledOn: null })) {
     throw { name: 'team_already_registered' };
+  }
+
+  const program = await programRepository.findById(programId).exec();
+  const activeRegistrations = program
+    ? await registrationRepository
+        .countDocuments({ programId, eventId: null, canceledOn: null })
+        .exec()
+    : 0;
+  // aktívny program, povolený typ registrácie, kapacita (#283)
+  const ruleError = checkProgramRegistration(program, input.type, activeRegistrations, {
+    isAdmin: ctx.userGuard.isAdmin(),
+  });
+  if (ruleError) {
+    log.warn(
+      'Program registration rejected teamId=%s programId=%s %s',
+      teamId,
+      programId,
+      ruleError,
+    );
+    throw { name: ruleError };
   }
 
   const team = await teamRepository.findById(teamId).exec();
@@ -536,6 +564,11 @@ export async function emailFoodInvoice(
     log.error('registration not found %s', id);
     return { errors: [{ code: 'registration_not_found' }] };
   }
+  // rovnako ako vystavenie faktúr za jedlo (issueFoodInvoices) – #280
+  ctx.userGuard.isAdmin() ||
+    (await ctx.userGuard.isEventManager(registration.eventId)) ||
+    (await ctx.userGuard.isProgramManagerForEvent(registration.eventId)) ||
+    ctx.userGuard.notAuthorized('Email food invoice');
   if (!registration.foodOrder?.invoiceRef) {
     log.error('food order invoice not found %s', id);
     return { errors: [{ code: 'food_invoice_not_found' }] };
@@ -627,7 +660,7 @@ export async function modifyFoodOrderItem(
 
   await reg.save();
 
-  void notifyFoodItemChanged(reg, oldItem, item, changedBy);
+  fireAndForget(notifyFoodItemChanged(reg, oldItem, item, changedBy), 'notifyFoodItemChanged');
 }
 
 export async function notifyFoodItemChanged(
@@ -662,14 +695,17 @@ export async function notifyFoodItemChanged(
   const regUrl =
     getServerConfig().clientAppRootUrl + appPath.registration(registration._id.toHexString());
 
-  void emailFoodItemChanged({
-    emails: coachEmails,
-    eventName: event.name,
-    programName: program.name,
-    oldItem,
-    changes,
-    regUrl,
-  });
+  fireAndForget(
+    emailFoodItemChanged({
+      emails: coachEmails,
+      eventName: event.name,
+      programName: program.name,
+      oldItem,
+      changes,
+      regUrl,
+    }),
+    'emailFoodItemChanged',
+  );
 
   const text = `Položka objednávky jedla zmenená usporiadateľom.  \n1. stará: ${
     oldItem.name

@@ -43,11 +43,20 @@ export class TeamDataSource extends BaseDataSource {
     const log = logBase.extend('getTeam');
     const ids = id.toString();
     log.debug('getTeam %s', ids);
-    const team = this.loader.load(ids);
-    return team;
+    const team = await this.loader.load(ids);
+    // adresy a kontakty iba pre oprávnených (#289) – platí aj pre type resolvery (Registration.team …)
+    if (!team || (await this.userGuard.canReadTeamDetails(id))) {
+      return team;
+    }
+    return TeamMapper.toPublicTeam(team);
   }
 
   async getTeams(filter: TeamFilterInput): Promise<Team[]> {
+    // zoznam všetkých tímov s adresami iba pre admina (#289)
+    if (!this.userGuard.isAdmin()) {
+      return [];
+    }
+    filter = filter ?? {};
     const q: QueryFilter<TeamData> = {};
     if (!filter.includeInactive) {
       q.deletedOn = null;
@@ -246,24 +255,6 @@ export class TeamDataSource extends BaseDataSource {
   }
 
   async isTeamRegisteredOnEventManagedByLoggedInUser(teamId: ObjectId): Promise<boolean> {
-    const [events, programs] = await Promise.all([
-      this.userGuard.getManagedEvents(),
-      this.userGuard.getManagedPrograms(),
-    ]);
-    // prázdny zoznam do filtra neposielať – `{ eventId: undefined }` by zodpovedalo
-    // každej registrácii do programu (bez turnaja)
-    const or: QueryFilter<RegistrationData>[] = [];
-    if (events.length > 0) {
-      or.push({ eventId: { $in: events.map((id) => new ObjectId(id)) } });
-    }
-    if (programs.length > 0) {
-      or.push({ programId: { $in: programs.map((id) => new ObjectId(id)) } });
-    }
-    if (or.length === 0) {
-      return false;
-    }
-
-    const reg = await registrationRepository.findOne({ teamId, $or: or }).lean().exec();
-    return reg !== null;
+    return this.userGuard.isManagerOfTeam(teamId);
   }
 }

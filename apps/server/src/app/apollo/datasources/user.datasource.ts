@@ -1,4 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
+import { fireAndForget } from '../../utils/fire-and-forget';
 import { UserData, userRepository } from '../../models';
 import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../_generated/graphql';
 import { UserMapper } from '../mappers';
@@ -6,6 +7,7 @@ import { ObjectId } from 'mongodb';
 import { QueryFilter } from 'mongoose';
 import Dataloader from 'dataloader';
 import { logger } from '@teams2/logger';
+import { MIN_PASSWORD_LENGTH, validateEmail, validatePassword } from '@teams2/common';
 import {
   emailUserAcceptedGdprToAdmin,
   emailUsernameChanged,
@@ -33,7 +35,11 @@ export class UserDataSource extends BaseDataSource {
     const log = logBase.extend('getUser');
     log.debug('id: %s', id);
     const u = await this.loader.load(id.toString());
-    return u;
+    // e-mail a telefón iba pre oprávnených (#289) – platí aj pre type resolvery (Team.coaches …)
+    if (!u || (await this.userGuard.canReadUserContact(id))) {
+      return u;
+    }
+    return UserMapper.toPublicUser(u);
   }
 
   async getUsers(filter: UserFilterInput): Promise<User[]> {
@@ -63,13 +69,23 @@ export class UserDataSource extends BaseDataSource {
     };
 
     const user = await userRepository.findById(id).lean().exec();
-    const usernameChanged = input.username && input.username !== user.username;
+    if (!user) {
+      throw new Error('User not found');
+    }
 
     if (input.gdprAccepted && !user.gdprAcceptedOn) {
       u.gdprAcceptedOn = new Date();
       u.gdprDeclinedOn = null;
     }
-    if (input.username && input.usernameOverride) {
+    // zmena username (= prihlasovací e-mail) iba adminom a iba na platný e-mail (#280);
+    // JWT nesie username, takže zmena by používateľovi zneplatnila prihlásenie
+    const usernameChanged =
+      !!input.username && !!input.usernameOverride && input.username !== user.username;
+    if (usernameChanged) {
+      this.userGuard.isAdmin() || this.userGuard.notAuthorized('Change username');
+      if (!validateEmail(input.username)) {
+        throw new Error('Username shall be valid email address.');
+      }
       u.username = input.username;
     }
 
@@ -82,7 +98,10 @@ export class UserDataSource extends BaseDataSource {
       emailUserAcceptedGdprToAdmin(nu.username);
     }
     if (nu && usernameChanged) {
-      void emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id);
+      fireAndForget(
+        emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id),
+        'emailUsernameChanged',
+      );
     }
 
     return { user: UserMapper.toUser(nu) };
@@ -118,8 +137,17 @@ export class UserDataSource extends BaseDataSource {
     this.userGuard.isAdmin() ||
       this.userGuard.isSelf(id) ||
       this.userGuard.notAuthorized('Change password');
-    const u = await userRepository.findByIdAndUpdate(id, { password }).lean().exec();
-    return UserMapper.toUser(u);
+    if (!validatePassword(password)) {
+      throw new Error(`Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.`);
+    }
+    // cez save() – hook pre('save') heslo zahashuje a nastaví passwordChangedOn (#281)
+    const u = await userRepository.findById(id).exec();
+    if (!u) {
+      return null;
+    }
+    u.password = password;
+    await u.save();
+    return UserMapper.toUser(u.toObject());
   }
 
   async setAdmin(id: ObjectId, isAdmin: boolean): Promise<User> {

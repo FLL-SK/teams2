@@ -126,8 +126,7 @@ describe('GraphQL mutácie (admin)', () => {
     });
   });
 
-  // kontrola duplicity počíta iba potvrdené registrácie – opraviť v #287
-  it.todo('opakovaná registrácia toho istého tímu do programu sa odmietne (#287)');
+  // opakovaná registrácia (#287) – pozri registration-rules.int.spec.ts
 
   describe('poznámky', () => {
     it('createNote / updateNote vrátia poznámku s autorom', async () => {

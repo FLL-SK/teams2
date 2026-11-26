@@ -25,5 +25,8 @@ EXPOSE 3000
 # making sure container starts from the right folder
 WORKDIR /server
 
+# beh pod neprivilegovaným používateľom z obrazu node (#284)
+USER node
+
 # run server
 ENTRYPOINT ["node", "main.js"]

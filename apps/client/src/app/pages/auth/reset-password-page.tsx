@@ -1,5 +1,5 @@
 import React from 'react';
-import { appPath } from '@teams2/common';
+import { appPath, MIN_PASSWORD_LENGTH, validatePassword } from '@teams2/common';
 import {
   Anchor,
   Box,
@@ -53,7 +53,17 @@ export function ResetPasswordPage() {
                   messages={{ required: 'Povinný údaj' }}
                   onChange={() => setError(undefined)}
                 >
-                  <FormField label="Heslo" name="password" required type="password" />
+                  <FormField
+                    label="Heslo"
+                    name="password"
+                    required
+                    type="password"
+                    validate={(f: string) =>
+                      validatePassword(f)
+                        ? undefined
+                        : `Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.`
+                    }
+                  />
                   <FormField
                     label="Heslo ešte raz"
                     name="password2"

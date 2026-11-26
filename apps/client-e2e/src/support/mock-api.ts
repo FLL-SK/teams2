@@ -55,7 +55,9 @@ export async function mockApi(page: Page, options: MockApiOptions = {}): Promise
 
     // overenie uloženého tokenu pri načítaní aplikácie
     if (request.method() === 'GET' && url.pathname === '/auth') {
-      const token = url.searchParams.get('token');
+      // klient posiela token v hlavičke Authorization (#281), starší klient v ?token=
+      const header = request.headers()['authorization'] ?? '';
+      const token = header.replace(/^Bearer /, '') || url.searchParams.get('token');
       if (user && token && VALID_TOKENS.includes(token)) {
         return route.fulfill({ json: { token: ISSUED_TOKEN, user } });
       }

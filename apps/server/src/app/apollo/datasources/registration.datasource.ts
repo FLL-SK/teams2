@@ -1,4 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
+import { fireAndForget } from '../../utils/fire-and-forget';
 import {
   eventRepository,
   ProgramData,
@@ -32,6 +33,7 @@ import {
 import { QueryFilter, UpdateQuery } from 'mongoose';
 import { OrderData } from '../../models/order.model';
 import { formatTeamNo } from '../../utils/format-teamNo';
+import { priceFoodOrderItems } from '../../domains/registration-rules';
 
 const logBase = logger('DS:Registration');
 
@@ -51,8 +53,21 @@ export class RegistrationDataSource extends BaseDataSource {
 
   async getRegistration(id: ObjectId): Promise<Registration> {
     if (!id) return null;
-    const reg = this.loader.load(id.toString());
+    const reg = await this.loader.load(id.toString());
+    // registráciu vidí iba admin, tréner tímu a správca programu/turnaja (#289)
+    if (!reg || !(await this.userGuard.canReadRegistration(reg))) {
+      return null;
+    }
     return reg;
+  }
+
+  /** ponechá iba registrácie, ktoré smie používateľ čítať (#289) */
+  private async onlyReadable(regs: Registration[]): Promise<Registration[]> {
+    if (this.userGuard.isAdmin()) {
+      return regs;
+    }
+    const allowed = await Promise.all(regs.map((r) => this.userGuard.canReadRegistration(r)));
+    return regs.filter((_r, i) => allowed[i]);
   }
 
   async getRegistrations(filter: RegistrationFilter): Promise<Registration[]> {
@@ -70,7 +85,7 @@ export class RegistrationDataSource extends BaseDataSource {
       q.teamId = filter.teamId;
     }
     const regs = await registrationRepository.find(q).exec();
-    return regs.map(RegistrationMapper.toRegistration);
+    return this.onlyReadable(regs.map(RegistrationMapper.toRegistration));
   }
 
   async getRegistrationGroups(filter: RegistrationFilter): Promise<RegistrationGroup[]> {
@@ -109,7 +124,10 @@ export class RegistrationDataSource extends BaseDataSource {
     registration.foodOrder = null;
     await registration.save();
     if (hadFoodOrder) {
-      void emailFoodOrderRemoved(registration, this.context.user.username);
+      fireAndForget(
+        emailFoodOrderRemoved(registration, this.context.user.username),
+        'emailFoodOrderRemoved',
+      );
     }
 
     return RegistrationMapper.toRegistration(registration);
@@ -135,7 +153,7 @@ export class RegistrationDataSource extends BaseDataSource {
       .find({ eventId, canceledOn: null })
       .sort({ createdOn: 1 })
       .exec();
-    return regs.map(RegistrationMapper.toRegistration);
+    return this.onlyReadable(regs.map(RegistrationMapper.toRegistration));
   }
 
   async getEventRegistrationsCount(eventId: ObjectId): Promise<number> {
@@ -152,7 +170,12 @@ export class RegistrationDataSource extends BaseDataSource {
       q.confirmedOn = { $ne: null };
     }
     const regs = await registrationRepository.find(q).sort({ createdOn: 1 }).exec();
-    return regs.map(RegistrationMapper.toRegistration);
+    const mapped = regs.map(RegistrationMapper.toRegistration);
+    // správca turnaja v programe potrebuje zoznam registrovaných tímov na pozvánky (turnaj na pozvanie)
+    if (await this.userGuard.isEventManagerInProgram(programId)) {
+      return mapped;
+    }
+    return this.onlyReadable(mapped);
   }
 
   async getProgramRegistrationsCount(programId: ObjectId): Promise<number> {
@@ -275,7 +298,10 @@ export class RegistrationDataSource extends BaseDataSource {
     r.sizeConfirmedOn = date;
     await r.save();
 
-    void emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+    fireAndForget(
+      emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username),
+      'emailTeamSizeConfirmed',
+    );
 
     return RegistrationMapper.toRegistration(r);
   }
@@ -321,13 +347,14 @@ export class RegistrationDataSource extends BaseDataSource {
     r = await registrationRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
 
     if (r.eventId) {
-      void emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+      fireAndForget(
+        emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username),
+        'emailEventRegistrationConfirmed',
+      );
     } else {
-      void emailProgramRegistrationConfirmed(
-        r._id,
-        r.programId,
-        r.teamId,
-        this.context.user.username,
+      fireAndForget(
+        emailProgramRegistrationConfirmed(r._id, r.programId, r.teamId, this.context.user.username),
+        'emailProgramRegistrationConfirmed',
       );
     }
     return RegistrationMapper.toRegistration(r);
@@ -376,21 +403,19 @@ export class RegistrationDataSource extends BaseDataSource {
 
     const createdOn = r.foodOrder?.createdOn ?? new Date();
     const no: OrderData = {
-      ...orderData,
+      note: orderData.note,
+      billTo: orderData.billTo,
+      shipTo: orderData.shipTo,
+      // cena a názov z cenníka turnaja, nie od klienta (#283); položky s množstvom 0 sa vynechajú
+      items: priceFoodOrderItems(orderData.items ?? [], e.foodTypes ?? []),
       createdOn,
       updatedOn: new Date(),
     };
-    // remove items with quantity 0
-    no.items = no.items.filter((i) => i.quantity > 0);
-    // round prices to 2 decimal places
-    no.items.forEach((i) => {
-      i.price = Math.round(i.quantity * i.unitPrice * 100) / 100;
-    });
 
     r.foodOrder = no;
     await r.save();
 
-    void emailFoodOrderUpdated(r, this.context.user.username);
+    fireAndForget(emailFoodOrderUpdated(r, this.context.user.username), 'emailFoodOrderUpdated');
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }
@@ -415,7 +440,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.foodOrder = null;
     await r.save();
 
-    void emailFoodOrderRemoved(r, this.context.user.username);
+    fireAndForget(emailFoodOrderRemoved(r, this.context.user.username), 'emailFoodOrderRemoved');
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }
@@ -425,12 +450,19 @@ export class RegistrationDataSource extends BaseDataSource {
     includeCoaches?: boolean,
   ): Promise<RegisteredTeamPayload[]> {
     const regs = await registrationRepository.find({ eventId, canceledOn: null }).exec();
+    // zoznam tímov na turnaji vidí každý prihlásený; adresu, platbu a objednávku jedla
+    // iba admin, správca turnaja/programu a tréner daného tímu (#289)
+    const isManager =
+      this.userGuard.isAdmin() ||
+      (await this.userGuard.isEventManager(eventId)) ||
+      (await this.userGuard.isProgramManagerForEvent(eventId));
     const teams: RegisteredTeamPayload[] = [];
     for (const reg of regs) {
       const team = await teamRepository.findById(reg.teamId).exec();
       if (!team) {
         continue;
       }
+      const showDetails = isManager || (await this.userGuard.isCoach(reg.teamId));
       const t: RegisteredTeamPayload = {
         id: reg._id,
         teamId: team._id,
@@ -460,13 +492,19 @@ export class RegistrationDataSource extends BaseDataSource {
         coaches: [],
         foodOrder: OrderMapper.toOrder(reg.foodOrder),
       };
+      if (!showDetails) {
+        t.paidOn = null;
+        t.foodOrder = null;
+        t.address = {
+          id: team.address?._id,
+          name: team.address?.name ?? '',
+          city: team.address?.city ?? '',
+          street: '',
+          zip: '',
+        };
+      }
 
-      if (
-        includeCoaches &&
-        (this.userGuard.isAdmin() ||
-          (await this.userGuard.isEventManager(eventId)) ||
-          (await this.userGuard.isProgramManagerForEvent(eventId)))
-      ) {
+      if (includeCoaches && isManager) {
         const c = await userRepository
           .find({ _id: { $in: team.coachesIds }, deletedOn: null }, { _id: 1 })
           .sort({ username: 1 })

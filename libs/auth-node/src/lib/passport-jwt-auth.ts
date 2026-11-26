@@ -1,10 +1,18 @@
 import * as passport from 'passport';
-import { sign, verify, JwtPayload } from 'jsonwebtoken';
+import { Algorithm, decode, sign, verify, JwtPayload } from 'jsonwebtoken';
 import { Strategy as PassportLocalStrategy } from 'passport-local';
 import { ExtractJwt, Strategy as PassportJwtStrategy } from 'passport-jwt';
 
 import { Application } from 'express';
-import { AuthUser, LoginOkFn, SecretGetterFn, VerifyUserIdFn, VerifyUserLoginFn } from './types';
+import {
+  AuthUser,
+  LoginOkFn,
+  SecretGetterFn,
+  TokenPurpose,
+  VerifiedAuthUser,
+  VerifyUserIdFn,
+  VerifyUserLoginFn,
+} from './types';
 import { debugLib } from './_debug';
 
 export const passportJwtAuth = () => 'passport-jwt-auth';
@@ -20,26 +28,109 @@ export function authenticateUsingJwt() {
   return passport.authenticate('jwt', { session: false });
 }
 
-export function createToken(data: AuthUser) {
-  return sign(data, secretGetterFn(), { expiresIn: '1d' });
+/** maximálna doba od prihlásenia heslom, počas ktorej sa dá token obnovovať (sekundy) */
+export const MAX_SESSION_AGE_SECONDS = 30 * 24 * 60 * 60;
+
+const JWT_ALGORITHMS: Algorithm[] = ['HS256'];
+
+interface LoginTokenPayload extends JwtPayload {
+  username?: string | null;
+  id?: string | null;
+  purpose?: TokenPurpose;
+  auth_time?: number;
 }
 
-export function createPasswordResetToken(username: string) {
-  const au: AuthUser = { username };
-  return sign(au, secretGetterFn(), { expiresIn: '1h' });
+const nowSeconds = () => Math.floor(Date.now() / 1000);
+
+/**
+ * Vytvorí prihlasovací token (platný 1 deň).
+ * @param authTime čas pôvodného prihlásenia heslom – pri obnove tokenu sa zachová,
+ *   aby sa relácia nedala predlžovať donekonečna
+ */
+export function createToken(data: AuthUser, authTime?: number) {
+  const payload: LoginTokenPayload = {
+    username: data.username,
+    id: data.id,
+    purpose: 'login',
+    auth_time: authTime ?? nowSeconds(),
+  };
+  return sign(payload, secretGetterFn(), { expiresIn: '1d', algorithm: 'HS256' });
 }
 
-export function verifyToken(token: string): AuthUser | null {
-  let ret: (JwtPayload & Partial<AuthUser>) | string | null = null;
+/**
+ * Overí prihlasovací token. Iný token (reset hesla, token bez účelu z pôvodnej verzie,
+ * token po uplynutí MAX_SESSION_AGE_SECONDS od prihlásenia) vráti `null`. #281
+ */
+export function verifyToken(token: string): VerifiedAuthUser | null {
+  let ret: LoginTokenPayload | string | null = null;
   try {
-    ret = verify(token, secretGetterFn());
-  } catch (err) {
+    ret = verify(token, secretGetterFn(), { algorithms: JWT_ALGORITHMS }) as LoginTokenPayload;
+  } catch {
     debug('Wrong token provided.');
+    return null;
   }
-  debug('verifyToken: ret=%o', ret);
-  const au: AuthUser | null =
-    ret && typeof ret === 'object' ? { username: ret?.username, id: ret?.id } : null;
-  return au;
+  return toVerifiedUser(ret);
+}
+
+function toVerifiedUser(ret: LoginTokenPayload | string | null): VerifiedAuthUser | null {
+  if (!ret || typeof ret !== 'object' || ret.purpose !== 'login') {
+    return null;
+  }
+  if (typeof ret.iat !== 'number' || typeof ret.auth_time !== 'number') {
+    return null;
+  }
+  if (nowSeconds() - ret.auth_time > MAX_SESSION_AGE_SECONDS) {
+    debug('Session too old.');
+    return null;
+  }
+  return { username: ret.username, id: ret.id, issuedAt: ret.iat, authTime: ret.auth_time };
+}
+
+/**
+ * Secret tokenu na reset hesla je odvodený od aktuálneho hashu hesla –
+ * po zmene hesla je token neplatný (jednorazový) a nedá sa overiť ako prihlasovací token.
+ */
+const resetSecret = (passwordHash: string) => `${secretGetterFn()}:reset:${passwordHash}`;
+
+/** vytvorí jednorazový token na reset hesla (platný 1 hodinu) */
+export function createPasswordResetToken(username: string, passwordHash: string) {
+  return sign({ username, purpose: 'reset' satisfies TokenPurpose }, resetSecret(passwordHash), {
+    expiresIn: '1h',
+    algorithm: 'HS256',
+  });
+}
+
+/**
+ * Overí token na reset hesla.
+ * @param getPasswordHash vráti aktuálny hash hesla aktívneho používateľa (alebo `null`)
+ * @returns username, ak je token platný
+ */
+export async function verifyPasswordResetToken(
+  token: unknown,
+  getPasswordHash: (username: string) => Promise<string | null | undefined>,
+): Promise<string | null> {
+  if (typeof token !== 'string' || !token) {
+    return null;
+  }
+  const decoded = decode(token);
+  if (!decoded || typeof decoded !== 'object' || decoded.purpose !== 'reset') {
+    return null;
+  }
+  const username = decoded.username;
+  if (typeof username !== 'string' || !username) {
+    return null;
+  }
+  const hash = await getPasswordHash(username);
+  if (!hash) {
+    return null;
+  }
+  try {
+    const ret = verify(token, resetSecret(hash), { algorithms: JWT_ALGORITHMS }) as JwtPayload;
+    return ret.purpose === 'reset' && ret.username === username ? username : null;
+  } catch {
+    debug('Wrong password reset token.');
+    return null;
+  }
 }
 
 const passportLoginStrategy = () => {
@@ -75,18 +166,29 @@ const passportJwtAuthStrategy = () => {
     {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: secretGetterFn(),
+      algorithms: JWT_ALGORITHMS,
     },
-    async function (payload: AuthUser, cb: (err: Error | null, user?: AuthUser | boolean) => void) {
+    async function (
+      payload: LoginTokenPayload,
+      cb: (err: Error | null, user?: AuthUser | boolean) => void,
+    ) {
       try {
-        debug('Authenticating using JWT=', JSON.stringify(payload));
+        // iba prihlasovací token – nie token na reset hesla ani token bez účelu
+        const token = toVerifiedUser(payload);
+        if (!token) {
+          debug('JWT: Not a valid login token.');
+          return cb(null, false);
+        }
         if (!verifyUserNameFn) {
           throw new Error('verifyUserIdFn not set');
         }
-        const user = await verifyUserNameFn(payload.username ?? '');
+        const user = await verifyUserNameFn(token.username ?? '', {
+          issuedAt: token.issuedAt,
+          authTime: token.authTime,
+        });
 
         if (!user) {
           debug('JWT: User not found.');
-          console.warn('JWT: User not found.');
           return cb(null, false);
         }
 

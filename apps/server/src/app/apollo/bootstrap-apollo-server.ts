@@ -35,7 +35,8 @@ export async function bootstrapApolloServer(app: Application) {
     schema: schema,
     cache: 'bounded',
     formatError: errorFormatter,
-    introspection: true,
+    // introspekcia iba mimo produkcie (#280)
+    introspection: appConfig.nodeEnv !== 'production',
     logger: logger('apollo'),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   };

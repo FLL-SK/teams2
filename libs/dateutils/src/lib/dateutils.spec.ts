@@ -1,4 +1,9 @@
-import { toUtcDateString, toZonedDateString, toZonedDateTime } from './dateutils';
+import {
+  startOfTodayInTimeZone,
+  toUtcDateString,
+  toZonedDateString,
+  toZonedDateTime,
+} from './dateutils';
 
 describe('toUtcDateString', () => {
   test('utc date from date', () => {
@@ -42,5 +47,18 @@ describe('toZonedDateString', () => {
   test('zoned date from string during summer-time', () => {
     const dateString = toZonedDateString('2000-08-01T02:00:00');
     expect(dateString).toEqual('2000-08-01 02:00:00+02:00');
+  });
+});
+
+describe('startOfTodayInTimeZone', () => {
+  it('vráti polnoc dňa v Europe/Bratislava (aj keď je v UTC ešte predchádzajúci deň)', () => {
+    // 26. 11. 00:30 v Bratislave = 25. 11. 23:30 UTC
+    expect(startOfTodayInTimeZone(new Date('2026-11-25T23:30:00Z')).toISOString()).toBe(
+      '2026-11-25T23:00:00.000Z',
+    );
+    // letný čas
+    expect(startOfTodayInTimeZone(new Date('2026-07-01T12:00:00Z')).toISOString()).toBe(
+      '2026-06-30T22:00:00.000Z',
+    );
   });
 });

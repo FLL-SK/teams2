@@ -1,6 +1,13 @@
 import { BaseDataSource } from './_base.datasource';
+import { fireAndForget } from '../../utils/fire-and-forget';
 import { ObjectId } from 'mongodb';
-import { eventRepository, ProgramData, programRepository, userRepository } from '../../models';
+import {
+  eventRepository,
+  ProgramData,
+  programRepository,
+  registrationRepository,
+  userRepository,
+} from '../../models';
 import { ProgramMapper } from '../mappers/program.mapper';
 import {
   CreateProgramInput,
@@ -74,7 +81,31 @@ export class ProgramDataSource extends BaseDataSource {
   async deleteProgram(id: ObjectId): Promise<Program> {
     this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete program');
 
-    const u = await programRepository.findByIdAndDelete(id).exec();
+    // soft delete (#285) – natvrdo zmazaný program nechal osirelé turnaje, registrácie a súbory
+    const active = await registrationRepository.exists({ programId: id, canceledOn: null });
+    if (active) {
+      throw new Error('Program má aktívne registrácie, nedá sa zmazať.');
+    }
+    const u = await programRepository
+      .findByIdAndUpdate(
+        id,
+        { deletedOn: new Date(), deletedBy: this.userGuard.userId },
+        { returnDocument: 'after' },
+      )
+      .exec();
+    return ProgramMapper.toProgram(u);
+  }
+
+  async undeleteProgram(id: ObjectId): Promise<Program> {
+    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Undelete program');
+
+    const u = await programRepository
+      .findByIdAndUpdate(
+        id,
+        { $unset: { deletedOn: null, deletedBy: null } },
+        { returnDocument: 'after' },
+      )
+      .exec();
     return ProgramMapper.toProgram(u);
   }
 
@@ -95,7 +126,7 @@ export class ProgramDataSource extends BaseDataSource {
       .findOneAndUpdate({ _id: programId }, u, { returnDocument: 'after' })
       .exec();
 
-    void emailProgramManagerAdded(programId, userId); // send email notification
+    fireAndForget(emailProgramManagerAdded(programId, userId), 'emailProgramManagerAdded'); // send email notification
 
     return ProgramMapper.toProgram(program);
   }
