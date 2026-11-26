@@ -27,7 +27,7 @@ export class TagDataSource extends BaseDataSource {
   async getTag(id: ObjectId): Promise<Tag> {
     if (!id) return null;
     const log = logBase.extend('getTag');
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get tag');
+    await this.userGuard.require('Get tag', this.userGuard.isAdmin());
     const tag = await this.loader.load(id.toString());
     if (!tag) {
       log.warn('getTag %s not found', id.toString());
@@ -50,7 +50,7 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async createTag(input: TagInput): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create tag');
+    await this.userGuard.require('Create tag', this.userGuard.isAdmin());
 
     const t: TagData = { color: 'TC1', ...input };
     const tag = await tagRepository.create(t);
@@ -58,7 +58,7 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async updateTag(id: ObjectId, input: TagInput): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update tag');
+    await this.userGuard.require('Update tag', this.userGuard.isAdmin());
 
     const tag = await tagRepository
       .findByIdAndUpdate(id, input, { returnDocument: 'after' })
@@ -67,7 +67,7 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async deleteTag(id: ObjectId): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete tag');
+    await this.userGuard.require('Delete tag', this.userGuard.isAdmin());
     const log = logBase.extend('deleteTag');
     log.debug('start', id);
     const tag = await tagRepository
@@ -81,7 +81,7 @@ export class TagDataSource extends BaseDataSource {
   }
 
   async restoreTag(id: ObjectId): Promise<Tag> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Restore tag');
+    await this.userGuard.require('Restore tag', this.userGuard.isAdmin());
     const log = logBase.extend('restoreTag');
     log.debug('start', id);
     const tag = await tagRepository

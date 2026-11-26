@@ -45,7 +45,7 @@ export function NoteList(props: NoteListProps) {
   const deleteNote = async (note: Note) => {
     const { id } = note;
     await deleteNoteMutation({ variables: { id } });
-    onListChanged && onListChanged();
+    onListChanged?.();
   };
 
   return (

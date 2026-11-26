@@ -7,6 +7,9 @@ import {
   UserDataNoPassword,
 } from '../models';
 
+/** kontrola oprávnenia pre `UserGuard.require` – hodnota alebo (asynchrónna) funkcia */
+export type GuardCheck = boolean | (() => boolean | Promise<boolean>);
+
 export class UserGuard {
   protected user?: UserDataNoPassword;
   protected coachOfTeams?: string[];
@@ -275,7 +278,30 @@ export class UserGuard {
     return (await this.getContactVisibleUserIds()).has(userId.toString());
   }
 
-  notAuthorized(context?: string) {
+  /**
+   * Overí, že aspoň jedna z kontrol prejde, inak vyhodí `notAuthorized(action)`.
+   *
+   * Kontroly sa vyhodnocujú postupne a lenivo – ďalšia sa spustí, iba ak predchádzajúca neprešla.
+   * Asynchrónnu kontrolu treba odovzdať ako funkciu:
+   *
+   * ```ts
+   * await this.userGuard.require('Update event',
+   *   this.userGuard.isAdmin(),
+   *   () => this.userGuard.isEventManager(eventId));
+   * ```
+   *
+   * Priamy `Promise` sa zámerne nepovoľuje – bez `await` by bol vždy pravdivý (#279, #297).
+   */
+  async require(action: string, ...checks: GuardCheck[]): Promise<void> {
+    for (const check of checks) {
+      if (typeof check === 'function' ? await check() : check) {
+        return;
+      }
+    }
+    this.notAuthorized(action);
+  }
+
+  notAuthorized(context?: string): never {
     throw new Error(
       `(${this.user ? this.user.username : 'not-logged-in'}) ${this.message}${
         context ? `: ${context}` : ''

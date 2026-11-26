@@ -41,7 +41,7 @@ export async function createRegistrationInvoice(
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
   // pred odoslaním faktúry do SuperFaktúry – predtým sa oprávnenie overilo až po vytvorení faktúry (#280)
-  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Create registration invoice');
+  await ctx.userGuard.require('Create registration invoice', ctx.userGuard.isAdmin());
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('createRegInv');
@@ -90,7 +90,7 @@ export async function emailRegistrationInvoice(
   id: ObjectId,
   ctx: ApolloContext,
 ): Promise<RegistrationPayload> {
-  ctx.userGuard.isAdmin() || ctx.userGuard.notAuthorized('Email registration invoice'); // #280
+  await ctx.userGuard.require('Email registration invoice', ctx.userGuard.isAdmin()); // #280
   const { dataSources } = ctx;
   const config = getServerConfig();
   const log = logLib.extend('emailInv');
@@ -385,9 +385,9 @@ export async function createEventRegistration(
   ctx: ApolloContext,
 ): Promise<RegistrationData> {
   const log = logLib.extend('createEventRegistration');
-  ctx.userGuard.isAdmin() ||
-    (await ctx.userGuard.isCoach(teamId)) ||
-    ctx.userGuard.notAuthorized('Create event registration');
+  await ctx.userGuard.require('Create event registration', ctx.userGuard.isAdmin(), () =>
+    ctx.userGuard.isCoach(teamId),
+  );
 
   // tím už má aktívnu registráciu na turnaj – potvrdenú aj nepotvrdenú (#287);
   // groupRegistrations bez onlyUnconfirmed započítaval iba potvrdené registrácie
@@ -439,9 +439,9 @@ export async function createProgramRegistration(
   ctx: ApolloContext,
 ): Promise<RegistrationData> {
   const log = logLib.extend('createProgramRegistration');
-  ctx.userGuard.isAdmin() ||
-    (await ctx.userGuard.isCoach(teamId)) ||
-    ctx.userGuard.notAuthorized('Create program registration');
+  await ctx.userGuard.require('Create program registration', ctx.userGuard.isAdmin(), () =>
+    ctx.userGuard.isCoach(teamId),
+  );
 
   // tím už má aktívnu registráciu do programu – potvrdenú aj nepotvrdenú (#287)
   if (await registrationRepository.exists({ programId, teamId, eventId: null, canceledOn: null })) {
@@ -565,10 +565,12 @@ export async function emailFoodInvoice(
     return { errors: [{ code: 'registration_not_found' }] };
   }
   // rovnako ako vystavenie faktúr za jedlo (issueFoodInvoices) – #280
-  ctx.userGuard.isAdmin() ||
-    (await ctx.userGuard.isEventManager(registration.eventId)) ||
-    (await ctx.userGuard.isProgramManagerForEvent(registration.eventId)) ||
-    ctx.userGuard.notAuthorized('Email food invoice');
+  await ctx.userGuard.require(
+    'Email food invoice',
+    ctx.userGuard.isAdmin(),
+    () => ctx.userGuard.isEventManager(registration.eventId),
+    () => ctx.userGuard.isProgramManagerForEvent(registration.eventId),
+  );
   if (!registration.foodOrder?.invoiceRef) {
     log.error('food order invoice not found %s', id);
     return { errors: [{ code: 'food_invoice_not_found' }] };

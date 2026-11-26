@@ -12,10 +12,11 @@ const logBase = logger('DS:File');
 
 export class FileDataSource extends BaseDataSource {
   async getProgramFiles(programId: ObjectId, checkAccess = true): Promise<File[]> {
-    !checkAccess ||
-      this.userGuard.isAdmin() ||
-      (await this.userGuard.isCoachOfRegisteredTeamForProgram(programId)) ||
-      this.userGuard.notAuthorized('Get program files');
+    if (checkAccess) {
+      await this.userGuard.require('Get program files', this.userGuard.isAdmin(), () =>
+        this.userGuard.isCoachOfRegisteredTeamForProgram(programId),
+      );
+    }
 
     const files = await fileRepository
       .find({ type: 'programDoc', ref: programId.toString() })
@@ -25,10 +26,11 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getEventFiles(eventId: ObjectId, checkAccess = true): Promise<File[]> {
-    !checkAccess ||
-      this.userGuard.isAdmin() ||
-      (await this.userGuard.isCoachOfRegisteredTeamForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Get event files');
+    if (checkAccess) {
+      await this.userGuard.require('Get event files', this.userGuard.isAdmin(), () =>
+        this.userGuard.isCoachOfRegisteredTeamForEvent(eventId),
+      );
+    }
 
     const files = await fileRepository
       .find({ type: 'eventDoc', ref: eventId.toString() })
@@ -39,7 +41,7 @@ export class FileDataSource extends BaseDataSource {
 
   // nahrávať súbory môže iba admin – rovnako ako addProgramFile/addEventFile
   async getProgramFileUploadUrl(programId: ObjectId, input: FileUploadInput): Promise<string> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get program file upload URL');
+    await this.userGuard.require('Get program file upload URL', this.userGuard.isAdmin());
     return getSignedUrlForUpload(
       storagePath(input.name, 'programDoc', programId.toString()),
       input.contentType,
@@ -47,7 +49,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async getEventFileUploadUrl(eventId: ObjectId, input: FileUploadInput): Promise<string> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Get event file upload URL');
+    await this.userGuard.require('Get event file upload URL', this.userGuard.isAdmin());
     return getSignedUrlForUpload(
       storagePath(input.name, 'eventDoc', eventId.toString()),
       input.contentType,
@@ -55,7 +57,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addProgramFile(programId: ObjectId, input: FileUploadInput): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add program file');
+    await this.userGuard.require('Add program file', this.userGuard.isAdmin());
 
     const log = logBase.extend('addPFile');
     const nf: FileData = {
@@ -73,7 +75,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async addEventFile(eventId: ObjectId, input: FileUploadInput): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add event file');
+    await this.userGuard.require('Add event file', this.userGuard.isAdmin());
 
     const log = logBase.extend('addFFile');
     const nf: FileData = {
@@ -92,7 +94,7 @@ export class FileDataSource extends BaseDataSource {
   }
 
   async removeFile(fileId: ObjectId): Promise<File> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove file');
+    await this.userGuard.require('Remove file', this.userGuard.isAdmin());
 
     const log = logBase.extend('removeFile');
 

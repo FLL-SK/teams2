@@ -34,11 +34,10 @@ export function EditPricelistItemDialog(props: EditPricelistItemDialogProps) {
   }, [item]);
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    onSubmit &&
-      (await onSubmit({
-        ...value,
-        up: Number(value.up),
-      }));
+    await onSubmit?.({
+      ...value,
+      up: Number(value.up),
+    });
     onClose();
   };
 

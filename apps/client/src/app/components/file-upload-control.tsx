@@ -40,7 +40,9 @@ export function FileUploadControl(props: FileUploadControlProps) {
           label="Nahrať"
           disabled={!toUpload}
           onClick={() => {
-            !!toUpload && onUpload && onUpload(toUpload);
+            if (toUpload) {
+              onUpload?.(toUpload);
+            }
             setToUpload(undefined);
           }}
         />

@@ -36,10 +36,11 @@ export default defineConfig([
           ignoreRestSiblings: true,
         },
       ],
-      // vzor autorizácie: `this.userGuard.isAdmin() || this.userGuard.notAuthorized('…')`
+      // výrazy bez príkazu (`a || guard.notAuthorized()`, `cb && cb()`) nie – kontroly oprávnení
+      // cez `await guard.require(…)`, voliteľné volanie cez `cb?.()` (#297)
       '@typescript-eslint/no-unused-expressions': [
         'error',
-        { allowShortCircuit: true, allowTernary: true },
+        { allowShortCircuit: false, allowTernary: false },
       ],
     },
   },

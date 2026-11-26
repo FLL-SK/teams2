@@ -14,14 +14,14 @@ export class SettingsDataSource extends BaseDataSource {
   }
 
   async put(input: UpdateSettingsInput): Promise<Settings> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Put settings');
+    await this.userGuard.require('Put settings', this.userGuard.isAdmin());
     const s = await settingsRepository.put(input);
     return SettingsMapper.toSettings(s);
   }
 
   /** testovací e-mail – iba admin (#280), inak by sa dalo cez SES posielať na ľubovoľné adresy */
   async sendTestEmail(to: string, cc?: string | null): Promise<boolean> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Send test email');
+    await this.userGuard.require('Send test email', this.userGuard.isAdmin());
     if (!validateEmail(to) || (cc && !validateEmail(cc))) {
       throw new Error('Nesprávna e-mailová adresa.');
     }

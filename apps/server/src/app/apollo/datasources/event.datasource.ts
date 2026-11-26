@@ -69,9 +69,9 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async createEvent(input: CreateEventInput): Promise<CreateEventPayload> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isProgramManager(input.programId)) ||
-      this.userGuard.notAuthorized('Create event');
+    await this.userGuard.require('Create event', this.userGuard.isAdmin(), () =>
+      this.userGuard.isProgramManager(input.programId),
+    );
     const { maxTeams, ...evtData } = input;
     const u: EventData = {
       ...evtData,
@@ -86,10 +86,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async updateEvent(eventId: ObjectId, input: UpdateEventInput): Promise<UpdateEventPayload> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Update event');
+    await this.userGuard.require(
+      'Update event',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const u: Partial<EventData> = input;
     const nu = await eventRepository
       .findByIdAndUpdate(eventId, u, { returnDocument: 'after' })
@@ -98,10 +100,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async deleteEvent(eventId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      this.userGuard.notAuthorized('Delete event');
+    await this.userGuard.require(
+      'Delete event',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+      () => this.userGuard.isEventManager(eventId),
+    );
     const tq: Partial<RegistrationData> = { eventId: eventId, canceledOn: null };
     const teams = await registrationRepository.find(tq).lean().exec();
     if (teams.length > 0) {
@@ -115,9 +119,9 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async undeleteEvent(eventId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Undelete event');
+    await this.userGuard.require('Undelete event', this.userGuard.isAdmin(), () =>
+      this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const u: Partial<EventData> = { deletedOn: null, deletedBy: this.context.user._id };
     const ne = await eventRepository
       .findByIdAndUpdate(eventId, u, { returnDocument: 'after' })
@@ -131,10 +135,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async addEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Add event manager');
+    await this.userGuard.require(
+      'Add event manager',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const event = await eventRepository
       .findOneAndUpdate(
         { _id: eventId },
@@ -147,10 +153,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async removeEventManager(eventId: ObjectId, userId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Remove event manager');
+    await this.userGuard.require(
+      'Remove event manager',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const event = await eventRepository
       .findOneAndUpdate(
         { _id: eventId },
@@ -181,18 +189,22 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async issueFoodInvoices(eventId: ObjectId): Promise<RegistrationPayload[]> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Issue food invoices');
+    await this.userGuard.require(
+      'Issue food invoices',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     return issueFoodInvoices(eventId);
   }
 
   async addFoodType(eventId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Add food type');
+    await this.userGuard.require(
+      'Add food type',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const foodType = { n: 'Nový typ stravy', up: 0 };
     const event = await eventRepository
       .findOneAndUpdate(
@@ -208,10 +220,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async removeFoodType(eventId: ObjectId, foodTypeId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Remove food type');
+    await this.userGuard.require(
+      'Remove food type',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
 
     const ex = await registrationRepository
       .findOne({
@@ -236,10 +250,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async updateFoodType(eventId: ObjectId, foodType: PricelistItemInput): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Update food type');
+    await this.userGuard.require(
+      'Update food type',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
 
     const event = await modifyFoodType(
       eventId,
@@ -254,10 +270,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async updateFoodOrderDeadline(eventId: ObjectId, deadline: Date): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Update food order deadline');
+    await this.userGuard.require(
+      'Update food order deadline',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const event = await eventRepository
       .findOneAndUpdate(
         { _id: eventId },
@@ -272,10 +290,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async inviteTeam(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Invite team');
+    await this.userGuard.require(
+      'Invite team',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const event = await eventRepository
       .findOneAndUpdate(
         { _id: eventId },
@@ -290,10 +310,12 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async uninviteTeam(eventId: ObjectId, teamId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Uninvite team');
+    await this.userGuard.require(
+      'Uninvite team',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
     const event = await eventRepository
       .findOneAndUpdate(
         { _id: eventId },
@@ -308,30 +330,36 @@ export class EventDataSource extends BaseDataSource {
   }
 
   async archiveEvent(eventId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Archive event');
+    await this.userGuard.require(
+      'Archive event',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
 
     const ne = await eventRepository.archiveEvent(eventId, this.userGuard.userId);
     return EventMapper.toEvent(ne);
   }
 
   async unarchiveEvent(eventId: ObjectId): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Unarchive event');
+    await this.userGuard.require(
+      'Unarchive event',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
 
     const ne = await eventRepository.unarchiveEvent(eventId, this.userGuard.userId);
     return EventMapper.toEvent(ne);
   }
 
   async toggleEventFoodOrderEnabled(eventId: ObjectId, enable?: boolean): Promise<Event> {
-    this.userGuard.isAdmin() ||
-      (await this.userGuard.isEventManager(eventId)) ||
-      (await this.userGuard.isProgramManagerForEvent(eventId)) ||
-      this.userGuard.notAuthorized('Toggle food order enabled');
+    await this.userGuard.require(
+      'Toggle food order enabled',
+      this.userGuard.isAdmin(),
+      () => this.userGuard.isEventManager(eventId),
+      () => this.userGuard.isProgramManagerForEvent(eventId),
+    );
 
     const ne = await eventRepository.toggleFoodOrderEnabled(eventId, this.userGuard.userId, enable);
     return EventMapper.toEvent(ne);

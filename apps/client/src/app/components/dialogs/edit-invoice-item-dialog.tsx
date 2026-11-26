@@ -39,13 +39,12 @@ export function EditInvoiceItemDialog(props: EditInvoiceItemDialogProps) {
   }, [item]);
 
   const handleSubmit = async ({ value }: { value: FormFields }) => {
-    onSubmit &&
-      (await onSubmit({
-        ...value,
-        lineNo: Number(value.lineNo),
-        quantity: Number(value.quantity),
-        unitPrice: Number(value.unitPrice),
-      }));
+    await onSubmit?.({
+      ...value,
+      lineNo: Number(value.lineNo),
+      quantity: Number(value.quantity),
+      unitPrice: Number(value.unitPrice),
+    });
     onClose();
   };
 

@@ -34,7 +34,7 @@ export function InvoiceItemList(props: InvoiceItemListProps) {
             editable
               ? (e) => {
                   e.stopPropagation();
-                  onClick && onClick(item);
+                  onClick?.(item);
                 }
               : undefined
           }

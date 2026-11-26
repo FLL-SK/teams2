@@ -58,7 +58,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async createProgram(input: CreateProgramInput): Promise<ProgramPayload> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Create program');
+    await this.userGuard.require('Create program', this.userGuard.isAdmin());
 
     const u: ProgramData = {
       ...input,
@@ -71,7 +71,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async updateProgram(id: ObjectId, input: UpdateProgramInput): Promise<ProgramPayload> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Update program');
+    await this.userGuard.require('Update program', this.userGuard.isAdmin());
 
     const u: Partial<ProgramData> = input;
     const nu = await programRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
@@ -79,7 +79,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async deleteProgram(id: ObjectId): Promise<Program> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Delete program');
+    await this.userGuard.require('Delete program', this.userGuard.isAdmin());
 
     // soft delete (#285) – natvrdo zmazaný program nechal osirelé turnaje, registrácie a súbory
     const active = await registrationRepository.exists({ programId: id, canceledOn: null });
@@ -97,7 +97,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async undeleteProgram(id: ObjectId): Promise<Program> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Undelete program');
+    await this.userGuard.require('Undelete program', this.userGuard.isAdmin());
 
     const u = await programRepository
       .findByIdAndUpdate(
@@ -110,16 +110,18 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async getProgramsManagedBy(managerId: ObjectId): Promise<Program[]> {
-    this.userGuard.isAdmin() ||
-      this.userGuard.isSelf(managerId) ||
-      this.userGuard.notAuthorized('Get programs managed by');
+    await this.userGuard.require(
+      'Get programs managed by',
+      this.userGuard.isAdmin(),
+      this.userGuard.isSelf(managerId),
+    );
 
     const programs = await programRepository.findProgramsManagedByUser(managerId);
     return programs.map((t) => ProgramMapper.toProgram(t));
   }
 
   async addProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Add program manager');
+    await this.userGuard.require('Add program manager', this.userGuard.isAdmin());
 
     const u: UpdateQuery<ProgramData> = { $addToSet: { managersIds: userId } };
     const program = await programRepository
@@ -132,7 +134,7 @@ export class ProgramDataSource extends BaseDataSource {
   }
 
   async removeProgramManager(programId: ObjectId, userId: ObjectId): Promise<Program> {
-    this.userGuard.isAdmin() || this.userGuard.notAuthorized('Remove program manager');
+    await this.userGuard.require('Remove program manager', this.userGuard.isAdmin());
 
     const program = await programRepository
       .findOneAndUpdate(

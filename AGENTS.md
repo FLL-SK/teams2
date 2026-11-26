@@ -143,7 +143,8 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 ### Autorizácia
 
 - Kontroly oprávnení sú v datasources cez `this.userGuard` (`apps/server/src/app/utils/user-guard.ts`): `isSuperAdmin`, `isAdmin`, `isCoach(teamId)`, `isEventManager(eventId)`, `isProgramManager(programId)`, `isSelf(userId)` atď.
-- Vzor: `this.userGuard.isAdmin() || this.userGuard.notAuthorized('Popis akcie');`
+- Vzor: `await this.userGuard.require('Popis akcie', this.userGuard.isAdmin(), () => this.userGuard.isCoach(teamId));` – kontroly sa vyhodnocujú postupne a lenivo, stačí jedna pravdivá; inak sa vyhodí `notAuthorized`. Asynchrónnu kontrolu odovzdaj ako funkciu (`() => guard.isCoach(id)`), nie ako `Promise` – typová kontrola to vynúti (#279, #297).
+- Výrazy bez príkazu (`a || guard.notAuthorized()`, `cb && cb()`) lint nepovoľuje – použi `require`, `if` alebo `cb?.()`.
 - `/graphql` je dostupné iba s platným JWT; nová funkcionalita musí vždy explicitne overiť oprávnenia.
 
 ### Ďalšie zvyklosti
