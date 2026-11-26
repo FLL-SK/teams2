@@ -1,4 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
+import { fireAndForget } from '../../utils/fire-and-forget';
 import {
   EventData,
   eventRepository,
@@ -141,7 +142,7 @@ export class EventDataSource extends BaseDataSource {
         { returnDocument: 'after' },
       )
       .exec();
-    void emailEventManagerAdded(eventId, userId);
+    fireAndForget(emailEventManagerAdded(eventId, userId), 'emailEventManagerAdded');
     return EventMapper.toEvent(event);
   }
 

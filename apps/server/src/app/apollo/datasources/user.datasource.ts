@@ -1,4 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
+import { fireAndForget } from '../../utils/fire-and-forget';
 import { UserData, userRepository } from '../../models';
 import { UpdateUserInput, UserPayload, User, UserFilterInput } from '../../_generated/graphql';
 import { UserMapper } from '../mappers';
@@ -97,7 +98,10 @@ export class UserDataSource extends BaseDataSource {
       emailUserAcceptedGdprToAdmin(nu.username);
     }
     if (nu && usernameChanged) {
-      void emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id);
+      fireAndForget(
+        emailUsernameChanged(user.username, nu.username, this.userGuard.userName, nu._id),
+        'emailUsernameChanged',
+      );
     }
 
     return { user: UserMapper.toUser(nu) };

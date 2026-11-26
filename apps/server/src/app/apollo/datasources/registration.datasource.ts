@@ -1,4 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
+import { fireAndForget } from '../../utils/fire-and-forget';
 import {
   eventRepository,
   ProgramData,
@@ -123,7 +124,10 @@ export class RegistrationDataSource extends BaseDataSource {
     registration.foodOrder = null;
     await registration.save();
     if (hadFoodOrder) {
-      void emailFoodOrderRemoved(registration, this.context.user.username);
+      fireAndForget(
+        emailFoodOrderRemoved(registration, this.context.user.username),
+        'emailFoodOrderRemoved',
+      );
     }
 
     return RegistrationMapper.toRegistration(registration);
@@ -294,7 +298,10 @@ export class RegistrationDataSource extends BaseDataSource {
     r.sizeConfirmedOn = date;
     await r.save();
 
-    void emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+    fireAndForget(
+      emailTeamSizeConfirmed(r._id, r.eventId, r.teamId, this.context.user.username),
+      'emailTeamSizeConfirmed',
+    );
 
     return RegistrationMapper.toRegistration(r);
   }
@@ -340,13 +347,14 @@ export class RegistrationDataSource extends BaseDataSource {
     r = await registrationRepository.findByIdAndUpdate(id, u, { returnDocument: 'after' }).exec();
 
     if (r.eventId) {
-      void emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username);
+      fireAndForget(
+        emailEventRegistrationConfirmed(r._id, r.eventId, r.teamId, this.context.user.username),
+        'emailEventRegistrationConfirmed',
+      );
     } else {
-      void emailProgramRegistrationConfirmed(
-        r._id,
-        r.programId,
-        r.teamId,
-        this.context.user.username,
+      fireAndForget(
+        emailProgramRegistrationConfirmed(r._id, r.programId, r.teamId, this.context.user.username),
+        'emailProgramRegistrationConfirmed',
       );
     }
     return RegistrationMapper.toRegistration(r);
@@ -407,7 +415,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.foodOrder = no;
     await r.save();
 
-    void emailFoodOrderUpdated(r, this.context.user.username);
+    fireAndForget(emailFoodOrderUpdated(r, this.context.user.username), 'emailFoodOrderUpdated');
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }
@@ -432,7 +440,7 @@ export class RegistrationDataSource extends BaseDataSource {
     r.foodOrder = null;
     await r.save();
 
-    void emailFoodOrderRemoved(r, this.context.user.username);
+    fireAndForget(emailFoodOrderRemoved(r, this.context.user.username), 'emailFoodOrderRemoved');
 
     return { registration: RegistrationMapper.toRegistration(r) };
   }

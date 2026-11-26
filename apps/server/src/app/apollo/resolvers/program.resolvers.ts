@@ -53,6 +53,7 @@ export const mutationResolvers: MutationResolvers<ApolloContext> = {
   updateProgram: (_parent, { id, input }, { dataSources }) =>
     dataSources.program.updateProgram(id, input),
   deleteProgram: (_parent, { id }, { dataSources }) => dataSources.program.deleteProgram(id),
+  undeleteProgram: (_parent, { id }, { dataSources }) => dataSources.program.undeleteProgram(id),
 
   addProgramManager: (_parent, { programId, userId }, { dataSources }) =>
     dataSources.program.addProgramManager(programId, userId),

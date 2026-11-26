@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { fireAndForget } from '../utils/fire-and-forget';
 import { getServerConfig } from '../../server-config';
 import { ApolloContext } from '../apollo/apollo-context';
 import { InvoiceEmailOptions, InvoicingAPI } from './invoicingAPI';
@@ -240,9 +241,15 @@ export async function cancelRegistration(
 
   // email notifications
   if (registration.eventId) {
-    void emailTeamUnregisteredFromEvent(registration.id);
+    fireAndForget(
+      emailTeamUnregisteredFromEvent(registration.id),
+      'emailTeamUnregisteredFromEvent',
+    );
   } else {
-    void emailTeamUnregisteredFromProgram(registration.id);
+    fireAndForget(
+      emailTeamUnregisteredFromProgram(registration.id),
+      'emailTeamUnregisteredFromProgram',
+    );
   }
 
   return { registration };
@@ -285,7 +292,7 @@ export async function registerTeamToEvent(
 
   try {
     // email notifications
-    void emailTeamRegisteredForEvent(registration._id);
+    fireAndForget(emailTeamRegisteredForEvent(registration._id), 'emailTeamRegisteredForEvent');
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -337,7 +344,7 @@ export async function registerTeamToProgram(
 
   try {
     // email notifications
-    void emailTeamRegisteredForProgram(registration._id);
+    fireAndForget(emailTeamRegisteredForProgram(registration._id), 'emailTeamRegisteredForProgram');
   } catch (e) {
     log.error('Failed to send email to team %s', teamId);
     return { errors: [{ code: 'registration_failed_to_send_email' }, { code: e.name }] };
@@ -653,7 +660,7 @@ export async function modifyFoodOrderItem(
 
   await reg.save();
 
-  void notifyFoodItemChanged(reg, oldItem, item, changedBy);
+  fireAndForget(notifyFoodItemChanged(reg, oldItem, item, changedBy), 'notifyFoodItemChanged');
 }
 
 export async function notifyFoodItemChanged(
@@ -688,14 +695,17 @@ export async function notifyFoodItemChanged(
   const regUrl =
     getServerConfig().clientAppRootUrl + appPath.registration(registration._id.toHexString());
 
-  void emailFoodItemChanged({
-    emails: coachEmails,
-    eventName: event.name,
-    programName: program.name,
-    oldItem,
-    changes,
-    regUrl,
-  });
+  fireAndForget(
+    emailFoodItemChanged({
+      emails: coachEmails,
+      eventName: event.name,
+      programName: program.name,
+      oldItem,
+      changes,
+      regUrl,
+    }),
+    'emailFoodItemChanged',
+  );
 
   const text = `Položka objednávky jedla zmenená usporiadateľom.  \n1. stará: ${
     oldItem.name

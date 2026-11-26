@@ -31,7 +31,8 @@ export interface TeamModel extends Model<TeamData> {
 const schema = new Schema<TeamData, TeamModel>(
   {
     name: { type: Types.String, required: true },
-    createdOn: { type: Types.Date, default: Date.now() },
+    // funkcia – `Date.now()` by sa vyhodnotil raz pri štarte servera (#285)
+    createdOn: { type: Types.Date, default: Date.now },
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
     coachesIds: [{ type: Types.ObjectId, ref: 'User', default: [] }],

@@ -41,7 +41,8 @@ const schema = new Schema<UserData, UserModel>(
     lastName: { type: Types.String },
     password: { type: Types.String, required: true }, // hashed password
     phone: { type: Types.String },
-    createdOn: { type: Types.Date, default: new Date() },
+    // funkcia – `new Date()` by sa vyhodnotil raz pri štarte servera (#285)
+    createdOn: { type: Types.Date, default: Date.now },
     deletedOn: { type: Types.Date },
     deletedBy: { type: Types.ObjectId, ref: 'User' },
     isAdmin: { type: Types.Boolean },
