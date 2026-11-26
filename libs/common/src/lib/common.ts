@@ -1,7 +1,3 @@
-export function common(): string {
-  return 'common';
-}
-
 export const appPath = {
   home: () => '/',
   settings: () => '/settings',

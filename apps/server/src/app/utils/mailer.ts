@@ -1,9 +1,9 @@
 import { SendEmailCommand, SendEmailCommandInput, SESClient } from '@aws-sdk/client-ses';
 import { getServerConfig } from '../../server-config';
-import { debugLib } from './debug';
+import { logger } from '@teams2/logger';
 import { getAppSettings } from './settings';
 
-const debug = debugLib.extend('mailer');
+const debug = logger('teams2:mailer').debug;
 
 const sesClient = createSESClient();
 

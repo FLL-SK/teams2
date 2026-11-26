@@ -1,7 +1,11 @@
-# dateutils
+# @teams2/dateutils
 
-This library was generated with [Nx](https://nx.dev).
+Práca s dátumami v časovom pásme Europe/Bratislava (date-fns) – formátovanie a prevody medzi UTC a lokálnym časom.
 
-## Running unit tests
+Import cez alias `@teams2/dateutils` (`tsconfig.base.json`).
 
-Run `nx test dateutils` to execute the unit tests via [Vitest](https://vitest.dev).
+## Testy
+
+```bash
+pnpm test --project dateutils
+```
