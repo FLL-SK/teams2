@@ -1,6 +1,15 @@
 import Markdown, { MarkdownToJSX } from 'markdown-to-jsx';
 
 /**
+ * Bezpečné voľby markdown-to-jsx: raw HTML sa nerenderuje (texty píšu aj správcovia turnajov
+ * a JWT je v localStorage – XSS by znamenalo prevzatie účtu). #284
+ * Nebezpečné URL (`javascript:`, `data:` …) odstraňuje predvolený sanitizer knižnice.
+ */
+export const SAFE_MARKDOWN_OPTIONS: MarkdownToJSX.Options = {
+  disableParsingRawHTML: true,
+};
+
+/**
  * Internal markdown component that wraps the markdown-to-jsx library and provides default overrides for certain elements.
  * This component is used to render markdown content in the application.
  * @param props
@@ -17,6 +26,7 @@ export function MD(props: {
     <Markdown
       options={{
         ...options,
+        ...SAFE_MARKDOWN_OPTIONS,
         overrides: {
           p: {
             component: (props) => <p {...props} style={{ maxWidth: '100%' }} />,

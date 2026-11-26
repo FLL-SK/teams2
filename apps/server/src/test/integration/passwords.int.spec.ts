@@ -64,7 +64,11 @@ describe('heslá a tokeny (#281)', () => {
   it('changeUserPassword uloží hash (nie čistý text) a nové heslo funguje', async () => {
     const { username, password, id } = srv.data.users.coach3;
     const token = await srv.loginAs(username, password);
-    const res = await srv.gql(G.ChangeUserPasswordDocument, { id, password: 'noveheslo123' }, token);
+    const res = await srv.gql(
+      G.ChangeUserPasswordDocument,
+      { id, password: 'noveheslo123' },
+      token,
+    );
     expect(res.errors).toBeUndefined();
 
     const stored = (await userRepository.findById(id).lean())!;
@@ -91,7 +95,9 @@ describe('heslá a tokeny (#281)', () => {
 
     // reset token sa nedá použiť ako prihlasovací token
     expect((await srv.gql(G.GetTagsDocument, {}, resetToken)).status).toBe(401);
-    expect((await (await fetch(`${srv.url}/auth?token=${resetToken}`)).json()).token).toBeUndefined();
+    expect(
+      (await (await fetch(`${srv.url}/auth?token=${resetToken}`)).json()).token,
+    ).toBeUndefined();
 
     const res = await post(srv, '/reset', { token: resetToken, password: 'resetnuteheslo1' });
     expect(res.status).toBe(200);

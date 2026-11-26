@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SAFE_MARKDOWN_OPTIONS } from './md';
 import { Box, Button, Markdown, TextArea, Text } from 'grommet';
 import styled from 'styled-components';
 import { Note } from '../_generated/graphql';
@@ -103,7 +104,7 @@ export function NoteDetail(props: NoteDetailProps) {
       <Box width="100%" gap="xsmall">
         {!editing && (
           <NoteTextWrapper background="light-3">
-            <Markdown>{note.text}</Markdown>
+            <Markdown options={SAFE_MARKDOWN_OPTIONS}>{note.text}</Markdown>
             <NoteActions
               canEdit={isNoteCreator || isAdmin()}
               onEdit={() => setEditing(true)}

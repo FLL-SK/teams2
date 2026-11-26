@@ -248,6 +248,9 @@ importers:
       graphql:
         specifier: ^16.15.0
         version: 16.15.0
+      helmet:
+        specifier: 8.3.0
+        version: 8.3.0
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
@@ -275,9 +278,6 @@ importers:
       passport-local:
         specifier: ^1.0.0
         version: 1.0.0
-      xlsx:
-        specifier: https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz
-        version: https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz
       yargs:
         specifier: ^18.2.0
         version: 18.2.0
@@ -435,6 +435,9 @@ importers:
       vitest:
         specifier: ^5.1.2
         version: 5.1.2(@types/node@26.6.10)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.10)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      xlsx:
+        specifier: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+        version: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 
 packages:
 
@@ -2898,6 +2901,10 @@ packages:
   header-case@2.0.4:
     resolution: {integrity: sha512-H/vuk5TEEVZwrR0lp2zed9OCo1uAILMlx0JEMgC26rzyJJ3N1v6XkwHHXJQdR2doSjcGPM6OKPYoJgf0plJ11Q==}
 
+  helmet@8.3.0:
+    resolution: {integrity: sha512-Qgpiaws3Sm30Av8Eah6sjMCZZwjlBu+E68rhpCWBshY1lb09HtLwj5GviX0OyQIn+ulUS0iX0AxN5n3tLZzz1w==}
+    engines: {node: '>=18.0.0'}
+
   hermes-estree@0.25.1:
     resolution: {integrity: sha512-0wUoCcLp+5Ev5pDW2OriHC2MJCbwLwuRx+gAqMTOkGKJJiBCLjtrvy4PWUGn6MIVefecRpzoOZ/UV6iGdOr+Cw==}
 
@@ -4498,9 +4505,9 @@ packages:
       utf-8-validate:
         optional: true
 
-  xlsx@https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz:
-    resolution: {integrity: sha512-ru2425diC7gjPT93C0aJ1amOz50IKH7ocv0wpA6+cGhdUt8hwsXIsIZ4siFojvvk6L0QVFN7F5K8WgXdeg6Dkg==, tarball: https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz}
-    version: 0.18.9
+  xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz:
+    resolution: {integrity: sha512-oLDq3jw7AcLqKWH2AhCpVTZl8mf6X2YReP+Neh0SJUzV/BdZYjth94tG5toiMB1PPrYtxOCfaoUCkvtuH+3AJA==, tarball: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz}
+    version: 0.20.3
     engines: {node: '>=0.8'}
     hasBin: true
 
@@ -7426,6 +7433,8 @@ snapshots:
       capital-case: 1.0.4
       tslib: 2.9.1
 
+  helmet@8.3.0: {}
+
   hermes-estree@0.25.1: {}
 
   hermes-parser@0.25.1:
@@ -9043,7 +9052,7 @@ snapshots:
 
   ws@8.23.0: {}
 
-  xlsx@https://cdn.sheetjs.com/xlsx-0.18.9/xlsx-0.18.9.tgz: {}
+  xlsx@https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz: {}
 
   xml-name-validator@5.0.0: {}
 

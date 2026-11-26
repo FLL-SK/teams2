@@ -244,10 +244,10 @@ export async function emailFoodOrderUpdated(registration: RegistrationData, upda
     .join('\n');
   const text =
     `Používateľ ${updatedBy} objednal stravovanie pre tím ${team.name}.` +
-    `<br/>Detaily registrácie nájdete tu ${registrationUrl}` +
-    '<br/><br/>' +
+    `\nDetaily registrácie nájdete tu ${registrationUrl}` +
+    '\n\n' +
     orderItems +
-    '<br/><br/>' +
+    '\n\n' +
     `Poznámka: ${registration.foodOrder.note}`;
 
   // email to admin
