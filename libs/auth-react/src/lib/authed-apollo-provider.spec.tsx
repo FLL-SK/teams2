@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import { ApolloClient, gql } from '@apollo/client';
+import { ApolloClient, CombinedGraphQLErrors, gql } from '@apollo/client';
 import { useApolloClient } from '@apollo/client/react';
 import { AuthedApolloProvider } from './authed-apollo-provider';
 
@@ -101,5 +101,30 @@ describe('AuthedApolloProvider', () => {
     );
 
     await waitFor(() => expect(client.readQuery({ query: TEST_QUERY })).toBeNull());
+  });
+
+  it('zamietnutý prístup (FORBIDDEN) vráti slovenskú hlášku (#298)', async () => {
+    fetchMock.mockImplementation(
+      async () =>
+        ({
+          ok: true,
+          status: 200,
+          headers: new Headers({ 'content-type': 'application/json' }),
+          text: async () =>
+            JSON.stringify({
+              data: null,
+              errors: [{ message: '(x) Not authorized: Test', extensions: { code: 'FORBIDDEN' } }],
+            }),
+        }) as unknown as Response,
+    );
+    renderProvider('token-1');
+    const error = await clients[0].query({ query: TEST_QUERY, fetchPolicy: 'network-only' }).then(
+      () => undefined,
+      (e: unknown) => e,
+    );
+    expect(CombinedGraphQLErrors.is(error)).toBe(true);
+    expect((error as CombinedGraphQLErrors).message).toContain(
+      'Nemáte oprávnenie na vykonanie tejto akcie.',
+    );
   });
 });

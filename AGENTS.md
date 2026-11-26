@@ -147,6 +147,13 @@ Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, pr
 - Výrazy bez príkazu (`a || guard.notAuthorized()`, `cb && cb()`) lint nepovoľuje – použi `require`, `if` alebo `cb?.()`.
 - `/graphql` je dostupné iba s platným JWT; nová funkcionalita musí vždy explicitne overiť oprávnenia.
 
+### Chyby (#298)
+
+- **Chýbajúce oprávnenie a neočakávané chyby** sú GraphQL chyby. `notAuthorized` / `require` vyhadzujú `GraphQLError` s `extensions.code = 'FORBIDDEN'`; klient (link v `libs/auth-react`) jej správu nahradí slovenskou hláškou a zobrazí sa cez `onError` mutácie/dotazu. Výnimka: registrácie (`domains/registration.ts`) z historických dôvodov vracajú `not_authorized` v payloade.
+- **Porušenie biznis pravidla**, ktoré vie používateľ vyriešiť (tím je už registrovaný, turnaj je plný, …), sa vracia v `errors[]` payloadu mutácie. Kódy a správy sú v `libs/common/src/lib/error-codes.ts` (typ `ErrorCode`) – nový kód pridaj tam aj so správou.
+- V doménovej logike vyhoď `new DomainError(code)` (`apps/server/src/app/utils/domain-error.ts`) a na úrovni mutácie ho preveď cez `failureErrors(code, e, log)` – nie `throw { name: '…' }`.
+- Klient: pri mutácii, ktorá vracia `errors`, vždy zavolaj `handleMutationErrors` (napr. v `onCompleted`) a správu o úspechu zobraz, iba ak chyby neboli.
+
 ### Ďalšie zvyklosti
 
 - Mazanie je spravidla „soft delete“ (`deletedOn`, `deletedBy`) s možnosťou obnovenia (`restore…`).

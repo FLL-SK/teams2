@@ -9,6 +9,7 @@ import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import { useNotification } from '../../../components/notifications/notification-provider';
 import { Panel } from '../../../components/panel';
+import { handleMutationErrors } from '../../../utils/handle_mutation_error';
 import {
   RegistrationFragmentFragment,
   CreateRegistrationInvoiceDocument,
@@ -61,7 +62,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
     EmailRegistrationInvoiceMutation,
     EmailRegistrationInvoiceMutationVariables
   >(EmailRegistrationInvoiceDocument, {
-    onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
+    onError: (e) => notify.error('Nepodarilo sa poslať faktúru.', e.message),
   });
 
   return (
@@ -159,15 +160,14 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                       clearTimeout(t);
                       setInvoiceProcessing(undefined);
 
-                      if (!data.createRegistrationInvoice.registration) {
-                        notify.error(
+                      // kódy chýb ako správy pre používateľa (predtým holé kódy, #298)
+                      if (
+                        !handleMutationErrors(
+                          data.createRegistrationInvoice,
                           'Nepodarilo sa vytvoriť faktúru.',
-                          (data.createRegistrationInvoice.errors ?? []).reduce(
-                            (t, e) => t + '\n' + e.code,
-                            '',
-                          ),
-                        );
-                      } else {
+                          notify.error,
+                        )
+                      ) {
                         notify.info('Faktúra bola vytvorená.');
                       }
                     },
@@ -182,10 +182,19 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                   setInvoiceBeingSent(t);
                   emailInvoice({
                     variables: { id: reg.id },
-                    onCompleted: () => {
+                    onCompleted: (data) => {
                       clearTimeout(t);
                       setInvoiceBeingSent(undefined);
-                      notify.info('Faktúra bola poslaná.');
+                      // predtým „poslaná“ aj pri chybe v payloade (#298)
+                      if (
+                        !handleMutationErrors(
+                          data.emailRegistrationInvoice,
+                          'Nepodarilo sa poslať faktúru.',
+                          notify.error,
+                        )
+                      ) {
+                        notify.info('Faktúra bola poslaná.');
+                      }
                       onUpdate();
                     },
                   });

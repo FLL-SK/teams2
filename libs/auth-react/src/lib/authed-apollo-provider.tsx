@@ -4,6 +4,7 @@ import { SetContextLink } from '@apollo/client/link/context';
 import omitDeep from 'omit-deep';
 import React from 'react';
 import { map } from 'rxjs/operators';
+import { localizeForbiddenErrors } from './forbidden-errors';
 
 interface AuthedApolloProviderProps {
   children: React.ReactNode;
@@ -21,6 +22,11 @@ const createApolloClient = (apiUri: string, getToken: () => string | null | unde
     return forward(operation).pipe(map((data) => data));
   });
 
+  // zamietnutý prístup (FORBIDDEN) zobraziť používateľovi po slovensky (#298)
+  const forbiddenLink = new ApolloLink((operation, forward) =>
+    forward(operation).pipe(map((result) => localizeForbiddenErrors(result))),
+  );
+
   const authLink = new SetContextLink(() => {
     // return authorization header with the current jwt token
     const token = getToken();
@@ -35,7 +41,7 @@ const createApolloClient = (apiUri: string, getToken: () => string | null | unde
   });
 
   return new ApolloClient({
-    link: authLink.concat(cleanTypeName).concat(httpLink),
+    link: ApolloLink.from([forbiddenLink, authLink, cleanTypeName, httpLink]),
     cache: new InMemoryCache(),
   });
 };

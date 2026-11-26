@@ -23,6 +23,8 @@ describe('oprávnenia', () => {
 
   const expectDenied = (res: Awaited<ReturnType<TestServer['gql']>>) => {
     expect(res.errors?.[0]?.message).toMatch(/not authorized|Not authorized|nemáte|oprávn/i);
+    // zamietnutý prístup má kód FORBIDDEN – klient podľa neho zobrazí slovenskú hlášku (#298)
+    expect(res.errors?.[0]?.extensions?.code).toBe('FORBIDDEN');
   };
   const expectAllowed = (res: Awaited<ReturnType<TestServer['gql']>>) => {
     expect(res.errors).toBeUndefined();

@@ -1,4 +1,6 @@
 import { ObjectId } from 'mongodb';
+import { GraphQLError } from 'graphql';
+import { FORBIDDEN_ERROR_CODE } from '@teams2/common';
 import {
   eventRepository,
   programRepository,
@@ -301,11 +303,13 @@ export class UserGuard {
     this.notAuthorized(action);
   }
 
+  /** vyhodí GraphQL chybu s `extensions.code = 'FORBIDDEN'` (#298) */
   notAuthorized(context?: string): never {
-    throw new Error(
+    throw new GraphQLError(
       `(${this.user ? this.user.username : 'not-logged-in'}) ${this.message}${
         context ? `: ${context}` : ''
       }`,
+      { extensions: { code: FORBIDDEN_ERROR_CODE } },
     );
   }
 }
