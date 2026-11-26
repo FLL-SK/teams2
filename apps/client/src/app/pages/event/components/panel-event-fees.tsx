@@ -106,11 +106,11 @@ export function PanelEventFees(props: PanelEventFeesProps) {
         }}
         onSubmit={(values) => {
           if (invoiceItemAdd || !values.id) {
-            createInvoiceItem({
+            void createInvoiceItem({
               variables: { type: 'event', refId: event.id, item: omit(values, 'id') },
             });
           } else {
-            updateInvoiceItem({
+            void updateInvoiceItem({
               variables: { id: values.id, item: values },
             });
           }

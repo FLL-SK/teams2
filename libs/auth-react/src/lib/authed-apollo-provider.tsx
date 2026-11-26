@@ -65,7 +65,7 @@ export const AuthedApolloProvider = ({
   const prevTokenRef = React.useRef(apiToken);
   React.useEffect(() => {
     if (prevTokenRef.current && !apiToken) {
-      apolloClient.clearStore();
+      void apolloClient.clearStore();
     }
     prevTokenRef.current = apiToken;
   }, [apiToken, apolloClient]);

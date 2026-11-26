@@ -44,7 +44,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
 
   React.useEffect(() => {
     if (details.program) {
-      fetchProgram({
+      void fetchProgram({
         variables: { id: details.program.id ?? details.event?.programId },
       });
     }
@@ -52,7 +52,7 @@ export function CheckoutReview(props: CheckoutReviewProps) {
 
   React.useEffect(() => {
     if (details.event) {
-      fetchEvent({
+      void fetchEvent({
         variables: { id: details.event.id },
       });
     }

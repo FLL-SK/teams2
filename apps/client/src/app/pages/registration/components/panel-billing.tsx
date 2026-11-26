@@ -154,7 +154,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                 onClick={() => {
                   const t = setTimeout(() => setInvoiceProcessing(undefined), 15000);
                   setInvoiceProcessing(t);
-                  createInvoice({
+                  void createInvoice({
                     variables: { id: reg.id },
                     onCompleted: (data) => {
                       clearTimeout(t);
@@ -180,7 +180,7 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
                 onClick={() => {
                   const t = setTimeout(() => setInvoiceBeingSent(undefined), 15000);
                   setInvoiceBeingSent(t);
-                  emailInvoice({
+                  void emailInvoice({
                     variables: { id: reg.id },
                     onCompleted: (data) => {
                       clearTimeout(t);

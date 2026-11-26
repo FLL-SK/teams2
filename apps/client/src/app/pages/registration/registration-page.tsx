@@ -115,7 +115,7 @@ export function RegistrationPage() {
 
   const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
     CreateNoteDocument,
-    { onCompleted: () => notesRefetch() },
+    { onCompleted: () => void notesRefetch() },
   );
 
   const reg = regData?.getRegistration;
@@ -153,7 +153,7 @@ export function RegistrationPage() {
         o.shipTo = { ...data.shipTo };
       }
 
-      updateOrder({
+      void updateOrder({
         variables: {
           id: reg.id,
           order: o,

@@ -107,7 +107,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
       const result = await axios.post(url, data, { headers });
       log.debug('result=%s', JSON.stringify(result.data));
 
-      if (result.status != 200) {
+      if (result.status !== 200) {
         log.error(
           `Failed posting invoice to Superfaktura. code=${result.status} text=${result.statusText}`,
         );
@@ -168,7 +168,7 @@ export class InvoicingAPISuperfaktura extends InvoicingAPI {
       );
       log.debug('result=%o', result);
 
-      if (result.status != 200) {
+      if (result.status !== 200) {
         log.error(
           `Failed sending invoice PDF via Superfaktura. code=${result.status} text=${result.statusText}`,
         );

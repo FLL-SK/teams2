@@ -119,10 +119,10 @@ export function FoodOrderModal(props: FoodOrderModalProps) {
           <Button
             label="Späť"
             onClick={() => setActiveTab(activeTab - 1)}
-            disabled={activeTab == 0}
+            disabled={activeTab === 0}
           />
           <Button label="Zrušiť" onClick={props.onClose} />
-          {activeTab == 3 && (
+          {activeTab === 3 && (
             <Button primary label="Objednať" onClick={() => props.onOrder(value)} />
           )}
           {activeTab < 3 && (

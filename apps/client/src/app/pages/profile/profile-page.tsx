@@ -56,12 +56,12 @@ export function ProfilePage() {
   const [createTeam] = useMutation<CreateTeamMutation, CreateTeamMutationVariables>(
     CreateTeamDocument,
     {
-      onCompleted: () => refetch(),
+      onCompleted: () => void refetch(),
       onError: (e) => notify.error('Nepodarilo sa vytvoriť tím.', e.message),
     },
   );
   const [setAdmin] = useMutation<SetAdminMutation, SetAdminMutationVariables>(SetAdminDocument, {
-    onCompleted: () => refetch(),
+    onCompleted: () => void refetch(),
     onError: (e) => notify.error('Nepodarilo sa nastaviť admina.', e.message),
   });
   const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(
@@ -85,7 +85,7 @@ export function ProfilePage() {
 
   React.useEffect(() => {
     if (id) {
-      fetchUser({ variables: { id } });
+      void fetchUser({ variables: { id } });
     }
   }, [id, fetchUser]);
 

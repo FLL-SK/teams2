@@ -33,6 +33,7 @@
     "typecheck": "node scripts/typecheck.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "prepare": "simple-git-hooks || true",
     "testseed": "tsx --tsconfig apps/server/tsconfig.app.json apps/server/src/main.ts testseed"
   },
   "dependencies": {
@@ -105,6 +106,7 @@
     "grommet": "^2.59.0",
     "grommet-icons": "^4.14.0",
     "jsdom": "^31.0.1",
+    "lint-staged": "^17.6.2",
     "markdown-to-jsx": "^9.11.0",
     "mongodb-memory-server-core": "^11.4.0",
     "prettier": "^3.10.1",
@@ -115,6 +117,7 @@
     "react-virtualized": "^10.0.1",
     "react-virtualized-auto-sizer": "^2.0.4",
     "rxjs": "^7.8.2",
+    "simple-git-hooks": "^2.14.0",
     "styled-components": "^6.7.0",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
@@ -122,5 +125,15 @@
     "vite": "^8.3.8",
     "vitest": "^5.1.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,mts,cjs}": [
+      "prettier --write",
+      "eslint --max-warnings=0 --no-warn-ignored"
+    ],
+    "*.{json,md,graphql,yaml,yml,css,html}": "prettier --write --ignore-unknown"
   }
 }

@@ -51,7 +51,7 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
   const handleDeleteEvent = useCallback(
     async (e: EventListFragmentFragment) => {
       if (e.registrationsCount === 0) {
-        deleteEvent({ variables: { id: e.id } });
+        void deleteEvent({ variables: { id: e.id } });
       } else {
         alert('Nie je možné vymazať turnaj, na ktorý je prihlásený jeden alebo viac tímov.');
       }

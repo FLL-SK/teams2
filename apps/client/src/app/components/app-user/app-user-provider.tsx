@@ -65,7 +65,7 @@ export function AppUserContextProvider(props: AppUserContextProviderProps) {
 
   useEffect(() => {
     if (user && user.id && fetchCount < 3) {
-      fetchUser({ variables: { id: user.id } })
+      void fetchUser({ variables: { id: user.id } })
         .catch(() => {
           incrementError();
         })

@@ -106,7 +106,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
         o.shipTo = { ...data.shipTo };
       }
 
-      updateOrder({
+      void updateOrder({
         variables: {
           id: registration.id,
           order: o,

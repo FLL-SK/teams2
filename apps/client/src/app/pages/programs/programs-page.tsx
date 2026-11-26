@@ -36,7 +36,7 @@ export function ProgramsPage(_props: ProgramsPageProps) {
   const [createProgram] = useMutation<CreateProgramMutation, CreateProgramMutationVariables>(
     CreateProgramDocument,
     {
-      onCompleted: () => refetch(),
+      onCompleted: () => void refetch(),
       onError,
     },
   );

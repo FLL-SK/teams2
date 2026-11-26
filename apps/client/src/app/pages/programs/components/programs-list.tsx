@@ -58,7 +58,7 @@ function ProgramListRow({ program }: { program: ProgramListFragmentFragment }) {
         regType: 'prog',
       });
 
-      navigate(`${appPath.registrations()}?${p.toString()}`);
+      void navigate(`${appPath.registrations()}?${p.toString()}`);
     },
     [navigate, program.id],
   );

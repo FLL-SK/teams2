@@ -32,7 +32,7 @@ export function SelectTag(props: SelectTagProps) {
   const [options, setOptions] = useState<TagFragmentFragment[]>([]);
   const [createTag] = useMutation<CreateTagMutation, CreateTagMutationVariables>(
     CreateTagDocument,
-    { onCompleted: () => refetch(), onError: () => notify.error('Chyba pri vytváraní tagu') },
+    { onCompleted: () => void refetch(), onError: () => notify.error('Chyba pri vytváraní tagu') },
   );
 
   useEffect(() => {

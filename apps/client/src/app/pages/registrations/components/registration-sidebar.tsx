@@ -66,13 +66,13 @@ export function RegistrationSidebar(props: RegistrationSidebarProps) {
 
   const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
     CreateNoteDocument,
-    { onCompleted: () => notesRefetch() },
+    { onCompleted: () => void notesRefetch() },
   );
 
   React.useEffect(() => {
     if (registrationId) {
-      fetchRegistration({ variables: { id: registrationId } });
-      fetchNotes({ variables: { type: 'registration', ref: registrationId } });
+      void fetchRegistration({ variables: { id: registrationId } });
+      void fetchNotes({ variables: { type: 'registration', ref: registrationId } });
     }
   }, [registrationId, fetchRegistration, fetchNotes]);
 

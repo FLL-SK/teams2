@@ -34,7 +34,7 @@ export function ProgramPage() {
 
   React.useEffect(() => {
     if (id) {
-      fetchProgram({ variables: { id } });
+      void fetchProgram({ variables: { id } });
     }
   }, [id, fetchProgram]);
 

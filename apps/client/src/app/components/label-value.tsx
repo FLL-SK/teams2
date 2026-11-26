@@ -23,7 +23,7 @@ export const LabelValue = (props: LabelValueProps) => {
             direction={dir}
             border={{ side: 'bottom', color: 'light-3' }}
             gap="xsmall"
-            align={dir == 'row' ? 'center' : undefined}
+            align={dir === 'row' ? 'center' : undefined}
             // justify={dir == 'row' ? 'between' : undefined}
           >
             <Box

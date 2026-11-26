@@ -104,19 +104,16 @@ describe('AuthedApolloProvider', () => {
   });
 
   it('zamietnutý prístup (FORBIDDEN) vráti slovenskú hlášku (#298)', async () => {
-    fetchMock.mockImplementation(
-      async () =>
-        ({
-          ok: true,
-          status: 200,
-          headers: new Headers({ 'content-type': 'application/json' }),
-          text: async () =>
-            JSON.stringify({
-              data: null,
-              errors: [{ message: '(x) Not authorized: Test', extensions: { code: 'FORBIDDEN' } }],
-            }),
-        }) as unknown as Response,
-    );
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () =>
+        JSON.stringify({
+          data: null,
+          errors: [{ message: '(x) Not authorized: Test', extensions: { code: 'FORBIDDEN' } }],
+        }),
+    } as unknown as Response);
     renderProvider('token-1');
     const error = await clients[0].query({ query: TEST_QUERY, fetchPolicy: 'network-only' }).then(
       () => undefined,

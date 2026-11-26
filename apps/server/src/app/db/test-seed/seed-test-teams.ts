@@ -124,7 +124,7 @@ export async function seedTestTeams(generatedTeams = 0) {
             await noteRepository.create(n);
             log.debug(`Note created =%o`, n);
           } catch (e) {
-            console.error(e);
+            log.error('Note not created: %o', e);
           }
         }
       }

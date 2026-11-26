@@ -88,7 +88,7 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
         }}
         onSubmit={(values) => {
           if (invoiceItemAdd || !values.id) {
-            createInvoiceItem({
+            void createInvoiceItem({
               variables: {
                 type: 'registration',
                 refId: registration.id,
@@ -96,7 +96,7 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
               },
             });
           } else {
-            updateInvoiceItem({
+            void updateInvoiceItem({
               variables: { id: values.id, item: values },
             });
           }

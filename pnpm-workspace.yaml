@@ -5,6 +5,8 @@ packages:
 allowBuilds:
   esbuild: true
   '@apollo/protobufjs': false
+  # hooky inštaluje skript `prepare` (nie postinstall balíka) – #302
+  simple-git-hooks: false
 
 minimumReleaseAgeExclude:
   - '@aws-sdk/client-s3@3.1178.0'

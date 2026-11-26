@@ -45,12 +45,12 @@ export function TeamSidebar(props: TeamSidebarProps) {
   );
   const [createNote] = useMutation<CreateNoteMutation, CreateNoteMutationVariables>(
     CreateNoteDocument,
-    { onCompleted: () => notesRefetch() },
+    { onCompleted: () => void notesRefetch() },
   );
 
   React.useEffect(() => {
     if (team) {
-      fetchNotes({
+      void fetchNotes({
         variables: { type: 'team', ref: team.id },
       });
     }

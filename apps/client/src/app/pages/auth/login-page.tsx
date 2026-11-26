@@ -28,7 +28,7 @@ export function LoginPage() {
     const resp = await login(value.username, value.password);
     if (resp.user) {
       const l = (location.state as { from?: string })?.from ?? appPath.home();
-      navigate(l);
+      void navigate(l);
       return;
     } else {
       setError('Nesprávne prihlasovacie údaje');

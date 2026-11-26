@@ -62,7 +62,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
 
   const handleDeleteEvent = useCallback(() => {
     if (event?.registrationsCount === 0) {
-      deleteEvent({
+      void deleteEvent({
         variables: { id: event?.id },
         onCompleted: () => notify.info('Turnaj bol zrušený.'),
       });
@@ -176,7 +176,7 @@ export function PanelEventDetails(props: PanelEventDetailsProps) {
           title="Archivovať turnaj"
           message="Naozaj chcete archivovať tento turnaj?"
           onYes={async () => {
-            archiveEvent({
+            void archiveEvent({
               variables: { eventId: event.id },
               onCompleted: () => notify.info('Turnaj bol archivovaný.'),
             });
