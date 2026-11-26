@@ -27,8 +27,14 @@ export const FieldInvoiceIssuedOn = (props: {
   const { notify } = useNotification();
 
   const onError = () => notify.error('Nepodarilo sa aktualizovať dátum vystavenia faktúry.');
-  const [setInvoiced] = useMutation<RegistrationSetInvoicedMutation, RegistrationSetInvoicedMutationVariables>(RegistrationSetInvoicedDocument, { onError });
-  const [clearInvoiced] = useMutation<RegistrationClearInvoicedMutation, RegistrationClearInvoicedMutationVariables>(RegistrationClearInvoicedDocument, { onError });
+  const [setInvoiced] = useMutation<
+    RegistrationSetInvoicedMutation,
+    RegistrationSetInvoicedMutationVariables
+  >(RegistrationSetInvoicedDocument, { onError });
+  const [clearInvoiced] = useMutation<
+    RegistrationClearInvoicedMutation,
+    RegistrationClearInvoicedMutationVariables
+  >(RegistrationClearInvoicedDocument, { onError });
   return (
     <LabelValue label="Faktúra vystavená">
       <SetClearDate

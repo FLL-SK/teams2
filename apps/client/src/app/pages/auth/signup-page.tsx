@@ -100,7 +100,10 @@ export function SignupPage() {
               validate={(f: string) =>
                 validatePassword(f)
                   ? true
-                  : { status: 'error', message: `Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.` }
+                  : {
+                      status: 'error',
+                      message: `Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.`,
+                    }
               }
             />
             <FormField

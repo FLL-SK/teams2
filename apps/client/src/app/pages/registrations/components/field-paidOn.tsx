@@ -23,8 +23,14 @@ export const FieldPaidOn = (props: {
   const { isAdmin } = useAppUser();
   const { notify } = useNotification();
   const onError = () => notify.error('Nepodarilo sa aktualizovať dátum zaplatenia faktúry.');
-  const [setPaid] = useMutation<RegistrationSetPaidMutation, RegistrationSetPaidMutationVariables>(RegistrationSetPaidDocument, { onError });
-  const [clearPaid] = useMutation<RegistrationClearPaidMutation, RegistrationClearPaidMutationVariables>(RegistrationClearPaidDocument, { onError });
+  const [setPaid] = useMutation<RegistrationSetPaidMutation, RegistrationSetPaidMutationVariables>(
+    RegistrationSetPaidDocument,
+    { onError },
+  );
+  const [clearPaid] = useMutation<
+    RegistrationClearPaidMutation,
+    RegistrationClearPaidMutationVariables
+  >(RegistrationClearPaidDocument, { onError });
 
   return (
     <LabelValue label="Zaplatená">

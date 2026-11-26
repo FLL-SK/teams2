@@ -23,10 +23,16 @@ export function PanelProgramManagers(props: PanelProgramManagersProps) {
   const { program, canAddManagers } = props;
   const { notify } = useNotification();
 
-  const [addManager] = useMutation<AddProgramManagerMutation, AddProgramManagerMutationVariables>(AddProgramManagerDocument, {
-    onError: () => notify.error('Nepodarilo sa pridať manažéra.'),
-  });
-  const [removeManager] = useMutation<RemoveProgramManagerMutation, RemoveProgramManagerMutationVariables>(RemoveProgramManagerDocument, {
+  const [addManager] = useMutation<AddProgramManagerMutation, AddProgramManagerMutationVariables>(
+    AddProgramManagerDocument,
+    {
+      onError: () => notify.error('Nepodarilo sa pridať manažéra.'),
+    },
+  );
+  const [removeManager] = useMutation<
+    RemoveProgramManagerMutation,
+    RemoveProgramManagerMutationVariables
+  >(RemoveProgramManagerDocument, {
     onError: () => notify.error('Nepodarilo sa odstrániť manažéra.'),
   });
 

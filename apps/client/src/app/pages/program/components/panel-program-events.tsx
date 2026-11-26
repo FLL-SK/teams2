@@ -28,14 +28,20 @@ export function PanelProgramEvents(props: PanelProgramEventsProps) {
 
   const [showAddEventDialog, setShowAddEventDialog] = useState(false);
 
-  const [createEvent] = useMutation<CreateEventMutation, CreateEventMutationVariables>(CreateEventDocument, {
-    onCompleted: onUpdate,
-    onError: (e) => notify.error('Nepodarilo sa vytvoriť turnaj.', e.message),
-  });
-  const [deleteEvent] = useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, {
-    onCompleted: onUpdate,
-    onError: (e) => notify.error('Nepodarilo sa zrušiť turnaj.', e.message),
-  });
+  const [createEvent] = useMutation<CreateEventMutation, CreateEventMutationVariables>(
+    CreateEventDocument,
+    {
+      onCompleted: onUpdate,
+      onError: (e) => notify.error('Nepodarilo sa vytvoriť turnaj.', e.message),
+    },
+  );
+  const [deleteEvent] = useMutation<DeleteEventMutation, DeleteEventMutationVariables>(
+    DeleteEventDocument,
+    {
+      onCompleted: onUpdate,
+      onError: (e) => notify.error('Nepodarilo sa zrušiť turnaj.', e.message),
+    },
+  );
 
   const events = useMemo(
     () => (program.events ?? []).filter((event) => !event.deletedOn),

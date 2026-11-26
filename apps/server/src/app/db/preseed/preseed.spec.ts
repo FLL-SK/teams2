@@ -23,7 +23,9 @@ describe('preSeedAdmin (#281)', () => {
 
   it('existujúci superadmin – heslo sa nemení (žiadne save())', async () => {
     const save = vi.fn();
-    findOne.mockReturnValue({ exec: async () => ({ _id: 1, isAdmin: true, isSuperAdmin: true, save }) });
+    findOne.mockReturnValue({
+      exec: async () => ({ _id: 1, isAdmin: true, isSuperAdmin: true, save }),
+    });
     await preSeedAdmin();
     expect(save).not.toHaveBeenCalled();
     expect(updateOne).not.toHaveBeenCalled();

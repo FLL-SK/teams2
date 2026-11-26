@@ -19,8 +19,7 @@ export interface InvoiceItemData {
 }
 
 export type InvoiceItemDocument =
-  | (Document<unknown, unknown, InvoiceItemData> & InvoiceItemData)
-  | null;
+  (Document<unknown, unknown, InvoiceItemData> & InvoiceItemData) | null;
 
 export interface InvoiceItemModel extends Model<InvoiceItemData> {
   clean(): Promise<DeleteResult>; // remove all docs from repo

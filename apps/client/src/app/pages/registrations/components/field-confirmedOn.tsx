@@ -24,8 +24,14 @@ export const FieldConfirmedOn = (props: {
   const { isAdmin } = useAppUser();
   const { notify } = useNotification();
   const onError = () => notify.error('Nepodarilo sa aktualizovať dátum potvrdenia registrácie.');
-  const [setConfirmed] = useMutation<RegistrationSetConfirmedMutation, RegistrationSetConfirmedMutationVariables>(RegistrationSetConfirmedDocument, { onError });
-  const [clearConfirmed] = useMutation<RegistrationClearConfirmedMutation, RegistrationClearConfirmedMutationVariables>(RegistrationClearConfirmedDocument, { onError });
+  const [setConfirmed] = useMutation<
+    RegistrationSetConfirmedMutation,
+    RegistrationSetConfirmedMutationVariables
+  >(RegistrationSetConfirmedDocument, { onError });
+  const [clearConfirmed] = useMutation<
+    RegistrationClearConfirmedMutation,
+    RegistrationClearConfirmedMutationVariables
+  >(RegistrationClearConfirmedDocument, { onError });
 
   return (
     <LabelValue label="Potvrdená" tip={props.tip}>

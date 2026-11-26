@@ -32,7 +32,10 @@ export async function preSeedAdmin() {
       createdOn: new Date(),
     };
     await userRepository.create(nsa);
-    logger('preseed').info('Superadmin %s created – set the password via "forgot password"', username);
+    logger('preseed').info(
+      'Superadmin %s created – set the password via "forgot password"',
+      username,
+    );
   } else if (!sa.isSuperAdmin || !sa.isAdmin) {
     // iba príznaky – heslo sa nemení (predtým sa pri každom štarte prehashovalo cez save()) #281
     await userRepository.updateOne({ _id: sa._id }, { isSuperAdmin: true, isAdmin: true }).exec();

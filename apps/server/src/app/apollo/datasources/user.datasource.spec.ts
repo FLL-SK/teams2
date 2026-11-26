@@ -38,7 +38,10 @@ describe('UserDataSource.changePassword (#281)', () => {
   it('heslo sa ukladá cez save() (hook ho zahashuje), nie cez findByIdAndUpdate', async () => {
     const doc = userDoc();
     findById.mockReturnValue({ exec: async () => doc });
-    const u = await new UserDataSource({ context: ctx({ _id: id }) }).changePassword(id, 'noveheslo1');
+    const u = await new UserDataSource({ context: ctx({ _id: id }) }).changePassword(
+      id,
+      'noveheslo1',
+    );
     expect(doc.password).toBe('noveheslo1');
     expect(doc.save).toHaveBeenCalledTimes(1);
     expect(findByIdAndUpdate).not.toHaveBeenCalled();
@@ -54,7 +57,10 @@ describe('UserDataSource.changePassword (#281)', () => {
 
   it('cudzí používateľ nemôže meniť heslo', async () => {
     await expect(
-      new UserDataSource({ context: ctx({ _id: new ObjectId() }) }).changePassword(id, 'noveheslo1'),
+      new UserDataSource({ context: ctx({ _id: new ObjectId() }) }).changePassword(
+        id,
+        'noveheslo1',
+      ),
     ).rejects.toThrow(/Not authorized/);
     expect(findById).not.toHaveBeenCalled();
   });

@@ -3,7 +3,11 @@ import { Box, Text, ResponsiveContext, Spinner, Grid } from 'grommet';
 import { MainMenu } from './main-menu';
 import styled from 'styled-components';
 import { ForceGdprDialog } from './dialogs/force-gdpr';
-import { GetRegistrationsCountDocument, GetRegistrationsCountQuery, GetRegistrationsCountQueryVariables } from '../_generated/graphql';
+import {
+  GetRegistrationsCountDocument,
+  GetRegistrationsCountQuery,
+  GetRegistrationsCountQueryVariables,
+} from '../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
 
 interface BasePageProps {
@@ -35,19 +39,31 @@ const PageTitle = ({ title }: { title?: string }) => (
 export function BasePage(props: BasePageProps) {
   const { children, title, loading } = props;
 
-  const { data: unconfirmedRegs } = useQuery<GetRegistrationsCountQuery, GetRegistrationsCountQueryVariables>(GetRegistrationsCountDocument, {
+  const { data: unconfirmedRegs } = useQuery<
+    GetRegistrationsCountQuery,
+    GetRegistrationsCountQueryVariables
+  >(GetRegistrationsCountDocument, {
     variables: { filter: { onlyUnconfirmed: true } },
     pollInterval: 300000,
   });
-  const { data: uninvoicedRegs } = useQuery<GetRegistrationsCountQuery, GetRegistrationsCountQueryVariables>(GetRegistrationsCountDocument, {
+  const { data: uninvoicedRegs } = useQuery<
+    GetRegistrationsCountQuery,
+    GetRegistrationsCountQueryVariables
+  >(GetRegistrationsCountDocument, {
     variables: { filter: { onlyNotInvoiced: true } },
     pollInterval: 300000,
   });
-  const { data: unpaidRegs } = useQuery<GetRegistrationsCountQuery, GetRegistrationsCountQueryVariables>(GetRegistrationsCountDocument, {
+  const { data: unpaidRegs } = useQuery<
+    GetRegistrationsCountQuery,
+    GetRegistrationsCountQueryVariables
+  >(GetRegistrationsCountDocument, {
     variables: { filter: { onlyUnpaid: true } },
     pollInterval: 300000,
   });
-  const { data: unshippedRegs } = useQuery<GetRegistrationsCountQuery, GetRegistrationsCountQueryVariables>(GetRegistrationsCountDocument, {
+  const { data: unshippedRegs } = useQuery<
+    GetRegistrationsCountQuery,
+    GetRegistrationsCountQueryVariables
+  >(GetRegistrationsCountDocument, {
     variables: { filter: { onlyNotShipped: true } },
     pollInterval: 300000,
   });

@@ -46,13 +46,22 @@ export function PanelRegistrationBilling(props: PanelRegistrationBillingProps) {
   const [invoiceProcessing, setInvoiceProcessing] = useState<NodeJS.Timeout>();
   const [invoiceBeingSent, setInvoiceBeingSent] = useState<NodeJS.Timeout>();
 
-  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
+  const [updateRegistration] = useMutation<
+    UpdateRegistrationMutation,
+    UpdateRegistrationMutationVariables
+  >(UpdateRegistrationDocument, {
     onError: (e) => notify.error('Nepodarilo sa aktualizovať registráciu.', e.message),
   });
-  const [createInvoice] = useMutation<CreateRegistrationInvoiceMutation, CreateRegistrationInvoiceMutationVariables>(CreateRegistrationInvoiceDocument, {
+  const [createInvoice] = useMutation<
+    CreateRegistrationInvoiceMutation,
+    CreateRegistrationInvoiceMutationVariables
+  >(CreateRegistrationInvoiceDocument, {
     onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
   });
-  const [emailInvoice] = useMutation<EmailRegistrationInvoiceMutation, EmailRegistrationInvoiceMutationVariables>(EmailRegistrationInvoiceDocument, {
+  const [emailInvoice] = useMutation<
+    EmailRegistrationInvoiceMutation,
+    EmailRegistrationInvoiceMutationVariables
+  >(EmailRegistrationInvoiceDocument, {
     onError: (e) => notify.error('Nepodarilo sa vytvoriť faktúru.', e.message),
   });
 

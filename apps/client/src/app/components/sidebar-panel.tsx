@@ -25,7 +25,7 @@ export const SidebarPanelGroup = styled(Box)`
 export function SidebarPanel(props: SidebarPanelProps) {
   const { label, header, children, gap, collapsible = false, hidden } = props;
   const [collapse, setCollapse] = useState<boolean>(
-    typeof collapsible === 'boolean' ? collapsible : !collapsible.open
+    typeof collapsible === 'boolean' ? collapsible : !collapsible.open,
   );
   if (hidden) {
     return null;

@@ -48,8 +48,7 @@ export interface RegistrationData {
 }
 
 export type RegistrationDocument =
-  | (Document<unknown, unknown, RegistrationData> & RegistrationData)
-  | null;
+  (Document<unknown, unknown, RegistrationData> & RegistrationData) | null;
 
 interface CountRegistrationsFilter {
   onlyNotInvoiced?: boolean;

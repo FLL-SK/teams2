@@ -35,7 +35,10 @@ export function isTokenIssuedBeforePasswordChange(
   return token.issuedAt < Math.floor(user.passwordChangedOn.getTime() / 1000);
 }
 
-export const verifyUserName = async (username: string, token?: AuthTokenInfo): Promise<AuthUser> => {
+export const verifyUserName = async (
+  username: string,
+  token?: AuthTokenInfo,
+): Promise<AuthUser> => {
   debug('Verifying user. username=%s', username);
 
   const user = await userRepository.findActiveByUsername(username);

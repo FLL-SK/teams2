@@ -34,15 +34,24 @@ export function PanelEventFees(props: PanelEventFeesProps) {
   const [invoiceItemEdit, setInvoiceItemEdit] = useState<InvoiceItemFragmentFragment>();
   const [invoiceItemAdd, setInvoiceItemAdd] = useState<boolean>(false);
 
-  const [createInvoiceItem] = useMutation<CreateInvoiceItemMutation, CreateInvoiceItemMutationVariables>(CreateInvoiceItemDocument, {
+  const [createInvoiceItem] = useMutation<
+    CreateInvoiceItemMutation,
+    CreateInvoiceItemMutationVariables
+  >(CreateInvoiceItemDocument, {
     onCompleted: onChange,
     onError: (e) => notify.error('Nepodarilo sa vytvoriť položku faktúry.', e.message),
   });
-  const [updateInvoiceItem] = useMutation<UpdateInvoiceItemMutation, UpdateInvoiceItemMutationVariables>(UpdateInvoiceItemDocument, {
+  const [updateInvoiceItem] = useMutation<
+    UpdateInvoiceItemMutation,
+    UpdateInvoiceItemMutationVariables
+  >(UpdateInvoiceItemDocument, {
     onCompleted: onChange,
     onError: (e) => notify.error('Nepodarilo sa aktualizovať položku faktúry.', e.message),
   });
-  const [deleteInvoiceItem] = useMutation<DeleteInvoiceItemMutation, DeleteInvoiceItemMutationVariables>(DeleteInvoiceItemDocument, {
+  const [deleteInvoiceItem] = useMutation<
+    DeleteInvoiceItemMutation,
+    DeleteInvoiceItemMutationVariables
+  >(DeleteInvoiceItemDocument, {
     onCompleted: onChange,
     onError: (e) => notify.error('Nepodarilo sa vymazať položku faktúry.', e.message),
   });

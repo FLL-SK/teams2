@@ -18,7 +18,8 @@ morgan.token('url-path', (req: IncomingMessage & { originalUrl?: string }) =>
 );
 
 /** ako morgan formát `tiny`, ale bez query stringu */
-export const REQUEST_LOG_FORMAT = ':method :url-path :status :res[content-length] - :response-time ms';
+export const REQUEST_LOG_FORMAT =
+  ':method :url-path :status :res[content-length] - :response-time ms';
 
 export function requestLogger() {
   return morgan(REQUEST_LOG_FORMAT);

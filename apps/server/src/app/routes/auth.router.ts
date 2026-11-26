@@ -31,13 +31,15 @@ const limiter = (windowMs: number, limit: number, skipSuccessfulRequests = false
  * Pri prihlásení sa počítajú iba neúspešné pokusy (tréneri zo školy môžu zdieľať IP).
  * Za reverznou proxy musí byť nastavené `trust proxy` (pozri main.ts), inak by všetci zdieľali IP proxy.
  */
-export const authRateLimiters: Record<'login' | 'forgot' | 'reset' | 'signup', RateLimitRequestHandler> =
-  {
-    login: limiter(15 * MINUTE, 20, true),
-    forgot: limiter(15 * MINUTE, 5),
-    reset: limiter(15 * MINUTE, 10),
-    signup: limiter(60 * MINUTE, 20),
-  };
+export const authRateLimiters: Record<
+  'login' | 'forgot' | 'reset' | 'signup',
+  RateLimitRequestHandler
+> = {
+  login: limiter(15 * MINUTE, 20, true),
+  forgot: limiter(15 * MINUTE, 5),
+  reset: limiter(15 * MINUTE, 10),
+  signup: limiter(60 * MINUTE, 20),
+};
 
 const isNonEmptyString = (v: unknown): v is string => typeof v === 'string' && v.length > 0;
 const isOptionalString = (v: unknown): v is string | undefined | null =>

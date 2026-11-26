@@ -1,7 +1,11 @@
 import React from 'react';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { ProgramTile } from './program-tile';
-import { ProgramListFragmentFragment, GetProgramsQuery, GetProgramsQueryVariables } from '../../../_generated/graphql';
+import {
+  ProgramListFragmentFragment,
+  GetProgramsQuery,
+  GetProgramsQueryVariables,
+} from '../../../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
 import { GetProgramsDocument } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';
@@ -17,7 +21,10 @@ interface CheckoutSelectProgramProps {
 
 export function CheckoutSelectProgram(props: CheckoutSelectProgramProps) {
   const { details, onSubmit, nextStep, prevStep, cancel, ignorePrograms = [] } = props;
-  const { data, loading } = useQuery<GetProgramsQuery, GetProgramsQueryVariables>(GetProgramsDocument, { variables: { filter: { isActive: true } } });
+  const { data, loading } = useQuery<GetProgramsQuery, GetProgramsQueryVariables>(
+    GetProgramsDocument,
+    { variables: { filter: { isActive: true } } },
+  );
 
   if (loading) {
     return <Spinner />;

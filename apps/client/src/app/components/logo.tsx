@@ -1,6 +1,10 @@
 import { Box } from 'grommet';
 import React from 'react';
-import { GetSettingsDocument, GetSettingsQuery, GetSettingsQueryVariables } from '../_generated/graphql';
+import {
+  GetSettingsDocument,
+  GetSettingsQuery,
+  GetSettingsQueryVariables,
+} from '../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
 
 interface LogoProps {

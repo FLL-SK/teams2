@@ -29,7 +29,10 @@ export function PanelRegistrationShipping(props: PanelRegistrationShippingProps)
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);
 
-  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
+  const [updateRegistration] = useMutation<
+    UpdateRegistrationMutation,
+    UpdateRegistrationMutationVariables
+  >(UpdateRegistrationDocument, {
     onError: () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
   });
 

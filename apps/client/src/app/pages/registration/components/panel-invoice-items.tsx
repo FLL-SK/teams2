@@ -37,15 +37,24 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
 
   const { notify } = useNotification();
 
-  const [createInvoiceItem] = useMutation<CreateInvoiceItemMutation, CreateInvoiceItemMutationVariables>(CreateInvoiceItemDocument, {
+  const [createInvoiceItem] = useMutation<
+    CreateInvoiceItemMutation,
+    CreateInvoiceItemMutationVariables
+  >(CreateInvoiceItemDocument, {
     onCompleted: () => onRefetch && onRefetch(),
     onError: () => notify.error('Nepodarilo sa vytvoriť položku faktúry.'),
   });
-  const [updateInvoiceItem] = useMutation<UpdateInvoiceItemMutation, UpdateInvoiceItemMutationVariables>(UpdateInvoiceItemDocument, {
+  const [updateInvoiceItem] = useMutation<
+    UpdateInvoiceItemMutation,
+    UpdateInvoiceItemMutationVariables
+  >(UpdateInvoiceItemDocument, {
     onCompleted: () => onRefetch && onRefetch(),
     onError: () => notify.error('Nepodarilo sa aktualizovať položku faktúry.'),
   });
-  const [deleteInvoiceItem] = useMutation<DeleteInvoiceItemMutation, DeleteInvoiceItemMutationVariables>(DeleteInvoiceItemDocument, {
+  const [deleteInvoiceItem] = useMutation<
+    DeleteInvoiceItemMutation,
+    DeleteInvoiceItemMutationVariables
+  >(DeleteInvoiceItemDocument, {
     onCompleted: () => onRefetch && onRefetch(),
     onError: () => notify.error('Nepodarilo sa vymazať položku faktúry.'),
   });

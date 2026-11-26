@@ -23,7 +23,10 @@ interface CheckoutSelectProductProps {
 
 export function CheckoutSelectProduct(props: CheckoutSelectProductProps) {
   const { details, onSubmit, nextStep, prevStep, cancel, team } = props;
-  const { data, loading } = useQuery<GetProductsQuery, GetProductsQueryVariables>(GetProductsDocument, { variables: { teamId: team.id } });
+  const { data, loading } = useQuery<GetProductsQuery, GetProductsQueryVariables>(
+    GetProductsDocument,
+    { variables: { teamId: team.id } },
+  );
 
   if (loading) {
     return <Spinner />;

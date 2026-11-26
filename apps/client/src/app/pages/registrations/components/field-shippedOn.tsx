@@ -27,8 +27,14 @@ export const FieldShippedOn = (props: {
     [notify],
   );
 
-  const [setShipped] = useMutation<RegistrationSetShippedMutation, RegistrationSetShippedMutationVariables>(RegistrationSetShippedDocument, { onError });
-  const [clearShipped] = useMutation<RegistrationClearShippedMutation, RegistrationClearShippedMutationVariables>(RegistrationClearShippedDocument, { onError });
+  const [setShipped] = useMutation<
+    RegistrationSetShippedMutation,
+    RegistrationSetShippedMutationVariables
+  >(RegistrationSetShippedDocument, { onError });
+  const [clearShipped] = useMutation<
+    RegistrationClearShippedMutation,
+    RegistrationClearShippedMutationVariables
+  >(RegistrationClearShippedDocument, { onError });
 
   return (
     <LabelValue label="Materiály odoslané">

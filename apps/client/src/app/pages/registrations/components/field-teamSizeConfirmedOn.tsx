@@ -29,8 +29,14 @@ export const FieldTeamSizeConfirmedOn = (props: {
     [notify],
   );
 
-  const [setSizeConfirmed] = useMutation<RegistrationSetTeamSizeConfirmedMutation, RegistrationSetTeamSizeConfirmedMutationVariables>(RegistrationSetTeamSizeConfirmedDocument, { onError });
-  const [clearSizeConfirmed] = useMutation<RegistrationClearTeamSizeConfirmedMutation, RegistrationClearTeamSizeConfirmedMutationVariables>(RegistrationClearTeamSizeConfirmedDocument, { onError });
+  const [setSizeConfirmed] = useMutation<
+    RegistrationSetTeamSizeConfirmedMutation,
+    RegistrationSetTeamSizeConfirmedMutationVariables
+  >(RegistrationSetTeamSizeConfirmedDocument, { onError });
+  const [clearSizeConfirmed] = useMutation<
+    RegistrationClearTeamSizeConfirmedMutation,
+    RegistrationClearTeamSizeConfirmedMutationVariables
+  >(RegistrationClearTeamSizeConfirmedDocument, { onError });
 
   return (
     <LabelValue

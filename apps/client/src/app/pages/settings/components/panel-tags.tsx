@@ -22,19 +22,30 @@ import { useQuery, useMutation } from '@apollo/client/react';
 
 export function PanelTags() {
   const { notify } = useNotification();
-  const { data, loading } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, { variables: { includeDeleted: true } });
-
-  const [deleteTag] = useMutation<DeleteTagMutation, DeleteTagMutationVariables>(DeleteTagDocument, {
-    onError: (e) => notify.error('Nepodarilo sa vymazať štítok.', e.message),
+  const { data, loading } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, {
+    variables: { includeDeleted: true },
   });
 
-  const [restoreTag] = useMutation<RestoreTagMutation, RestoreTagMutationVariables>(RestoreTagDocument, {
-    onError: (e) => notify.error('Nepodarilo sa obnoviť štítok.', e.message),
-  });
+  const [deleteTag] = useMutation<DeleteTagMutation, DeleteTagMutationVariables>(
+    DeleteTagDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa vymazať štítok.', e.message),
+    },
+  );
 
-  const [updateTag] = useMutation<UpdateTagMutation, UpdateTagMutationVariables>(UpdateTagDocument, {
-    onError: (e) => notify.error('Nepodarilo sa uložiť zmeny v štítku.', e.message),
-  });
+  const [restoreTag] = useMutation<RestoreTagMutation, RestoreTagMutationVariables>(
+    RestoreTagDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa obnoviť štítok.', e.message),
+    },
+  );
+
+  const [updateTag] = useMutation<UpdateTagMutation, UpdateTagMutationVariables>(
+    UpdateTagDocument,
+    {
+      onError: (e) => notify.error('Nepodarilo sa uložiť zmeny v štítku.', e.message),
+    },
+  );
 
   if (loading) {
     return <Spinner />;

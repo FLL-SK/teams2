@@ -26,10 +26,16 @@ export function PanelTeamCoaches(props: PanelTeamCoachesProps) {
   const { notify } = useNotification();
   const [showAddCoachDialog, setShowAddCoachDialog] = useState(false);
 
-  const [addCoach] = useMutation<AddCoachToTeamMutation, AddCoachToTeamMutationVariables>(AddCoachToTeamDocument, {
-    onError: (error) => notify.error('Nepodarilo sa pridať trénera', error.message),
-  });
-  const [removeCoach] = useMutation<RemoveCoachFromTeamMutation, RemoveCoachFromTeamMutationVariables>(RemoveCoachFromTeamDocument, {
+  const [addCoach] = useMutation<AddCoachToTeamMutation, AddCoachToTeamMutationVariables>(
+    AddCoachToTeamDocument,
+    {
+      onError: (error) => notify.error('Nepodarilo sa pridať trénera', error.message),
+    },
+  );
+  const [removeCoach] = useMutation<
+    RemoveCoachFromTeamMutation,
+    RemoveCoachFromTeamMutationVariables
+  >(RemoveCoachFromTeamDocument, {
     onError: (error) => notify.error('Nepodarilo sa odstrániť trénera', error.message),
   });
 
