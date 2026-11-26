@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Box, CheckBox, Text, Tip, Paragraph } from 'grommet';
 import {
   Checkmark,

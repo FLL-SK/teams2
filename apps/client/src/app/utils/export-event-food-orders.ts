@@ -1,4 +1,3 @@
-import { NestedObjectLeaves } from '@teams2/common';
 import { saveXlsx } from './save-xlsx';
 import { ArrayOfArraysOfAny, ArrayOfSDN } from './def-aoa';
 
@@ -24,8 +23,6 @@ interface ExportSourceType {
     }[];
   };
 }
-
-type ExportFieldKey = NestedObjectLeaves<ExportSourceType>;
 
 export function exportEventFoodOrders(eventName: string, registrations: ExportSourceType[]) {
   const aoa: ArrayOfArraysOfAny = [];

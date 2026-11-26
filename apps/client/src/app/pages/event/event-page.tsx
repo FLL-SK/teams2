@@ -1,4 +1,5 @@
 import React from 'react';
+import { getInvitableTeams } from './invitable-teams';
 import { Box, Button, Spinner, Text } from 'grommet';
 import { useAppUser } from '../../components/app-user/use-app-user';
 import { BasePage } from '../../components/base-page';
@@ -72,14 +73,14 @@ export function EventPage() {
       fetchPolicy: 'cache-and-network',
     });
 
-  const [fetchRegistrations, { data: regData, error: regError }] = useLazyQuery<
+  const [fetchRegistrations, { data: regData }] = useLazyQuery<
     GetRegisteredTeamsQuery,
     GetRegisteredTeamsQueryVariables
   >(GetRegisteredTeamsDocument, {
     fetchPolicy: 'cache-and-network',
   });
 
-  const [fetchProgramRegistrations, { data: progRegs, error: progRegsError }] = useLazyQuery<
+  const [fetchProgramRegistrations, { data: progRegs }] = useLazyQuery<
     GetProgramRegistrationsQuery,
     GetProgramRegistrationsQueryVariables
   >(GetProgramRegistrationsDocument, {
@@ -182,7 +183,7 @@ export function EventPage() {
 
   const canEdit = React.useMemo(
     () => isAdmin() || isEventManager(id) || isProgramManager(event?.programId),
-    [isAdmin, isEventManager, isProgramManager, id, eventData],
+    [isAdmin, isEventManager, isProgramManager, id, event?.programId],
   );
 
   React.useEffect(() => {
@@ -193,36 +194,12 @@ export function EventPage() {
     }
   }, [id, fetchRegistrations, canEdit]);
 
-  const invitableTeams = React.useMemo(() => {
-    if (!progRegs?.getProgramRegistrations) {
-      return [];
-    }
-
-    const it: { id: string; name: string; teamNo: string }[] = [];
-    if (!regs || !progRegs) {
-      return it;
-    }
-    for (const r of progRegs.getProgramRegistrations) {
-      if (!r.team) {
-        continue;
-      }
-      if (event?.invitedTeamsIds.includes(r.teamId)) {
-        continue;
-      }
-      if (it.findIndex((i) => i.id === r.teamId) >= 0) {
-        continue;
-      }
-
-      it.push({
-        id: r.teamId,
-        name: r.team.name,
-        teamNo: r.teamNo ?? 'xxx',
-      });
-    }
-
-    it.sort((a, b) => a.name.localeCompare(b.name));
-    return it;
-  }, [progRegs, regs]);
+  const invitableTeams = React.useMemo(
+    () =>
+      regs ? getInvitableTeams(progRegs?.getProgramRegistrations, event?.invitedTeamsIds) : [],
+    // event?.invitedTeamsIds predtým chýbal – po pozvaní tímu sa zoznam neobnovil (#294)
+    [progRegs, regs, event?.invitedTeamsIds],
+  );
 
   React.useEffect(() => {
     if (event?.programId && event?.invitationOnly) {

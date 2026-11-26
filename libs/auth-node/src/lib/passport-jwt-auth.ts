@@ -15,8 +15,6 @@ import {
 } from './types';
 import { debugLib } from './_debug';
 
-export const passportJwtAuth = () => 'passport-jwt-auth';
-
 export let secretGetterFn: SecretGetterFn = () => 'no-secrets';
 export let verifyUserLoginFn: VerifyUserLoginFn | null = null;
 export let verifyUserNameFn: VerifyUserIdFn | null = null;
@@ -154,7 +152,7 @@ const passportLoginStrategy = () => {
           return cb(null, false);
         }
         return cb(null, user);
-      } catch (err) {
+      } catch {
         return cb(new Error('Auth server error'), false);
       }
     },

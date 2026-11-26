@@ -14,7 +14,7 @@ function parse(value?: string | number | null) {
     let d: ObjectId;
     try {
       d = new ObjectId(value.toString());
-    } catch (error) {
+    } catch {
       throw new GraphQLError(errorMessage, {
         extensions: { code: ApolloServerErrorCode.BAD_USER_INPUT },
       });

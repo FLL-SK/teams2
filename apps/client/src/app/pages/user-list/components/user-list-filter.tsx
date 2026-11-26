@@ -1,5 +1,4 @@
 import { CheckBox } from 'grommet';
-import React from 'react';
 import { ClosableSidebar } from '../../../components/sidebar';
 import { SidebarPanel } from '../../../components/sidebar-panel';
 

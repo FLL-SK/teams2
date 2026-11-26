@@ -40,6 +40,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Format
+        run: pnpm format:check
+
       - name: Typecheck
         run: pnpm typecheck
 
@@ -51,3 +54,8 @@ jobs:
 
       - name: Build
         run: pnpm compile
+
+      # informačne – známe zraniteľnosti produkčných závislostí (PR kvôli nim nezlyhá)
+      - name: Audit
+        run: pnpm audit --prod
+        continue-on-error: true

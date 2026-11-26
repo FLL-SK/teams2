@@ -1,13 +1,9 @@
 import { Box, Button, Text, Tip } from 'grommet';
 import { Group as GroupIcon, Cafeteria as CafeteriaIcon } from 'grommet-icons';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ListRow2 } from '../../../components/list-row';
 import { Panel } from '../../../components/panel';
-import {
-  EventFragmentFragment,
-  RegisteredTeamFragmentFragment,
-  TeamListFragmentFragment,
-} from '../../../_generated/graphql';
+import { EventFragmentFragment, RegisteredTeamFragmentFragment } from '../../../_generated/graphql';
 import { fullAddress } from '../../../utils/format-address';
 import { formatTeamSize } from '../../../utils/format-teamsize';
 import { handleExportRegisteredTeams } from './handle-export-teams';

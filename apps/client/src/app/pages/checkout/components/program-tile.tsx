@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Text } from 'grommet';
 import { BorderType } from 'grommet/utils';
 import styled from 'styled-components';

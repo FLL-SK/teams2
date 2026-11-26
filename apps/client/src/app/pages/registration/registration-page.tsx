@@ -153,7 +153,7 @@ export function RegistrationPage() {
         },
       });
     },
-    [reg],
+    [reg, updateOrder],
   );
 
   const canOrderFood = React.useMemo(() => {

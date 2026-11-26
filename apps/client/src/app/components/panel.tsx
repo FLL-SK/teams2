@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, BoxExtendedProps, Text } from 'grommet';
 
 interface PanelProps extends BoxExtendedProps {

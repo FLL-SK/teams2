@@ -54,10 +54,9 @@ type CheckoutStep =
   | 'error';
 
 export function CheckoutPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [teamId, setTeamId] = useState<string | null>(null);
   const [programId, setProgramId] = useState<string | null>(null);
-  const [eventId, setEventId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { notify } = useNotification();
@@ -69,8 +68,9 @@ export function CheckoutPage() {
   });
   const [isRegisteringForEvent, setIsRegisteringForEvent] = useState<boolean>(false);
 
-  const [fetchProgram, { data: programData, loading: programLoading, error: programError }] =
-    useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(GetProgramDocument);
+  const [fetchProgram] = useLazyQuery<GetProgramQuery, GetProgramQueryVariables>(
+    GetProgramDocument,
+  );
 
   const [fetchTeam, { data: teamData, loading: teamLoading, error: teamError }] = useLazyQuery<
     GetTeamQuery,
@@ -104,9 +104,8 @@ export function CheckoutPage() {
   React.useEffect(() => {
     const tid = searchParams.get('teamId');
     setTeamId(tid);
-    setCheckoutDetails({ ...checkoutDetails, teamId: tid ?? 'x' });
+    setCheckoutDetails((c) => ({ ...c, teamId: tid ?? 'x' }));
     setProgramId(searchParams.get('programId'));
-    setEventId(searchParams.get('eventId'));
   }, [searchParams]);
 
   React.useEffect(() => {
@@ -123,7 +122,8 @@ export function CheckoutPage() {
         variables: { id: programId },
       }).then((r) => {
         if (r.data?.getProgram) {
-          setCheckoutDetails({ ...checkoutDetails, program: r.data.getProgram });
+          const program = r.data.getProgram;
+          setCheckoutDetails((c) => ({ ...c, program }));
           setIsRegisteringForEvent(true);
         }
       });
@@ -188,7 +188,7 @@ export function CheckoutPage() {
 
       setStep('success');
     },
-    [notify, registerTeam4Event, teamId, isRegisteringForEvent],
+    [notify, registerTeam4Event, registerTeam4Program, teamId, isRegisteringForEvent],
   );
 
   if (!canShop) {

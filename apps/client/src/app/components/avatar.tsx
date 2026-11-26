@@ -1,4 +1,3 @@
-import React from 'react';
 import { Avatar as GrommetAvatar, Text } from 'grommet';
 
 interface AvatarProps {

@@ -113,12 +113,13 @@ pnpm test               # testy všetkých projektov (vitest run)
 pnpm test --project server   # testy jedného projektu (server|client|common|dateutils|logger|auth-node|auth-react|scripts)
 pnpm test:integration   # integračné testy servera (MongoDB v pamäti)
 pnpm e2e                # E2E testy (Playwright, API je mockované)
-pnpm lint               # lint celého repozitára (eslint .)
+pnpm lint               # lint celého repozitára (eslint .) – bez chýb aj bez varovaní
+pnpm format:check       # kontrola formátovania (Prettier), `pnpm format` opraví
 pnpm typecheck          # typová kontrola všetkých projektov (napr. `pnpm typecheck client`)
 pnpm testseed           # vyčistenie a naplnenie DB testovacími dátami (iba NODE_ENV=development)
 ```
 
-Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, prázdny riadok na konci súboru (`.editorconfig`). Lint: ESLint 9 (jeden `eslint.config.mjs` v koreni).
+Formátovanie: Prettier (`singleQuote`, `printWidth: 100`), 2 medzery, UTF-8, prázdny riadok na konci súboru (`.editorconfig`). Lint: ESLint 9 (jeden `eslint.config.mjs` v koreni). Lint aj formátovanie kontroluje CI pri PR (`pr-check.yaml`) – pred commitom spusti `pnpm lint` a `pnpm format:check`. Zámerne nepoužité parametre a premenné pomenuj s prefixom `_` (napr. `(_parent, args)`).
 
 ## Lokálny vývoj a konfigurácia
 

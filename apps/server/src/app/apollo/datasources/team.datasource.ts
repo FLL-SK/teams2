@@ -1,11 +1,5 @@
 import { BaseDataSource } from './_base.datasource';
-import {
-  RegistrationData,
-  registrationRepository,
-  TeamData,
-  teamRepository,
-  userRepository,
-} from '../../models';
+import { registrationRepository, TeamData, teamRepository, userRepository } from '../../models';
 import {
   CreateTeamInput,
   TeamPayload,

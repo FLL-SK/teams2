@@ -1,5 +1,5 @@
 import { Box, Button, Text } from 'grommet';
-import { EventFragmentFragment, TeamListFragmentFragment } from '../../../_generated/graphql';
+import { EventFragmentFragment } from '../../../_generated/graphql';
 import { Modal } from '../../../components/modal';
 import { Close } from 'grommet-icons';
 import { useState } from 'react';

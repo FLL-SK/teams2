@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SAFE_MARKDOWN_OPTIONS } from './md';
 import { Box, Button, Markdown, TextArea, Text } from 'grommet';
 import styled from 'styled-components';
 import { Note } from '../_generated/graphql';
 import { useAppUser } from './app-user/use-app-user';
-import { formatDate, formatDateTimeRelative, toZonedDateTime } from '@teams2/dateutils';
+import { formatDateTimeRelative, toZonedDateTime } from '@teams2/dateutils';
 import { Edit, Trash } from 'grommet-icons';
 import { formatFullName } from '../utils/format-fullname';
 
@@ -106,7 +106,7 @@ export function NoteDetail(props: NoteDetailProps) {
           <NoteTextWrapper background="light-3">
             <Markdown options={SAFE_MARKDOWN_OPTIONS}>{note.text}</Markdown>
             <NoteActions
-              canEdit={isNoteCreator || isAdmin()}
+              canEdit={!disabled && (isNoteCreator || isAdmin())}
               onEdit={() => setEditing(true)}
               onDelete={() => onDelete && onDelete(note)}
             />

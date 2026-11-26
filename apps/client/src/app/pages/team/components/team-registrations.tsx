@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Box } from 'grommet';
 import { TeamRegistrationFragmentFragment } from '../../../_generated/graphql';
 import { ProgramRegistrationTile } from './program-registration-tile';

@@ -1,13 +1,11 @@
-# auth-node
+# @teams2/auth-node
 
-This library was generated with [Nx](https://nx.dev).
+Autentifikácia na serveri: Passport stratégie (prihlásenie menom a heslom, JWT), vydávanie a overovanie prihlasovacích tokenov a tokenov na reset hesla.
 
+Import cez alias `@teams2/auth-node` (`tsconfig.base.json`).
 
+## Testy
 
-
-
-## Running unit tests
-
-Run `nx test auth-node` to execute the unit tests via [Vitest](https://vitest.dev).
-
-
+```bash
+pnpm test --project auth-node
+```

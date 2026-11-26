@@ -1,0 +1,31 @@
+# Automatické aktualizácie závislostí (#301).
+# Nové verzie sa navrhujú až po 14 dňoch od vydania – rovnaký princíp ako minimumReleaseAge v pnpm.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 14
+    commit-message:
+      prefix: 'závislosti'
+    groups:
+      # menšie aktualizácie spolu v jednom PR, major verzie samostatne
+      minor-a-patch:
+        update-types: ['minor', 'patch']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 14
+    commit-message:
+      prefix: 'ci'
+    groups:
+      actions:
+        patterns: ['*']

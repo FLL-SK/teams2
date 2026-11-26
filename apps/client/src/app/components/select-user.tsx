@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Select, Spinner } from 'grommet';
 import { useState } from 'react';
 import { GetUsersDocument, GetUsersQuery, GetUsersQueryVariables } from '../_generated/graphql';
@@ -26,7 +26,8 @@ export function SelectUser(props: SelectUserProps) {
     variables: { filter: { includeInactive: false } },
   });
 
-  const users = data?.getUsers ?? [];
+  // stabilná referencia – nový prázdny zoznam pri každom renderi by spúšťal efekt stále dookola
+  const users = useMemo(() => data?.getUsers ?? [], [data]);
 
   useEffect(() => {
     setOptions(users);

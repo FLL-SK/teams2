@@ -121,7 +121,9 @@ describe('GET /auth – obnova tokenu', () => {
   });
 
   it('token vydaný pred zmenou hesla je neplatný', async () => {
-    findActiveByUsername.mockResolvedValue(user({ passwordChangedOn: new Date(Date.now() + 5000) }));
+    findActiveByUsername.mockResolvedValue(
+      user({ passwordChangedOn: new Date(Date.now() + 5000) }),
+    );
     const r = await refresh(createToken({ username: USERNAME }));
     expect(r.token).toBeUndefined();
   });

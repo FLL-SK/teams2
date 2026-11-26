@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { ApolloClient, gql } from '@apollo/client';
 import { useApolloClient } from '@apollo/client/react';

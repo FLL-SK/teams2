@@ -1,7 +1,6 @@
 import debugLib from 'debug';
 import mongoose from 'mongoose';
 import { RegistrationType } from '../../models';
-import _ from 'lodash';
 
 export async function upgrade() {
   const debug = debugLib('upgrade');

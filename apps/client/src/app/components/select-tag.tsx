@@ -1,4 +1,3 @@
-import React from 'react';
 import { Select, Spinner } from 'grommet';
 import { useEffect, useState } from 'react';
 import {
@@ -50,7 +49,7 @@ export function SelectTag(props: SelectTagProps) {
           onSelect(res.data.createTag);
         }
         // TODO: handle errors
-      } catch (err) {
+      } catch {
         // TODO: handle errors
       }
     } else {

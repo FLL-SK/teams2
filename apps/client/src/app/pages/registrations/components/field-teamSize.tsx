@@ -1,13 +1,17 @@
-import { Anchor, Box, Button, Text, Tip } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 import React, { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { EditTeamSizeDialog } from '../../../components/dialogs/edit-team-size-dialog';
 import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
-import { Registration, RegistrationSetTeamSizeDocument, RegistrationSetTeamSizeMutation, RegistrationSetTeamSizeMutationVariables } from '../../../_generated/graphql';
+import {
+  Registration,
+  RegistrationSetTeamSizeDocument,
+  RegistrationSetTeamSizeMutation,
+  RegistrationSetTeamSizeMutationVariables,
+} from '../../../_generated/graphql';
 import { useMutation } from '@apollo/client/react';
 import { formatTeamSize } from '../../../utils/format-teamsize';
-import { WidthType } from 'grommet/utils';
 
 export const FieldTeamSize = (props: {
   registration: Pick<Registration, 'id' | 'boyCount' | 'girlCount' | 'coachCount' | 'teamId'>;
@@ -24,7 +28,10 @@ export const FieldTeamSize = (props: {
   );
 
   const [showDialog, setShowDialog] = React.useState(false);
-  const [setTeamSize] = useMutation<RegistrationSetTeamSizeMutation, RegistrationSetTeamSizeMutationVariables>(RegistrationSetTeamSizeDocument, { onError });
+  const [setTeamSize] = useMutation<
+    RegistrationSetTeamSizeMutation,
+    RegistrationSetTeamSizeMutationVariables
+  >(RegistrationSetTeamSizeDocument, { onError });
 
   return (
     <LabelValue

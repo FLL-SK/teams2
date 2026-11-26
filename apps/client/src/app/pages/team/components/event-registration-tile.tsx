@@ -74,7 +74,8 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
       return { status: false, msg: 'Nemáte oprávnenie objednať jedlo.' };
     }
     return { status: true, msg: '' };
-  }, [registration]);
+    // canEdit chýbal – po načítaní oprávnení sa stav objednávky neprepočítal (#294)
+  }, [registration, canEdit, today]);
 
   const handleOrder = useCallback(
     (data: {
@@ -105,7 +106,7 @@ export function EventRegistrationTile(props: EventRegistrationTileProps) {
         },
       });
     },
-    [registration],
+    [registration, updateOrder],
   );
 
   // hooky musia byť volané vždy (rules-of-hooks), preto až za nimi

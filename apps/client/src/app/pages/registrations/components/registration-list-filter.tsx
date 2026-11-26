@@ -31,7 +31,9 @@ interface RegistrationListFilterProps {
 export function RegistrationListFilter(props: RegistrationListFilterProps) {
   const { onClose, show, onChange, values } = props;
 
-  const { data: tagsData, loading: loadingTags } = useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument);
+  const { data: tagsData, loading: loadingTags } = useQuery<GetTagsQuery, GetTagsQueryVariables>(
+    GetTagsDocument,
+  );
 
   const filterTags = useMemo(() => values.tags ?? [], [values.tags]);
 

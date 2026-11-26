@@ -1,14 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Box, Button, ButtonType, Text } from 'grommet';
+import { Box, Button, Text } from 'grommet';
 
 import { Modal } from '../modal';
-
-interface ActionButton {
-  label: string;
-  primary?: boolean;
-  plain?: boolean;
-  action: () => void;
-}
 
 interface YesNoDialogProps {
   title?: string;

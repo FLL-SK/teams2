@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, CheckBox, Form, FormField, Paragraph } from 'grommet';
 import { Modal } from '../modal';
-import { GetSettingsDocument, GetSettingsQuery, GetSettingsQueryVariables } from '../../_generated/graphql';
+import {
+  GetSettingsDocument,
+  GetSettingsQuery,
+  GetSettingsQueryVariables,
+} from '../../_generated/graphql';
 import { useQuery } from '@apollo/client/react';
 import { validateEmail, validatePhone } from '@teams2/common';
 import { useAppUser } from '../app-user/use-app-user';
 import { YesNoDialog } from './yes-no-dialog';
-import { set } from 'lodash';
 
 interface EditUserDialogProps {
   user?: EditUserDialogFields | null;
@@ -53,9 +56,10 @@ export function EditUserDialog(props: EditUserDialogProps) {
     setDoSubmit(false);
     onSubmit({
       ...formValues,
-      usernameOverride: formValues?.usernameOverride !== user?.username ? isAdmin() : false,
+      // predtým sa porovnával usernameOverride (boolean) s username – vždy pravda (#294)
+      usernameOverride: formValues?.username !== user?.username ? isAdmin() : false,
     }).then(() => onClose());
-  }, [doSubmit, confirmNewUsername]);
+  }, [doSubmit, confirmNewUsername, formValues, isAdmin, onClose, onSubmit, user?.username]);
 
   if (!show) {
     return null;

@@ -4,10 +4,7 @@ import { Note, NoteCreateInput, NoteType, NoteUpdateInput } from '../../_generat
 import { NoteMapper } from '../mappers';
 import { ObjectId } from 'mongodb';
 
-import { logger } from '@teams2/logger';
 import { QueryFilter } from 'mongoose';
-
-const logBase = logger('DS:Note');
 
 export class NoteDataSource extends BaseDataSource {
   async getNote(id: ObjectId): Promise<Note> {

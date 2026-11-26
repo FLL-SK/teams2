@@ -1,11 +1,11 @@
-# common
+# @teams2/common
 
-This library was generated with [Nx](https://nx.dev).
+Zdieľané typy a funkcie pre server aj klienta: cesty aplikácie (`appPath`), validácia (e-mail, telefón, heslo), chybové kódy a ich správy.
 
-## Running unit tests
+Import cez alias `@teams2/common` (`tsconfig.base.json`).
 
-Run `nx test common` to execute the unit tests via [Vitest](https://vitest.dev).
+## Testy
 
-## Running lint
-
-Run `nx lint common` to execute the lint via [ESLint](https://eslint.org/).
+```bash
+pnpm test --project common
+```

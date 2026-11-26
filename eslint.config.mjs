@@ -20,11 +20,22 @@ export default defineConfig([
   js.configs.recommended,
   tseslint.configs.recommended,
   {
+    // nepotrebné eslint-disable direktívy sú chyba (#294)
+    linterOptions: { reportUnusedDisableDirectives: 'error' },
     languageOptions: {
       globals: { ...globals.node },
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'warn',
+      // zámerne nepoužité parametre/premenné začínajú `_` (napr. `(_parent, args)` v resolveroch)
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       // vzor autorizácie: `this.userGuard.isAdmin() || this.userGuard.notAuthorized('…')`
       '@typescript-eslint/no-unused-expressions': [
         'error',
@@ -57,7 +68,7 @@ export default defineConfig([
     settings: { react: { version: 'detect' } },
     rules: {
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
     },
   },
   prettier,

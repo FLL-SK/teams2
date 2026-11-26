@@ -1,5 +1,5 @@
 import { Anchor, Box, Paragraph, Text } from 'grommet';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LabelValue } from '../../../components/label-value';
 import { LabelValueGroup } from '../../../components/label-value-group';
 import {
@@ -29,7 +29,10 @@ export function PanelRegistrationShipping(props: PanelRegistrationShippingProps)
   const [editShipToAddress, setEditShipToAddress] = useState(false);
   const [editShipToContact, setEditShipToContact] = useState(false);
 
-  const [updateRegistration] = useMutation<UpdateRegistrationMutation, UpdateRegistrationMutationVariables>(UpdateRegistrationDocument, {
+  const [updateRegistration] = useMutation<
+    UpdateRegistrationMutation,
+    UpdateRegistrationMutationVariables
+  >(UpdateRegistrationDocument, {
     onError: () => notify.error('Nepodarilo sa aktualizovať registráciu.'),
   });
 

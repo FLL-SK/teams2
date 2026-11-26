@@ -16,9 +16,6 @@ import {
 } from 'grommet';
 import { Modal } from './modal';
 import React, { useEffect } from 'react';
-import { LabelValue } from './label-value';
-import { parse } from 'path';
-import { ProgramUpdateLevel } from 'typescript';
 import { formatDate } from '@teams2/dateutils';
 
 interface Address {

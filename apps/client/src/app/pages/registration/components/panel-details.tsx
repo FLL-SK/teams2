@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { appPath } from '@teams2/common';
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button } from 'grommet';
@@ -25,8 +25,6 @@ import { useNotification } from '../../../components/notifications/notification-
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { FieldConfirmedOn } from '../../registrations/components/field-confirmedOn';
 import { EditRegistrationTypeDialog } from '../../../components/dialogs/edit-registration-type-dialog';
-import { set } from 'lodash';
-import { on } from 'events';
 
 interface PanelRegistrationDetailsProps {
   registration: RegistrationFragmentFragment;

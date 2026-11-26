@@ -19,11 +19,9 @@ import { PanelProgramFees } from './components/panel-program-fees';
 import { PanelProgramEvents } from './components/panel-program-events';
 import { PanelProgramFiles } from './components/panel-program-files';
 import { PanelProgramManagers } from './components/panel-program-managers';
-import { useNotification } from '../../components/notifications/notification-provider';
 
 export function ProgramPage() {
   const { id } = useParams();
-  const { notify } = useNotification();
 
   const [
     fetchProgram,

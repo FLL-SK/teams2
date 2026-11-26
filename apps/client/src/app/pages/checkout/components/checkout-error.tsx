@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Text } from 'grommet';
 import { TeamFragmentFragment } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';

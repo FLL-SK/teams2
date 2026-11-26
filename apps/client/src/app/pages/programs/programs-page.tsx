@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Button, CheckBox } from 'grommet';
 import { BasePage } from '../../components/base-page';
 import { ProgramsList } from './components/programs-list';
@@ -20,7 +20,7 @@ interface ProgramsPageProps {
   responsiveSize?: string;
 }
 
-export function ProgramsPage(props: ProgramsPageProps) {
+export function ProgramsPage(_props: ProgramsPageProps) {
   const [today] = useState(new Date().toISOString());
   const [showInactivePrograms, setShowInactivePrograms] = useState(false);
   const [showAddProgramDialog, setShowAddProgramDialog] = useState(false);
@@ -29,7 +29,7 @@ export function ProgramsPage(props: ProgramsPageProps) {
 
   const onError = useCallback(() => notify.error('Nepodarilo sa vytvoriť program.'), [notify]);
 
-  const { data, loading, error, refetch } = useQuery<GetProgramsQuery, GetProgramsQueryVariables>(
+  const { data, loading, refetch } = useQuery<GetProgramsQuery, GetProgramsQueryVariables>(
     GetProgramsDocument,
   );
 

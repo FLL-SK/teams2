@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, BoxExtendedProps } from 'grommet';
 import { ReactNode } from 'react';
 import { Link } from 'react-router';

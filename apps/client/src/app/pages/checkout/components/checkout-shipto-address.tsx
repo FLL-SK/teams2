@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Button, CheckBox, Form, Text } from 'grommet';
 import { CheckoutDetails } from './types';
 

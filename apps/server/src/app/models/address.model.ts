@@ -32,5 +32,5 @@ export const addressSchema = new Schema<AddressData>(
     email: { type: Types.String },
     phone: { type: Types.String },
   },
-  { collation: { locale: 'sk', strength: 1 }, _id: true }
+  { collation: { locale: 'sk', strength: 1 }, _id: true },
 );

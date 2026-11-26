@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grommet, Box } from 'grommet';
 import styled from 'styled-components';
 import { AppRouter } from './app-router';

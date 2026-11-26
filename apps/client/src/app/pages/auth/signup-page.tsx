@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { Box, Button, CheckBox, Form, FormField, Paragraph, Text } from 'grommet';
 import { useState } from 'react';
@@ -100,7 +100,10 @@ export function SignupPage() {
               validate={(f: string) =>
                 validatePassword(f)
                   ? true
-                  : { status: 'error', message: `Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.` }
+                  : {
+                      status: 'error',
+                      message: `Heslo musí mať aspoň ${MIN_PASSWORD_LENGTH} znakov.`,
+                    }
               }
             />
             <FormField

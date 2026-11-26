@@ -1,5 +1,4 @@
-import { Box, Button, Paragraph, Text } from 'grommet';
-import React from 'react';
+import { Box, Button, Paragraph } from 'grommet';
 import { Modal } from '../modal';
 
 interface ConfirmTeamUnregisterDialogProps {

@@ -1,11 +1,11 @@
-# logger
+# @teams2/logger
 
-This library was generated with [Nx](https://nx.dev).
+Logovanie nad knižnicou `debug`: `logger(modul)` s úrovňami debug/info/warn/error. Info, warning a error sa logujú vždy, debug podľa premennej `DEBUG` (napr. `DEBUG=DS:*`).
 
-## Running unit tests
+Import cez alias `@teams2/logger` (`tsconfig.base.json`).
 
-Run `nx test logger` to execute the unit tests via [Vitest](https://vitest.dev).
+## Testy
 
-## Running lint
-
-Run `nx lint logger` to execute the lint via [ESLint](https://eslint.org/).
+```bash
+pnpm test --project logger
+```

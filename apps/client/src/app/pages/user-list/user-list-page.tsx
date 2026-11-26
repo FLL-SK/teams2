@@ -20,11 +20,9 @@ import {
   parseUserListSearchParams,
 } from './components/user-list-params';
 import { useSearchParams } from 'react-router';
-import { useNotification } from '../../components/notifications/notification-provider';
 
 export function UserListPage() {
   const { isAdmin } = useAppUser();
-  const { notify } = useNotification();
   const [selectedTeam, setSelectedTeam] = React.useState<string>();
   const [showFilter, setShowFilter] = React.useState(false);
   const [filter, setFilter] = useState<UserListFilterValues>({});

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, Form, FormField } from 'grommet';
 import { Modal } from '../modal';
 import { TagColorType } from '../../_generated/graphql';

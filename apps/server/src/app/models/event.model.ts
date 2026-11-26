@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document, ProjectionType, Aggregate } from 'mongoose';
+import { Schema, model, Model, Document, ProjectionType } from 'mongoose';
 import { DeleteResult, ObjectId } from 'mongodb';
 import { PricelistEntryData } from './pricelist.model';
 
@@ -119,12 +119,12 @@ schema.static('deleteEvent', function (eventId: ObjectId, userId: ObjectId) {
   return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });
 
-schema.static('undeleteEvent', function (eventId: ObjectId, userId: ObjectId) {
+schema.static('undeleteEvent', function (eventId: ObjectId, _userId: ObjectId) {
   const u: Partial<EventData> = { deletedOn: null, deletedBy: null };
   return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });
 
-schema.static('unarchiveEvent', function (eventId: ObjectId, userId: ObjectId) {
+schema.static('unarchiveEvent', function (eventId: ObjectId, _userId: ObjectId) {
   const u: Partial<EventData> = { archivedOn: null, archivedBy: null };
   return this.findByIdAndUpdate(eventId, u, { returnDocument: 'after' }).exec();
 });

@@ -1,0 +1,5 @@
+# Commity, ktoré git blame preskočí (iba hromadné formátovanie).
+# Lokálne: git config blame.ignoreRevsFile .git-blame-ignore-revs (GitHub ho používa automaticky).
+
+# jednorazové formátovanie Prettierom #294
+464ff20255c1fb2b5e7142d6d4605ca11484e341

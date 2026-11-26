@@ -1,4 +1,3 @@
-import React from 'react';
 import { toUtcDateString, toZonedDateString } from '@teams2/dateutils';
 import {
   Box,

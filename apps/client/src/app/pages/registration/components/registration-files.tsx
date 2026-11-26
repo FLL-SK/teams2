@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text } from 'grommet';
 import { FileTile } from '../../../components/file-tile';
 import {

@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { Box, Button, ButtonType } from 'grommet';
+import { ReactNode } from 'react';
+import { Box, Button } from 'grommet';
 
 import { Modal } from '../modal';
 

@@ -11,7 +11,7 @@ import {
   Text,
 } from 'grommet';
 
-import { Registration, RegistrationInput, RegistrationType } from '../../../_generated/graphql';
+import { RegistrationType } from '../../../_generated/graphql';
 import { CheckoutDetails } from './types';
 import styled from 'styled-components';
 

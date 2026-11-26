@@ -1,7 +1,7 @@
 import { formatDate } from '@teams2/dateutils';
 import { Anchor, Box, Button } from 'grommet';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { EditColorDialog } from '../../../components/dialogs/edit-color-dialog';
 import { EditProgramDialog } from '../../../components/dialogs/edit-program-dialog';
 import { LabelValue } from '../../../components/label-value';
@@ -53,7 +53,7 @@ export function PanelProgramDetails(props: PanelProgramDetailsProps) {
               width="20px"
               height="100%"
               border={{ color: 'dark-5', size: 'xsmall' }}
-              onClick={(e) => setEditColor(true)}
+              onClick={() => setEditColor(true)}
             />
           </Box>
         </LabelValue>

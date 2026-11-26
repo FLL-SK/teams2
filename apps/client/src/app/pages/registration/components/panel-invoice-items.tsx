@@ -1,6 +1,6 @@
 import { Box, Button, Text } from 'grommet';
 import { omit } from 'lodash';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { EditInvoiceItemDialog } from '../../../components/dialogs/edit-invoice-item-dialog';
 import { InvoiceItemList } from '../../../components/invoice-item-list';
 import { useNotification } from '../../../components/notifications/notification-provider';
@@ -37,15 +37,24 @@ export function PanelRegistrationInvoiceItems(props: PanelRegistrationInvoiceIte
 
   const { notify } = useNotification();
 
-  const [createInvoiceItem] = useMutation<CreateInvoiceItemMutation, CreateInvoiceItemMutationVariables>(CreateInvoiceItemDocument, {
+  const [createInvoiceItem] = useMutation<
+    CreateInvoiceItemMutation,
+    CreateInvoiceItemMutationVariables
+  >(CreateInvoiceItemDocument, {
     onCompleted: () => onRefetch && onRefetch(),
     onError: () => notify.error('Nepodarilo sa vytvoriť položku faktúry.'),
   });
-  const [updateInvoiceItem] = useMutation<UpdateInvoiceItemMutation, UpdateInvoiceItemMutationVariables>(UpdateInvoiceItemDocument, {
+  const [updateInvoiceItem] = useMutation<
+    UpdateInvoiceItemMutation,
+    UpdateInvoiceItemMutationVariables
+  >(UpdateInvoiceItemDocument, {
     onCompleted: () => onRefetch && onRefetch(),
     onError: () => notify.error('Nepodarilo sa aktualizovať položku faktúry.'),
   });
-  const [deleteInvoiceItem] = useMutation<DeleteInvoiceItemMutation, DeleteInvoiceItemMutationVariables>(DeleteInvoiceItemDocument, {
+  const [deleteInvoiceItem] = useMutation<
+    DeleteInvoiceItemMutation,
+    DeleteInvoiceItemMutationVariables
+  >(DeleteInvoiceItemDocument, {
     onCompleted: () => onRefetch && onRefetch(),
     onError: () => notify.error('Nepodarilo sa vymazať položku faktúry.'),
   });

@@ -1,5 +1,5 @@
 import { Spinner, Text } from 'grommet';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { FileTile } from '../../../components/file-tile';
 import { FileUploadControl } from '../../../components/file-upload-control';
 import { useNotification } from '../../../components/notifications/notification-provider';
@@ -32,7 +32,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
   const { program, canEdit } = props;
   const { notify } = useNotification();
 
-  const [getUploadUrl, { error: urlError }] = useLazyQuery<
+  const [getUploadUrl] = useLazyQuery<
     GetProgramFileUploadUrlQuery,
     GetProgramFileUploadUrlQueryVariables
   >(GetProgramFileUploadUrlDocument);
@@ -86,7 +86,7 @@ export function PanelProgramFiles(props: PanelProgramFilesProps) {
         }
       }
     },
-    [addProgramFile, getUploadUrl, program.id],
+    [addProgramFile, getUploadUrl, notify, program.id],
   );
 
   const files = filesData?.getProgramFiles ?? [];

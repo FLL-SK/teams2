@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { formatDate } from '@teams2/dateutils';
 import { Box, Button, Text } from 'grommet';
 
@@ -20,7 +18,7 @@ interface SetClearDateProps {
 }
 
 export function SetClearDate(props: SetClearDateProps) {
-  const { date, onSet, onClear, canEdit, clearType, action, direction = 'row' } = props;
+  const { date, onSet, onClear, canEdit, action, direction = 'row' } = props;
 
   return (
     <Box

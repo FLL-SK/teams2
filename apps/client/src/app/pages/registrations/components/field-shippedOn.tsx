@@ -1,5 +1,5 @@
 import { toUtcDateString } from '@teams2/dateutils';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useAppUser } from '../../../components/app-user/use-app-user';
 import { LabelValue } from '../../../components/label-value';
 import { useNotification } from '../../../components/notifications/notification-provider';
@@ -27,8 +27,14 @@ export const FieldShippedOn = (props: {
     [notify],
   );
 
-  const [setShipped] = useMutation<RegistrationSetShippedMutation, RegistrationSetShippedMutationVariables>(RegistrationSetShippedDocument, { onError });
-  const [clearShipped] = useMutation<RegistrationClearShippedMutation, RegistrationClearShippedMutationVariables>(RegistrationClearShippedDocument, { onError });
+  const [setShipped] = useMutation<
+    RegistrationSetShippedMutation,
+    RegistrationSetShippedMutationVariables
+  >(RegistrationSetShippedDocument, { onError });
+  const [clearShipped] = useMutation<
+    RegistrationClearShippedMutation,
+    RegistrationClearShippedMutationVariables
+  >(RegistrationClearShippedDocument, { onError });
 
   return (
     <LabelValue label="Materiály odoslané">

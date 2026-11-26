@@ -1,4 +1,3 @@
-import React from 'react';
 import { appPath, MIN_PASSWORD_LENGTH, validatePassword } from '@teams2/common';
 import {
   Anchor,

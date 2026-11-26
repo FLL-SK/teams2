@@ -1,7 +1,11 @@
-# auth-react
+# @teams2/auth-react
 
-This library was generated with [Nx](https://nx.dev).
+Autentifikácia v klientovi: `AuthContextProvider` (prihlásenie, registrácia, obnova tokenu, reset hesla), `RequireAuth` a Apollo provider s JWT.
 
-## Running unit tests
+Import cez alias `@teams2/auth-react` (`tsconfig.base.json`).
 
-Run `nx test auth-react` to execute the unit tests via [Vitest](https://vitest.dev).
+## Testy
+
+```bash
+pnpm test --project auth-react
+```
